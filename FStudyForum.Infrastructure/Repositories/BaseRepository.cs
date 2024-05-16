@@ -22,7 +22,6 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
         var data = await _dbContext.Set<T>()
             .AsNoTracking()
             .ToListAsync();
-
         return data;
     }
 
