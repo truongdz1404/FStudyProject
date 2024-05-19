@@ -135,13 +135,10 @@ public class IdentityService : IIdentityService
 
     public async Task<List<string>> GetUserRolesAsync(string userId)
     {
-        var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Id == userId);
-        if (user == null)
-        {
-            throw new NotFoundException("User not found");
-        }
+        var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Id == userId)
+            ?? throw new NotFoundException("User not found");
         var roles = await _userManager.GetRolesAsync(user);
-        return roles.ToList();
+        return [.. roles];
     }
 
     public async Task<bool> IsInRoleAsync(string userId, string role)

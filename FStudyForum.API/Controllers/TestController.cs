@@ -1,4 +1,6 @@
+using System.Security.Claims;
 using FStudyForum.Core.Constants;
+using FStudyForum.Core.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,8 +12,13 @@ public class TestController : ControllerBase
 {
     [HttpGet("helloworld")]
     [Authorize(Roles = UserRole.User)]
-    public string HelloWorld()
+    public IActionResult HelloWorld()
     {
-        return "Hello World";
+        var userName = User.FindFirstValue(ClaimTypes.Name);
+        return Ok(new Response
+        {
+            Status = ResponseStatus.SUCCESS,
+            Message = $"Hello World, {userName}"
+        });
     }
 }

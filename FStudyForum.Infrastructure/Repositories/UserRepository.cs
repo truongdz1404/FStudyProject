@@ -17,4 +17,5 @@ public class UserRepository : BaseRepository<ApplicationUser>, IUserRepository
     {
         return await _dbContext.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
     }
+
 }

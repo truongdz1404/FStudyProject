@@ -1,5 +1,7 @@
 using System.Security.Claims;
+using AutoMapper;
 using FStudyForum.Core.DTOs.Token;
+using FStudyForum.Core.DTOs.User;
 using FStudyForum.Core.Entities;
 using FStudyForum.Core.Interfaces.IRepositories;
 using FStudyForum.Core.Interfaces.IServices;
@@ -12,16 +14,18 @@ public class UserService : IUserService
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ITokenService _tokenService;
     private readonly IUserRepository _userRepository;
+    private readonly IMapper _mapper;
 
     public UserService(
         UserManager<ApplicationUser> userManager,
         ITokenService tokenService,
-        IUserRepository userRepository)
+        IUserRepository userRepository,
+        IMapper mapper)
     {
         _userManager = userManager;
         _tokenService = tokenService;
         _userRepository = userRepository;
-
+        _mapper = mapper;
     }
 
     private async Task<List<Claim>> GetClaimsAsync(ApplicationUser user)
@@ -65,5 +69,12 @@ public class UserService : IUserService
         return await CreateAuthTokenAsync(user);
     }
 
-
+    public async Task<UserDTO> GetUserByUserName(string userName)
+    {
+        var user = await _userManager.FindByNameAsync(userName)
+            ?? throw new Exception("UserName is invalid");
+        var userDTO = _mapper.Map<UserDTO>(user);
+        userDTO.Roles = await _userManager.GetRolesAsync(user);
+        return userDTO;
+    }
 }

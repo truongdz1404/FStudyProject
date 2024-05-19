@@ -1,6 +1,4 @@
-@FStudyForum.API_HostAddress = http://localhost:5293
-
-GET {{FStudyForum.API_HostAddress}}/weatherforecast/
+@FStudyForum.API_HostAddress = http://localhost:5246
 Accept: application/json
 
 ###

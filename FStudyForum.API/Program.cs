@@ -1,6 +1,7 @@
 using System.Text;
 using FStudyForum.API.Extensions;
 using FStudyForum.API.Mapper;
+using FStudyForum.Core.Constants;
 using FStudyForum.Core.DTOs.Token;
 using FStudyForum.Core.Entities;
 using FStudyForum.Infrastructure.Data;
@@ -19,6 +20,18 @@ builder.Services.Configure<JwtDTO>(jwtSection);
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
     options.UseSqlServer(connectionString)
 );
+builder.Services.AddCors(options =>
+{
+    var jwtDTO = jwtSection.Get<JwtDTO>()
+            ?? throw new Exception("Jwt options have not been set!");
+    options.AddPolicy(Policies.SINGLE_PAGE_APP, policy =>
+    {
+        policy.WithOrigins(jwtDTO.Audience);
+        policy.AllowAnyHeader();
+        policy.AllowAnyMethod();
+        policy.AllowCredentials();
+    });
+});
 
 builder.Services.AddAutoMapper(typeof(MapperProfile));
 
@@ -67,7 +80,7 @@ builder.Services
 builder.Services.RegisterService();
 
 var app = builder.Build();
-
+app.UseCors(Policies.SINGLE_PAGE_APP);
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

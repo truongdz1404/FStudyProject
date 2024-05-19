@@ -30,7 +30,6 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterDTO registerDTO)
     {
-
         try
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -83,7 +82,7 @@ public class AuthController : ControllerBase
             Message = "Username or password is incorrect"
         });
     }
-    [HttpPost("refresh-token")]
+    [HttpGet("refresh-token")]
     public async Task<IActionResult> RefreshToken()
     {
         try
@@ -124,8 +123,10 @@ public class AuthController : ControllerBase
                 HttpOnly = true,
                 IsEssential = true,
                 Secure = true,
-                SameSite = SameSiteMode.None
+                SameSite = SameSiteMode.Strict
             });
+
+        const string refeshTokenPath = "/api/auth/refresh-token";
         context.Response.Cookies.Append(_jwtDTO.RefreshTokenKey, tokenDTO.RefreshToken,
             new CookieOptions
             {
@@ -133,7 +134,8 @@ public class AuthController : ControllerBase
                 HttpOnly = true,
                 IsEssential = true,
                 Secure = true,
-                SameSite = SameSiteMode.None
+                SameSite = SameSiteMode.Strict,
+                Path = refeshTokenPath,
             });
     }
 
