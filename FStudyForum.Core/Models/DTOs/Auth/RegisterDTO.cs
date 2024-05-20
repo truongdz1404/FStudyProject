@@ -1,10 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace FStudyForum.Core.DTOs.Auth;
+namespace FStudyForum.Core.Models.DTOs.Auth;
 
-public class LoginDTO
+public class RegisterDTO
 {
-    [Required]
+    [Required, EmailAddress]
     public string UserName { get; set; } = string.Empty;
     [Required]
     public string Password { get; set; } = string.Empty;

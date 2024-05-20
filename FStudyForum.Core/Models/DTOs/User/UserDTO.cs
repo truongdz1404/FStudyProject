@@ -1,4 +1,4 @@
-namespace FStudyForum.Core.DTOs.User;
+namespace FStudyForum.Core.Models.DTOs.User;
 
 public class UserDTO
 {

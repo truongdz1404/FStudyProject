@@ -1,4 +1,4 @@
-using FStudyForum.Core.Entities;
+using FStudyForum.Core.Models.Entities;
 
 namespace FStudyForum.Core.Interfaces.IRepositories;
 

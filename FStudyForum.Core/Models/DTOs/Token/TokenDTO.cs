@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace FStudyForum.Core.DTOs.Token;
+namespace FStudyForum.Core.Models.DTOs.Token;
 
 public class TokenDTO
 {

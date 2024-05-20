@@ -1,5 +1,5 @@
-using FStudyForum.Core.DTOs.Token;
-using FStudyForum.Core.DTOs.User;
+using FStudyForum.Core.Models.DTOs.Token;
+using FStudyForum.Core.Models.DTOs.User;
 
 namespace FStudyForum.Core.Interfaces.IServices;
 

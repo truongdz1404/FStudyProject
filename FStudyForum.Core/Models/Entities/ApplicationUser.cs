@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace FStudyForum.Core.Entities;
+namespace FStudyForum.Core.Models.Entities;
 
 public class ApplicationUser : IdentityUser
 {

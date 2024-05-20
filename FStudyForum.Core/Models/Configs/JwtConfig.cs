@@ -1,4 +1,4 @@
-namespace FStudyForum.Core.DTOs.Token;
+namespace FStudyForum.Core.Models.Configs;
 
 public class JwtConfig
 {

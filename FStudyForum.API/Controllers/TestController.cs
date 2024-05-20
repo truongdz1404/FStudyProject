@@ -1,6 +1,6 @@
 using System.Security.Claims;
 using FStudyForum.Core.Constants;
-using FStudyForum.Core.DTOs;
+using FStudyForum.Core.Models.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

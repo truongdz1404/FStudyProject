@@ -1,8 +1,8 @@
 using System.Security.Claims;
 using AutoMapper;
-using FStudyForum.Core.DTOs.Token;
-using FStudyForum.Core.DTOs.User;
-using FStudyForum.Core.Entities;
+using FStudyForum.Core.Models.DTOs.Token;
+using FStudyForum.Core.Models.DTOs.User;
+using FStudyForum.Core.Models.Entities;
 using FStudyForum.Core.Interfaces.IRepositories;
 using FStudyForum.Core.Interfaces.IServices;
 using Microsoft.AspNetCore.Identity;

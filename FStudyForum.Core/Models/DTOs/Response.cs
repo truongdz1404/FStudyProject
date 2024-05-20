@@ -1,4 +1,4 @@
-namespace FStudyForum.Core.DTOs;
+namespace FStudyForum.Core.Models.DTOs;
 
 public class Response
 {

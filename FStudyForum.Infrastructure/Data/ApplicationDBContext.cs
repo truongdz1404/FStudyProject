@@ -1,5 +1,5 @@
 using FStudyForum.Core.Constants;
-using FStudyForum.Core.Entities;
+using FStudyForum.Core.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;

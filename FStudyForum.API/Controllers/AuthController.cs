@@ -1,9 +1,10 @@
 using FStudyForum.Core.Constants;
-using FStudyForum.Core.DTOs;
-using FStudyForum.Core.DTOs.Auth;
-using FStudyForum.Core.DTOs.Token;
+using FStudyForum.Core.Models.DTOs;
+using FStudyForum.Core.Models.DTOs.Auth;
+using FStudyForum.Core.Models.DTOs.Token;
 using FStudyForum.Core.Exceptions;
 using FStudyForum.Core.Interfaces.IServices;
+using FStudyForum.Core.Models.Configs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -93,7 +94,7 @@ public class AuthController : ControllerBase
             return Ok(new Response
             {
                 Status = ResponseStatus.SUCCESS,
-                Message = "Refesh Token Successfully!"
+                Message = "Refresh Token Successfully!"
             });
         }
         catch (Exception ex)
@@ -126,7 +127,7 @@ public class AuthController : ControllerBase
                 SameSite = SameSiteMode.Strict
             });
 
-        const string refeshTokenPath = "/api/auth/refresh-token";
+        const string refreshTokenPath = "/api/auth/refresh-token";
         context.Response.Cookies.Append(_jwtConfig.RefreshTokenKey, tokenDTO.RefreshToken,
             new CookieOptions
             {
@@ -135,7 +136,7 @@ public class AuthController : ControllerBase
                 IsEssential = true,
                 Secure = true,
                 SameSite = SameSiteMode.Strict,
-                Path = refeshTokenPath,
+                Path = refreshTokenPath,
             });
     }
 

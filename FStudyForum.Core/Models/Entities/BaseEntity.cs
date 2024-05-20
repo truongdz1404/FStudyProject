@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace FStudyForum.Core.Entities;
+namespace FStudyForum.Core.Models.Entities;
 
 public class BaseEntity
 {
@@ -9,10 +9,5 @@ public class BaseEntity
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public long Id { get; set; }
     public DateTime CreatedDate { get; set; }
-    public DateTime ModifiedDate { get; private set; }
-
-    public BaseEntity()
-    {
-        ModifiedDate = DateTime.Now;
-    }
+    public DateTime ModifiedDate { get; private set; } = DateTime.Now;
 }

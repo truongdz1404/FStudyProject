@@ -1,5 +1,5 @@
-using FStudyForum.Core.DTOs.Auth;
-using FStudyForum.Core.Entities;
+using FStudyForum.Core.Models.DTOs.Auth;
+using FStudyForum.Core.Models.Entities;
 using FStudyForum.Core.Exceptions;
 using FStudyForum.Core.Interfaces.IServices;
 using Microsoft.AspNetCore.Identity;

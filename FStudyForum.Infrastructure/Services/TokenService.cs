@@ -2,8 +2,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using FStudyForum.Core.DTOs.Token;
 using FStudyForum.Core.Interfaces.IServices;
+using FStudyForum.Core.Models.Configs;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -16,7 +16,7 @@ public class TokenService : ITokenService
     public TokenService(IOptions<JwtConfig> jwtConfig)
     {
         _jwtConfig = jwtConfig.Value;
-        _key = new(Encoding.UTF8.GetBytes(_jwtConfig.SigningKey));
+        _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfig.SigningKey));
     }
 
     public string GenerateAccessToken(List<Claim> claims)

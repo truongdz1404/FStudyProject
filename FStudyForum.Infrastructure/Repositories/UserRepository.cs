@@ -1,4 +1,4 @@
-using FStudyForum.Core.Entities;
+using FStudyForum.Core.Models.Entities;
 using FStudyForum.Core.Interfaces.IRepositories;
 using FStudyForum.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;

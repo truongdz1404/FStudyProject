@@ -1,4 +1,4 @@
-using FStudyForum.Core.DTOs.Auth;
+using FStudyForum.Core.Models.DTOs.Auth;
 
 namespace FStudyForum.Core.Interfaces.IServices;
 

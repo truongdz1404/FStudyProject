@@ -1,6 +1,6 @@
 using AutoMapper;
-using FStudyForum.Core.DTOs.User;
-using FStudyForum.Core.Entities;
+using FStudyForum.Core.Models.DTOs.User;
+using FStudyForum.Core.Models.Entities;
 
 namespace FStudyForum.API.Mapper;
 
