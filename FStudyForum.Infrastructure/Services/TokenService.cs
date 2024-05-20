@@ -11,12 +11,12 @@ namespace FStudyForum.Infrastructure.Services;
 
 public class TokenService : ITokenService
 {
-    private readonly JwtOptions _jwtOptions;
+    private readonly JwtConfig _jwtConfig;
     private readonly SymmetricSecurityKey _key;
-    public TokenService(IOptions<JwtOptions> jwtOptions)
+    public TokenService(IOptions<JwtConfig> jwtConfig)
     {
-        _jwtOptions = jwtOptions.Value;
-        _key = new(Encoding.UTF8.GetBytes(_jwtOptions.SigningKey));
+        _jwtConfig = jwtConfig.Value;
+        _key = new(Encoding.UTF8.GetBytes(_jwtConfig.SigningKey));
     }
 
     public string GenerateAccessToken(List<Claim> claims)
@@ -25,10 +25,10 @@ public class TokenService : ITokenService
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.Now.AddMinutes(_jwtOptions.TokenValidityInMinutes),
+            Expires = DateTime.Now.AddMinutes(_jwtConfig.TokenValidityInMinutes),
             SigningCredentials = credentials,
-            Issuer = _jwtOptions.Issuer,
-            Audience = _jwtOptions.Audience
+            Issuer = _jwtConfig.Issuer,
+            Audience = _jwtConfig.Audience
         };
         var tokenHandle = new JwtSecurityTokenHandler();
         var token = tokenHandle.CreateToken(tokenDescriptor);
@@ -50,7 +50,7 @@ public class TokenService : ITokenService
             ValidateIssuer = false,
             ValidateLifetime = false,
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.SigningKey)),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfig.SigningKey)),
         };
 
         var tokenHandler = new JwtSecurityTokenHandler();

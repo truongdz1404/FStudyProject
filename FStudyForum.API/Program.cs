@@ -15,10 +15,10 @@ builder.Services.AddControllers();
 
 var jwtSection = builder.Configuration.GetSection("JWT");
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-var jwtOptions = jwtSection.Get<JwtOptions>()
-            ?? throw new Exception("Jwt options have not been set!");
+var jwtConfig = jwtSection.Get<JwtConfig>()
+    ?? throw new Exception("Jwt options have not been set!");
 
-builder.Services.Configure<JwtOptions>(jwtSection);
+builder.Services.Configure<JwtConfig>(jwtSection);
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
     options.UseSqlServer(connectionString)
 );
@@ -27,7 +27,7 @@ builder.Services.AddCors(options =>
 
     options.AddPolicy(Policies.SINGLE_PAGE_APP, policy =>
     {
-        policy.WithOrigins(jwtOptions.Audience);
+        policy.WithOrigins(jwtConfig.Audience);
         policy.AllowAnyHeader();
         policy.AllowAnyMethod();
         policy.AllowCredentials();
@@ -58,17 +58,17 @@ builder.Services
         {
             ValidateIssuerSigningKey = true,
             ClockSkew = TimeSpan.Zero,
-            ValidIssuer = jwtOptions.Issuer,
-            ValidAudience = jwtOptions.Audience,
+            ValidIssuer = jwtConfig.Issuer,
+            ValidAudience = jwtConfig.Audience,
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(jwtOptions.SigningKey)
+                Encoding.UTF8.GetBytes(jwtConfig.SigningKey)
             )
         };
         option.Events = new()
         {
             OnMessageReceived = context =>
             {
-                context.Request.Cookies.TryGetValue(jwtOptions.AccessTokenKey, out var accessToken);
+                context.Request.Cookies.TryGetValue(jwtConfig.AccessTokenKey, out var accessToken);
                 if (!string.IsNullOrEmpty(accessToken))
                     context.Token = accessToken;
                 return Task.CompletedTask;
