@@ -165,8 +165,8 @@ namespace FStudyForum.Infrastructure.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "19da5d07-4dec-46c4-9c05-26bbf4eda6f6", null, "Admin", "ADMIN" },
-                    { "83cc8ce9-7cf3-4981-9537-501d1bb66620", null, "User", "USER" }
+                    { "1192b76d-43c8-4512-bd33-ada133b376dc", null, "User", "USER" },
+                    { "b268c4d7-9168-4975-b415-5ac2c0119359", null, "Admin", "ADMIN" }
                 });
 
             migrationBuilder.CreateIndex(

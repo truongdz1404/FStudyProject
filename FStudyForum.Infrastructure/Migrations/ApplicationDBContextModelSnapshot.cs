@@ -22,7 +22,7 @@ namespace FStudyForum.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("FStudyForum.Infrastructure.Identity.ApplicationUser", b =>
+            modelBuilder.Entity("FStudyForum.Core.Models.Entities.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -123,13 +123,13 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "19da5d07-4dec-46c4-9c05-26bbf4eda6f6",
+                            Id = "b268c4d7-9168-4975-b415-5ac2c0119359",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "83cc8ce9-7cf3-4981-9537-501d1bb66620",
+                            Id = "1192b76d-43c8-4512-bd33-ada133b376dc",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -252,7 +252,7 @@ namespace FStudyForum.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("FStudyForum.Infrastructure.Identity.ApplicationUser", null)
+                    b.HasOne("FStudyForum.Core.Models.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -261,7 +261,7 @@ namespace FStudyForum.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("FStudyForum.Infrastructure.Identity.ApplicationUser", null)
+                    b.HasOne("FStudyForum.Core.Models.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -276,7 +276,7 @@ namespace FStudyForum.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FStudyForum.Infrastructure.Identity.ApplicationUser", null)
+                    b.HasOne("FStudyForum.Core.Models.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -285,7 +285,7 @@ namespace FStudyForum.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("FStudyForum.Infrastructure.Identity.ApplicationUser", null)
+                    b.HasOne("FStudyForum.Core.Models.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
