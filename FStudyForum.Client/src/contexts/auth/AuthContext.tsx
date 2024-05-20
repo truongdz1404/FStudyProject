@@ -26,7 +26,6 @@ const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
         (async () => {
             try {
                 const user = await UserService.getProfile();
-                console.log(user);
                 dispatch(initialize({ isAuthenticated: true, user: user }));
             } catch {
                 dispatch(initialize({ isAuthenticated: false, user: null }));
