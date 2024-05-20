@@ -5,13 +5,13 @@ const Home: FC = () => {
     const [message, setMessage] = React.useState<string>("Dit me the gioi");
     React.useEffect(() => {
         const fetchMessage = async () => {
-            setMessage((await HomeService.helloworld()));
+            setMessage(await HomeService.helloworld());
         };
         fetchMessage();
     }, []);
     return (
         <>
-            <h1 className="text-yellow-500">{message}</h1>
+            <h1 className="text-black">{message}</h1>
         </>
     );
 };

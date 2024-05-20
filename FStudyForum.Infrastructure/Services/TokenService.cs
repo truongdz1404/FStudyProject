@@ -11,9 +11,9 @@ namespace FStudyForum.Infrastructure.Services;
 
 public class TokenService : ITokenService
 {
-    private readonly JwtDTO _jwtOptions;
+    private readonly JwtOptions _jwtOptions;
     private readonly SymmetricSecurityKey _key;
-    public TokenService(IOptions<JwtDTO> jwtOptions)
+    public TokenService(IOptions<JwtOptions> jwtOptions)
     {
         _jwtOptions = jwtOptions.Value;
         _key = new(Encoding.UTF8.GetBytes(_jwtOptions.SigningKey));

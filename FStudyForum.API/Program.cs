@@ -15,18 +15,19 @@ builder.Services.AddControllers();
 
 var jwtSection = builder.Configuration.GetSection("JWT");
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var jwtOptions = jwtSection.Get<JwtOptions>()
+            ?? throw new Exception("Jwt options have not been set!");
 
-builder.Services.Configure<JwtDTO>(jwtSection);
+builder.Services.Configure<JwtOptions>(jwtSection);
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
     options.UseSqlServer(connectionString)
 );
 builder.Services.AddCors(options =>
 {
-    var jwtDTO = jwtSection.Get<JwtDTO>()
-            ?? throw new Exception("Jwt options have not been set!");
+
     options.AddPolicy(Policies.SINGLE_PAGE_APP, policy =>
     {
-        policy.WithOrigins(jwtDTO.Audience);
+        policy.WithOrigins(jwtOptions.Audience);
         policy.AllowAnyHeader();
         policy.AllowAnyMethod();
         policy.AllowCredentials();
@@ -53,23 +54,21 @@ builder.Services
     })
     .AddJwtBearer(option =>
     {
-        var jwtDTO = jwtSection.Get<JwtDTO>()
-            ?? throw new Exception("Jwt options have not been set!");
         option.TokenValidationParameters = new()
         {
             ValidateIssuerSigningKey = true,
             ClockSkew = TimeSpan.Zero,
-            ValidIssuer = jwtDTO.Issuer,
-            ValidAudience = jwtDTO.Audience,
+            ValidIssuer = jwtOptions.Issuer,
+            ValidAudience = jwtOptions.Audience,
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(jwtDTO.SigningKey)
+                Encoding.UTF8.GetBytes(jwtOptions.SigningKey)
             )
         };
         option.Events = new()
         {
             OnMessageReceived = context =>
             {
-                context.Request.Cookies.TryGetValue(jwtDTO.AccessTokenKey, out var accessToken);
+                context.Request.Cookies.TryGetValue(jwtOptions.AccessTokenKey, out var accessToken);
                 if (!string.IsNullOrEmpty(accessToken))
                     context.Token = accessToken;
                 return Task.CompletedTask;

@@ -13,17 +13,17 @@ namespace FStudyForum.API.Controllers;
 [ApiController]
 public class AuthController : ControllerBase
 {
-    private readonly JwtDTO _jwtDTO;
+    private readonly JwtOptions _jwtOptions;
     private readonly IUserService _userService;
     private readonly IIdentityService _identityService;
 
 
     public AuthController(
-        IOptions<JwtDTO> jwtOptions,
+        IOptions<JwtOptions> jwtOptions,
         IUserService accountService,
         IIdentityService identityService)
     {
-        _jwtDTO = jwtOptions.Value;
+        _jwtOptions = jwtOptions.Value;
         _userService = accountService;
         _identityService = identityService;
     }
@@ -67,7 +67,7 @@ public class AuthController : ControllerBase
         var isValid = await _identityService.SigninUserAsync(loginDTO);
         if (isValid)
         {
-            var tokenDTO = await _userService.CreateAuthTokenAsync(loginDTO.UserName, _jwtDTO.RefreshTokenValidityInDays);
+            var tokenDTO = await _userService.CreateAuthTokenAsync(loginDTO.UserName, _jwtOptions.RefreshTokenValidityInDays);
             SetTokensInsideCookie(tokenDTO, HttpContext);
 
             return Ok(new Response
@@ -87,7 +87,7 @@ public class AuthController : ControllerBase
     {
         try
         {
-            var refeshToken = GetTokenInsideCookie(_jwtDTO.RefreshTokenKey, HttpContext);
+            var refeshToken = GetTokenInsideCookie(_jwtOptions.RefreshTokenKey, HttpContext);
             var tokenDTO = await _userService.RefeshAuthTokenAsync(refeshToken);
             SetTokensInsideCookie(tokenDTO, HttpContext);
             return Ok(new Response
@@ -116,10 +116,10 @@ public class AuthController : ControllerBase
 
     private void SetTokensInsideCookie(TokenDTO tokenDTO, HttpContext context)
     {
-        context.Response.Cookies.Append(_jwtDTO.AccessTokenKey, tokenDTO.AccessToken,
+        context.Response.Cookies.Append(_jwtOptions.AccessTokenKey, tokenDTO.AccessToken,
             new CookieOptions
             {
-                Expires = DateTimeOffset.UtcNow.AddMinutes(_jwtDTO.TokenValidityInMinutes),
+                Expires = DateTimeOffset.UtcNow.AddMinutes(_jwtOptions.TokenValidityInMinutes),
                 HttpOnly = true,
                 IsEssential = true,
                 Secure = true,
@@ -127,10 +127,10 @@ public class AuthController : ControllerBase
             });
 
         const string refeshTokenPath = "/api/auth/refresh-token";
-        context.Response.Cookies.Append(_jwtDTO.RefreshTokenKey, tokenDTO.RefreshToken,
+        context.Response.Cookies.Append(_jwtOptions.RefreshTokenKey, tokenDTO.RefreshToken,
             new CookieOptions
             {
-                Expires = DateTimeOffset.UtcNow.AddDays(_jwtDTO.RefreshTokenValidityInDays),
+                Expires = DateTimeOffset.UtcNow.AddDays(_jwtOptions.RefreshTokenValidityInDays),
                 HttpOnly = true,
                 IsEssential = true,
                 Secure = true,
