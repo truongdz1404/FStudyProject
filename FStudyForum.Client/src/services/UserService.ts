@@ -4,7 +4,7 @@ import { ResponseWith } from "@/types/response";
 
 const getProfile = async () => {
     const response = await api.get<ResponseWith<User>>("/user/profile");
-    return response.data.data;
+    return (response.data).data;
 };
 
 const UserService = {

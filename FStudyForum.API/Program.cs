@@ -14,14 +14,19 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 var jwtSection = builder.Configuration.GetSection("JWT");
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.Configure<JwtConfig>(jwtSection);
+builder.Services.Configure<GoogleConfig>(builder.Configuration.GetSection("Google"));
+
 var jwtConfig = jwtSection.Get<JwtConfig>()
     ?? throw new Exception("Jwt options have not been set!");
 
-builder.Services.Configure<JwtConfig>(jwtSection);
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
-    options.UseSqlServer(connectionString)
+    {
+        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+        options.UseSqlServer(connectionString);
+    }
 );
+
 builder.Services.AddCors(options =>
 {
 

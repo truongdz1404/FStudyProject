@@ -6,6 +6,7 @@ import { Role } from "./helpers/constants";
 
 const SignIn = lazy(() => import("./pages/auth/signin"));
 const Home = lazy(() => import("./pages/home"));
+
 const Router: FC = () => {
     return useRoutes([
         {
@@ -27,6 +28,10 @@ const Router: FC = () => {
             children: [
                 {
                     path: "signin",
+                    element: <SignIn />,
+                },
+                {
+                    path: "register",
                     element: <SignIn />,
                 },
             ],

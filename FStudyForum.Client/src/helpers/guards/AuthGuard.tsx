@@ -1,3 +1,4 @@
+import Loading from "@/components/loading";
 import { useAuth } from "@/hooks/useAuth";
 import { FC, PropsWithChildren } from "react";
 import { Navigate } from "react-router-dom";
@@ -5,7 +6,7 @@ import { Navigate } from "react-router-dom";
 const AuthGuard: FC<PropsWithChildren> = ({ children }) => {
     const { isInitialized, isAuthenticated } = useAuth();
 
-    if (!isInitialized) return <></>; //TODO: Handle Loading
+    if (!isInitialized) return <Loading />;
     if (!isAuthenticated) {
         return <Navigate to="/auth/signin" replace />;
     }

@@ -1,4 +1,4 @@
-export const API_BASE_URL = "http://localhost:5246/api";
+export const API_BASE_URL = "http://localhost:5005/api";
 export enum ResponseStatus {
     SUCCESS = "Success",
     ERROR = "Error",

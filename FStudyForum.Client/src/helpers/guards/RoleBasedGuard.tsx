@@ -1,3 +1,4 @@
+import NoPremission from "@/components/noPremission";
 import { useAuth } from "@/hooks/useAuth";
 import { FC, ReactNode } from "react";
 
@@ -13,7 +14,7 @@ const RoleBasedGuard: FC<RoleBasedGuardProps> = ({
     const { user } = useAuth();
     const isRoleMatched =
         user?.roles.some((r) => accessibleRoles.includes(r)) ?? false;
-    if (!isRoleMatched) return <>Not Permission</>; //TODO: Handle Not Permission
+    if (!isRoleMatched) return <NoPremission />;
     return <>{children}</>;
 };
 

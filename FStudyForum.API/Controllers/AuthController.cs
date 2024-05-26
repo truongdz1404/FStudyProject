@@ -28,6 +28,7 @@ public class AuthController : ControllerBase
         _userService = accountService;
         _identityService = identityService;
     }
+
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterDTO registerDTO)
     {
@@ -83,6 +84,20 @@ public class AuthController : ControllerBase
             Message = "Username or password is incorrect"
         });
     }
+
+    [HttpPost("login-google")]
+    public IActionResult GoogleAuthenticate()
+    {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+
+        
+        return Unauthorized(new Response
+        {
+            Status = ResponseStatus.ERROR,
+            Message = "Username or password is incorrect"
+        });
+    }
+
     [HttpGet("refresh-token")]
     public async Task<IActionResult> RefreshToken()
     {
@@ -117,6 +132,7 @@ public class AuthController : ControllerBase
 
     private void SetTokensInsideCookie(TokenDTO tokenDTO, HttpContext context)
     {
+
         context.Response.Cookies.Append(_jwtConfig.AccessTokenKey, tokenDTO.AccessToken,
             new CookieOptions
             {
@@ -139,6 +155,5 @@ public class AuthController : ControllerBase
                 Path = refreshTokenPath,
             });
     }
-
 
 }

@@ -24,7 +24,7 @@ public class TokenService : ITokenService
         var credentials = new SigningCredentials(_key, SecurityAlgorithms.HmacSha256);
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity(claims),
+            Subject = new(claims),
             Expires = DateTime.Now.AddMinutes(_jwtConfig.TokenValidityInMinutes),
             SigningCredentials = credentials,
             Issuer = _jwtConfig.Issuer,

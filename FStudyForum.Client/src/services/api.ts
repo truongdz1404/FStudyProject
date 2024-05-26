@@ -18,11 +18,10 @@ api.interceptors.response.use(
         if (status === 401 && !config._retry) {
             config._retry = true;
             try {
-                await AuthService.refesh();
+                await AuthService.refreshToken();
                 return axios(config);
             } catch (error) {
-                console.log(error);
-                //TODO: Handle error or redict to login
+                return Promise.reject(error);
             }
         }
         return Promise.reject(error);

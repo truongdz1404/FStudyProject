@@ -8,15 +8,20 @@ const login = async (username: string, password: string) => {
     });
     return response.data.message;
 };
+const logout = async () => {
+    const response = await api.get<Response>("/auth/logout");
+    return response.data.message;
+};
 
-const refesh = async () => {
+const refreshToken = async () => {
     const response = await api.get<Response>("/auth/refresh-token");
     return response.data.message;
 };
 
 const AuthService = {
-    refesh,
+    refreshToken,
     login,
+    logout,
 };
 
 export default AuthService;
