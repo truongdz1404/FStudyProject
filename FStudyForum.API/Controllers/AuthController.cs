@@ -69,7 +69,8 @@ public class AuthController : ControllerBase
         var isValid = await _identityService.SigninUserAsync(loginDTO);
         if (isValid)
         {
-            var tokenDTO = await _userService.CreateAuthTokenAsync(loginDTO.UserName, _jwtConfig.RefreshTokenValidityInDays);
+            var tokenDTO = await _userService
+                .CreateAuthTokenAsync(loginDTO.UserName, _jwtConfig.RefreshTokenValidityInDays);
             SetTokensInsideCookie(tokenDTO, HttpContext);
 
             return Ok(new Response
@@ -86,15 +87,26 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login-google")]
-    public IActionResult GoogleAuthenticate()
+    public async Task<IActionResult> GoogleAuthenticate(ExternalAuthDTO externalAuth)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
+        var user = await _userService.FindOrCreateUserAsync(externalAuth, [UserRole.User]);
+        if (user != null)
+        {
+            var tokenDTO = await _userService
+                .CreateAuthTokenAsync(user.UserName, _jwtConfig.RefreshTokenValidityInDays);
+            SetTokensInsideCookie(tokenDTO, HttpContext);
 
-        
+            return Ok(new Response
+            {
+                Status = ResponseStatus.SUCCESS,
+                Message = "Login Successfully"
+            });
+        }
         return Unauthorized(new Response
         {
             Status = ResponseStatus.ERROR,
-            Message = "Username or password is incorrect"
+            Message = "Invalid External Authentication."
         });
     }
 
@@ -154,6 +166,11 @@ public class AuthController : ControllerBase
                 SameSite = SameSiteMode.Strict,
                 Path = refreshTokenPath,
             });
+    }
+
+    private void RemoveTokensInsideCookie(HttpContext context)
+    {
+        //TODO: Remove accesstoken and refeshtoken
     }
 
 }

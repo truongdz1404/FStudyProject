@@ -6,6 +6,7 @@ using FStudyForum.Core.Models.Entities;
 using FStudyForum.Core.Interfaces.IRepositories;
 using FStudyForum.Core.Interfaces.IServices;
 using Microsoft.AspNetCore.Identity;
+using FStudyForum.Core.Models.DTOs.Auth;
 
 namespace FStudyForum.Infrastructure.Services;
 
@@ -76,5 +77,26 @@ public class UserService : IUserService
         var userDTO = _mapper.Map<UserDTO>(user);
         userDTO.Roles = await _userManager.GetRolesAsync(user);
         return userDTO;
+    }
+
+    public async Task<UserDTO?> FindOrCreateUserAsync(ExternalAuthDTO externalAuth, List<string> roles)
+    {
+        var payload = await _tokenService.VerifyGoogleToken(externalAuth);
+        if (payload == null) return null;
+        var info = new UserLoginInfo(externalAuth.Provider, payload.Subject, externalAuth.Provider);
+        var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+        if (user == null)
+        {
+            user = await _userManager.FindByEmailAsync(payload.Email);
+            if (user == null)
+            {
+                user = new ApplicationUser { Email = payload.Email, UserName = payload.Email };
+                await _userManager.CreateAsync(user);
+                //TODO: Prepare and send an email for the email confirmation
+                await _userManager.AddToRolesAsync(user, roles);
+            }
+            await _userManager.AddLoginAsync(user, info);
+        }
+        return user == null ? null : _mapper.Map<UserDTO>(user);
     }
 }

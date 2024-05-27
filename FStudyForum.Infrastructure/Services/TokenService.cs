@@ -4,6 +4,8 @@ using System.Security.Cryptography;
 using System.Text;
 using FStudyForum.Core.Interfaces.IServices;
 using FStudyForum.Core.Models.Configs;
+using FStudyForum.Core.Models.DTOs.Auth;
+using Google.Apis.Auth;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -12,11 +14,13 @@ namespace FStudyForum.Infrastructure.Services;
 public class TokenService : ITokenService
 {
     private readonly JwtConfig _jwtConfig;
+    private readonly GoogleConfig _googleConfig;
     private readonly SymmetricSecurityKey _key;
-    public TokenService(IOptions<JwtConfig> jwtConfig)
+    public TokenService(IOptions<JwtConfig> jwtConfig, IOptions<GoogleConfig> googleConfig)
     {
         _jwtConfig = jwtConfig.Value;
         _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfig.SigningKey));
+        _googleConfig = googleConfig.Value;
     }
 
     public string GenerateAccessToken(List<Claim> claims)
@@ -60,5 +64,22 @@ public class TokenService : ITokenService
             throw new SecurityTokenException("Invalid token");
 
         return principal;
+    }
+
+    public async Task<GoogleJsonWebSignature.Payload?> VerifyGoogleToken(ExternalAuthDTO externalAuth)
+    {
+        try
+        {
+            var settings = new GoogleJsonWebSignature.ValidationSettings()
+            {
+                Audience = [_googleConfig.ClientId],
+            };
+            var payload = await GoogleJsonWebSignature.ValidateAsync(externalAuth.IdToken, settings);
+            return payload;
+        }
+        catch (Exception)
+        {
+            return null;
+        }
     }
 }

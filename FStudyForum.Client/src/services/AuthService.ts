@@ -8,6 +8,15 @@ const login = async (username: string, password: string) => {
     });
     return response.data.message;
 };
+
+const loginGoogle = async (idToken: string) => {
+    const response = await api.post<Response>("/auth/login-google", {
+        provider: "Google",
+        idToken,
+    });
+    return response.data.message;
+};
+
 const logout = async () => {
     const response = await api.get<Response>("/auth/logout");
     return response.data.message;
@@ -21,6 +30,7 @@ const refreshToken = async () => {
 const AuthService = {
     refreshToken,
     login,
+    loginGoogle,
     logout,
 };
 
