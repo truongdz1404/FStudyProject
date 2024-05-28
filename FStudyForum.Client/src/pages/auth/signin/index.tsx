@@ -17,7 +17,6 @@ const SignIn: FC = () => {
     };
     const handleGoogleLogin = async (response: CredentialResponse) => {
         const idToken = response.credential;
-        console.log(idToken);
         if (!idToken) return;
         await AuthService.loginGoogle(idToken);
         const user = await UserService.getProfile();
