@@ -11,6 +11,7 @@ import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 import { checkEmail, cn } from "@/helpers/utils";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { AxiosError } from "axios";
 type LoginFormsInputs = {
     username: string;
     password: string;
@@ -44,7 +45,11 @@ const SignIn: FC = () => {
             toast.success(message);
             navigate("/");
         } catch (error) {
-            toast.warning("Login failed");
+            if (error instanceof AxiosError){
+                toast.warning(error.message);
+            }else{
+                toast.warning("Login failed");
+            }
         }
     };
     const handleGoogleLogin = async (response: CredentialResponse) => {

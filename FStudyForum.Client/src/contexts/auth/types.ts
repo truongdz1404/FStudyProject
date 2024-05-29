@@ -6,3 +6,7 @@ export interface AuthState {
     user: User | null
 }
 
+export interface ServerResponse {
+    message: string,
+    status: string
+}
