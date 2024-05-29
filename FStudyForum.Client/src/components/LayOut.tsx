@@ -1,9 +1,34 @@
 import { cn } from "@/helpers/utils";
-import { useNavigate, Outlet } from "react-router-dom";
+import { useNavigate, Outlet, useLocation } from "react-router-dom";
 import { GrNotification } from "react-icons/gr";
+import { useState } from "react";
+import { TfiSearch } from "react-icons/tfi";
 
 const LayOut = () => {
     const navigate = useNavigate();
+    enum ButtonType {
+        HOME = 1,
+        POST = 2,
+        TOPIC = 3,
+    }
+    const [activeButton, setActiveButton] = useState<ButtonType | number>(1);
+    const ButtonClickStatus = (buttonType: ButtonType) => { 
+        switch (buttonType) {
+            case 1:
+                navigate("/home")
+                break;
+            case 2:
+                navigate("/post")
+                break;
+            case 3:
+                navigate("/topic")
+                break;
+            default:
+                navigate("/home")
+                break;
+        }
+        setActiveButton(buttonType);
+    };
     return (
         <div>
             <div
@@ -19,11 +44,11 @@ const LayOut = () => {
             >
                 <div className="col-span-2">
                     <div
-                        onClick={() => navigate("/home")}
+                        onClick={() => window.location.href="/home"}
                         className={cn(
                             "font-bold",
                             "text-orange-500",
-                            "ml-[10%]",
+                            "ml-[5%]",
                             "w-[10%]",
                             "cursor-pointer",
                             "text-[150%]",
@@ -44,10 +69,14 @@ const LayOut = () => {
                                 " w-[90%]",
                                 "mt-[2%]",
                                 "h-[7vh]",
-                                "pl-[3%]"
+                                "pl-[7%]",
+                                "pr-[2%]"
                             )}
                             placeholder="Search"
                         />
+                        <div className={cn("absolute", "top-[43%]", "right-[67%]")}>
+                        <TfiSearch />
+                        </div>
                     </div>
                 </div>
                 <div className="col-span-2">
@@ -83,11 +112,24 @@ const LayOut = () => {
                             >
                                 +
                             </div>
-                            <div className={cn("text-[100%]", "mt-[8%]", "ml-[-3%]")}>
+                            <div
+                                className={cn(
+                                    "text-[100%]",
+                                    "mt-[8%]",
+                                    "ml-[-3%]"
+                                )}
+                            >
                                 Create
                             </div>
                         </div>
-                        <div className={cn("p-[3%]", "rounded-full","cursor-pointer", "hover:bg-gray-200")}>
+                        <div
+                            className={cn(
+                                "p-[3%]",
+                                "rounded-full",
+                                "cursor-pointer",
+                                "hover:bg-gray-200"
+                            )}
+                        >
                             <GrNotification />
                         </div>
                     </div>
@@ -109,7 +151,7 @@ const LayOut = () => {
                     "border-l",
                     "border-gray-200",
                     "absolute",
-                    "ml-[21%]",
+                    "ml-[18%]",
                     "fixed",
                     "top-[10%]",
                     "z-50"
@@ -121,7 +163,7 @@ const LayOut = () => {
                     className={cn(
                         "fixed",
                         "top-[12%]",
-                        "left-[2%]",
+                        "left-[1%]",
                         "h-full",
                         "w-2/12",
                         "bg-white",
@@ -130,37 +172,46 @@ const LayOut = () => {
                 >
                     <div
                         className={cn(
-                            "bg-orange-500",
                             "w-10/12",
                             "m-2",
                             "cursor-pointer",
                             "p-2",
-                            "rounded-md"
-                        )}
+                            "rounded-md",
+                            "hover:bg-gray-200",                          
+                           {"bg-slate-300": activeButton == ButtonType.HOME}
+                        )}                       
+                        onClick={() => ButtonClickStatus(ButtonType.HOME)}
                     >
                         <div className="ml-2">Home</div>
                     </div>
                     <div
                         className={cn(
-                            "bg-rose-50",
                             "w-10/12",
-                            "m-2",
+                            "ml-2",
+                            "mt-[-4%]",
                             "cursor-pointer",
                             "p-2",
-                            "rounded-md"
+                            "rounded-md",
+                            "hover:bg-gray-200",
+                            {"bg-slate-300": activeButton == ButtonType.POST}
                         )}
+                        onClick={() => ButtonClickStatus(ButtonType.POST)}
+                        tabIndex={0}
                     >
                         <div className={cn("ml-2", "cursor-pointer")}>Post</div>
                     </div>
                     <div
                         className={cn(
-                            "bg-slate-400",
                             "w-10/12",
-                            "m-2",
+                            "ml-2",
                             "cursor-pointer",
                             "p-2",
-                            "rounded-md"
+                            "rounded-md",
+                            "hover:bg-gray-200",
+                            {"bg-slate-300": activeButton == ButtonType.TOPIC}
                         )}
+                        onClick={() => ButtonClickStatus(ButtonType.TOPIC)}
+                        tabIndex={0}
                     >
                         <div className={cn("ml-2", "cursor-pointer")}>
                             Topics
@@ -170,7 +221,9 @@ const LayOut = () => {
             </div>
 
             <div
-                className={cn("mt-[5%]", "w-[100%]", "ml-[22%]", "h-[1000vh]")}
+                className={cn("mt-[5%]", "w-[80%]", 
+                "ml-[19%]", "h-[1000vh]",    
+                )}
             >
                 <Outlet />
             </div>
