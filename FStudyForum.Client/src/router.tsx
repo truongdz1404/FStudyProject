@@ -4,22 +4,23 @@ import AuthGuard from "@/helpers/guards/AuthGuard";
 import RoleBasedGuard from "./helpers/guards/RoleBasedGuard";
 import { Role } from "./helpers/constants";
 import LayOut from "./components/LayOut";
-
+import Post from "./pages/post";
+import Topic from "./pages/topic";
+import Home from "./pages/home";
 const SignIn = lazy(() => import("./pages/auth/signin"));
-const Home = lazy(() => import("./pages/home"));
 
 const Router: FC = () => {
     return useRoutes([
         {
             path: "",
-            element: <Navigate to="/home" />,
+            element: <LayOut />,
         },
         {
-            path: "home",
+            path: "",
             element: <LayOut />,
             children: [
                 {
-                    path: "",
+                    path: "/home",
                     element: (
                         <AuthGuard>
                             <RoleBasedGuard accessibleRoles={[Role.USER]}>
@@ -27,6 +28,14 @@ const Router: FC = () => {
                             </RoleBasedGuard>
                         </AuthGuard>
                     ),
+                },
+                {
+                    path: "/post",
+                    element: <Post />,
+                },
+                {
+                    path: "/topic",
+                    element: <Topic />,
                 },
             ],
         },

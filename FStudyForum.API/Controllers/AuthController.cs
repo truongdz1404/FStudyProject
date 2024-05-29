@@ -36,7 +36,6 @@ public class AuthController : ControllerBase
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
             await _identityService.CreateUserAsync(registerDTO, [UserRole.User]);
-
             return Ok(new Response
             {
                 Status = ResponseStatus.SUCCESS,
@@ -79,7 +78,7 @@ public class AuthController : ControllerBase
                 Message = "Login Successfully"
             });
         }
-        return Unauthorized(new Response
+        return BadRequest(new Response
         {
             Status = ResponseStatus.ERROR,
             Message = "Username or password is incorrect"

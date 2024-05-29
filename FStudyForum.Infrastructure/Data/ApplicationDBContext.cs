@@ -1,3 +1,4 @@
+using AutoMapper;
 using FStudyForum.Core.Constants;
 using FStudyForum.Core.Models.Entities;
 using Microsoft.AspNetCore.Identity;
@@ -24,5 +25,6 @@ public class ApplicationDBContext(DbContextOptions options)
         builder.Entity<IdentityRole>().HasData(roles);
     }
     public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+    public DbSet<Profile> Profiles { get; set; }
 }
 
