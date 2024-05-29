@@ -37,14 +37,14 @@ const SignIn: FC = () => {
     } = useForm<LoginFormsInputs>({ resolver: yupResolver(validation) });
 
     const handleLogin = async (form: LoginFormsInputs) => {
-        let message;
+        let message: any;
         try {
             message = await AuthService.login(form.username, form.password);
             const user = await UserService.getProfile();
             dispatch(signIn({ user }));
             toast.success(message);
             navigate("/");
-        } catch (error) {
+        } catch (error) { 
             if (error instanceof AxiosError){
                 toast.warning(error.message);
             }else{
