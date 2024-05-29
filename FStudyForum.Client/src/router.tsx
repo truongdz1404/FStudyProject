@@ -1,28 +1,46 @@
 import { FC, lazy } from "react";
-import { useRoutes } from "react-router-dom";
+import { Navigate, useRoutes } from "react-router-dom";
 import AuthGuard from "@/helpers/guards/AuthGuard";
-import RoleBasedGuard from "@/helpers/guards/RoleBasedGuard";
-import { Role } from "./helpers/constants";
+import Layout from "@/components/layout/Layout";
 
 const SignIn = lazy(() => import("./pages/auth/signin"));
 const Home = lazy(() => import("./pages/home"));
-const Profile = lazy(() => import("./pages/profile"));
 
 const Router: FC = () => {
     return useRoutes([
         {
-            path: "",
-            element: <Navigate to="/home" />,
-        },
-        {
-            path: "home",
-            element: (
-                <AuthGuard>
-                    <RoleBasedGuard accessibleRoles={[Role.USER]}>
-                        <Home />
-                    </RoleBasedGuard>
-                </AuthGuard>
-            ),
+            path: "/",
+            element: <Layout />,
+            children: [
+                {
+                    index: true,
+                    element: <Navigate to="/home" />,
+                },
+                {
+                    path: "/home",
+                    element: (
+                        <AuthGuard>
+                            <Home />
+                        </AuthGuard>
+                    ),
+                },
+                {
+                    path: "/posts",
+                    element: (
+                        <AuthGuard>
+                            <>Posts</>
+                        </AuthGuard>
+                    ),
+                },
+                {
+                    path: "/topics",
+                    element: (
+                        <AuthGuard>
+                            <>Topics</>
+                        </AuthGuard>
+                    ),
+                },
+            ],
         },
         {
             path: "auth",
