@@ -20,7 +20,13 @@ const Router: FC = () => {
             children: [
                 {
                     path: "",
-                    element: <Home />,
+                    element: (
+                        <AuthGuard>
+                            <RoleBasedGuard accessibleRoles={[Role.USER]}>
+                                <Home />
+                            </RoleBasedGuard>
+                        </AuthGuard>
+                    ),
                 },
             ],
         },
