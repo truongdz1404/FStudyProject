@@ -1,4 +1,4 @@
-import Loading from "@/components/loading";
+import Loading from "@/components/Loading";
 import { useAuth } from "@/hooks/useAuth";
 import { FC, PropsWithChildren } from "react";
 import { Navigate } from "react-router-dom";

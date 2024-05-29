@@ -79,7 +79,7 @@ public class AuthController : ControllerBase
                 Message = "Login Successfully"
             });
         }
-        return Unauthorized(new Response
+        return BadRequest(new Response
         {
             Status = ResponseStatus.ERROR,
             Message = "Username or password is incorrect"
@@ -103,7 +103,7 @@ public class AuthController : ControllerBase
                 Message = "Login Successfully"
             });
         }
-        return Unauthorized(new Response
+        return BadRequest(new Response
         {
             Status = ResponseStatus.ERROR,
             Message = "Invalid External Authentication."

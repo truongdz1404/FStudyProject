@@ -24,5 +24,7 @@ public class ApplicationDBContext(DbContextOptions options)
         builder.Entity<IdentityRole>().HasData(roles);
     }
     public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+    public DbSet<UserProfile> UserProfiles { get; set; }
+
 }
 

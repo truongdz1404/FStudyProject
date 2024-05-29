@@ -1,4 +1,4 @@
 export interface User {
-    username: string;
+    userName: string;
     roles: Array<string>;
 }

@@ -9,12 +9,6 @@ import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 const SignIn: FC = () => {
     const { dispatch } = useAuth();
     const navigate = useNavigate();
-    const handleLogin = async () => {
-        await AuthService.login("vodichsieucap@gmail.com", "12345678");
-        const user = await UserService.getProfile();
-        dispatch(signIn({ user }));
-        navigate("/");
-    };
     const handleGoogleLogin = async (response: CredentialResponse) => {
         const idToken = response.credential;
         if (!idToken) return;
@@ -32,12 +26,6 @@ const SignIn: FC = () => {
                     console.log("Login Failed");
                 }}
             />
-            <button
-                className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
-                onClick={handleLogin}
-            >
-                Login with account
-            </button>
         </div>
     );
 };
