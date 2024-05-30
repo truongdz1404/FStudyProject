@@ -96,34 +96,29 @@ const navListItems = [
   {
     label: "Create",
     icon: Plus,
-    show: true,
+    showLabel: true,
+    path: "/create",
   },
   {
     label: "Notification",
     icon: Bell,
-    show: false,
+    showLabel: false,
+    path: "/notification",
   },
 ];
 
 function NavList({ isCollapse }: { isCollapse: boolean }) {
   return (
     <ul className="mt-2 mb-4 flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center">
-      {navListItems.map(({ label, icon, show }) => (
-        <Typography
-          key={label}
-          as="a"
-          href="#"
-          variant="small"
-          color="gray"
-          className="font-medium text-blue-gray-500"
-        >
+      {navListItems.map(({ label, icon, showLabel, path }) => (
+        <Link key={label} to={path} className="font-medium text-blue-gray-500">
           <MenuItem className="flex items-center gap-2 lg:rounded-full">
             {React.createElement(icon, { className: "h-[18px] w-[18px]" })}{" "}
-            {(isCollapse || show) && (
+            {(isCollapse || showLabel) && (
               <span className="text-gray-900"> {label}</span>
             )}
           </MenuItem>
-        </Typography>
+        </Link>
       ))}
     </ul>
   );
