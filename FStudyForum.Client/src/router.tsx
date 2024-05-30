@@ -1,5 +1,5 @@
 import { FC, lazy } from "react";
-import { Navigate, useRoutes } from "react-router-dom";
+import { useRoutes } from "react-router-dom";
 import AuthGuard from "@/helpers/guards/AuthGuard";
 import RoleBasedGuard from "./helpers/guards/RoleBasedGuard";
 import { Role } from "./helpers/constants";
@@ -11,10 +11,6 @@ const SignIn = lazy(() => import("./pages/auth/signin"));
 
 const Router: FC = () => {
     return useRoutes([
-        {
-            path: "",
-            element: <LayOut />,
-        },
         {
             path: "",
             element: <LayOut />,

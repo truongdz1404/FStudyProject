@@ -26,7 +26,7 @@ const validation = Yup.object().shape({
     password: Yup.string().required("Password is required"),
 });
 
-const SignIn: FC = () => {
+const SignIn = () => {
     const { dispatch } = useAuth();
     const navigate = useNavigate();
 
@@ -207,4 +207,5 @@ const SignIn: FC = () => {
         </section>
     );
 };
+}
 export default SignIn;
