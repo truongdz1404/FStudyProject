@@ -29,6 +29,7 @@ const validation = Yup.object().shape({
 const SignIn = () => {
     const { dispatch } = useAuth();
     const navigate = useNavigate();
+<<<<<<< HEAD
 
     const {
         register,
@@ -52,6 +53,8 @@ const SignIn = () => {
             }
         }
     };
+=======
+>>>>>>> 346c27f4f57839ebb965ba9dcd5ad48cb4dcc4bb
     const handleGoogleLogin = async (response: CredentialResponse) => {
         const idToken = response.credential;
         if (!idToken) return;
@@ -62,6 +65,7 @@ const SignIn = () => {
     };
 
     return (
+<<<<<<< HEAD
         <section className={cn("bg-gray-50", "dark:bg-gray-900")}>
             <div
                 className={cn(
@@ -205,6 +209,16 @@ const SignIn = () => {
                 </div>
             </div>
         </section>
+=======
+        <div className="flex flex-col justify-center items-center w-full h-screen">
+            <GoogleLogin
+                onSuccess={handleGoogleLogin}
+                onError={() => {
+                    console.log("Login Failed");
+                }}
+            />
+        </div>
+>>>>>>> 346c27f4f57839ebb965ba9dcd5ad48cb4dcc4bb
     );
 };
 }

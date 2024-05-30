@@ -1,4 +1,4 @@
-import NoPremission from "@/components/noPremission";
+import NoPremission from "@/components/NoPremission";
 import { useAuth } from "@/hooks/useAuth";
 import { FC, ReactNode } from "react";
 

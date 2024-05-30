@@ -7,7 +7,6 @@ import { ToastContainer } from "react-toastify";
 export default function App() {
     return (
         <>
-            <ToastContainer />
             <GoogleOAuthProvider clientId={CLIENT_ID}>
                 <AuthProvider>
                     <Router />
