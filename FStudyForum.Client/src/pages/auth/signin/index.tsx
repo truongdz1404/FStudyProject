@@ -53,12 +53,19 @@ const SignIn: FC = () => {
         }
     };
     const handleGoogleLogin = async (response: CredentialResponse) => {
-        const idToken = response.credential;
-        if (!idToken) return;
-        await AuthService.loginGoogle(idToken);
-        const user = await UserService.getProfile();
-        dispatch(signIn({ user }));
-        navigate("/");
+        try
+        {
+            const idToken = response.credential;
+            if (!idToken) return;
+            const message = await AuthService.loginGoogle(idToken);
+            const user = await UserService.getProfile();
+            dispatch(signIn({ user }));
+            toast.success(String(message));
+            navigate("/");
+        } catch (error)
+        {
+            toast.warning("Login failed");
+        }
     };
 
     return (
