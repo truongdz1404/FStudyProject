@@ -121,14 +121,11 @@ public class AuthController : ControllerBase
                 throw new Exception("User is not authenticated!");
             }
             var refreshToken = await _userService.GetRefreshTokenAsync(userName);
-            if (refreshToken is not null)
-            {
-                await _userService.RemoveRefreshTokenAsync(refreshToken);
-            }
-            else
+            if (refreshToken is null)
             {
                 throw new Exception("Not found refresh token!");
             }
+            await _userService.RemoveRefreshTokenAsync(refreshToken);
             RemoveTokensInsideCookie(HttpContext);
             return Ok(new Response
             {
