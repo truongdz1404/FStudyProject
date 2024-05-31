@@ -107,16 +107,16 @@ const navListItems = [
   },
 ];
 
-function NavList({ isCollapse }: { isCollapse: boolean }) {
+function NavList() {
   return (
     <ul className="mt-2 mb-4 flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center">
       {navListItems.map(({ label, icon, showLabel, path }) => (
         <Link key={label} to={path} className="font-medium text-blue-gray-500">
           <MenuItem className="flex items-center gap-2 lg:rounded-full">
             {React.createElement(icon, { className: "h-[18px] w-[18px]" })}{" "}
-            {(isCollapse || showLabel) && (
-              <span className="text-gray-900"> {label}</span>
-            )}
+            <span className={cn("text-gray-900", !showLabel && "lg:hidden ")}>
+              {label}
+            </span>
           </MenuItem>
         </Link>
       ))}
@@ -173,7 +173,7 @@ export function Header({ openSidebar }: HeaderProps) {
           />
         </div>
         <div className="hidden lg:block ml-auto mr-2">
-          <NavList isCollapse={isNavOpen} />
+          <NavList />
         </div>
         <IconButton
           size="sm"
@@ -191,7 +191,7 @@ export function Header({ openSidebar }: HeaderProps) {
         <ProfileMenu />
       </div>
       <Collapse open={isNavOpen} className="overflow-hidden">
-        <NavList isCollapse={isNavOpen} />
+        <NavList />
       </Collapse>
     </Navbar>
   );
