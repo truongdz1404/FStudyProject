@@ -44,10 +44,10 @@ const SignIn: FC = () => {
             dispatch(signIn({ user }));
             toast.success(String(message)); // Convert message to a string
             navigate("/");
-        } catch (error) { 
-            if (error instanceof AxiosError){
+        } catch (error) {
+            if (error instanceof AxiosError) {
                 toast.warning(error.message);
-            }else{
+            } else {
                 toast.warning("Login failed");
             }
         }
@@ -62,7 +62,7 @@ const SignIn: FC = () => {
     };
 
     return (
-        <section className={cn("bg-gray-50", "dark:bg-gray-900")}>
+        <section className={cn("bg-white", "dark:bg-white")}>
             <div
                 className={cn(
                     "flex flex-col",
@@ -77,7 +77,7 @@ const SignIn: FC = () => {
                         "w-full bg-white rounded-lg",
                         "shadow dark:border md:mb-20",
                         "sm:max-w-md xl:p-0",
-                        " dark:bg-gray-800 dark:border-gray-700"
+                        " dark:bg-orange-400 dark:border-yellow-50"
                     )}
                 >
                     <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
@@ -118,7 +118,8 @@ const SignIn: FC = () => {
                                     {...register("username")}
                                 />
                                 {errors.username ? (
-                                    <p className="text-red-500 text-xs italic">
+                                    <p className={cn("text-red-500 text-xs italic ",
+                                        "text-sm mt-4")}>
                                         {errors.username.message}
                                     </p>
                                 ) : (
@@ -148,7 +149,7 @@ const SignIn: FC = () => {
                                     {...register("password")}
                                 />
                                 {errors.password ? (
-                                    <p className="text-red-500 text-xs italic">
+                                    <p className="text-red-500 italic text-sm mt-4">
                                         {errors.password.message}
                                     </p>
                                 ) : (
@@ -180,26 +181,33 @@ const SignIn: FC = () => {
                             </button>
                             <div className="flex items-center justify-center my-4">
                                 <hr className="flex-grow border-gray-300 dark:border-gray-600" />
-                                <span className="px-2 text-sm text-gray-500 dark:text-gray-400">
+                                <span
+                                    className="px-2 text-sm font-black text-gray-500
+                                 dark:text-gray-500"
+                                >
                                     OR
                                 </span>
                                 <hr className="flex-grow border-gray-300 dark:border-gray-600" />
                             </div>
-                            <GoogleLogin
-                                onSuccess={handleGoogleLogin}
-                                onError={() => {
-                                    console.log("Login Failed");
-                                }}
-                            />
-                            <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                                Don’t have an account yet?{" "}
-                                <a
-                                    href="#"
-                                    className="font-medium text-primary-600 hover:underline dark:text-primary-500"
-                                >
-                                    Sign up
-                                </a>
-                            </p>
+                            <div className="flex justify-center">
+                                <GoogleLogin
+                                    onSuccess={handleGoogleLogin}
+                                    onError={() => {
+                                        console.log("Login Failed");
+                                    }}
+                                />
+                            </div>
+                            <div className="flex justify-center">
+                                <p className="text-sm font-light text-gray-950 dark:text-gray-600">
+                                    Don’t have an account yet?{" "}
+                                    <a
+                                        href="#"
+                                        className="font-medium text-primary-600 hover:underline dark:text-primary-500"
+                                    >
+                                        Sign up
+                                    </a>
+                                </p>
+                            </div>
                         </form>
                     </div>
                 </div>

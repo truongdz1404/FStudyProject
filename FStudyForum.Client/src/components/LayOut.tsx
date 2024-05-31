@@ -3,6 +3,7 @@ import { useNavigate, Outlet, useLocation } from "react-router-dom";
 import { GrNotification } from "react-icons/gr";
 import { useState } from "react";
 import { TfiSearch } from "react-icons/tfi";
+import { Logout } from "./buttons/logout";
 
 const LayOut = () => {
     const navigate = useNavigate();
@@ -12,19 +13,19 @@ const LayOut = () => {
         TOPIC = 3,
     }
     const [activeButton, setActiveButton] = useState<ButtonType | number>(1);
-    const ButtonClickStatus = (buttonType: ButtonType) => { 
+    const ButtonClickStatus = (buttonType: ButtonType) => {
         switch (buttonType) {
             case 1:
-                navigate("/home")
+                navigate("/home");
                 break;
             case 2:
-                navigate("/post")
+                navigate("/post");
                 break;
             case 3:
-                navigate("/topic")
+                navigate("/topic");
                 break;
             default:
-                navigate("/home")
+                navigate("/home");
                 break;
         }
         setActiveButton(buttonType);
@@ -44,7 +45,7 @@ const LayOut = () => {
             >
                 <div className="col-span-2">
                     <div
-                        onClick={() => window.location.href="/home"}
+                        onClick={() => (window.location.href = "/home")}
                         className={cn(
                             "font-bold",
                             "text-orange-500",
@@ -74,8 +75,14 @@ const LayOut = () => {
                             )}
                             placeholder="Search"
                         />
-                        <div className={cn("absolute", "top-[43%]", "right-[67%]")}>
-                        <TfiSearch />
+                        <div
+                            className={cn(
+                                "absolute",
+                                "top-[43%]",
+                                "right-[67%]"
+                            )}
+                        >
+                            <TfiSearch />
                         </div>
                     </div>
                 </div>
@@ -132,6 +139,9 @@ const LayOut = () => {
                         >
                             <GrNotification />
                         </div>
+                        <div className={cn("ml-[5%]")}>
+                            <Logout />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -177,9 +187,9 @@ const LayOut = () => {
                             "cursor-pointer",
                             "p-2",
                             "rounded-md",
-                            "hover:bg-gray-200",                          
-                           {"bg-slate-300": activeButton == ButtonType.HOME}
-                        )}                       
+                            "hover:bg-gray-200",
+                            { "bg-slate-300": activeButton == ButtonType.HOME }
+                        )}
                         onClick={() => ButtonClickStatus(ButtonType.HOME)}
                     >
                         <div className="ml-2">Home</div>
@@ -193,7 +203,7 @@ const LayOut = () => {
                             "p-2",
                             "rounded-md",
                             "hover:bg-gray-200",
-                            {"bg-slate-300": activeButton == ButtonType.POST}
+                            { "bg-slate-300": activeButton == ButtonType.POST }
                         )}
                         onClick={() => ButtonClickStatus(ButtonType.POST)}
                         tabIndex={0}
@@ -208,7 +218,7 @@ const LayOut = () => {
                             "p-2",
                             "rounded-md",
                             "hover:bg-gray-200",
-                            {"bg-slate-300": activeButton == ButtonType.TOPIC}
+                            { "bg-slate-300": activeButton == ButtonType.TOPIC }
                         )}
                         onClick={() => ButtonClickStatus(ButtonType.TOPIC)}
                         tabIndex={0}
@@ -220,11 +230,7 @@ const LayOut = () => {
                 </div>
             </div>
 
-            <div
-                className={cn("mt-[5%]", "w-[80%]", 
-                "ml-[19%]", "h-[1000vh]",    
-                )}
-            >
+            <div className={cn("mt-[5%]", "w-[80%]", "ml-[19%]", "h-[1000vh]")}>
                 <Outlet />
             </div>
         </div>

@@ -110,6 +110,52 @@ public class AuthController : ControllerBase
         });
     }
 
+    [HttpGet("logout")]
+    public async Task<IActionResult> Logout()
+    {
+        var userName = HttpContext.User?.Identity?.Name;
+        if (userName is null)
+        {
+            return BadRequest(new Response
+            {
+                Status = ResponseStatus.ERROR,
+                Message = "User is not logged in!"
+            });
+        }
+        try
+        {
+            var refreshToken = await _userService.GetRefreshTokenAsync(userName);
+            if (refreshToken is not null)
+            {
+                Console.WriteLine(refreshToken);
+                await _userService.RemoveRefreshTokenAsync(refreshToken);
+            }
+            else
+            {
+                Console.WriteLine("Not found refresh token!");
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = "Not found refresh token!"
+                }); 
+            }
+            RemoveTokensInsideCookie(HttpContext);
+            return Ok(new Response
+            {
+                Status = ResponseStatus.SUCCESS,
+                Message = "Logout Successfully"
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new Response
+            {
+                Status = ResponseStatus.ERROR,
+                Message = $"Logout failed! Error: {ex.Message}"
+            });
+        }
+    }
+
     [HttpGet("refresh-token")]
     public async Task<IActionResult> RefreshToken()
     {
@@ -170,7 +216,14 @@ public class AuthController : ControllerBase
 
     private void RemoveTokensInsideCookie(HttpContext context)
     {
-        //TODO: Remove accesstoken and refeshtoken
+
+        context.Response.Cookies.Append(_jwtConfig.AccessTokenKey, "", new CookieOptions {
+            HttpOnly = false,
+            Expires = DateTimeOffset.UtcNow.AddDays(-1) });
+        context.Response.Cookies.Append(_jwtConfig.RefreshTokenKey, "", new CookieOptions { 
+            HttpOnly = false,
+            Expires = DateTimeOffset.UtcNow.AddDays(-1) });
+
     }
 
 }
