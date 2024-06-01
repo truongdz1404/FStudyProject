@@ -34,11 +34,12 @@ public class ApplicationDBContext(DbContextOptions options)
         builder.Entity<ApplicationUser>()
             .HasMany(u => u.Comments)
             .WithOne(c => c.Creater)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.NoAction);
 
         builder.Entity<ApplicationUser>()
             .HasMany(u => u.CreatedPosts)
-            .WithOne(p => p.Creater);
+            .WithOne(p => p.Creater)
+            .OnDelete(DeleteBehavior.NoAction);
 
         builder.Entity<ApplicationUser>()
             .HasMany(u => u.Reports)

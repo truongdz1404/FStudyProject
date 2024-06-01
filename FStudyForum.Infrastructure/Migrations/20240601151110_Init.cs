@@ -175,8 +175,7 @@ namespace FStudyForum.Infrastructure.Migrations
                         column: x => x.CreaterId,
                         principalSchema: "dbo",
                         principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -359,8 +358,8 @@ namespace FStudyForum.Infrastructure.Migrations
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    PostId = table.Column<long>(type: "bigint", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    PostId = table.Column<long>(type: "bigint", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -372,13 +371,15 @@ namespace FStudyForum.Infrastructure.Migrations
                         column: x => x.PostId,
                         principalSchema: "dbo",
                         principalTable: "Posts",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_SavedPosts_Users_UserId",
                         column: x => x.UserId,
                         principalSchema: "dbo",
                         principalTable: "Users",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -424,8 +425,7 @@ namespace FStudyForum.Infrastructure.Migrations
                         column: x => x.CreaterId,
                         principalSchema: "dbo",
                         principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -472,8 +472,8 @@ namespace FStudyForum.Infrastructure.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "05c7a0bb-35d9-495f-889e-2a703f184a48", null, "Admin", "ADMIN" },
-                    { "4076d679-e42b-47e5-8da1-066b498b8426", null, "User", "USER" }
+                    { "a8d56fe8-fdbc-4d9e-bcfb-282c4ae6e675", null, "User", "USER" },
+                    { "e18476f9-20f6-4141-a955-b888124e7c10", null, "Admin", "ADMIN" }
                 });
 
             migrationBuilder.CreateIndex(
