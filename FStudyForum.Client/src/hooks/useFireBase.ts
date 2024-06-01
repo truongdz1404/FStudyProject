@@ -1,28 +1,15 @@
 import { store } from "@/firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 interface Image {
-     url: File | string;
+    url: File | string;
 }
 const values: Image = { url: "" };
-const useFireBase = async (urlImage: string | File) => {
+const useFireBase = async (urlImage: File) => {
     values.url = urlImage;
     try {
         let fileUrl = "";
-        let data: any;
-        if (values.url instanceof File) {
+        let data  = await values.url.arrayBuffer();
             // Nếu ảnh được chọn từ máy tính (offline)
-            data = await values.url.arrayBuffer();
-        } else if (typeof values.url === "string") {
-            // Nếu ảnh được chọn từ URL trực tuyến
-            const response = await fetch(values.url);
-            const blob = await response.blob();
-            data = await new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result as ArrayBuffer);
-                reader.onerror = (error) => reject(error);
-                reader.readAsArrayBuffer(blob);
-            });
-        }
         // Tải ArrayBuffer lên Firebase Storage
         const metadata = {
             contentType: "image/png",
@@ -35,12 +22,10 @@ const useFireBase = async (urlImage: string | File) => {
         // Lấy đường dẫn tải xuống của tệp từ Firebase Storage
         fileUrl = await getDownloadURL(storageRef);
         //console.log("File uploaded successfully. Download URL:", fileUrl);
-       
         return fileUrl;
     } catch (error) {
         console.error("Error uploading file:", error);
-    return "";
+        return "";
     }
-    
 };
 export default useFireBase;

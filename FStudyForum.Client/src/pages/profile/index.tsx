@@ -42,12 +42,14 @@ const UserProfile: React.FC = () => {
             gender: profile.gender || 0,
             birthDate: profile.birthDate || "",
             avatarUrl:
-                profile.avatarUrl ||
-                "https://images.unsplash.com/photo-1682407186023-12c70a4a35e0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2832&q=80",
+                profile.avatarUrl || "https://via.placeholder.com/150",
         },
         validationSchema: validationSchema,
         onSubmit: async (values) => {
-            values.avatarUrl = await useFireBase(values.avatarUrl);
+            if(values.avatarUrl instanceof File) {
+                values.avatarUrl = await useFireBase(values.avatarUrl);
+            }
+            console.log(values.avatarUrl)
             const userProfile = await ProfileService.editProfile(values.userName, values as Profile);
             console.log("User profile: ", userProfile);
             console.log("Form data: ", values);
@@ -85,13 +87,11 @@ const UserProfile: React.FC = () => {
                         <img
                             className="h-96 w-96 rounded-full object-cover object-center cursor-pointer"
                             src={
-                                "https://images.unsplash.com/photo-1682407186023-12c70a4a35e0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2832&q=80"
-                            }
+                                profile == null  ? "" : profile.avatarUrl + ""}
                             alt="nature image"
                             onClick={handleImageClick}
                             id="profileImage"
                         />
-
                         <input
                             type="file"
                             ref={fileInputRef}

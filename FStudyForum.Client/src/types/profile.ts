@@ -4,5 +4,5 @@ export interface Profile {
     lastName: string | "";
     gender: number | "",
     birthDate: string | "";
-    avatarUrl: string | "";
+    avatarUrl: string | File;
 }
