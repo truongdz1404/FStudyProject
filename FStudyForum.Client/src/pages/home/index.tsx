@@ -13,6 +13,7 @@ const Home: FC = () => {
         };
         fetchMessage();
     }, []);
+    
     return (
         <>
             <h1 className={cn("text-black", "bg-yellow-200")}>

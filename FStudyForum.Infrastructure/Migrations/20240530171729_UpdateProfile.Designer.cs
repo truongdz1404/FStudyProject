@@ -12,15 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FStudyForum.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20240528075755_AddUserProfile")]
-    partial class AddUserProfile
+    [Migration("20240530171729_UpdateProfile")]
+    partial class UpdateProfile
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.2")
+                .HasAnnotation("ProductVersion", "8.0.6")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -105,6 +105,10 @@ namespace FStudyForum.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
+                    b.Property<string>("AvatarUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("BirthDate")
                         .HasColumnType("datetime2");
 
@@ -113,23 +117,28 @@ namespace FStudyForum.Infrastructure.Migrations
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<int>("Gender")
                         .HasColumnType("int");
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.HasKey("Id");
 
-                    b.ToTable("UserProfiles");
+                    b.ToTable("Profile");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -161,13 +170,13 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "4b6956dd-e8ab-4bbb-a802-812f9b55452e",
+                            Id = "3d8cf1b0-dd84-4c4f-8893-1f3f445b0ecc",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "eaa5433e-c3c8-4688-a100-f6391e5e0e35",
+                            Id = "b582963a-5522-4724-be2a-6d745edb4b4f",
                             Name = "User",
                             NormalizedName = "USER"
                         });

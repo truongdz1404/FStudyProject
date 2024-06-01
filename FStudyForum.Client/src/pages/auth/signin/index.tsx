@@ -3,7 +3,6 @@ import { useAuth } from "@/hooks/useAuth";
 import AuthService from "@/services/AuthService";
 import UserService from "@/services/UserService";
 import { useNavigate } from "react-router-dom";
-import { FC } from "react";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
@@ -29,7 +28,7 @@ const validation = Yup.object().shape({
 const SignIn = () => {
     const { dispatch } = useAuth();
     const navigate = useNavigate();
-<<<<<<< HEAD
+
 
     const {
         register,
@@ -53,8 +52,7 @@ const SignIn = () => {
             }
         }
     };
-=======
->>>>>>> 346c27f4f57839ebb965ba9dcd5ad48cb4dcc4bb
+
     const handleGoogleLogin = async (response: CredentialResponse) => {
         const idToken = response.credential;
         if (!idToken) return;
@@ -65,7 +63,7 @@ const SignIn = () => {
     };
 
     return (
-<<<<<<< HEAD
+
         <section className={cn("bg-gray-50", "dark:bg-gray-900")}>
             <div
                 className={cn(
@@ -208,9 +206,7 @@ const SignIn = () => {
                     </div>
                 </div>
             </div>
-        </section>
-=======
-        <div className="flex flex-col justify-center items-center w-full h-screen">
+            <div className="flex flex-col justify-center items-center w-full h-screen">
             <GoogleLogin
                 onSuccess={handleGoogleLogin}
                 onError={() => {
@@ -218,8 +214,11 @@ const SignIn = () => {
                 }}
             />
         </div>
->>>>>>> 346c27f4f57839ebb965ba9dcd5ad48cb4dcc4bb
-    );
+        </section>
+    )
+        
+    
+    
 };
-}
+
 export default SignIn;

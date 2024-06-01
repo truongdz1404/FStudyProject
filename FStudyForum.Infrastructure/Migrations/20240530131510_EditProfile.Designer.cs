@@ -4,6 +4,7 @@ using FStudyForum.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FStudyForum.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20240530131510_EditProfile")]
+    partial class EditProfile
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -81,6 +84,9 @@ namespace FStudyForum.Infrastructure.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
+                    b.Property<long>("UserProfileId")
+                        .HasColumnType("bigint");
+
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedEmail")
@@ -90,6 +96,8 @@ namespace FStudyForum.Infrastructure.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.HasIndex("UserProfileId");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -106,8 +114,7 @@ namespace FStudyForum.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("BirthDate")
-                        .IsRequired()
+                    b.Property<DateTime>("BirthDate")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("CreatedDate")
@@ -118,8 +125,7 @@ namespace FStudyForum.Infrastructure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int?>("Gender")
-                        .IsRequired()
+                    b.Property<int>("Gender")
                         .HasColumnType("int");
 
                     b.Property<string>("LastName")
@@ -169,13 +175,13 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "28686700-4ef2-45d3-b300-908733f463b0",
+                            Id = "2b80e414-c086-4410-b2a1-cbec8a7154a9",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "be86cee9-20d2-4e3b-993e-c76887cd07a4",
+                            Id = "69baefbf-e36b-43a2-82cd-b0da1399976e",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -285,6 +291,17 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("FStudyForum.Core.Models.Entities.ApplicationUser", b =>
+                {
+                    b.HasOne("FStudyForum.Core.Models.Entities.UserProfile", "Profile")
+                        .WithMany()
+                        .HasForeignKey("UserProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Profile");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

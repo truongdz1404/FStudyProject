@@ -17,8 +17,6 @@ public class AuthController : ControllerBase
     private readonly JwtConfig _jwtConfig;
     private readonly IUserService _userService;
     private readonly IIdentityService _identityService;
-
-
     public AuthController(
         IOptions<JwtConfig> jwtConfig,
         IUserService accountService,

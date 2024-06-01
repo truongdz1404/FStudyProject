@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
@@ -29,7 +30,6 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
 
 builder.Services.AddCors(options =>
 {
-
     options.AddPolicy(Policies.SINGLE_PAGE_APP, policy =>
     {
         policy.WithOrigins(jwtConfig.Audience);
@@ -40,7 +40,6 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddAutoMapper(typeof(MapperProfile));
-
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     {
         options.Password.RequiredLength = 8;

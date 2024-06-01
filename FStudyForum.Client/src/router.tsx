@@ -5,7 +5,7 @@ import Layout from "@/components/layout/Layout";
 import Home from "./pages/home";
 import Post from "./pages/post";
 import Topic from "./pages/topic";
-
+import Profile from "./pages/profile";
 
 const SignIn = lazy(() => import("./pages/auth/signin"));
 
@@ -65,6 +65,14 @@ const Router: FC = () => {
                     element: <SignIn />,
                 },
             ],
+        },
+        {
+            path: "/profile",
+            element: (
+                <AuthGuard>
+                    <><Profile/></>
+                </AuthGuard>
+            ),
         },
     ]);
 };

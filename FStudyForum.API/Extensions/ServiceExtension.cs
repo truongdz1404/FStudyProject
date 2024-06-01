@@ -1,5 +1,6 @@
 using FStudyForum.Core.Interfaces.IRepositories;
 using FStudyForum.Core.Interfaces.IServices;
+using FStudyForum.Core.Models.Entities;
 using FStudyForum.Infrastructure.Repositories;
 using FStudyForum.Infrastructure.Services;
 
@@ -18,9 +19,10 @@ public static class ServiceExtension
 
         #region Repositories
         services.AddTransient<IUserRepository, UserRepository>();
-
+        services.AddTransient<IBaseRepository<UserProfile>, BaseRepository<UserProfile>>();
+        services.AddTransient<IUserProfileRepository, UserProfileRepository>();
+        services.AddTransient<IUserProfileService, UserProfileService>();
         #endregion
-
         return services;
     }
 }

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FStudyForum.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20240530052902_UpdateProfile")]
-    partial class UpdateProfile
+    [Migration("20240531154351_Test")]
+    partial class Test
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -105,33 +105,35 @@ namespace FStudyForum.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
-                    b.Property<string>("AvatarUrl")
+                    b.Property<string?>("AvatarUrl")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("BirthDate")
+                    b.Property<DateTime?>("BirthDate")
+                        .IsRequired()
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("CreatedDate")
+                    b.Property<DateTime?>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("FirstName")
+                    b.Property<string?>("FirstName")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("Gender")
+                    b.Property<int?>("Gender")
+                        .IsRequired()
                         .HasColumnType("int");
 
-                    b.Property<string>("LastName")
+                    b.Property<string?>("LastName")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<DateTime>("ModifiedDate")
+                    b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("UserName")
+                    b.Property<string?>("UserName")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
@@ -170,13 +172,13 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "2d837990-d2b0-4e73-9500-9a5ea9b2951e",
+                            Id = "28686700-4ef2-45d3-b300-908733f463b0",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "7128f5be-961c-46b0-bf5e-8c39e70e4c28",
+                            Id = "be86cee9-20d2-4e3b-993e-c76887cd07a4",
                             Name = "User",
                             NormalizedName = "USER"
                         });
