@@ -1,7 +1,7 @@
 using FStudyForum.Core.Models.DTOs.Auth;
-using FStudyForum.Core.Models.Entities;
 using FStudyForum.Core.Exceptions;
 using FStudyForum.Core.Interfaces.IServices;
+using FStudyForum.Core.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,7 +20,6 @@ public class IdentityService : IIdentityService
     {
         _userManager = userManager;
         _signInManager = signInManager;
-        _roleManager = roleManager;
         _roleManager = roleManager;
     }
 

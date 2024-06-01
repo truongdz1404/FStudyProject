@@ -2,8 +2,8 @@ using System.Text;
 using FStudyForum.API.Extensions;
 using FStudyForum.API.Mapper;
 using FStudyForum.Core.Constants;
-using FStudyForum.Core.Models.Entities;
 using FStudyForum.Core.Models.Configs;
+using FStudyForum.Core.Models.Entities;
 using FStudyForum.Infrastructure.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -30,7 +30,7 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
 builder.Services.AddCors(options =>
 {
 
-    options.AddPolicy(Policies.SINGLE_PAGE_APP, policy =>
+    options.AddPolicy(Policy.SINGLE_PAGE_APP, policy =>
     {
         policy.WithOrigins(jwtConfig.Audience);
         policy.AllowAnyHeader();
@@ -84,7 +84,7 @@ builder.Services
 builder.Services.RegisterService();
 
 var app = builder.Build();
-app.UseCors(Policies.SINGLE_PAGE_APP);
+app.UseCors(Policy.SINGLE_PAGE_APP);
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
