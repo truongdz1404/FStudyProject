@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FStudyForum.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20240601143746_Init")]
+    [Migration("20240601151110_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -349,10 +349,11 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<long?>("PostId")
+                    b.Property<long>("PostId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -462,13 +463,13 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "05c7a0bb-35d9-495f-889e-2a703f184a48",
+                            Id = "e18476f9-20f6-4141-a955-b888124e7c10",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "4076d679-e42b-47e5-8da1-066b498b8426",
+                            Id = "a8d56fe8-fdbc-4d9e-bcfb-282c4ae6e675",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -615,7 +616,7 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.HasOne("FStudyForum.Core.Models.Entities.ApplicationUser", "Creater")
                         .WithMany("Comments")
                         .HasForeignKey("CreaterId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("FStudyForum.Core.Models.Entities.Post", "Post")
@@ -642,7 +643,7 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.HasOne("FStudyForum.Core.Models.Entities.ApplicationUser", "Creater")
                         .WithMany("CreatedPosts")
                         .HasForeignKey("CreaterId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("FStudyForum.Core.Models.Entities.Topic", "Topic")
@@ -682,11 +683,15 @@ namespace FStudyForum.Infrastructure.Migrations
                 {
                     b.HasOne("FStudyForum.Core.Models.Entities.Post", "Post")
                         .WithMany("SavedByUsers")
-                        .HasForeignKey("PostId");
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("FStudyForum.Core.Models.Entities.ApplicationUser", "User")
                         .WithMany("SavedPosts")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Post");
 
