@@ -138,28 +138,29 @@ export function Header({ openSidebar }: HeaderProps) {
 
   return (
     <Navbar className=" sticky top-0 mx-auto max-w-screen-3xl rounded-none p-1 lg:pl-6 shadow-sm">
-      <div className="relative mx-auto flex items-center justify-between text-blue-gray-900">
-        <IconButton
-          size="sm"
-          color="blue-gray"
-          variant="text"
-          className="lg:hidden"
-          onClick={openSidebar}
-        >
-          <AlignJustify className="h-6 w-6" />
-        </IconButton>
+      <div className="relative mx-auto flex items-center justify-center text-blue-gray-900">
+        <div className="flex items-center justify-start w-1/4 lg:w-1/3">
+          <IconButton
+            size="sm"
+            color="blue-gray"
+            variant="text"
+            className="lg:hidden"
+            onClick={openSidebar}
+          >
+            <AlignJustify className="h-6 w-6" />
+          </IconButton>
 
-        <Link
-          to="/"
-          className="mr-4 ml-2 cursor-pointer py-1.5 font-medium flex gap-2 items-center"
-        >
-          <Icons.logo className="h-8 w-8 sm:h-6 sm:w-6" />
-          <p className="hidden text-zinc-700 text-md font-semibold md:block">
-            FStudy
-          </p>
-        </Link>
-
-        <div className="w-1/2 lg:w-1/3 ml-auto">
+          <Link
+            to="/"
+            className="mx-2 cursor-pointer py-1.5 font-medium flex gap-2 items-center"
+          >
+            <Icons.logo className="h-8 w-8 sm:h-6 sm:w-6" />
+            <p className="hidden text-zinc-700 text-md font-semibold md:block">
+              FStudy
+            </p>
+          </Link>
+        </div>
+        <div className="w-1/2 lg:w-1/3">
           <Input
             icon={<Search className="h-5 w-5" />}
             labelProps={{
@@ -168,27 +169,29 @@ export function Header({ openSidebar }: HeaderProps) {
             crossOrigin={undefined}
             className={cn(
               "placeholder:text-gray-500 placeholder:opacity-100 focus:!border-gray-900 focus:!border-t-gray-900",
-              "rounded-full !border !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent "
+              "rounded-full !border-2 !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent "
             )}
           />
         </div>
-        <div className="hidden lg:block ml-auto mr-2">
-          <NavList />
+        <div className="flex items-center justify-end w-1/4 lg:w-1/3">
+          <div className="hidden lg:block mr-2">
+            <NavList />
+          </div>
+          <IconButton
+            size="sm"
+            color="blue-gray"
+            variant="text"
+            onClick={toggleIsNavOpen}
+            className="mr-2 lg:hidden"
+          >
+            {isNavOpen ? (
+              <ChevronUp className="h-6 w-6" />
+            ) : (
+              <ChevronDown className="h-6 w-6" />
+            )}
+          </IconButton>
+          <ProfileMenu />
         </div>
-        <IconButton
-          size="sm"
-          color="blue-gray"
-          variant="text"
-          onClick={toggleIsNavOpen}
-          className="ml-auto mr-2 lg:hidden"
-        >
-          {isNavOpen ? (
-            <ChevronUp className="h-6 w-6" />
-          ) : (
-            <ChevronDown className="h-6 w-6" />
-          )}
-        </IconButton>
-        <ProfileMenu />
       </div>
       <Collapse open={isNavOpen} className="overflow-hidden">
         <NavList />
