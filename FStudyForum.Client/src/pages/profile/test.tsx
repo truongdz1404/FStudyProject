@@ -13,7 +13,7 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Profile } from "@/types/profile";
 
-const HAHA: React.FC = () => {
+const UserProfile = () => {
     const [profile, setProfile] = useState<Profile>({} as Profile);
     const fileInputRef = useRef<HTMLInputElement>(null);
     useEffect(() => {
@@ -81,17 +81,13 @@ const HAHA: React.FC = () => {
             reader.readAsDataURL(file);
         }
     };
-
-    return (
-        <>
-            <Card color="transparent" shadow={false}>
-                <Typography variant="h4" color="blue-gray">
-                    Information Profile
-                </Typography>
-                <form
-                    className="mt-8 mb-2 w-80 max-w-screen-lg sm:w-96 mx-auto"
-                    onSubmit={formik.handleSubmit}
-                >
+  return <div>
+    <div className="bg-gray-100">
+    <div className="container mx-auto py-8">
+        <div className="grid grid-cols-4 sm:grid-cols-12 gap-6 px-4">
+            <div className="col-span-4 sm:col-span-3">
+                <div className="bg-white shadow rounded-lg p-6">
+                    <div className="flex flex-col items-center">
                     <div>
                         <img
                             className="w-24 h-24 rounded-full object-cover object-center cursor-pointer mx-auto"
@@ -100,6 +96,31 @@ const HAHA: React.FC = () => {
                             onClick={handleImageClick}
                             id="profileImage"
                         />
+                        <input
+                            type="file"
+                            ref={fileInputRef}
+                            className="hidden"
+                            name="avatarUrl"
+                            onChange={handleFileChange}
+                        />
+                    </div>
+                        <h1 className="text-xl font-bold">John Doe</h1>
+                        <p className="text-gray-700">Software Developer</p>
+                        <div className="mt-6 flex flex-wrap gap-4 justify-center">
+                            <a href="#" className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">Contact</a>
+                            <a href="#" className="bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded">Resume</a>
+                        </div>
+                    </div>                 
+                </div>
+            </div>
+            <div className="col-span-4 sm:col-span-9">
+                <div className="bg-white shadow rounded-lg p-6">
+                <Card color="transparent" shadow={false}>
+                <form
+                    className="mt-8 mb-2 w-80 max-w-screen-lg sm:w-96 mx-auto"
+                    onSubmit={formik.handleSubmit}
+                >
+                    <div>
                         <input
                             type="file"
                             ref={fileInputRef}
@@ -265,8 +286,11 @@ const HAHA: React.FC = () => {
                     </Button>
                 </form>
             </Card>
-        </>
-    );
-};
-
-export default HAHA;
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+  </div>;
+}
+export default UserProfile;

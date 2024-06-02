@@ -5,7 +5,7 @@ import Layout from "@/components/layout/Layout";
 import Home from "./pages/home";
 import Post from "./pages/post";
 import Topic from "./pages/topic";
-import Profile from "./pages/profile";
+import UserProfile from "./pages/profile/test";
 
 const SignIn = lazy(() => import("./pages/auth/signin"));
 
@@ -70,7 +70,7 @@ const Router: FC = () => {
             path: "/profile",
             element: (
                 <AuthGuard>
-                    <><Profile/></>
+                    <><UserProfile/></>
                 </AuthGuard>
             ),
         },

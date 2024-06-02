@@ -27,9 +27,7 @@ namespace FStudyForum.Infrastructure.Services
         public async Task UpdateProfile(ProfileDTO profileDTO, UserProfile profile)
         {
             _mapper.Map(profileDTO, profile);
-            // Chuyển đổi Profile sang UserProfile nếu cần
-            var result = _mapper.Map<UserProfile>(profile);
-            // Cập nhật hồ sơ người dùng trong cơ sở dữ liệu
+            var result = _mapper.Map<UserProfile>(profile);           
             await _userProfileRepository.Update(result);
         }
     }
