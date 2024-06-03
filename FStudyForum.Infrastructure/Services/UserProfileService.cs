@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Profile = FStudyForum.Core.Models.Entities.Profile;
 
 namespace FStudyForum.Infrastructure.Services
 {
@@ -20,14 +21,20 @@ namespace FStudyForum.Infrastructure.Services
             _userProfileRepository = userProfileRepository;
             _mapper = mapper;
         }
-        public async Task<UserProfile?> GetProfileByName(string? username)
+
+        public async Task<Profile?> GetProfileById(long id)
+        {
+           return await _userProfileRepository.GetById(id);
+        }
+
+        public async Task<Profile?> GetProfileByName(string? username)
         {
             return await _userProfileRepository.GetProfileByName(username);
         }
-        public async Task UpdateProfile(ProfileDTO profileDTO, UserProfile profile)
+        public async Task UpdateProfile(ProfileDTO profileDTO, Profile profile)
         {
             _mapper.Map(profileDTO, profile);
-            var result = _mapper.Map<UserProfile>(profile);           
+            var result = _mapper.Map<Profile>(profile);           
             await _userProfileRepository.Update(result);
         }
     }

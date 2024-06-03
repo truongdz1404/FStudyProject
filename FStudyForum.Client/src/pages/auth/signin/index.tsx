@@ -28,8 +28,6 @@ const validation = Yup.object().shape({
 const SignIn = () => {
     const { dispatch } = useAuth();
     const navigate = useNavigate();
-
-
     const {
         register,
         handleSubmit,

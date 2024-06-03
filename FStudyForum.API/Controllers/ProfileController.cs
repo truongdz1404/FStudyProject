@@ -7,6 +7,7 @@ using FStudyForum.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using Profile = FStudyForum.Core.Models.Entities.Profile;
 
 namespace FStudyForum.API.Controllers
 {
@@ -36,8 +37,9 @@ namespace FStudyForum.API.Controllers
                 }
                 return Ok(new Response
                 {
-                    Data = new UserProfile
+                    Data = new Profile
                     {
+                        Id = user.Id,
                         UserName = user.UserName,
                         FirstName = user.FirstName,
                         LastName = user.LastName,
@@ -59,12 +61,12 @@ namespace FStudyForum.API.Controllers
             }
         }
 
-        [HttpPut("edit-profile/{username}")]
-        public async Task<IActionResult> UpdateProfile([FromRoute] string username, [FromBody] ProfileDTO userProfile)
+        [HttpPut("edit-profile/{id}")]
+        public async Task<IActionResult> UpdateProfile([FromRoute] long id, [FromBody] ProfileDTO userProfile)
         {
             try
             {
-                var profile = await _userProfileService.GetProfileByName(username);
+                var profile = await _userProfileService.GetProfileById(id);
                 if (profile == null)
                 {
                     return NotFound(new Response

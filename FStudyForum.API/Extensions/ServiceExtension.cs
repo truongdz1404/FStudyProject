@@ -19,7 +19,7 @@ public static class ServiceExtension
 
         #region Repositories
         services.AddTransient<IUserRepository, UserRepository>();
-        services.AddTransient<IBaseRepository<UserProfile>, BaseRepository<UserProfile>>();
+        services.AddTransient<IBaseRepository<Profile>, BaseRepository<Profile>>();
         services.AddTransient<IUserProfileRepository, UserProfileRepository>();
         services.AddTransient<IUserProfileService, UserProfileService>();
         #endregion

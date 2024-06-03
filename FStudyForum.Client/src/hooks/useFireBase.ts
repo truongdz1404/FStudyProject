@@ -1,4 +1,4 @@
-import { store } from "@/firebase";
+import { store } from "@/helpers/firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 interface Image {
     url: File | string;

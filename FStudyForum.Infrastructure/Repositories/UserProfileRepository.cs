@@ -10,34 +10,34 @@ using System.Threading.Tasks;
 
 namespace FStudyForum.Infrastructure.Repositories
 {
-    public class UserProfileRepository : BaseRepository<UserProfile>, IUserProfileRepository 
+    public class UserProfileRepository : BaseRepository<Profile>, IUserProfileRepository 
     {
         public UserProfileRepository(ApplicationDBContext dbContext) : base(dbContext)
         {
         }
-        public Task<UserProfile> Create(UserProfile model)
+        public Task<Profile> Create(Profile model)
         {
             throw new NotImplementedException();
         }
 
-        public Task CreateRange(List<UserProfile> model)
+        public Task CreateRange(List<Profile> model)
         {
             throw new NotImplementedException();
         }
 
-        public Task Delete(UserProfile model)
+        public Task Delete(Profile model)
         {
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<UserProfile>> GetAll()
+        public Task<IEnumerable<Profile>> GetAll()
         {
             throw new NotImplementedException();
         }
 
-        public async Task<UserProfile> GetById<Tid>(Tid id)
+        public async Task<Profile> GetById<Tid>(Tid id)
         {
-            var user = await _dbContext.UserProfiles.FirstOrDefaultAsync(u => u.Id.Equals(id));
+            var user = await _dbContext.UserProfiles.Where(u => u.Id.Equals(id)).FirstOrDefaultAsync();
             if(user == null)
             {
                 throw new Exception("User not found");
@@ -45,12 +45,12 @@ namespace FStudyForum.Infrastructure.Repositories
             return user;
         }
 
-        public Task<PaginatedDataDTO<UserProfile>> GetPaginatedData(int pageNumber, int pageSize)
+        public Task<PaginatedDataDTO<Profile>> GetPaginatedData(int pageNumber, int pageSize)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<UserProfile?> GetProfileByName(string username)
+        public async Task<Profile?> GetProfileByName(string username)
         {
             var user = await _dbContext.UserProfiles.Where(u => u.UserName.Equals(username)).FirstOrDefaultAsync();           
             return user;
@@ -71,7 +71,7 @@ namespace FStudyForum.Infrastructure.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task Update(UserProfile model)
+        public async Task Update(Profile model)
         {
             _dbContext.UserProfiles.Update(model);
             await _dbContext.SaveChangesAsync();

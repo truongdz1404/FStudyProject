@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FStudyForum.Core.Models.DTOs.Profile
 {
-    public class ProfileDTO
+    public class ProfileDTO 
     {
         [Required]
         [MaxLength(50, ErrorMessage = "The User Name maximum length is 50 characters.")]

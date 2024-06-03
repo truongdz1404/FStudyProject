@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace FStudyForum.Infrastructure.Repositories
 {
-    public interface IUserProfileRepository : IBaseRepository<UserProfile>
+    public interface IUserProfileRepository : IBaseRepository<Profile>
     {
-        public Task<UserProfile?> GetProfileByName(string username);
+        public Task<Profile?> GetProfileByName(string username);
         
     }
 }
