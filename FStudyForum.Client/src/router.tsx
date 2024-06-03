@@ -4,9 +4,10 @@ import AuthGuard from "@/helpers/guards/AuthGuard";
 import NotFound from "./components/NotFound";
 import Layout from "./components/layout/Layout";
 
-const Profile = lazy(() => import("./pages/profile"));
-const SignIn = lazy(() => import("./pages/auth/signin"));
+const Profile = lazy(() => import("@/pages/profile"));
+const SignIn = lazy(() => import("@/pages/auth/signin"));
 const Home = lazy(() => import("@/pages/home"));
+const SignOut = lazy(() => import("@/pages/auth/signout"));
 
 const Router: FC = () => {
   return useRoutes([
@@ -56,6 +57,14 @@ const Router: FC = () => {
           element: (
             <Suspense>
               <SignIn />
+            </Suspense>
+          ),
+        },
+        {
+          path: "signout",
+          element: (
+            <Suspense>
+              <SignOut />
             </Suspense>
           ),
         },

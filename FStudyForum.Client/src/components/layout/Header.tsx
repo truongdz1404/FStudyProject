@@ -35,7 +35,7 @@ const profileMenuItems = [
   {
     label: "Sign Out",
     icon: PowerIcon,
-    path: "/signout",
+    path: "/auth/signout",
   },
 ];
 
