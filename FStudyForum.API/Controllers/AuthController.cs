@@ -82,6 +82,39 @@ public class AuthController : ControllerBase
         });
     }
 
+    [HttpGet("logout")]
+    public async Task<IActionResult> Logout()
+    {
+        try
+        {
+            var userName = HttpContext.User?.Identity?.Name;
+            if (userName is null)
+            {
+                throw new Exception("User is not authenticated!");
+            }
+            var refreshToken = await _userService.GetRefreshTokenAsync(userName);
+            if (refreshToken is null)
+            {
+                throw new Exception("Not found refresh token!");
+            }
+            await _userService.RemoveRefreshTokenAsync(refreshToken);
+            RemoveTokensInsideCookie(HttpContext);
+            return Ok(new Response
+            {
+                Status = ResponseStatus.SUCCESS,
+                Message = "Logout Successfully"
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new Response
+            {
+                Status = ResponseStatus.ERROR,
+                Message = $"Logout failed! Error: {ex.Message}"
+            });
+        }
+    }
+
     [HttpGet("refresh-token")]
     public async Task<IActionResult> RefreshToken()
     {
@@ -142,7 +175,18 @@ public class AuthController : ControllerBase
 
     private void RemoveTokensInsideCookie(HttpContext context)
     {
-        //TODO: Remove accesstoken and refeshtoken
+
+        context.Response.Cookies.Append(_jwtConfig.AccessTokenKey, "", new CookieOptions
+        {
+            HttpOnly = false,
+            Expires = DateTimeOffset.UtcNow.AddDays(-1)
+        });
+        context.Response.Cookies.Append(_jwtConfig.RefreshTokenKey, "", new CookieOptions
+        {
+            HttpOnly = false,
+            Expires = DateTimeOffset.UtcNow.AddDays(-1)
+        });
+
     }
 
     [HttpPost("forgot-password")]

@@ -1,10 +1,7 @@
-import { TriangleAlert } from "lucide-react";
 const NoPremission = () => {
   return (
-    <div className="grid h-screen place-content-center bg-white px-4">
-      <h1 className="uppercase tracking-widest text-gray-500 flex">
-        <TriangleAlert /> No Premission
-      </h1>
+    <div className="h-screen w-full flex items-center justify-center">
+      <h1 className="uppercase tracking-widest text-gray-500">No Premission</h1>
     </div>
   );
 };

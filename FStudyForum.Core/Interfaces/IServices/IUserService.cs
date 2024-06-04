@@ -15,4 +15,6 @@ public interface IUserService
      Task<ApplicationUser> GetUserByEmailAsync(string email);
     Task<string> GeneratePasswordResetTokenAsync(string email);
     Task<IdentityResult> ResetPasswordAsync(ResetPasswordModelDTO model);
+    Task RemoveRefreshTokenAsync(string refreshToken);
+    Task<string?> GetRefreshTokenAsync(string userName);
 }

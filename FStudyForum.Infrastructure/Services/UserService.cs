@@ -125,4 +125,22 @@ public class UserService : IUserService
 
         return await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
     }
+    public async Task RemoveRefreshTokenAsync(string refreshToken)
+    
+    {
+        var appUser = await _userRepository.FindUserByRefreshTokenAsync(refreshToken);
+        if (appUser == null)
+        {
+            Console.WriteLine("User not found");
+            return;
+        }
+        appUser.RefreshToken = "";
+        await _userManager.UpdateAsync(appUser);
+    }
+
+    public async Task<string?> GetRefreshTokenAsync(string userName)
+    {
+        var user = await _userManager.FindByNameAsync(userName);
+        return user?.RefreshToken;
+    }
 }
