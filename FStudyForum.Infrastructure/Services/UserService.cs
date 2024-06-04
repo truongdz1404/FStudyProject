@@ -102,15 +102,16 @@ public class UserService : IUserService
         return user == null ? null : _mapper.Map<UserDTO>(user);
     }
 
-    public async Task<ApplicationUser> GetUserByEmailAsync(string email)
+    public async Task<bool> CheckEmailExistedAsync(string email)
     {
-        return await _userManager.FindByEmailAsync(email);
+        var user = await _userManager.FindByEmailAsync(email);
+        return user != null;
     }
 
     public async Task<string> GeneratePasswordResetTokenAsync(string email)
     {
         var user = await _userManager.FindByEmailAsync(email);
-         if (user == null)
+        if (user == null)
         {
             throw new NotFoundException("User not found");
         }
@@ -127,7 +128,7 @@ public class UserService : IUserService
         return await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
     }
     public async Task RemoveRefreshTokenAsync(string refreshToken)
-    
+
     {
         var appUser = await _userRepository.FindUserByRefreshTokenAsync(refreshToken);
         if (appUser == null)

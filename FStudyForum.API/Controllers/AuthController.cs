@@ -2,7 +2,6 @@ using FStudyForum.Core.Constants;
 using FStudyForum.Core.Models.DTOs;
 using FStudyForum.Core.Models.DTOs.Auth;
 using FStudyForum.Core.Models.DTOs.Token;
-using FStudyForum.Core.Exceptions;
 using FStudyForum.Core.Interfaces.IServices;
 using FStudyForum.Core.Models.Configs;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +23,7 @@ public class AuthController : ControllerBase
         IOptions<JwtConfig> jwtConfig,
         IUserService accountService,
         IIdentityService identityService,
-         IEmailService emailService)
+        IEmailService emailService)
     {
         _jwtConfig = jwtConfig.Value;
         _userService = accountService;
@@ -192,45 +191,45 @@ public class AuthController : ControllerBase
     [HttpPost("forgot-password")]
     public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequestDTO model)
     {
-        var user = await _userService.GetUserByEmailAsync(model.Email);
-        if (user == null)
-            return BadRequest("User not found");
+        var isExisted = await _userService.CheckEmailExistedAsync(model.Email);
+        if (!isExisted) return BadRequest("User not found");
 
-        var token = await _userService.GeneratePasswordResetTokenAsync(user.Email);
-        var resetLink = $"http://localhost:3000/reset-password/change-pass?token={token}&email={user.Email}";
+        var token = await _userService.GeneratePasswordResetTokenAsync(model.Email);
+        var resetLink = $"http://localhost:3000/reset-password/change-pass?token={token}&email={model.Email}";
 
         var emailContent = $@"
         <p>Please click the link below to reset your password:</p>
         <p><a href='{resetLink}'>Reset Password</a></p>";
-        await _emailService.SendEmailAsync(user.Email, "Reset Password", emailContent);
+        await _emailService.SendEmailAsync(model.Email, "Reset Password", emailContent);
 
         return Ok(new { message = "Reset password email sent" });
     }
 
 
-     [HttpPost("change-password")]
-public async Task<IActionResult> ResetPassword([FromQuery] string email, [FromQuery] string token, [FromBody] ResetPasswordBody resetPasswordBody)
-{
-    var resetPasswordModelDTO = new ResetPasswordModelDTO{
-        Email = email,
-        Password = resetPasswordBody.NewPassword,
-        Token = token,
-    };
-    
-    var user = await _userService.GetUserByEmailAsync(email);
-    if (user == null)
+    [HttpPost("change-password")]
+    public async Task<IActionResult> ResetPassword([FromQuery] string email, [FromQuery] string token, [FromBody] ResetPasswordBody resetPasswordBody)
     {
-        return NotFound("Email not found.");
-    }
+        var resetPasswordModelDTO = new ResetPasswordModelDTO
+        {
+            Email = email,
+            Password = resetPasswordBody.NewPassword,
+            Token = token,
+        };
 
-    var result = await _userService.ResetPasswordAsync(resetPasswordModelDTO);
-    if (result.Succeeded)
-    {
-        return Ok("Password has been reset successfully.");
-    }
+        var isExisted = await _userService.CheckEmailExistedAsync(email);
+        if (!isExisted)
+        {
+            return NotFound("Email not found.");
+        }
 
-    return BadRequest("Error resetting password.");
-}
+        var result = await _userService.ResetPasswordAsync(resetPasswordModelDTO);
+        if (result.Succeeded)
+        {
+            return Ok("Password has been reset successfully.");
+        }
+
+        return BadRequest("Error resetting password.");
+    }
 
 
 
@@ -245,8 +244,8 @@ public async Task<IActionResult> ResetPassword([FromQuery] string email, [FromQu
             return BadRequest(new { Message = "User already exists" });
         }
 
-        var result = await _identityService.CreateUserAsync(registerDTO, [UserRole.User]);
-        if (!result.isSucceed)
+        var (isSucceed, userId) = await _identityService.CreateUserAsync(registerDTO, [UserRole.User]);
+        if (!isSucceed)
         {
             return StatusCode(500, new { Message = "An error occurred while creating the user" });
         }
@@ -277,8 +276,8 @@ public async Task<IActionResult> ResetPassword([FromQuery] string email, [FromQu
     }
 
 
-     [HttpGet("confirm-reset-password")]
-    public async Task<IActionResult> ConfirmResetPass(string token, string email)
+    [HttpGet("confirm-reset-password")]
+    public async Task<IActionResult> ConfirmResetPassword(string token, string email)
     {
         var result = await _identityService.ConfirmEmailAsync(email, token);
         if (result)
