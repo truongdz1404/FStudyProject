@@ -7,6 +7,7 @@ using FStudyForum.Core.Interfaces.IRepositories;
 using FStudyForum.Core.Interfaces.IServices;
 using Microsoft.AspNetCore.Identity;
 using FStudyForum.Core.Models.DTOs.Auth;
+using FStudyForum.Core.Exceptions;
 
 namespace FStudyForum.Infrastructure.Services;
 
@@ -29,12 +30,8 @@ public class UserService : IUserService
         _mapper = mapper;
     }
 
-    private async Task<TokenDTO> CreateAuthTokenAsync(ApplicationUser user, int expDays = -1)
+    private async Task<List<Claim>> GetClaimsAsync(ApplicationUser user)
     {
-        user.RefreshToken = _tokenService.GenerateRefreshToken();
-        if (expDays > 0)
-            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(expDays);
-        await _userManager.UpdateAsync(user);
         var claims = new List<Claim>
         {
             new(ClaimTypes.Name, user.UserName??string.Empty),
@@ -43,6 +40,16 @@ public class UserService : IUserService
         var roles = await _userManager.GetRolesAsync(user);
         foreach (var role in roles)
             claims.Add(new Claim(ClaimTypes.Role, role));
+        return claims;
+    }
+
+    private async Task<TokenDTO> CreateAuthTokenAsync(ApplicationUser user, int expDays = -1)
+    {
+        user.RefreshToken = _tokenService.GenerateRefreshToken();
+        if (expDays > 0)
+            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(expDays);
+        await _userManager.UpdateAsync(user);
+        var claims = await GetClaimsAsync(user);
         return new TokenDTO()
         {
             AccessToken = _tokenService.GenerateAccessToken(claims),
@@ -52,7 +59,6 @@ public class UserService : IUserService
 
     public async Task<TokenDTO> CreateAuthTokenAsync(string userName, int expDays = -1)
     {
-
         var user = await _userManager.FindByNameAsync(userName)
             ?? throw new Exception("UserName is invalid");
         return await CreateAuthTokenAsync(user, expDays);
@@ -93,5 +99,30 @@ public class UserService : IUserService
             await _userManager.AddLoginAsync(user, info);
         }
         return user == null ? null : _mapper.Map<UserDTO>(user);
+    }
+
+    public async Task<ApplicationUser> GetUserByEmailAsync(string email)
+    {
+        return await _userManager.FindByEmailAsync(email);
+    }
+
+    public async Task<string> GeneratePasswordResetTokenAsync(string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+         if (user == null)
+        {
+            throw new NotFoundException("User not found");
+        }
+        return await _userManager.GeneratePasswordResetTokenAsync(user);
+    }
+
+
+    public async Task<IdentityResult> ResetPasswordAsync(ResetPasswordModelDTO model)
+    {
+        var user = await _userManager.FindByEmailAsync(model.Email);
+        if (user == null)
+            return IdentityResult.Failed(new IdentityError { Description = "User not found" });
+
+        return await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
     }
 }

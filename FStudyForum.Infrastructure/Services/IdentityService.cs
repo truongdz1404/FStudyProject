@@ -1,7 +1,7 @@
 using FStudyForum.Core.Models.DTOs.Auth;
+using FStudyForum.Core.Models.Entities;
 using FStudyForum.Core.Exceptions;
 using FStudyForum.Core.Interfaces.IServices;
-using FStudyForum.Core.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,6 +20,7 @@ public class IdentityService : IIdentityService
     {
         _userManager = userManager;
         _signInManager = signInManager;
+        _roleManager = roleManager;
         _roleManager = roleManager;
     }
 
@@ -49,8 +50,8 @@ public class IdentityService : IIdentityService
     {
         var user = new ApplicationUser()
         {
-            UserName = registerDTO.UserName,
-            Email = registerDTO.UserName
+            UserName = registerDTO.Email,
+            Email = registerDTO.Email
         };
 
         var result = await _userManager.CreateAsync(user, registerDTO.Password);
@@ -189,6 +190,33 @@ public class IdentityService : IIdentityService
         var result = await _userManager.RemoveFromRolesAsync(user, existingRoles);
         result = await _userManager.AddToRolesAsync(user, usersRole);
 
+        return result.Succeeded;
+    }
+     public async Task<bool> CheckUserExistsAsync(string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        return user != null;
+    }
+
+    public async Task<string> GenerateEmailConfirmationTokenAsync(string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user == null)
+        {
+            throw new NotFoundException("User not found");
+        }
+        return await _userManager.GenerateEmailConfirmationTokenAsync(user);
+    }
+
+    public async Task<bool> ConfirmEmailAsync(string email, string token)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user == null)
+        {
+            throw new NotFoundException("User not found");
+        }
+
+        var result = await _userManager.ConfirmEmailAsync(user, token);
         return result.Succeeded;
     }
 }
