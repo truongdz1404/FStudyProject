@@ -4,7 +4,6 @@ import { FormikProps } from "formik";
 interface HeaderComponentProps {
     fileInputRef: React.RefObject<HTMLInputElement>;
     profile: Profile;
-    formik: FormikProps<any>;
     handleImageClick: () => void;
     handleFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }

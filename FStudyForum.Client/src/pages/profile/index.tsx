@@ -105,7 +105,6 @@ const UserProfile = () => {
                         <Header
                             fileInputRef={fileInputRef}
                             profile={profile}
-                            formik={formik}
                             handleImageClick={handleImageClick}
                             handleFileChange={handleFileChange}
                         />
