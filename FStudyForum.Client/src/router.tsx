@@ -8,7 +8,7 @@ import Layout from "./components/layout/Layout";
 const Register = lazy(() => import("./pages/auth/register"));
 const ConfirmationSent = lazy(() => import("./pages/auth/confirmEmail"));
 const ChangePass = lazy(() => import("./pages/reset-password/change-pass"));
-const SendMail = lazy(() => import("./pages/reset-password/send-mail"));
+const SendMail = lazy(() => import("./pages/reset-password"));
 const Profile = lazy(() => import("@/pages/profile"));
 const SignIn = lazy(() => import("@/pages/auth/signin"));
 const Home = lazy(() => import("@/pages/home"));
