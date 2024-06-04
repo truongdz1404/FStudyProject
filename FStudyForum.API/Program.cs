@@ -47,6 +47,9 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
         options.Password.RequireUppercase =
             options.Password.RequireLowercase =
                 options.Password.RequireNonAlphanumeric = false;
+
+        options.User.RequireUniqueEmail = true;
+        options.SignIn.RequireConfirmedEmail = true;
     }
 ).AddEntityFrameworkStores<ApplicationDBContext>();
 
