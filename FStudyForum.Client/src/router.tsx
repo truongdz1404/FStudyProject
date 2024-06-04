@@ -62,11 +62,18 @@ const Router: FC = () => {
       children: [
         {
           path: "signin",
-          element: <SignIn />,
+          element: (
+            <Suspense>
+              <SignIn />
+            </Suspense>
+          )
         },
         {
           path: "register",
-          element: <Register />,
+          element:
+            <Suspense>
+              <Register />
+            </Suspense>
         },
         {
           path: "confirmation-sent",

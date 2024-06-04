@@ -91,7 +91,7 @@ public class UserService : IUserService
             user = await _userManager.FindByEmailAsync(payload.Email);
             if (user == null)
             {
-                user = new ApplicationUser { Email = payload.Email, UserName = payload.Email };
+                user = new ApplicationUser { Email = payload.Email, UserName = payload.Email , EmailConfirmed = true };
                 await _userManager.CreateAsync(user);
                 //TODO: Prepare and send an email for the email confirmation
                 await _userManager.AddToRolesAsync(user, roles);

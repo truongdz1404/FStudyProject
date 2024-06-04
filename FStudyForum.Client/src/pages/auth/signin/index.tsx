@@ -2,7 +2,7 @@ import { signIn } from "@/contexts/auth/reduce";
 import { useAuth } from "@/hooks/useAuth";
 import AuthService from "@/services/AuthService";
 import UserService from "@/services/UserService";
-import { useNavigate } from "react-router-dom";
+import {Link, useNavigate } from "react-router-dom";
 import { FC } from "react";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -175,9 +175,7 @@ const SignIn: FC = () => {
           <div className="mt-4 text-sm text-gray-600 text-center">
             <p>
               You don't have an account?{" "}
-              <a href="#" className="text-black hover:underline">
-                Register
-              </a>
+              <Link to="/auth/register" className="text-black hover:underline">Register</Link>
             </p>
           </div>
         </div>
