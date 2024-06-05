@@ -23,26 +23,24 @@ import {
     ChevronDown,
 } from "lucide-react";
 import { cn } from "@/helpers/utils";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Icons } from "../Icons";
-import { useNavigate } from "react-router-dom";
 const profileMenuItems = [
     {
         label: "My Profile",
         icon: UserCircleIcon,
-        url: "/profile",
     },
     {
         label: "Sign Out",
         icon: PowerIcon,
-        url: "/auth/signin",
     },
 ];
 
 function ProfileMenu() {
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-    const navigate = useNavigate();
+
     const closeMenu = () => setIsMenuOpen(false);
+
     return (
         <Menu open={isMenuOpen} handler={setIsMenuOpen} placement="bottom-end">
             <MenuHandler>
@@ -66,10 +64,7 @@ function ProfileMenu() {
                     return (
                         <MenuItem
                             key={label}
-                            onClick={() => {
-                              closeMenu();
-                              navigate(profileMenuItems[key].url);
-                            }}
+                            onClick={closeMenu}
                             className={`flex items-center gap-2 rounded ${
                                 isLastItem
                                     ? "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
@@ -87,7 +82,6 @@ function ProfileMenu() {
                                 variant="small"
                                 className="font-normal"
                                 color={isLastItem ? "red" : "inherit"}
-                                
                             >
                                 {label}
                             </Typography>

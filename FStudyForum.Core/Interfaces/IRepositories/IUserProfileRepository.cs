@@ -1,4 +1,5 @@
 ﻿using FStudyForum.Core.Interfaces.IRepositories;
+using FStudyForum.Core.Models.DTOs.Profile;
 using FStudyForum.Core.Models.Entities;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,6 @@ namespace FStudyForum.Infrastructure.Repositories
 {
     public interface IUserProfileRepository : IBaseRepository<Profile>
     {
-        public Task<Profile?> GetProfileByName(string username);
-        
+        public Task<Profile?> GetProfileByName(string? username);
     }
 }

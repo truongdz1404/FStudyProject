@@ -1,123 +1,126 @@
-import ProfileService from "@/services/ProfileService";
-import { useRef, useEffect, useState } from "react";
-import useFireBase from "@/hooks/useFireBase";
-import * as Yup from "yup";
-import { FormikProps, useFormik } from "formik";
-import { Profile } from "@/types/profile";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { useNavigate } from "react-router-dom";
-import { AxiosError } from "axios";
-import Header from "@/components/profile/header";
-import Body from "@/components/profile/body";
+import ContentLayout from "@/components/layout/ContentLayout";
+import ProfileDescription from "@/components/profile/ProfileDescription";
+import { useAuth } from "@/hooks/useAuth";
+import {
+  Accordion,
+  AccordionBody,
+  AccordionHeader,
+  Avatar,
+  Button,
+  Typography,
+} from "@material-tailwind/react";
+import { Camera, ChevronDown, ChevronUp, PencilLine, Plus } from "lucide-react";
+import React from "react";
+import { Link } from "react-router-dom";
+const tabItems = [
+  {
+    label: "Overview",
+  },
+  {
+    label: "Posts",
+  },
+];
+const Profile = () => {
+  const { user } = useAuth();
+  const [data] = React.useState([]);
+  const [open, setOpen] = React.useState(0);
 
-const UserProfile = () => {
-    const [profile, setProfile] = useState<Profile>({} as Profile);
-    const navigate = useNavigate();
-    const fileInputRef = useRef<HTMLInputElement>(null);
-    useEffect(() => {
-        const fetchProfile = async () => {
-            const response = await ProfileService.getProfileByUserName();
-            setProfile(response);
-            console.log(response);
-        };
-        fetchProfile();
-    }, []);
-
-    const handleImageClick = () => {
-        if (fileInputRef.current != null) {
-            fileInputRef.current.click();
-        }
-        console.log("click");
-    };
-
-    const validationSchema = Yup.object({
-        userName: Yup.string().required("Username is required"),
-        firstName: Yup.string().required("First name is required"),
-        lastName: Yup.string().required("Last name is required"),
-        gender: Yup.number()
-            .oneOf([1, 2, 3], "Invalid gender")
-            .required("Gender is required"),
-        birthDate: Yup.date().required("Birth date is required").nullable(),
-        avatarUrl: Yup.mixed().required("A file is required"),
-    });
-
-    const formik: FormikProps<Profile> = useFormik<Profile>({
-        initialValues: {
-            id: profile.id,
-            userName: profile.userName || "",
-            firstName: profile.firstName || "",
-            lastName: profile.lastName || "",
-            gender: profile.gender || 0,
-            birthDate: profile.birthDate || "",
-            avatarUrl: profile.avatarUrl || "https://via.placeholder.com/150",
-        },
-        validationSchema: validationSchema,
-        onSubmit: async (values) => {
-            let reponse ;
-            try {
-                if (values.avatarUrl instanceof File) {
-                    values.avatarUrl = await useFireBase(values.avatarUrl);
-                }
-                console.log(values.avatarUrl);
-                reponse = await ProfileService.editProfile(
-                    profile.id,
-                    values as Profile
-                ) 
-                console.log(reponse);
-                if (!reponse) {
-                    toast.error("Update profile failed");
-                } else {
-                    toast.success("Update profile successfully");
-                    navigate("/home");
-                }
-            } catch (error) {
-                if (error instanceof AxiosError) {
-                    console.log(error.message);
-                }
-            }
-        },
-        enableReinitialize: true,
-    });
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files ? event.target.files[0] : null;
-        console.log(file);
-        let profileImage = document.getElementById(
-            "profileImage"
-        ) as HTMLImageElement;
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                if (e.target && e.target.result) {
-                    profileImage.src = e.target.result as string;
-                    formik.setFieldValue("avatarUrl", file);
-                }
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-    return (
-        <div>
-            <div className="bg-gray-100">
-                <div className="container mx-auto py-8">
-                    <div className="grid grid-cols-4 sm:grid-cols-12 gap-6 px-4">
-                        {/* Header */}
-                        <Header
-                            fileInputRef={fileInputRef}
-                            profile={profile}
-                            handleImageClick={handleImageClick}
-                            handleFileChange={handleFileChange}
-                        />
-                        {/* Body */}
-                        <Body
-                            formik={formik}
-                            fileInputRef={fileInputRef}
-                            handleFileChange={handleFileChange}
-                        />
-                    </div>
-                </div>
+  const handleOpen = (value: number) => setOpen(open === value ? 0 : value);
+  return (
+    <ContentLayout pannel={<ProfileDescription />}>
+      <div className="flex flex-col items-center w-full mb-24">
+        <div className="relative w-full max-w-screen-lg">
+          <img
+            src="https://i.ibb.co/FWggPq1/banner.png"
+            className="w-full object-center h-36 rounded-sm"
+          />
+          <div className="absolute -bottom-1/2 left-4">
+            <Avatar
+              variant="circular"
+              size="xxl"
+              alt="tania andrew"
+              src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1480&q=80"
+            />
+            <div className="absolute bottom-0 right-0 bg-blue-gray-50 rounded-full">
+              <Camera className="h-4 w-4 m-1" strokeWidth={1.5} />
             </div>
+          </div>
+
+          <div className="absolute bottom-0 right-0 bg-blue-gray-50 rounded-full m-2 font-normal">
+            <Camera className="h-4 w-4 m-1 " strokeWidth={1.5} />
+          </div>
+
+          <div className="absolute left-32 pl-2 font-semibold text-md">
+            No name
+          </div>
+          <div className="mt-2 absolute right-0">
+            <Button
+              size="sm"
+              variant="outlined"
+              className="rounded-full px-2 py-2"
+            >
+              <div className="flex items-center">
+                <PencilLine size={"16"} />
+                <Link className="mx-1" to="/profile/edit">
+                  <Typography className="text-xs capitalize font-normal hidden xl:block">
+                    Edit Profile
+                  </Typography>
+                  <Typography className="text-xs capitalize font-normal block  xl:hidden">
+                    Edit
+                  </Typography>
+                </Link>
+              </div>
+            </Button>
+          </div>
         </div>
-    );
+      </div>
+
+      <Accordion open={open === 1} className="xl:hidden mb-2 ">
+        <AccordionHeader
+          onClick={() => handleOpen(1)}
+          className="py-0 pb-2 text-md text-black font-semibold !justify-normal"
+        >
+          Introduction{" "}
+          {open === 1 ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+        </AccordionHeader>
+        <AccordionBody className="py-0 pt-2 ">
+          <ProfileDescription />
+          <hr className="mt-4 border-blue-gray-50" />
+        </AccordionBody>
+      </Accordion>
+
+      <div className="flex w-max gap-4">
+        {tabItems.map(({ label }) => (
+          <Button
+            key={label}
+            variant="text"
+            size="sm"
+            className="rounded-full bg-blue-gray-50"
+          >
+            <Typography className="text-sm capitalize  text-black">
+              {label}
+            </Typography>
+          </Button>
+        ))}
+      </div>
+      <Button size="sm" variant="outlined" className="rounded-full mt-2">
+        <div className="flex items-center">
+          <Plus size={"16"} />
+          <Typography className="text-xs capitalize ml-1">
+            Create a Post
+          </Typography>
+        </div>
+      </Button>
+      <hr className="my-2 border-blue-gray-50" />
+      <div className="flex justify-center h-screen">
+        {data && (
+          <Typography className="text-sm capitalize font-semibold">
+            {user?.userName} hasn't posts yet
+          </Typography>
+        )}
+      </div>
+    </ContentLayout>
+  );
 };
-export default UserProfile;
+
+export default Profile;

@@ -16,6 +16,7 @@ namespace FStudyForum.API.Controllers
     public class ProfileController : ControllerBase
     {
         private readonly IUserProfileService _userProfileService;
+       
         public ProfileController(IUserProfileService userProfileService)
         {
             _userProfileService = userProfileService;
@@ -37,17 +38,8 @@ namespace FStudyForum.API.Controllers
                 }
                 return Ok(new Response
                 {
-                    Data = new Profile
-                    {
-                        Id = user.Id,
-                        UserName = user.UserName,
-                        FirstName = user.FirstName,
-                        LastName = user.LastName,
-                        AvatarUrl = user.AvatarUrl,
-                        Gender = user.Gender,
-                        BirthDate = user.BirthDate
-                    },
-                Message = "Find Profile successfully",
+                    Data = user,
+                    Message = "Find Profile successfully",
                     Status = (int)HttpStatusCode.OK + "",
                 });
             }
@@ -61,17 +53,16 @@ namespace FStudyForum.API.Controllers
             }
         }
 
-        [HttpPut("edit-profile/{id}")]
-        public async Task<IActionResult> UpdateProfile([FromRoute] long id, [FromBody] ProfileDTO userProfile)
+        [HttpPut("edit-profile/{username}")]
+        public async Task<IActionResult> UpdateProfile([FromRoute] string? username, [FromBody] ProfileDTO profileDTO)
         {
             try
             {
-                var profile = await _userProfileService.GetProfileById(id);
+                var profile = await _userProfileService.UpdateProfile(profileDTO, username);
                 if (profile == null)
                 {
                     return NotFound(new Response
                     {
-                        Data = profile,
                         Message = "User is not found.",
                         Status = (int)HttpStatusCode.NotFound + ""
                     });
@@ -88,10 +79,8 @@ namespace FStudyForum.API.Controllers
                     };
                     return BadRequest(responseNotFound);
                 }
-                await _userProfileService.UpdateProfile(userProfile, profile);
                 return Ok(new Response
                 {
-                    Data = profile,
                     Message = "Profile updated successfully",
                     Status = (int)HttpStatusCode.OK + "",
                 });

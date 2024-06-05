@@ -9,7 +9,6 @@ public class MapperProfile : AutoMapper.Profile
 {
     public MapperProfile()
     {
-
         CreateMap<ApplicationUser, UserDTO>();
 
         CreateMap<ProfileDTO, Core.Models.Entities.Profile>().ReverseMap();

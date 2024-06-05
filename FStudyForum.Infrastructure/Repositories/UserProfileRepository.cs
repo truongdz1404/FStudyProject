@@ -15,47 +15,28 @@ namespace FStudyForum.Infrastructure.Repositories
         public UserProfileRepository(ApplicationDBContext dbContext) : base(dbContext)
         {
         }
-        public Task<Profile> Create(Profile model)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task CreateRange(List<Profile> model)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task Delete(Profile model)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Profile>> GetAll()
-        {
-            throw new NotImplementedException();
-        }
-
+        
         public async Task<Profile> GetById<Tid>(Tid id)
         {
-            var user = await _dbContext.UserProfiles.Where(u => u.Id.Equals(id)).FirstOrDefaultAsync();
+            var user = await _dbContext.UserProfiles.Where(u => u.Id.Equals(id)).FirstOrDefaultAsync();          
             if(user == null)
             {
                 throw new Exception("User not found");
             }
             return user;
         }
-
         public Task<PaginatedDataDTO<Profile>> GetPaginatedData(int pageNumber, int pageSize)
         {
             throw new NotImplementedException();
         }
-
         public async Task<Profile?> GetProfileByName(string username)
         {
-            var user = await _dbContext.UserProfiles.Where(u => u.UserName.Equals(username)).FirstOrDefaultAsync();           
+            var user = await _dbContext.UserProfiles
+                           .Where(u => u.User.UserName.Equals(username))
+                           .Include(u => u.User)
+                           .FirstOrDefaultAsync();
             return user;
         }
-
         public Task<bool> IsExists<Tvalue>(string key, Tvalue value)
         {
             throw new NotImplementedException();

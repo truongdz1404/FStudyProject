@@ -10,11 +10,10 @@ const getProfileByUserName = async () => {
     const response = await api.get<ResponseWith<Profile>>(`/profile/getProfileByUsername/${profile.userName}`); 
     return (response.data).data;
 }
-const editProfile = async (id: number, profile: Profile) => {
+const editProfile = async (username: string, profile: Profile) => {
     let response;
     try {
-        response = await api.put<Response>(`/profile/edit-profile/${id}`, {
-            userName: profile.userName,
+        response = await api.put<Response>(`/profile/edit-profile/${username}`, {
             firstName: profile.firstName,
             lastName: profile.lastName,
             gender: profile.gender,

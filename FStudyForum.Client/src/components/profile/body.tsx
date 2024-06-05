@@ -43,37 +43,6 @@ const Body: React.FC<HeaderComponentProps> = ({
                                     color="blue-gray"
                                     className="-mb-3"
                                 >
-                                    Username
-                                </Typography>
-                                <Input
-                                    size="lg"
-                                    type="text"
-                                    placeholder="Username"
-                                    name="userName"
-                                    value={formik.values.userName}
-                                    onChange={formik.handleChange}
-                                    onBlur={formik.handleBlur}
-                                    className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
-                                    labelProps={{
-                                        className:
-                                            "before:content-none after:content-none",
-                                    }}
-                                    crossOrigin={undefined}
-                                />
-                                {formik.touched.userName &&
-                                formik.errors.userName ? (
-                                    <div className="text-red-500">
-                                        {formik.errors.userName}
-                                    </div>
-                                ) : null}
-                            </div>
-
-                            <div className="mb-1 flex flex-col gap-6">
-                                <Typography
-                                    variant="h6"
-                                    color="blue-gray"
-                                    className="-mb-3"
-                                >
                                     First Name
                                 </Typography>
                                 <Input
@@ -178,7 +147,7 @@ const Body: React.FC<HeaderComponentProps> = ({
                                         placeholder=" "
                                         type="datetime-local"
                                         name="birthDate"
-                                        value={formik.values.birthDate.toString()}
+                                        value={formik.values.birthDate + ""}
                                         onChange={formik.handleChange}
                                         onBlur={formik.handleBlur}
                                     />

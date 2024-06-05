@@ -12,8 +12,7 @@ namespace FStudyForum.Infrastructure.Services
 {
     public interface IUserProfileService
     {
-        public Task UpdateProfile(ProfileDTO profileDTO, Profile profile);
-        public Task<Profile?> GetProfileByName(string? username);
-        public Task<Profile?> GetProfileById(long id);
+        public Task<ProfileDTO?> UpdateProfile(ProfileDTO profileDTO, string? username);
+        public Task<ProfileDTO?> GetProfileByName(string? username);
     }
 }

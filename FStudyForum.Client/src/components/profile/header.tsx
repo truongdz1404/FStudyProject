@@ -1,5 +1,4 @@
 import { Profile } from "@/types/profile";
-import { FormikProps } from "formik";
 
 interface HeaderComponentProps {
     fileInputRef: React.RefObject<HTMLInputElement>;
@@ -34,10 +33,6 @@ const Header: React.FC<HeaderComponentProps> = ({
                             onChange={handleFileChange}
                         />
                     </div>
-                    <h1 className="text-l font-bold">
-                        {profile.userName || ""}
-                    </h1>
-
                     <div className="mt-6 flex flex-wrap gap-4 justify-center">
                         <a
                             href="#"
