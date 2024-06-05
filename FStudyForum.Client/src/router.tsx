@@ -8,6 +8,7 @@ import EditProfile from "./pages/profile/edit";
 import Profile from "./pages/profile";
 import CreateProfile from "./pages/profile/create";
 import IsVerified from "./helpers/guards/IsVerified";
+import ProfileGuard from "./helpers/guards/ProfileGuard";
 const Home = lazy(() => import("@/pages/home"));
 const SignOut = lazy(() => import("@/pages/auth/signout"));
 const Router: FC = () => {
@@ -22,7 +23,7 @@ const Router: FC = () => {
                 </AuthGuard>
             ),
             children: [
-                {                   
+                {
                     index: true,
                     element: <Navigate to="/home" replace />,
                 },
@@ -48,10 +49,10 @@ const Router: FC = () => {
                         {
                             index: true,
                             element: (
-                              <Suspense>
-                                  <Profile />
-                              </Suspense>
-                          ),
+                                <Suspense>
+                                    <Profile />
+                                </Suspense>
+                            ),
                         },
                         {
                             path: "edit",
@@ -60,17 +61,19 @@ const Router: FC = () => {
                                     <EditProfile />
                                 </Suspense>
                             ),
-                        }
+                        },
                     ],
                 },
             ],
         },
         {
-            path: "profile/create",
+            path: "/profile/create",
             element: (
-                <Suspense>
-                    <CreateProfile />
-                </Suspense>
+                <AuthGuard>
+                    <ProfileGuard>
+                        <CreateProfile />
+                    </ProfileGuard>
+                </AuthGuard>
             ),
         },
         {
@@ -97,7 +100,7 @@ const Router: FC = () => {
         {
             path: "*",
             element: <NotFound />,
-        }, 
+        },
     ]);
 };
 

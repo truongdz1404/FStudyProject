@@ -7,6 +7,7 @@ using FStudyForum.Core.Interfaces.IServices;
 using FStudyForum.Core.Models.Configs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Authentication;
 
 namespace FStudyForum.API.Controllers;
 
@@ -124,6 +125,7 @@ public class AuthController : ControllerBase
             }
             await _userService.RemoveRefreshTokenAsync(refreshToken);
             RemoveTokensInsideCookie(HttpContext);
+            await HttpContext.SignOutAsync();
             return Ok(new Response
             {
                 Status = ResponseStatus.SUCCESS,
@@ -206,12 +208,6 @@ public class AuthController : ControllerBase
             HttpOnly = false,
             Expires = DateTimeOffset.UtcNow.AddDays(-1)
         });
-        context.Response.Cookies.Append(_jwtConfig.RefreshTokenKey, "", new CookieOptions
-        {
-            HttpOnly = false,
-            Expires = DateTimeOffset.UtcNow.AddDays(-1)
-        });
-
     }
 
 }

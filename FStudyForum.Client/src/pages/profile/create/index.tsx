@@ -44,7 +44,7 @@ const CreateProfile = () => {
             avatarUrl: "https://via.placeholder.com/150",
         },
         validationSchema: validationSchema,
-        onSubmit: async (values) => {
+        onSubmit: async (values: Profile) => {
             let response;
             try {
                 if (values.avatarUrl instanceof File) {
@@ -56,16 +56,14 @@ const CreateProfile = () => {
                 );
                 console.log(response);
                 if (Number(response?.status) === 200) {
-                    console.log("status: " + response?.status);
-                    toast.success("Update profile successfully");
+                    toast.success("Create profile successfully");
                     navigate("/");
                 } else {
-                    console.log("status: " + response?.status);
-                    toast.error("Update profile failed");
+                    toast.warning("Create profile failed");
                 }
             } catch (error) {
                 if (error instanceof AxiosError) {
-                    console.log(error.message);
+                    toast.error("There was an unexpected error, please refresh the page and try again");
                 }
             }
         },

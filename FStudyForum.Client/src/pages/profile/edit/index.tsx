@@ -21,7 +21,7 @@ const EditProfile = () => {
     useEffect(() => {
         const fetchProfile = async () => {
             const response = await ProfileService.getProfileByUserName();
-            setProfile(response);
+            setProfile(response as Profile);
             console.log(response);
         };
         fetchProfile();

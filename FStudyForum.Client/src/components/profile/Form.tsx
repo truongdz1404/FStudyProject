@@ -119,9 +119,9 @@ const Form: React.FC<HeaderComponentProps> = ({
                                         }}
                                         onBlur={formik.handleBlur}
                                     >
-                                        <Option value="1">Male</Option>
-                                        <Option value="2">FeMale</Option>
-                                        <Option value="3">Other</Option>
+                                        <Option value="0">Male</Option>
+                                        <Option value="1">FeMale</Option>
+                                        <Option value="2">Other</Option>
                                     </Select>
                                 </div>
                                 {formik.touched.gender &&

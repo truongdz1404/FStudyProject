@@ -33,26 +33,39 @@ namespace FStudyForum.Infrastructure.Services
 
         public async Task<ProfileDTO> InsertIntoProfile(ProfileDTO profileDto, UserDTO userDto)
         {
-            if (profileDto != null && IsValid(profileDto))
+            if (profileDto == null || !IsValidProfile(profileDto))
+                throw new ArgumentNullException(nameof(profileDto) + "is not valid");
+
+            var appUser = await _userManager.FindByNameAsync(userDto.UserName)
+                ?? throw new ArgumentNullException(nameof(userDto) + "is not valid");
+            
+            if (await NonDuplicatedProfile( appUser))
             {
-                var appUser = await _userManager.FindByNameAsync(userDto.UserName)
-                    ?? throw new ArgumentNullException(nameof(userDto) + "is not valid");
                 var profile = _mapper.Map<Profile>(profileDto);
                 profile.User = appUser;
                 appUser.Profile = profile;
                 await _userManager.UpdateAsync(appUser);
-                return profileDto;
-            }
-            throw new ArgumentNullException(nameof(profileDto) + "or is not valid");
-        }
 
-        private static bool IsValid(ProfileDTO profileDto)
+                // convert the updated profile to DTO
+                var updatedProfileDto = _mapper.Map<ProfileDTO>(profile);
+                return updatedProfileDto;
+            }
+            throw new InvalidOperationException("User has already had a profile");
+        }
+        private static bool IsValidProfile(ProfileDTO profileDto)
         {
-            // TODO: Validate that appUser just has only one profile.
             var validationContext = new ValidationContext(profileDto);
             var validationResults = new List<ValidationResult>();
             bool isValid = Validator.TryValidateObject(profileDto, validationContext, validationResults, true);
             return isValid;
+        }
+
+        private async Task<bool> NonDuplicatedProfile(ApplicationUser appUser)
+        {
+            var user = await _userManager.Users
+                .Include(u => u.Profile)
+                .SingleOrDefaultAsync(u => u.UserName == appUser.UserName);
+            return user?.Profile == null;
         }
 
         public async Task<ProfileDTO> GetProfileByUserDTO(UserDTO userDto)

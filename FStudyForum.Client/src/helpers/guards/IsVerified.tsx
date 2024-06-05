@@ -1,56 +1,62 @@
-import UserService from "@/services/UserService"
-import api from "@/services/api"
-import { AxiosError } from "axios"
-import { Response } from "@/types/response"
-import { FC, PropsWithChildren, useEffect, useState } from "react"
-import { Navigate, useNavigate } from "react-router-dom"
-import Loading from "@/components/Loading"
+import UserService from "@/services/UserService";
+import api from "@/services/api";
+import axios, { AxiosError } from "axios";
+import { Response } from "@/types/response";
+import React, { FC, PropsWithChildren, useEffect, useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
+import Loading from "@/components/Loading";
+const SIGN_IN_PATH = "/auth/signin";
+const PROFILE_CREATE_PATH = "/profile/create";
 
-const IsVerified: FC<PropsWithChildren> = ({children}) => {
-  const navigate = useNavigate();
-  const [isVerified, setIsVerified] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  useEffect(() => {
-    const checkVerification = async () => {
-      try {
-        const user = await UserService.getProfile();
-        if (user != null){
-          console.log("Call api");
-          const response = await api.get<Response>(`/profile/getProfileByUsername/${user.userName}`);
-          const respStatus = Number(response.data.status);
-          if (respStatus === 404){
-            console.log("User is not verified");
-            setIsVerified(false);
-          }else if (respStatus === 200){
-            console.log("User is verified");
-            setIsVerified(true);
-          }
-        }else{
-          console.log("User is null");
-          navigate("/auth/signin");
-        }
-      } catch (error: unknown) {
-        if (error && (error as AxiosError).isAxiosError) {
-          const axiosError = error as AxiosError;
-          if (axiosError.response && axiosError.response?.data) {
-            const serverError = axiosError.response.data as Response;
-            if (serverError.status === "404") {
-              navigate("/profile/create");
-            }
-          }
-        }
-      }finally{
-        setIsLoading(false);
-      }
+const handleError = (
+    error: AxiosError,
+    navigate: ReturnType<typeof useNavigate>
+) => {
+    if (axios.isAxiosError(error) && error.response?.status === 404){
+        navigate(PROFILE_CREATE_PATH, {replace: true});
     }
-    checkVerification();
-  }, [children, navigate]);
-  if (isLoading) return <Loading />;
-  if (!isVerified) {
-    return <Navigate to="/profile/create" replace/>;
-  }
+    throw error;
+};
 
-  return <>{children}</>;
-}
+const checkVerification = async (
+    navigate: ReturnType<typeof useNavigate>,
+    setIsVerified: React.Dispatch<React.SetStateAction<boolean>>,
+    setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
+) => {
+    try {
+        const user = await UserService.getProfile();
+        if (user != null) {
+            const response = await api.get<Response>(
+                `/profile/getProfileByUsername/${user.userName}`
+            );
+            const respStatus = Number(response.data.status);
+            if (respStatus === 404) {
+                setIsVerified(false);
+            } else if (respStatus === 200) {
+                setIsVerified(true);
+            }
+        } else {
+            navigate(SIGN_IN_PATH, { replace: true });
+        }
+    } catch (error: unknown) {
+        handleError(error as AxiosError, navigate);
+    } finally {
+        setIsLoading(false);
+    }
+};
+const IsVerified: FC<PropsWithChildren> = ({ children }) => {
+    const navigate = useNavigate();
+    const [isVerified, setIsVerified] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    useEffect(() => {
+        checkVerification(navigate, setIsVerified, setIsLoading);
+    }, [ navigate]);
+    if (isLoading) return <Loading />;
+    if (!isVerified) {
+        return <Navigate to={PROFILE_CREATE_PATH} replace />;
+    }
 
-export default IsVerified
+    return <>{children}</>;
+};
+
+export default IsVerified;
