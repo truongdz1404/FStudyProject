@@ -62,7 +62,7 @@ const refreshToken = async () => {
     return response.data.message;
 };
 
-const confirmEmail = async (email: string) => {
+const resendEmail = async (email: string) => {
     try {
         const response = await api.post<Response>(`/auth/resend-confirmation-email?email=${email}`, {
             params: {email},
@@ -89,7 +89,7 @@ const AuthService = {
     loginGoogle,
     logout,
     register,
-    confirmEmail,
+    resendEmail,
 };
 
 export default AuthService;

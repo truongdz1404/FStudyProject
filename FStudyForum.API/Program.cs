@@ -47,13 +47,12 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
         options.Password.RequireUppercase =
             options.Password.RequireLowercase =
                 options.Password.RequireNonAlphanumeric = false;
-                 options.Tokens.PasswordResetTokenProvider = TokenOptions.DefaultEmailProvider;
-                options.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultEmailProvider;
-                options.Tokens.AuthenticatorTokenProvider = TokenOptions.DefaultEmailProvider;
 
         options.User.RequireUniqueEmail = true;
         options.SignIn.RequireConfirmedEmail = true;
-        // options.SignIn.RequireConfirmedAccount = true;
+        options.Tokens.PasswordResetTokenProvider = TokenOptions.DefaultEmailProvider;
+        options.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultEmailProvider;
+        options.Tokens.AuthenticatorTokenProvider = TokenOptions.DefaultEmailProvider;
     }
 ).AddEntityFrameworkStores<ApplicationDBContext>().AddDefaultTokenProviders();
 

@@ -34,6 +34,10 @@ const ChangePassword: FC = () => {
 
     const onSubmit = async (form: ChangePasswordFormInputs) => {
         setLoading(true);
+
+        console.log(token);
+        console.log(email);
+        console.log(form.password);
         if (!token) {
             console.error("Failed to retrieve token.");
             setLoading(false);

@@ -1,69 +1,47 @@
-import { signIn } from "@/contexts/auth/reduce";
-import { useAuth } from "@/hooks/useAuth";
 import AuthService from "@/services/AuthService";
-import UserService from "@/services/UserService";
-import {Link, useNavigate } from "react-router-dom";
 import { FC } from "react";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
-import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 import { checkEmail, cn } from "@/helpers/utils";
-import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AxiosError } from "axios";
-import { Button, Checkbox, Input, Typography } from "@material-tailwind/react";
-type LoginFormsInputs = {
-  username: string;
+import { Button, Input } from "@material-tailwind/react";
+import { Link, useNavigate } from "react-router-dom";
+
+type RegisterFormInputs = {
+  email: string;
   password: string;
+  confirmPassword: string;
 };
 
 const validation = Yup.object().shape({
-  username: Yup.string()
-    .required("Username is required")
-    .test("is-mailFPT", "Username must have @fpt.edu.vn", (value) => {
-      return checkEmail(value);
-    }),
+  email: Yup.string().required("Email is required").test("is-mailFPT", "Email must have @fpt.edu.vn", (value) => {
+    return checkEmail(value);
+  }),
   password: Yup.string().required("Password is required"),
+  confirmPassword: Yup.string().oneOf([Yup.ref("password"), undefined], "Passwords must match").defined(),
 });
 
-const SignIn: FC = () => {
-  const { dispatch } = useAuth();
+const SignUp: FC = () => {
   const navigate = useNavigate();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginFormsInputs>({ resolver: yupResolver(validation) });
+  } = useForm<RegisterFormInputs>({ resolver: yupResolver(validation) });
 
-  const handleLogin = async (form: LoginFormsInputs) => {
-    let message;
+  const handleRegister = async (form: RegisterFormInputs) => {
     try {
-      message = await AuthService.login(form.username, form.password);
-      const user = await UserService.getProfile();
-      dispatch(signIn({ user }));
-      toast.success(String(message)); // Convert message to a string
-      navigate("/");
+       await AuthService.register(form.email, form.password);
+      navigate(`/auth/confirm-email?email=${form.email}`);
     } catch (error) {
       if (error instanceof AxiosError) {
-        toast.warning(error.message);
+        console.error(error.message);
       } else {
-        toast.warning("Login failed");
+        console.error("Register failed!");
       }
-    }
-  };
-  const handleGoogleLogin = async (response: CredentialResponse) => {
-    try {
-      const idToken = response.credential;
-      if (!idToken) return;
-      const message = await AuthService.loginGoogle(idToken);
-      const user = await UserService.getProfile();
-      dispatch(signIn({ user }));
-      toast.success(String(message));
-      navigate("/");
-    } catch (error) {
-      toast.warning("Login failed");
     }
   };
 
@@ -79,7 +57,7 @@ const SignIn: FC = () => {
           <h1
             className={cn("text-3xl font-bold mb-6", " text-black text-center")}
           >
-            Sign In
+            Register
           </h1>
           <h1
             className={cn(
@@ -90,18 +68,9 @@ const SignIn: FC = () => {
             Join to Our Community with all time access and free
           </h1>
           <div className={cn("mt-4 flex flex-col lg:flex-row justify-center")}>
-            <GoogleLogin
-              onSuccess={handleGoogleLogin}
-              onError={() => {
-                console.log("Login Failed");
-              }}
-            />
-          </div>
-          <div className="mt-4 text-sm text-gray-600 text-center">
-            <p>or with email</p>
           </div>
           <form
-            onSubmit={handleSubmit(handleLogin)}
+            onSubmit={handleSubmit(handleRegister)}
             method="POST"
             className="space-y-4"
           >
@@ -124,12 +93,12 @@ const SignIn: FC = () => {
                 }}
                 containerProps={{ className: "min-w-[100px]" }}
                 crossOrigin={undefined}
-                {...register("username")}
+                {...register("email")}
               />
 
-              {errors.username && (
+              {errors.email && (
                 <p className={cn("text-red-500 text-xs m-2")}>
-                  {errors.username.message}
+                  {errors.email.message}
                 </p>
               )}
             </div>
@@ -158,24 +127,39 @@ const SignIn: FC = () => {
                 </p>
               )}
             </div>
-            <div className="-ml-2.5">
-              <Checkbox
-                label={
-                  <Typography color="blue-gray" className="text-sm">
-                    Remember Me
-                  </Typography>
-                }
+            <div>
+              <label
+                htmlFor="password"
+                className="block text-sm font-semibold m-1"
+              >
+                Confirm Password
+              </label>
+              <Input
+                type="password"
+                id="confirmPassword"
+                placeholder="Confirm Password"
+                className="!border !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-gray-900 focus:!border-t-gray-900 focus:ring-gray-900/10"
+                labelProps={{
+                  className: "hidden",
+                }}
+                containerProps={{ className: "min-w-[100px]" }}
                 crossOrigin={undefined}
+                {...register("confirmPassword")}
               />
+              {errors.confirmPassword && (
+                <p className="text-red-500 text-xs m-2">
+                  {errors.confirmPassword.message}
+                </p>
+              )}
             </div>
             <Button type="submit" className="mt-6" fullWidth>
-              sign up
+              Register
             </Button>
           </form>
           <div className="mt-4 text-sm text-gray-600 text-center">
             <p>
-              You don't have an account?{" "}
-              <Link to="/auth/register" className="text-black hover:underline">Register</Link>
+              Already have an account?{" "}
+              <Link to="/auth/signin" className="font-medium text-black hover:underline "> Sign in</Link>
             </p>
           </div>
         </div>
@@ -183,4 +167,5 @@ const SignIn: FC = () => {
     </div>
   );
 };
-export default SignIn;
+
+export default SignUp;

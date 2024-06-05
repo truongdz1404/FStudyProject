@@ -84,6 +84,7 @@ public class UserService : IUserService
     {
         var payload = await _tokenService.VerifyGoogleToken(externalAuth);
         if (payload == null) return null;
+
         var info = new UserLoginInfo(externalAuth.Provider, payload.Subject, externalAuth.Provider);
         var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
         if (user == null)
@@ -91,7 +92,7 @@ public class UserService : IUserService
             user = await _userManager.FindByEmailAsync(payload.Email);
             if (user == null)
             {
-                user = new ApplicationUser { Email = payload.Email, UserName = payload.Email , EmailConfirmed = true };
+                user = new ApplicationUser { Email = payload.Email, UserName = payload.Email, EmailConfirmed = true };
                 await _userManager.CreateAsync(user);
                 //TODO: Prepare and send an email for the email confirmation
                 await _userManager.AddToRolesAsync(user, roles);
@@ -101,9 +102,20 @@ public class UserService : IUserService
         return user == null ? null : _mapper.Map<UserDTO>(user);
     }
 
-    public async Task<ApplicationUser> GetUserByEmailAsync(string email)
+    public async Task<bool> CheckEmailExistedAsync(string email)
     {
-        return await _userManager.FindByEmailAsync(email);
+        var user = await _userManager.FindByEmailAsync(email);
+        return user != null;
+    }
+
+       public async Task<string> GeneratePasswordResetTokenAsync(string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+         if (user == null)
+        {
+            throw new NotFoundException("User not found");
+        }
+        return await _userManager.GeneratePasswordResetTokenAsync(user);
     }
 
 
@@ -116,7 +128,7 @@ public class UserService : IUserService
         return await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
     }
     public async Task RemoveRefreshTokenAsync(string refreshToken)
-    
+
     {
         var appUser = await _userRepository.FindUserByRefreshTokenAsync(refreshToken);
         if (appUser == null)

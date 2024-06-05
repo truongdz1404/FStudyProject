@@ -30,10 +30,11 @@ const ForgotPassword: FC = () => {
     });
 
     const onSubmit = async (form: ForgotPasswordFormInputs) => {
+        const email = (document.getElementById('email') as HTMLInputElement).value;
         setLoading(true);
         try {
             await UserService.forgotPassword(form.email);
-            navigate('/reset-password', { replace: true, state: { email: form.email } });
+            navigate(`/reset-password/confirm-reset-email?email=${email}`, { replace: true, state: { email } });
         } catch (error) {
             console.error("Failed to send password reset email.");
         }
@@ -90,10 +91,10 @@ const ForgotPassword: FC = () => {
                     </button>
                 </form>
                 <div className="mt-9 text-center">
-                    <p className="text-gray-700 text-lg">
+                    <p className="text-gray-700 text-sm">
                         Didn't receive a confirmation email?
                          {/* <a href="#" className="text-blue-500 hover:text-blue-700" onClick={handleRequestNewOne}>Request a new one</a> */}
-                         <Link to="" className="inline text-blue-500 hover:text-blue-700 text-xl" onClick={handleRequestNewOne}> Request a new one</Link>
+                         <Link to="" className="inline text-blue-500 hover:text-blue-700 text-sm" onClick={handleRequestNewOne}> Request a new one</Link>
 
                     </p>
                     <p className="inline text-xl text-gray-700">Already have an account?</p>

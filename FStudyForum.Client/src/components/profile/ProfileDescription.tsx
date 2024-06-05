@@ -3,7 +3,7 @@ import { Plus } from "lucide-react";
 
 const ProfileDescription = () => {
   return (
-    <>
+    <div className="text-black">
       <Typography className="text-sm font-semibold ">About me</Typography>
       <Typography className="text-xs">
         Một ngày nọ, khi bạn thức giấc, sẽ chợt nhận ra bạn không được tạo ra
@@ -32,7 +32,7 @@ const ProfileDescription = () => {
           </Typography>
         </div>
       </Button>
-    </>
+    </div>
   );
 };
 

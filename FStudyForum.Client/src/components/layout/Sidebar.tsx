@@ -1,6 +1,6 @@
 import { List, ListItem, ListItemPrefix, Card } from "@material-tailwind/react";
 import { Home, Rocket, Tags } from "lucide-react";
-import React from "react";
+import React, { FC } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 const sidebarListItems = [
   {
@@ -19,8 +19,17 @@ const sidebarListItems = [
     path: "/topics",
   },
 ];
-const Sidebar = () => {
+
+type SidebarProps = {
+  handleClose?: () => void;
+};
+
+const Sidebar: FC<SidebarProps> = ({ handleClose }) => {
   const navigate = useNavigate();
+  const handleOpen = (path: string) => {
+    handleClose?.();
+    navigate(path);
+  };
   const location = useLocation();
   return (
     <Card
@@ -31,7 +40,7 @@ const Sidebar = () => {
       <List>
         {sidebarListItems.map(({ label, icon, path }) => (
           <ListItem
-            onClick={() => navigate(path)}
+            onClick={() => handleOpen(path)}
             selected={location.pathname === path}
             key={label}
             className="text-sm"
