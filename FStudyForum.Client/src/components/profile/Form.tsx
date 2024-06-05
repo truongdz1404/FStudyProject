@@ -14,7 +14,7 @@ interface HeaderComponentProps {
     formik: FormikProps<Profile>;
     handleFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
-const Body: React.FC<HeaderComponentProps> = ({
+const Form: React.FC<HeaderComponentProps> = ({
     formik,
     fileInputRef,
     handleFileChange,
@@ -173,4 +173,4 @@ const Body: React.FC<HeaderComponentProps> = ({
         </>
     );
 };
-export default Body;
+export default Form;

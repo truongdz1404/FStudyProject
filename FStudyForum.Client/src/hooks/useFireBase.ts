@@ -8,15 +8,15 @@ const useFireBase = async (urlImage: File) => {
     values.url = urlImage;
     try {
         let fileUrl = "";
-        let data  = await values.url.arrayBuffer();
-            // Nếu ảnh được chọn từ máy tính (offline)
+        const data = await values.url.arrayBuffer();
+        // Nếu ảnh được chọn từ máy tính (offline)
         // Tải ArrayBuffer lên Firebase Storage
         const metadata = {
             contentType: "image/png",
         };
         const storageRef = ref(
             store,
-            `/trong/${values.url || "default_image_name.png"}`
+            `/trong/${values.url.name}`
         );
         await uploadBytes(storageRef, data, metadata);
         // Lấy đường dẫn tải xuống của tệp từ Firebase Storage

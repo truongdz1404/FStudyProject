@@ -33,9 +33,34 @@ const editProfile = async (username: string, profile: Profile) => {
         }
     }
 };
+const createProfile = async (profile: Profile) => {
+    let response;
+    try{
+        response = await api.post<Response>(`/profile/create-profile`, {
+            firstName: profile.firstName,
+            lastName: profile.lastName,
+            gender: profile.gender,
+            birthDate: profile.birthDate,
+            avatarUrl: profile.avatarUrl
+        });
+        return response.data;
+    }catch (error: unknown){
+        if (error && (error as AxiosError).isAxiosError){
+            const axiosError = error as AxiosError;
+            if (axiosError.response && axiosError.response?.data){
+                const serverError = axiosError.response.data as ResponseWith<Profile>;
+                throw new AxiosError(String(serverError.data));
+            }
+        }else{
+            throw error;
+        }
+    
+    }
+}
 const  ProfileService = {
      getProfileByUserName,
-     editProfile
+     editProfile,
+    createProfile
 }
 export default ProfileService;
 

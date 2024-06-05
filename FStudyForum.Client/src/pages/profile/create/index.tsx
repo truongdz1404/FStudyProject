@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import ProfileService from "@/services/ProfileService";
-import { useRef, useEffect, useState } from "react";
+import { useRef } from "react";
 import * as Yup from "yup";
 import { FormikProps, useFormik } from "formik";
 import type { Profile } from "@/types/profile";
@@ -8,24 +9,15 @@ import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import { AxiosError } from "axios";
 import Form from "@/components/profile/Form";
-import { useAuth } from "@/hooks/useAuth";
 import React from "react";
-import Image from "@/components/profile/Image";
 import useFireBase from "@/hooks/useFireBase";
+import Image from "@/components/profile/Image";
 
-const EditProfile = () => {
-    const { user } = useAuth();
-    const [profile, setProfile] = useState<Profile>({} as Profile);
+const CreateProfile = () => {
+    // const { user } = useAuth();
+    // const [profile, setProfile] = useState<Profile>({} as Profile);
     const navigate = useNavigate();
     const fileInputRef = useRef<HTMLInputElement>(null);
-    useEffect(() => {
-        const fetchProfile = async () => {
-            const response = await ProfileService.getProfileByUserName();
-            setProfile(response);
-            console.log(response);
-        };
-        fetchProfile();
-    }, []);
     const handleImageClick = () => {
         if (fileInputRef.current != null) {
             fileInputRef.current.click();
@@ -45,31 +37,31 @@ const EditProfile = () => {
 
     const formik: FormikProps<Profile> = useFormik<Profile>({
         initialValues: {
-            firstName: profile.firstName || "",
-            lastName: profile.lastName || "",
-            gender: profile.gender || 0,
-            birthDate: profile.birthDate || null,
-            avatarUrl: profile.avatarUrl || "https://via.placeholder.com/150",
+            firstName: "",
+            lastName: "",
+            gender: 0,
+            birthDate: null,
+            avatarUrl: "https://via.placeholder.com/150",
         },
         validationSchema: validationSchema,
         onSubmit: async (values) => {
-            let message;
+            let response;
             try {
                 if (values.avatarUrl instanceof File) {
                     // eslint-disable-next-line react-hooks/rules-of-hooks
                     values.avatarUrl = await useFireBase(values.avatarUrl);
                 }
-                console.log(values.avatarUrl);
-                message = await ProfileService.editProfile(
-                    String(user?.userName),
+                response = await ProfileService.createProfile(
                     values as Profile
                 );
-                console.log(message);
-                if (!message) {
-                    toast.error("Update profile failed");
-                } else {
+                console.log(response);
+                if (Number(response?.status) === 200) {
+                    console.log("status: " + response?.status);
                     toast.success("Update profile successfully");
-                    navigate("/home");
+                    navigate("/");
+                } else {
+                    console.log("status: " + response?.status);
+                    toast.error("Update profile failed");
                 }
             } catch (error) {
                 if (error instanceof AxiosError) {
@@ -104,7 +96,7 @@ const EditProfile = () => {
                         {/* Header */}
                         <Image
                             fileInputRef={fileInputRef}
-                            profile={profile}
+                            profile={formik.values}
                             handleImageClick={handleImageClick}
                             handleFileChange={handleFileChange}
                         />
@@ -120,4 +112,5 @@ const EditProfile = () => {
         </div>
     );
 };
-export default EditProfile;
+
+export default CreateProfile;
