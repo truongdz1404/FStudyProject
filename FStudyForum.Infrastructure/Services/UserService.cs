@@ -106,16 +106,6 @@ public class UserService : IUserService
         return await _userManager.FindByEmailAsync(email);
     }
 
-    public async Task<string> GeneratePasswordResetTokenAsync(string email)
-    {
-        var user = await _userManager.FindByEmailAsync(email);
-         if (user == null)
-        {
-            throw new NotFoundException("User not found");
-        }
-        return await _userManager.GeneratePasswordResetTokenAsync(user);
-    }
-
 
     public async Task<IdentityResult> ResetPasswordAsync(ResetPasswordModelDTO model)
     {

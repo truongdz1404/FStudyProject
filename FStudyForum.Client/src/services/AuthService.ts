@@ -62,10 +62,10 @@ const refreshToken = async () => {
     return response.data.message;
 };
 
-const confirmEmail = async (token: string, email: string) => {
+const confirmEmail = async (email: string) => {
     try {
-        const response = await api.get<Response>("/auth/confirm-email", {
-            params: { token, email},
+        const response = await api.post<Response>(`/auth/resend-confirmation-email?email=${email}`, {
+            params: {email},
         });
         return response.data.message;
     } catch (error: unknown) {

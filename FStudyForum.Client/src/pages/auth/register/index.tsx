@@ -4,11 +4,11 @@ import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import { checkEmail, cn } from "@/helpers/utils";
-import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AxiosError } from "axios";
 import { Button, Input } from "@material-tailwind/react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+
 type RegisterFormInputs = {
     email: string;
     password: string;
@@ -24,6 +24,8 @@ const validation = Yup.object().shape({
 });
 
 const SignUp: FC = () => {
+    const navigate = useNavigate();
+
     const {
         register,
         handleSubmit,
@@ -33,12 +35,13 @@ const SignUp: FC = () => {
     const handleRegister = async (form: RegisterFormInputs) => {
         try {
             const message = await AuthService.register(form.email, form.password);
-            toast.success(String(message));
+            console.log(String(message));
+            navigate(`/auth/confirmation-sent?email=${form.email}`);
         } catch (error) {
             if (error instanceof AxiosError) {
-                toast.warning(error.message);
+                console.error(error.message);
             } else {
-                toast.warning("Register failed!");
+                console.error("Register failed!");
             }
         }
     };
@@ -151,13 +154,12 @@ const SignUp: FC = () => {
                             )}
                         </div>
                         <Button type="submit" className="mt-6" fullWidth>
-                            sign up
+                            Sign up
                         </Button>
                     </form>
                     <div className="mt-4 text-sm text-gray-600 text-center">
                         <p>
                             Already have an account?{" "}
-
                             <Link to="/auth/signin" className="font-medium text-primary-600 hover:underline dark:text-primary-500"> Sign in</Link>
                         </p>
                     </div>
@@ -166,4 +168,5 @@ const SignUp: FC = () => {
         </div>
     );
 };
+
 export default SignUp;

@@ -196,7 +196,7 @@ public class AuthController : ControllerBase
         if (user == null)
             return BadRequest("User not found");
 
-        var token = await _userService.GeneratePasswordResetTokenAsync(user.Email);
+        var token = await _identityService.GenerateEmailConfirmationTokenAsync(user.Email);
         var resetLink = $"http://localhost:3000/reset-password/change-pass?token={token}&email={user.Email}";
 
         var emailContent = $@"
@@ -208,29 +208,30 @@ public class AuthController : ControllerBase
     }
 
 
-     [HttpPost("change-password")]
-public async Task<IActionResult> ResetPassword([FromQuery] string email, [FromQuery] string token, [FromBody] ResetPasswordBody resetPasswordBody)
-{
-    var resetPasswordModelDTO = new ResetPasswordModelDTO{
-        Email = email,
-        Password = resetPasswordBody.NewPassword,
-        Token = token,
-    };
-    
-    var user = await _userService.GetUserByEmailAsync(email);
-    if (user == null)
+    [HttpPost("change-password")]
+    public async Task<IActionResult> ResetPassword([FromQuery] string email, [FromQuery] string token, [FromBody] ResetPasswordBody resetPasswordBody)
     {
-        return NotFound("Email not found.");
-    }
+        var resetPasswordModelDTO = new ResetPasswordModelDTO
+        {
+            Email = email,
+            Password = resetPasswordBody.NewPassword,
+            Token = token,
+        };
 
-    var result = await _userService.ResetPasswordAsync(resetPasswordModelDTO);
-    if (result.Succeeded)
-    {
-        return Ok("Password has been reset successfully.");
-    }
+        var user = await _userService.GetUserByEmailAsync(email);
+        if (user == null)
+        {
+            return NotFound("Email not found.");
+        }
 
-    return BadRequest("Error resetting password.");
-}
+        var result = await _userService.ResetPasswordAsync(resetPasswordModelDTO);
+        if (result.Succeeded)
+        {
+            return Ok("Password has been reset successfully.");
+        }
+
+        return BadRequest("Error resetting password.");
+    }
 
 
 
@@ -251,17 +252,38 @@ public async Task<IActionResult> ResetPassword([FromQuery] string email, [FromQu
             return StatusCode(500, new { Message = "An error occurred while creating the user" });
         }
 
-        var emailConfirmationToken = await _identityService.GenerateEmailConfirmationTokenAsync(registerDTO.Email);
-        var confirmationLink = Url.Action(nameof(ConfirmEmail), "Auth", new { token = emailConfirmationToken, email = registerDTO.Email, action = "register" }, Request.Scheme);
+        await SendConfirmationEmailAsync(registerDTO.Email);
+
+        return Ok(new { Message = "Registration successful, please check your email to confirm your account" });
+    }
+
+    [HttpPost("resend-confirmation-email")]
+    public async Task<IActionResult> ResendConfirmationEmail([FromQuery] ResendEmailDTO resendEmailDTO)
+    {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+
+        var userExists = await _identityService.CheckUserExistsAsync(resendEmailDTO.Email);
+        if (!userExists)
+        {
+            return BadRequest(new { Message = "User does not exist" });
+        }
+
+        await SendConfirmationEmailAsync(resendEmailDTO.Email);
+
+        return Ok(new { Message = "Confirmation email resent, please check your email to confirm your account" });
+    }
+
+    private async Task SendConfirmationEmailAsync(string email)
+    {
+        var emailConfirmationToken = await _identityService.GenerateEmailConfirmationTokenAsync(email);
+        var confirmationLink = Url.Action(nameof(ConfirmEmail), "Auth", new { token = emailConfirmationToken, email = email, action = "register" }, Request.Scheme);
         var emailContent =
-            $@"<p>Dear user, {registerDTO.Email}</p>
+            $@"<p>Dear user, {email}</p>
         <p>Welcome to FStudy!</p>
         <p>Thank you for registering. Please confirm your email by clicking the link below:</p>
         <p><a href='{confirmationLink}'>Confirm Email</a></p>";
 
-        await _emailService.SendEmailAsync(registerDTO.Email, "Confirm your email", emailContent);
-
-        return Ok(new { Message = "Registration successful, please check your email to confirm your account" });
+        await _emailService.SendEmailAsync(email, "Confirm your email", emailContent);
     }
 
 
@@ -277,7 +299,7 @@ public async Task<IActionResult> ResetPassword([FromQuery] string email, [FromQu
     }
 
 
-     [HttpGet("confirm-reset-password")]
+    [HttpGet("confirm-reset-password")]
     public async Task<IActionResult> ConfirmResetPass(string token, string email)
     {
         var result = await _identityService.ConfirmEmailAsync(email, token);
