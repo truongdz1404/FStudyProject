@@ -61,7 +61,6 @@ const Router: FC = () => {
                 },
             ],
         },
-
         {
             path: "auth",
             children: [

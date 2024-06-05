@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using FStudyForum.Core.Models.DTOs.Profile;
 using FStudyForum.Infrastructure.Repositories;
-using Profile = FStudyForum.Core.Models.Entities.Profile;
 
 namespace FStudyForum.Infrastructure.Services
 {

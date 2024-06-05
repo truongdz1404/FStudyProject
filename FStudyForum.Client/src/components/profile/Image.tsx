@@ -7,7 +7,7 @@ interface HeaderComponentProps {
     handleFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const Header: React.FC<HeaderComponentProps> = ({
+const Image: React.FC<HeaderComponentProps> = ({
     fileInputRef,
     profile,
     handleImageClick,
@@ -52,4 +52,4 @@ const Header: React.FC<HeaderComponentProps> = ({
         </div>
     );
 };
-export default Header;
+export default Image;

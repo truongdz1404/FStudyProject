@@ -29,10 +29,13 @@ const profileMenuItems = [
     {
         label: "My Profile",
         icon: UserCircleIcon,
+        path: "/profile",
+
     },
     {
         label: "Sign Out",
         icon: PowerIcon,
+        path: "/auth/signin"
     },
 ];
 
@@ -40,7 +43,7 @@ function ProfileMenu() {
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
     const closeMenu = () => setIsMenuOpen(false);
-
+    const navigate = useNavigate();
     return (
         <Menu open={isMenuOpen} handler={setIsMenuOpen} placement="bottom-end">
             <MenuHandler>
@@ -59,12 +62,15 @@ function ProfileMenu() {
                 </Button>
             </MenuHandler>
             <MenuList className="p-1">
-                {profileMenuItems.map(({ label, icon }, key) => {
+                {profileMenuItems.map(({ label, icon, path }, key) => {
                     const isLastItem = key === profileMenuItems.length - 1;
                     return (
                         <MenuItem
                             key={label}
-                            onClick={closeMenu}
+                            onClick={() => {
+                                closeMenu();
+                                navigate(path);
+                            }}
                             className={`flex items-center gap-2 rounded ${
                                 isLastItem
                                     ? "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
@@ -156,7 +162,6 @@ export function Header({ openSidebar }: HeaderProps) {
                 >
                     <AlignJustify className="h-6 w-6" />
                 </IconButton>
-
                 <Link
                     to="/"
                     className="mr-4 ml-2 cursor-pointer py-1.5 font-medium flex gap-2 items-center"
@@ -166,7 +171,6 @@ export function Header({ openSidebar }: HeaderProps) {
                         FStudy
                     </p>
                 </Link>
-
                 <div className="w-1/2 lg:w-1/3 ml-auto">
                     <Input
                         icon={<Search className="h-5 w-5" />}

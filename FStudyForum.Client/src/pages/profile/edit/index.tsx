@@ -8,11 +8,11 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import { AxiosError } from "axios";
-import Body from "@/components/profile/body";
+import Form from "@/components/profile/Form";
 import { useAuth } from "@/hooks/useAuth";
 import React from "react";
-import Header from "@/components/profile/header";
-
+import Image from "@/components/profile/Image";
+import { Response } from "@/types/response";
 const EditProfile = () => {
     const { user } = useAuth();
     const [profile, setProfile] = useState<Profile>({} as Profile);
@@ -22,7 +22,6 @@ const EditProfile = () => {
         const fetchProfile = async () => {
             const response = await ProfileService.getProfileByUserName();
             setProfile(response);
-            console.log(response);
         };
         fetchProfile();
     }, []);
@@ -30,12 +29,17 @@ const EditProfile = () => {
         if (fileInputRef.current != null) {
             fileInputRef.current.click();
         }
-        console.log("click");
     };
 
     const validationSchema = Yup.object({
-        firstName: Yup.string().required("First name is required"),
-        lastName: Yup.string().required("Last name is required"),
+        firstName: Yup.string()
+            .required("First name is required")
+            .min(3, "First name must be at least 3 characters")
+            .max(25, "First name must not exceed 25 characters"),
+        lastName: Yup.string()
+            .required("Last name is required")
+            .min(3, "Last name must be at least 3 characters")
+            .max(25, "Last name must not exceed 25 characters"),
         gender: Yup.number()
             .oneOf([0, 1, 2], "Invalid gender")
             .required("Gender is required"),
@@ -53,26 +57,31 @@ const EditProfile = () => {
         },
         validationSchema: validationSchema,
         onSubmit: async (values) => {
-            let message;
+            let reponse;
             try {
                 if (values.avatarUrl instanceof File) {
                     values.avatarUrl = await useFireBase(values.avatarUrl);
                 }
-                console.log(values.avatarUrl);
-                message = await ProfileService.editProfile(
+                reponse = await ProfileService.editProfile(
                     String(user?.userName),
                     values as Profile
                 );
-                console.log(message);
-                if (!message) {
-                    toast.error("Update profile failed");
-                } else {
+                if (Number(reponse?.status) === 200) {
                     toast.success("Update profile successfully");
                     navigate("/home");
+                } else {
+                    toast.error("Update profile failed");
                 }
-            } catch (error) {
-                if (error instanceof AxiosError) {
-                    console.log(error.message);
+            } catch (error: unknown) {
+                if (error && (error as AxiosError).isAxiosError) {
+                    const axiosError = error as AxiosError;
+                    if (axiosError.response && axiosError.response?.data) {
+                        const serverError = axiosError.response
+                            .data as Response;
+                        throw new AxiosError(String(serverError.message));
+                    }
+                } else {
+                    throw error;
                 }
             }
         },
@@ -80,7 +89,6 @@ const EditProfile = () => {
     });
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files ? event.target.files[0] : null;
-        console.log(file);
         let profileImage = document.getElementById(
             "profileImage"
         ) as HTMLImageElement;
@@ -99,16 +107,14 @@ const EditProfile = () => {
         <div>
             <div className="bg-gray-100">
                 <div className="container mx-auto py-8">
-                    <div className="grid grid-cols-4 sm:grid-cols-12 gap-6 px-4">
-                        {/* Header */}
-                        <Header
+                    <div className="grid grid-cols-4 sm:grid-cols-12 gap-6 px-4">                
+                        <Image
                             fileInputRef={fileInputRef}
                             profile={profile}
                             handleImageClick={handleImageClick}
                             handleFileChange={handleFileChange}
-                        />
-                        {/* Body */}
-                        <Body
+                        />               
+                        <Form
                             formik={formik}
                             fileInputRef={fileInputRef}
                             handleFileChange={handleFileChange}

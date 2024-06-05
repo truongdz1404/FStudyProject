@@ -14,7 +14,7 @@ interface HeaderComponentProps {
     formik: FormikProps<Profile>;
     handleFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
-const Body: React.FC<HeaderComponentProps> = ({
+const Form: React.FC<HeaderComponentProps> = ({
     formik,
     fileInputRef,
     handleFileChange,
@@ -119,9 +119,9 @@ const Body: React.FC<HeaderComponentProps> = ({
                                         }}
                                         onBlur={formik.handleBlur}
                                     >
-                                        <Option value="1">Male</Option>
-                                        <Option value="2">FeMale</Option>
-                                        <Option value="3">Other</Option>
+                                        <Option value="0">Male</Option>
+                                        <Option value="1">FeMale</Option>
+                                        <Option value="2">Other</Option>
                                     </Select>
                                 </div>
                                 {formik.touched.gender &&
@@ -173,4 +173,4 @@ const Body: React.FC<HeaderComponentProps> = ({
         </>
     );
 };
-export default Body;
+export default Form;
