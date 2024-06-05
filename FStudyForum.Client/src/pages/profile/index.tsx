@@ -1,8 +1,15 @@
 import ContentLayout from "@/components/layout/ContentLayout";
 import ProfileDescription from "@/components/profile/ProfileDescription";
 import { useAuth } from "@/hooks/useAuth";
-import { Avatar, Button, Typography } from "@material-tailwind/react";
-import { Camera, PencilLine, Plus } from "lucide-react";
+import {
+  Accordion,
+  AccordionBody,
+  AccordionHeader,
+  Avatar,
+  Button,
+  Typography,
+} from "@material-tailwind/react";
+import { Camera, ChevronDown, ChevronUp, PencilLine, Plus } from "lucide-react";
 import React from "react";
 import { Link } from "react-router-dom";
 const tabItems = [
@@ -16,6 +23,9 @@ const tabItems = [
 const Profile = () => {
   const { user } = useAuth();
   const [data] = React.useState([]);
+  const [open, setOpen] = React.useState(0);
+
+  const handleOpen = (value: number) => setOpen(open === value ? 0 : value);
   return (
     <ContentLayout pannel={<ProfileDescription />}>
       <div className="flex flex-col items-center w-full mb-24">
@@ -55,7 +65,7 @@ const Profile = () => {
                   <Typography className="text-xs capitalize font-normal hidden xl:block">
                     Edit Profile
                   </Typography>
-                  <Typography className="text-xs capitalize font-normal sm:hidden md:block  xl:hidden">
+                  <Typography className="text-xs capitalize font-normal block  xl:hidden">
                     Edit
                   </Typography>
                 </Link>
@@ -64,10 +74,21 @@ const Profile = () => {
           </div>
         </div>
       </div>
-      <div className="xl:hidden">
-        <ProfileDescription />
-        <hr className="my-2 border-blue-gray-50" />
-      </div>
+
+      <Accordion open={open === 1} className="xl:hidden mb-2 ">
+        <AccordionHeader
+          onClick={() => handleOpen(1)}
+          className="py-0 pb-2 text-md text-black font-semibold !justify-normal"
+        >
+          Introduction{" "}
+          {open === 1 ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+        </AccordionHeader>
+        <AccordionBody className="py-0 pt-2 ">
+          <ProfileDescription />
+          <hr className="mt-4 border-blue-gray-50" />
+        </AccordionBody>
+      </Accordion>
+
       <div className="flex w-max gap-4">
         {tabItems.map(({ label }) => (
           <Button

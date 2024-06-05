@@ -1,14 +1,13 @@
 import { FC, Suspense, lazy } from "react";
 import { Navigate, useRoutes } from "react-router-dom";
 import AuthGuard from "@/helpers/guards/AuthGuard";
-import NotFound from "./components/NotFound";
-import Layout from "./components/layout/Layout";
+import NotFound from "@/components/NotFound";
+import Layout from "@/components/layout/Layout";
 
-
-const Register = lazy(() => import("./pages/auth/register"));
-const ConfirmationSent = lazy(() => import("./pages/auth/confirmEmail"));
-const ChangePass = lazy(() => import("./pages/reset-password/change-pass"));
-const SendMail = lazy(() => import("./pages/reset-password"));
+const Register = lazy(() => import("@/pages/auth/register"));
+const ConfirmEmail = lazy(() => import("@/pages/auth/confirm-email"));
+const ChangePassword = lazy(() => import("@/pages/reset-password/change-pass"));
+const ResetPassword = lazy(() => import("@/pages/reset-password"));
 const Profile = lazy(() => import("@/pages/profile"));
 const SignIn = lazy(() => import("@/pages/auth/signin"));
 const Home = lazy(() => import("@/pages/home"));
@@ -36,7 +35,6 @@ const Router: FC = () => {
             </Suspense>
           ),
         },
-
 
         {
           path: "posts",
@@ -66,18 +64,23 @@ const Router: FC = () => {
             <Suspense>
               <SignIn />
             </Suspense>
-          )
+          ),
         },
         {
           path: "register",
-          element:
+          element: (
             <Suspense>
               <Register />
             </Suspense>
+          ),
         },
         {
           path: "confirmation-sent",
-          element: <ConfirmationSent />,
+          element: (
+            <Suspense>
+              <ConfirmEmail />
+            </Suspense>
+          ),
         },
 
         {
@@ -88,7 +91,6 @@ const Router: FC = () => {
             </Suspense>
           ),
         },
-
       ],
     },
     {
@@ -96,14 +98,13 @@ const Router: FC = () => {
       children: [
         {
           path: "change-pass",
-          element: <ChangePass />,
+          element: <ChangePassword />,
         },
         {
           index: true,
-          element: <SendMail />,
+          element: <ResetPassword />,
         },
       ],
-
     },
     {
       path: "*",
