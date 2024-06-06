@@ -11,18 +11,21 @@ const ResetPassword = lazy(() => import("@/pages/reset-password"));
 const Profile = lazy(() => import("@/pages/profile"));
 const SignIn = lazy(() => import("@/pages/auth/signin"));
 const Home = lazy(() => import("@/pages/home"));
+const TopicList = lazy(() => import("@/pages/topic"));
 const SignOut = lazy(() => import("@/pages/auth/signout"));
-
 const Router: FC = () => {
   return useRoutes([
+    
     {
+      
       path: "/",
       element: (
         <AuthGuard>
           <Layout />
         </AuthGuard>
       ),
-      children: [
+      
+      children: [ 
         {
           index: true,
           element: <Navigate to="/home" replace />,
@@ -35,15 +38,15 @@ const Router: FC = () => {
             </Suspense>
           ),
         },
-
-        {
-          path: "posts",
-          element: <>Posts</>,
-        },
         {
           path: "topics",
-          element: <>Topics</>,
+          element: (
+            <Suspense>
+              <TopicList/>
+            </Suspense>
+          ),
         },
+        
         {
           path: "profile",
           element: (
@@ -54,7 +57,6 @@ const Router: FC = () => {
         },
       ],
     },
-
     {
       path: "auth",
       children: [

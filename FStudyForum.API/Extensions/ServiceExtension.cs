@@ -1,5 +1,6 @@
 using FStudyForum.Core.Interfaces.IRepositories;
 using FStudyForum.Core.Interfaces.IServices;
+using FStudyForum.Core.Models.Entities;
 using FStudyForum.Infrastructure.Repositories;
 using FStudyForum.Infrastructure.Services;
 
@@ -14,13 +15,13 @@ public static class ServiceExtension
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IIdentityService, IdentityService>();
         services.AddScoped<IEmailService, EmailService>();
-
+        services.AddScoped<ITopicService, TopicService>();
 
         #endregion
 
         #region Repositories
         services.AddTransient<IUserRepository, UserRepository>();
-
+        services.AddTransient<ITopicRepository, TopicRepository>();
         #endregion
 
         return services;

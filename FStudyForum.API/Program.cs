@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
@@ -26,7 +25,6 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
         options.UseSqlServer(connectionString);
     }
 );
-
 builder.Services.AddCors(options =>
 {
 
