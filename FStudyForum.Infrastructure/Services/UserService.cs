@@ -110,10 +110,10 @@ public class UserService : IUserService
         return user != null;
     }
 
-    public async Task<string> GeneratePasswordResetTokenAsync(string email)
+       public async Task<string> GeneratePasswordResetTokenAsync(string email)
     {
         var user = await _userManager.FindByEmailAsync(email);
-        if (user == null)
+         if (user == null)
         {
             throw new NotFoundException("User not found");
         }

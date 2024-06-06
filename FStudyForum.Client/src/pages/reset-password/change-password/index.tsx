@@ -1,12 +1,9 @@
 import { FC, useState } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import UserService from "@/services/UserService";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
-import { useLocation } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Icons } from "@/components/Icons";
 
 type ChangePasswordFormInputs = {
@@ -22,10 +19,9 @@ const validation = Yup.object().shape({
 });
 
 const ChangePassword: FC = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
-  // Extract token and email from query string
   const searchParams = new URLSearchParams(location.search);
   const token = searchParams.get("token");
   const email = searchParams.get("email");
@@ -41,42 +37,27 @@ const ChangePassword: FC = () => {
   const onSubmit = async (form: ChangePasswordFormInputs) => {
     setLoading(true);
     if (!token) {
-      toast.error("Failed to retrieve token.");
+      console.error("Failed to retrieve token.");
       setLoading(false);
       return;
     }
     if (!email) {
-      toast.error("Failed to retrieve email.");
+      console.error("Failed to retrieve email.");
       setLoading(false);
       return;
     }
     if (!form.password) {
-      toast.error("Password is required.");
+      console.error("Password is required.");
       setLoading(false);
       return;
     }
     try {
       await UserService.changePassword(token, email, form.password);
-      toast.success("Password reset successfully.");
+      navigate("/auth/signin");
     } catch (error) {
-      toast.error("Failed to reset password.");
-    }
-    setLoading(false);
-  };
-
-  const handleRequestNewOne = async () => {
-    if (!email) {
-      navigate("/reset-password/send-mail", { replace: true });
-      setTimeout(() => {
-        window.location.reload();
-      }, 0);
-      return null;
-    }
-    try {
-      await UserService.forgotPassword(email);
-      toast.success("Password reset email sent. Please check your email.");
-    } catch (error) {
-      toast.error("Failed to resend password reset email.");
+      console.error("Failed to reset password.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -142,24 +123,15 @@ const ChangePassword: FC = () => {
           </button>
         </form>
         <div className="text-center mt-6">
-          <p className="text-gray-700 text-lg">
-            Didn't receive a confirmation email?{" "}
-            <a
-              href="#"
-              className="text-blue-500 hover:text-blue-700"
-              onClick={handleRequestNewOne}
-            >
-              Request a new one
-            </a>
-          </p>
           <p className="text-gray-700 mt-3 text-lg">
-            Already have an account?{" "}
-            <a
-              href="http://localhost:3000/auth/signin"
+            Already have an account?
+            <Link
+              to="/auth/signin"
               className="text-blue-500 hover:text-blue-700"
             >
+              {" "}
               Sign in
-            </a>
+            </Link>
           </p>
         </div>
       </div>

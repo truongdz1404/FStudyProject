@@ -12,7 +12,7 @@ import { checkEmail, cn } from "@/helpers/utils";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AxiosError } from "axios";
-import { Button, Checkbox, Input, Typography } from "@material-tailwind/react";
+import { Button, Input } from "@material-tailwind/react";
 type LoginFormsInputs = {
   username: string;
   password: string;
@@ -157,15 +157,16 @@ const SignIn: FC = () => {
                 </p>
               )}
             </div>
-            <div className="-ml-2.5">
-              <Checkbox
-                label={<Typography className="text-sm">Remember Me</Typography>}
-                className="w-4 h-4"
-                crossOrigin={undefined}
-              />
+            <div className="flex justify-end">
+              <Link
+                className="text-xs text-black hover:underline"
+                to={"/reset-password"}
+              >
+                Forgot password?
+              </Link>
             </div>
             <Button type="submit" className="mt-6" fullWidth>
-              sign up
+              sign in
             </Button>
           </form>
           <div className="mt-4 text-xs text-gray-600 text-center">

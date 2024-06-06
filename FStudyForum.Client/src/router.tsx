@@ -10,7 +10,12 @@ const CreateProfile = lazy(() => import("@/pages/profile/create"));
 const EditProfile = lazy(() => import("@/pages/profile/edit"));
 const Register = lazy(() => import("@/pages/auth/register"));
 const ConfirmEmail = lazy(() => import("@/pages/auth/confirm-email"));
-const ChangePassword = lazy(() => import("@/pages/reset-password/change-pass"));
+const ChangePassword = lazy(
+  () => import("@/pages/reset-password/change-password")
+);
+const ConfirmResetEmail = lazy(
+  () => import("@/pages/reset-password/confirm-reset-email")
+);
 const ResetPassword = lazy(() => import("@/pages/reset-password"));
 const Profile = lazy(() => import("@/pages/profile"));
 const SignIn = lazy(() => import("@/pages/auth/signin"));
@@ -114,7 +119,7 @@ const Router: FC = () => {
         },
 
         {
-          path: "confirmation-sent",
+          path: "confirm-email",
           element: (
             <Suspense>
               <ConfirmEmail />
@@ -127,12 +132,28 @@ const Router: FC = () => {
       path: "reset-password",
       children: [
         {
-          path: "change-pass",
-          element: <ChangePassword />,
+          path: "change-password",
+          element: (
+            <Suspense>
+              <ChangePassword />{" "}
+            </Suspense>
+          ),
         },
         {
           index: true,
-          element: <ResetPassword />,
+          element: (
+            <Suspense>
+              <ResetPassword />
+            </Suspense>
+          ),
+        },
+        {
+          path: "confirm-reset-email",
+          element: (
+            <Suspense>
+              <ConfirmResetEmail />
+            </Suspense>
+          ),
         },
       ],
     },

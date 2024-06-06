@@ -4,11 +4,11 @@ import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import { checkEmail, cn } from "@/helpers/utils";
-import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AxiosError } from "axios";
 import { Button, Input } from "@material-tailwind/react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+
 type RegisterFormInputs = {
   email: string;
   password: string;
@@ -16,18 +16,16 @@ type RegisterFormInputs = {
 };
 
 const validation = Yup.object().shape({
-  email: Yup.string()
-    .required("Email is required")
-    .test("is-mailFPT", "Email must have @fpt.edu.vn", (value) => {
-      return checkEmail(value);
-    }),
+  email: Yup.string().required("Email is required").test("is-mailFPT", "Email must have @fpt.edu.vn", (value) => {
+    return checkEmail(value);
+  }),
   password: Yup.string().required("Password is required"),
-  confirmPassword: Yup.string()
-    .oneOf([Yup.ref("password"), undefined], "Passwords must match")
-    .defined(),
+  confirmPassword: Yup.string().oneOf([Yup.ref("password"), undefined], "Passwords must match").defined(),
 });
 
 const SignUp: FC = () => {
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -36,13 +34,13 @@ const SignUp: FC = () => {
 
   const handleRegister = async (form: RegisterFormInputs) => {
     try {
-      const message = await AuthService.register(form.email, form.password);
-      toast.success(String(message));
+       await AuthService.register(form.email, form.password);
+      navigate(`/auth/confirm-email?email=${form.email}`);
     } catch (error) {
       if (error instanceof AxiosError) {
-        toast.warning(error.message);
+        console.error(error.message);
       } else {
-        toast.warning("Register failed!");
+        console.error("Register failed!");
       }
     }
   };
@@ -58,12 +56,16 @@ const SignUp: FC = () => {
           >
             Register
           </h1>
-          <h1 className={cn("text-sm mb-6", " text-gray-500 text-center")}>
+          <h1
+            className={cn(
+              "text-sm font-semibold mb-6",
+              " text-gray-500 text-center"
+            )}
+          >
             Join to Our Community with all time access and free
           </h1>
-          <div
-            className={cn("mt-4 flex flex-col lg:flex-row justify-center")}
-          ></div>
+          <div className={cn("mt-4 flex flex-col lg:flex-row justify-center")}>
+          </div>
           <form
             onSubmit={handleSubmit(handleRegister)}
             method="POST"
@@ -148,16 +150,14 @@ const SignUp: FC = () => {
               )}
             </div>
             <Button type="submit" className="mt-6" fullWidth>
-              sign up
+              Register
             </Button>
           </form>
 
           <div className="mt-4 text-xs text-gray-600 text-center">
             <p>
               Already have an account?{" "}
-              <Link to="/auth/signin" className="text-black hover:underline">
-                Sign in
-              </Link>
+              <Link to="/auth/signin" className="font-medium text-black hover:underline "> Sign in</Link>
             </p>
           </div>
         </div>
@@ -165,4 +165,5 @@ const SignUp: FC = () => {
     </div>
   );
 };
+
 export default SignUp;

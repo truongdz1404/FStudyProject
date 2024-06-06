@@ -24,7 +24,7 @@ const NoProfileGuard: FC<PropsWithChildren> = ({ children }) => {
   }, [user]);
 
   if (isLoading) return <Loading />;
-  if (hasProfile) return <Navigate to="/" replace />;
+  if (hasProfile) return <Navigate to="/profile/edit" replace />;
 
   return <>{children}</>;
 };
