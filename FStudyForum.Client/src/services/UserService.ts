@@ -20,7 +20,6 @@ const changePassword = async (
     newPassword,
   });
 };
-
 const UserService = {
   getInfo,
   forgotPassword,

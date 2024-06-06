@@ -7,6 +7,7 @@ using FStudyForum.Core.Models.Configs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using FStudyForum.Core.Helpers;
+using Microsoft.AspNetCore.Authentication;
 
 namespace FStudyForum.API.Controllers;
 
@@ -91,6 +92,7 @@ public class AuthController : ControllerBase
             var refreshToken = await _userService.GetRefreshTokenAsync(userName) ?? throw new Exception("Not found refresh token!");
             await _userService.RemoveRefreshTokenAsync(refreshToken);
             RemoveTokensInsideCookie(HttpContext);
+            await HttpContext.SignOutAsync();
             return Ok(new Response
             {
                 Status = ResponseStatus.SUCCESS,
@@ -173,12 +175,6 @@ public class AuthController : ControllerBase
             HttpOnly = false,
             Expires = DateTimeOffset.UtcNow.AddDays(-1)
         });
-        context.Response.Cookies.Append(_jwtConfig.RefreshTokenKey, "", new CookieOptions
-        {
-            HttpOnly = false,
-            Expires = DateTimeOffset.UtcNow.AddDays(-1)
-        });
-
     }
 
     [HttpPost("forgot-password")]

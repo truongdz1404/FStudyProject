@@ -9,8 +9,9 @@ public class MapperProfile : AutoMapper.Profile
     public MapperProfile()
     {
         CreateMap<ApplicationUser, UserDTO>();
-        CreateMap<Profile, ProfileDTO>().ForMember(des => des.BirthDate, 
+        CreateMap<Profile, ViewProfileDTO>().ForMember(des => des.BirthDate,
             act => act.MapFrom(src => src.BirthDate.Date.ToShortDateString()));
 
+        CreateMap<ProfileDTO, Profile>().ReverseMap();
     }
 }

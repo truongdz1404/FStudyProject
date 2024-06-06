@@ -1,7 +1,7 @@
 import ContentLayout from "@/components/layout/ContentLayout";
 import ProfileDescription from "@/components/profile/ProfileDescription";
 import ProfileService from "@/services/ProfileService";
-import { Profile as ProdileModel } from "@/types/profile";
+import { ProfileDTO as ProdileModel } from "@/types/profile";
 import {
   Accordion,
   AccordionBody,
@@ -48,9 +48,12 @@ const Profile = () => {
               alt="avatar user"
               src={profile?.avatarUrl}
             />
-            <div className="absolute bottom-0 right-0 bg-blue-gray-50 rounded-full">
+            <Link
+              to={"/profile/edit"}
+              className="absolute bottom-0 right-0 bg-blue-gray-50 rounded-full"
+            >
               <Camera className="h-4 w-4 m-1" strokeWidth={1.5} />
-            </div>
+            </Link>
           </div>
 
           {/* <div className="absolute bottom-0 right-0 bg-blue-gray-50 rounded-full m-2 font-normal">

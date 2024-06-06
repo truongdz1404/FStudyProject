@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using FStudyForum.Core.Constants;
 
@@ -6,6 +6,7 @@ namespace FStudyForum.Core.Models.Entities;
 [Table("tblProfiles")]
 public class Profile : BaseEntity
 {
+
     [MaxLength(25)]
     public required string FirstName { get; set; }
     [MaxLength(25)]
@@ -15,4 +16,7 @@ public class Profile : BaseEntity
     [MaxLength(255)]
     public string AvatarUrl { get; set; } = string.Empty;
     public required virtual ApplicationUser User { get; set; }
+
 }
+
+

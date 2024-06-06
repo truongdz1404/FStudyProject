@@ -1,9 +1,9 @@
-import { Profile } from "@/types/profile";
+import { ProfileDTO } from "@/types/profile";
 import { Button, Typography } from "@material-tailwind/react";
 import { Plus } from "lucide-react";
 import { FC } from "react";
 type ProfileDescriptionProps = {
-  profile: Profile;
+  profile: ProfileDTO;
 };
 const convertGenderToString = (gender: number) => {
   switch (gender) {

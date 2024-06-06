@@ -460,13 +460,13 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "667dbc07-7d63-438f-9cb1-0e99d3ae084d",
+                            Id = "2b6a3760-67c4-4d8d-97dd-edae3ac2fe6d",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "af257bba-0fbb-44eb-9688-389b2002d291",
+                            Id = "5a94a933-4cee-4d48-a539-ae85706807ed",
                             Name = "User",
                             NormalizedName = "USER"
                         });

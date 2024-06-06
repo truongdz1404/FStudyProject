@@ -15,8 +15,8 @@ const login = async (username: string, password: string) => {
         if (error && (error as AxiosError).isAxiosError) {
             const axiosError = error as AxiosError;
             if (axiosError.response && axiosError.response?.data){
-                const serverError = axiosError.response.data as ServerResponse;
-                throw new AxiosError(serverError.message);   
+                const serverError = axiosError.response.data as Response;
+                throw new AxiosError(String(serverError.message));   
             }
         } else {
             throw error;
