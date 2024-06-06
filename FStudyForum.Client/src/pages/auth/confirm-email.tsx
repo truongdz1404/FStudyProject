@@ -1,50 +1,26 @@
 import { FC, useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { toast } from "react-toastify";
-import AuthService from "@/services/AuthService";
+import { useNavigate, useLocation } from "react-router-dom";
+import AuthService from "@/services/AuthService"; // Import the AuthService
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 
 const ConfirmEmail: FC = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const [countdown, setCountdown] = useState(20); // Thời gian đếm ngược ban đầu là 20 giây
-  const [showResendButton, setShowResendButton] = useState(true); // State để kiểm soát việc hiển thị nút resend email
+  const location = useLocation();
+  const [countdown, setCountdown] = useState(20); // Initial countdown time is 20 seconds
+  const [showResendButton, setShowResendButton] = useState(false); // Initially hide the resend email button
 
-  useEffect(() => {
-    const confirmEmail = async () => {
-      const token = searchParams.get("token");
-      const email = searchParams.get("email");
-      const action = searchParams.get("action");
-
-      if (!token || !email || !action) {
-        // toast.warning("Liên kết xác nhận không hợp lệ");
-        return;
-      }
-
-      try {
-        const message = await AuthService.confirmEmail(token, email);
-        toast.success(String(message));
-        if (action === "reset-pass") {
-          navigate("/reset-password/change-pass");
-        }
-        if (action === "register") {
-          navigate("/auth/signin");
-        }
-      } catch (error) {
-        toast.warning("Email confirmation failed");
-      }
-    };
-
-    confirmEmail();
-  }, [navigate, searchParams]);
+  // Extract email from query parameters
+  const searchParams = new URLSearchParams(location.search);
+  const email = searchParams.get("email") || "";
+  console.log(email);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCountdown((prev) => {
         if (prev === 1) {
           clearInterval(interval);
-          setShowResendButton(true); // Hiển thị nút resend email khi countdown đạt 0
+          setShowResendButton(true); // Show the resend email button when countdown reaches 0
         }
         return prev - 1;
       });
@@ -53,72 +29,52 @@ const ConfirmEmail: FC = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Hàm để gửi lại email xác nhận
+  // Function to resend the confirmation email
   const handleResendEmail = async () => {
+    navigate(`/auth/confirm-email?email=${email}`, { replace: true });
+    setTimeout(() => {
+      window.location.reload();
+    }, 0);
     try {
-      // Gọi hàm gửi lại email xác nhận ở đây
-      // Ví dụ: AuthService.resendConfirmationEmail()
-      // Sau khi gửi email thành công, có thể hiển thị thông báo hoặc điều hướng tới trang khác
-      //  await AuthService.confirmEmail(); // Gọi hàm resendConfirmationEmail từ AuthService
-      toast.success("Email confirmation sent successfully.");
-      setCountdown(20); // Reset lại đếm ngược về 20 giây
-      setShowResendButton(false); // Ẩn nút resend email sau khi gửi lại email thành công
+      await AuthService.resendEmail(email);
+      setCountdown(20);
+      setShowResendButton(false);
     } catch (error) {
-      toast.error("Failed to resend confirmation email.");
+      console.error("Failed to resend confirmation email.");
     }
   };
 
   return (
     <section className="bg-gray-50 dark:bg-gray-900 min-h-screen flex flex-col justify-center items-center">
-      <div className="text-center">
-        <FontAwesomeIcon
-          icon={faEnvelope}
-          className="text-6xl text-primary-600 mb-4"
-        />
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-          Confirmation Email Sent
-        </h2>
-        <p className="text-gray-700 dark:text-gray-300 mb-4">
-          A confirmation email has been sent to your email address. Please check
-          your inbox and follow the instructions to confirm your account.
+      <div className="text-center bg-white dark:bg-gray-800 rounded-lg p-12 shadow-lg max-w-lg w-full transform scale-120">
+        <FontAwesomeIcon icon={faEnvelope} className="text-8xl text-blue-600 mb-6" />
+        <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">Confirmation Email Sent</h2>
+        <p className="text-lg text-gray-700 dark:text-gray-300 mb-8">
+          A confirmation email has been sent to your email address. Please check your inbox and follow the
+          instructions to confirm your account.
         </p>
-        {/* Hiển thị số countdown và nút resend email */}
+        {/* Display countdown and resend email button */}
         {countdown > 0 && (
+          <p className="text-lg text-gray-700 dark:text-gray-300 mb-6">
+            Didn't receive the email? You can resend it in {countdown} seconds.
+          </p>
+        )}
+        {countdown === 0 && showResendButton && (
           <>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
+            <p className="text-lg text-gray-700 dark:text-gray-300 mb-6">
               Didn't receive the email? Click below to resend it.
             </p>
             <button
               onClick={handleResendEmail}
-              disabled={!showResendButton} // Disable nút khi không được phép click
-              className="bg-primary-600 hover:bg-primary-700 text-white font-semibold py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-            >
-              {showResendButton
-                ? `Resend Email (${countdown})`
-                : "Resend Email"}
-            </button>
-          </>
-        )}
-        {/* Nếu countdown đã hết và hiển thị nút resend email */}
-        {countdown === 0 && showResendButton && (
-          <>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              Resend email countdown has expired. Click below to resend it.
-            </p>
-            <button
-              onClick={handleResendEmail}
-              className="bg-primary-600 hover:bg-primary-700 text-white font-semibold py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               Resend Email
             </button>
           </>
         )}
-        <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">
+        <p className="mt-8 text-base text-gray-500 dark:text-gray-400">
           <span>Return to </span>
-          <button
-            onClick={() => navigate("/auth/register")}
-            className="text-primary-600 hover:underline focus:outline-none"
-          >
+          <button onClick={() => navigate("/auth/register")} className="text-blue-600 hover:underline focus:outline-none">
             Sign up
           </button>
         </p>

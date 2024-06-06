@@ -3,10 +3,19 @@ import { Navigate, useRoutes } from "react-router-dom";
 import AuthGuard from "@/helpers/guards/AuthGuard";
 import NotFound from "@/components/NotFound";
 import Layout from "@/components/layout/Layout";
+import ProfileGuard from "./helpers/guards/ProfileGuard";
+import NoProfileGuard from "./helpers/guards/NoProfileGuard";
 
+const CreateProfile = lazy(() => import("@/pages/profile/create"));
+const EditProfile = lazy(() => import("@/pages/profile/edit"));
 const Register = lazy(() => import("@/pages/auth/register"));
 const ConfirmEmail = lazy(() => import("@/pages/auth/confirm-email"));
-const ChangePassword = lazy(() => import("@/pages/reset-password/change-pass"));
+const ChangePassword = lazy(
+  () => import("@/pages/reset-password/change-password")
+);
+const ConfirmResetEmail = lazy(
+  () => import("@/pages/reset-password/confirm-reset-email")
+);
 const ResetPassword = lazy(() => import("@/pages/reset-password"));
 const Profile = lazy(() => import("@/pages/profile"));
 const SignIn = lazy(() => import("@/pages/auth/signin"));
@@ -21,7 +30,9 @@ const Router: FC = () => {
       path: "/",
       element: (
         <AuthGuard>
-          <Layout />
+          <ProfileGuard>
+            <Layout />
+          </ProfileGuard>
         </AuthGuard>
       ),
       
@@ -39,6 +50,10 @@ const Router: FC = () => {
           ),
         },
         {
+          path: "posts",
+          element: <>Posts</>,
+        },
+        {
           path: "topics",
           element: (
             <Suspense>
@@ -49,14 +64,40 @@ const Router: FC = () => {
         
         {
           path: "profile",
-          element: (
-            <Suspense>
-              <Profile />
-            </Suspense>
-          ),
+          children: [
+            {
+              index: true,
+              element: (
+                <Suspense>
+                  <Profile />
+                </Suspense>
+              ),
+            },
+            {
+              path: "edit",
+              element: (
+                <Suspense>
+                  <EditProfile />
+                </Suspense>
+              ),
+            },
+          ],
         },
       ],
     },
+    {
+      path: "/profile/create",
+      element: (
+        <AuthGuard>
+          <NoProfileGuard>
+            <Suspense>
+              <CreateProfile />
+            </Suspense>
+          </NoProfileGuard>
+        </AuthGuard>
+      ),
+    },
+
     {
       path: "auth",
       children: [
@@ -69,6 +110,15 @@ const Router: FC = () => {
           ),
         },
         {
+          path: "signout",
+          element: (
+            <Suspense>
+              <SignOut />
+            </Suspense>
+          ),
+        },
+
+        {
           path: "register",
           element: (
             <Suspense>
@@ -76,20 +126,12 @@ const Router: FC = () => {
             </Suspense>
           ),
         },
+
         {
-          path: "confirmation-sent",
+          path: "confirm-email",
           element: (
             <Suspense>
               <ConfirmEmail />
-            </Suspense>
-          ),
-        },
-
-        {
-          path: "signout",
-          element: (
-            <Suspense>
-              <SignOut />
             </Suspense>
           ),
         },
@@ -99,12 +141,28 @@ const Router: FC = () => {
       path: "reset-password",
       children: [
         {
-          path: "change-pass",
-          element: <ChangePassword />,
+          path: "change-password",
+          element: (
+            <Suspense>
+              <ChangePassword />{" "}
+            </Suspense>
+          ),
         },
         {
           index: true,
-          element: <ResetPassword />,
+          element: (
+            <Suspense>
+              <ResetPassword />
+            </Suspense>
+          ),
+        },
+        {
+          path: "confirm-reset-email",
+          element: (
+            <Suspense>
+              <ConfirmResetEmail />
+            </Suspense>
+          ),
         },
       ],
     },

@@ -1,8 +1,7 @@
 import AuthProvider from "./contexts/auth/AuthContext";
+import { ToastContainer} from 'react-toastify';
 import Router from "./router";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import { ToastContainer } from "react-toastify";
-
 export default function App() {
   return (
     <>

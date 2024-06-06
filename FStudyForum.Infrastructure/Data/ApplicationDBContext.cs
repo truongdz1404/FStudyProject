@@ -13,13 +13,13 @@ public class ApplicationDBContext(DbContextOptions options)
         base.OnModelCreating(builder);
 
         builder.HasDefaultSchema("dbo");
-        builder.Entity<ApplicationUser>().ToTable("Users");
-        builder.Entity<IdentityRole>().ToTable("Roles");
-        builder.Entity<IdentityRoleClaim<string>>().ToTable("RoleClaims");
-        builder.Entity<IdentityUserClaim<string>>().ToTable("UserClaims");
-        builder.Entity<IdentityUserRole<string>>().ToTable("UserRoles");
-        builder.Entity<IdentityUserToken<string>>().ToTable("UserTokens");
-        builder.Entity<IdentityUserLogin<string>>().ToTable("UserLogins");
+        builder.Entity<ApplicationUser>().ToTable("tblUsers");
+        builder.Entity<IdentityRole>().ToTable("tblRoles");
+        builder.Entity<IdentityRoleClaim<string>>().ToTable("tblRoleClaims");
+        builder.Entity<IdentityUserClaim<string>>().ToTable("tblUserClaims");
+        builder.Entity<IdentityUserRole<string>>().ToTable("tblUserRoles");
+        builder.Entity<IdentityUserToken<string>>().ToTable("tblUserTokens");
+        builder.Entity<IdentityUserLogin<string>>().ToTable("tblUserLogins");
 
         builder.Entity<ApplicationUser>()
             .HasOne(u => u.Profile)
@@ -56,7 +56,7 @@ public class ApplicationDBContext(DbContextOptions options)
         builder.Entity<Category>()
             .HasMany(c => c.Topics)
             .WithMany(t => t.Categories)
-            .UsingEntity("TopicCategories");
+            .UsingEntity("tblTopicCategories");
 
         builder.Entity<Topic>()
             .HasMany(t => t.Posts)
@@ -99,6 +99,11 @@ public class ApplicationDBContext(DbContextOptions options)
         }
         builder.Entity<IdentityRole>().HasData(roles);
     }
+    // <<<<<<< HEAD
+    //     public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+    //     public DbSet<Profile> UserProfiles { get; set; }
+    // =======
+    // >>>>>>> 9e3b00c9c3455c98f6b4ceb3cf7638aba0b4c0c8
 
     public DbSet<Profile> Profiles { get; set; }
     public DbSet<Category> Categories { get; set; }

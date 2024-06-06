@@ -15,8 +15,8 @@ const login = async (username: string, password: string) => {
         if (error && (error as AxiosError).isAxiosError) {
             const axiosError = error as AxiosError;
             if (axiosError.response && axiosError.response?.data){
-                const serverError = axiosError.response.data as ServerResponse;
-                throw new AxiosError(serverError.message);   
+                const serverError = axiosError.response.data as Response;
+                throw new AxiosError(String(serverError.message));   
             }
         } else {
             throw error;
@@ -62,10 +62,10 @@ const refreshToken = async () => {
     return response.data.message;
 };
 
-const confirmEmail = async (token: string, email: string) => {
+const resendEmail = async (email: string) => {
     try {
-        const response = await api.get<Response>("/auth/confirm-email", {
-            params: { token, email},
+        const response = await api.post<Response>(`/auth/resend-confirmation-email?email=${email}`, {
+            params: {email},
         });
         return response.data.message;
     } catch (error: unknown) {
@@ -89,7 +89,7 @@ const AuthService = {
     loginGoogle,
     logout,
     register,
-    confirmEmail,
+    resendEmail,
 };
 
 export default AuthService;

@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FStudyForum.Core.Models.Entities;
 
-[Table("Votes")]
+[Table("tblVotes")]
 public class Vote : BaseEntity
 {
     public bool IsUp { get; set; }

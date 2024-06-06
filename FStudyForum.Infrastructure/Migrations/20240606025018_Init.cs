@@ -17,7 +17,7 @@ namespace FStudyForum.Infrastructure.Migrations
                 name: "dbo");
 
             migrationBuilder.CreateTable(
-                name: "Categories",
+                name: "tblCategories",
                 schema: "dbo",
                 columns: table => new
                 {
@@ -31,11 +31,11 @@ namespace FStudyForum.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Categories", x => x.Id);
+                    table.PrimaryKey("PK_tblCategories", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Roles",
+                name: "tblRoles",
                 schema: "dbo",
                 columns: table => new
                 {
@@ -46,11 +46,11 @@ namespace FStudyForum.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Roles", x => x.Id);
+                    table.PrimaryKey("PK_tblRoles", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Topics",
+                name: "tblTopics",
                 schema: "dbo",
                 columns: table => new
                 {
@@ -64,11 +64,11 @@ namespace FStudyForum.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Topics", x => x.Id);
+                    table.PrimaryKey("PK_tblTopics", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Users",
+                name: "tblUsers",
                 schema: "dbo",
                 columns: table => new
                 {
@@ -92,11 +92,11 @@ namespace FStudyForum.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.Id);
+                    table.PrimaryKey("PK_tblUsers", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "RoleClaims",
+                name: "tblRoleClaims",
                 schema: "dbo",
                 columns: table => new
                 {
@@ -108,18 +108,18 @@ namespace FStudyForum.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RoleClaims", x => x.Id);
+                    table.PrimaryKey("PK_tblRoleClaims", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_RoleClaims_Roles_RoleId",
+                        name: "FK_tblRoleClaims_tblRoles_RoleId",
                         column: x => x.RoleId,
                         principalSchema: "dbo",
-                        principalTable: "Roles",
+                        principalTable: "tblRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "TopicCategories",
+                name: "tblTopicCategories",
                 schema: "dbo",
                 columns: table => new
                 {
@@ -128,25 +128,25 @@ namespace FStudyForum.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TopicCategories", x => new { x.CategoriesId, x.TopicsId });
+                    table.PrimaryKey("PK_tblTopicCategories", x => new { x.CategoriesId, x.TopicsId });
                     table.ForeignKey(
-                        name: "FK_TopicCategories_Categories_CategoriesId",
+                        name: "FK_tblTopicCategories_tblCategories_CategoriesId",
                         column: x => x.CategoriesId,
                         principalSchema: "dbo",
-                        principalTable: "Categories",
+                        principalTable: "tblCategories",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_TopicCategories_Topics_TopicsId",
+                        name: "FK_tblTopicCategories_tblTopics_TopicsId",
                         column: x => x.TopicsId,
                         principalSchema: "dbo",
-                        principalTable: "Topics",
+                        principalTable: "tblTopics",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Posts",
+                name: "tblPosts",
                 schema: "dbo",
                 columns: table => new
                 {
@@ -162,24 +162,24 @@ namespace FStudyForum.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Posts", x => x.Id);
+                    table.PrimaryKey("PK_tblPosts", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Posts_Topics_TopicId",
+                        name: "FK_tblPosts_tblTopics_TopicId",
                         column: x => x.TopicId,
                         principalSchema: "dbo",
-                        principalTable: "Topics",
+                        principalTable: "tblTopics",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Posts_Users_CreaterId",
+                        name: "FK_tblPosts_tblUsers_CreaterId",
                         column: x => x.CreaterId,
                         principalSchema: "dbo",
-                        principalTable: "Users",
+                        principalTable: "tblUsers",
                         principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
-                name: "Profiles",
+                name: "tblProfiles",
                 schema: "dbo",
                 columns: table => new
                 {
@@ -196,18 +196,18 @@ namespace FStudyForum.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Profiles", x => x.Id);
+                    table.PrimaryKey("PK_tblProfiles", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Profiles_Users_UserId",
+                        name: "FK_tblProfiles_tblUsers_UserId",
                         column: x => x.UserId,
                         principalSchema: "dbo",
-                        principalTable: "Users",
+                        principalTable: "tblUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Reports",
+                name: "tblReports",
                 schema: "dbo",
                 columns: table => new
                 {
@@ -222,18 +222,18 @@ namespace FStudyForum.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Reports", x => x.Id);
+                    table.PrimaryKey("PK_tblReports", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Reports_Users_CreaterId",
+                        name: "FK_tblReports_tblUsers_CreaterId",
                         column: x => x.CreaterId,
                         principalSchema: "dbo",
-                        principalTable: "Users",
+                        principalTable: "tblUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserClaims",
+                name: "tblUserClaims",
                 schema: "dbo",
                 columns: table => new
                 {
@@ -245,18 +245,18 @@ namespace FStudyForum.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserClaims", x => x.Id);
+                    table.PrimaryKey("PK_tblUserClaims", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserClaims_Users_UserId",
+                        name: "FK_tblUserClaims_tblUsers_UserId",
                         column: x => x.UserId,
                         principalSchema: "dbo",
-                        principalTable: "Users",
+                        principalTable: "tblUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserLogins",
+                name: "tblUserLogins",
                 schema: "dbo",
                 columns: table => new
                 {
@@ -267,18 +267,18 @@ namespace FStudyForum.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserLogins", x => new { x.LoginProvider, x.ProviderKey });
+                    table.PrimaryKey("PK_tblUserLogins", x => new { x.LoginProvider, x.ProviderKey });
                     table.ForeignKey(
-                        name: "FK_UserLogins_Users_UserId",
+                        name: "FK_tblUserLogins_tblUsers_UserId",
                         column: x => x.UserId,
                         principalSchema: "dbo",
-                        principalTable: "Users",
+                        principalTable: "tblUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserRoles",
+                name: "tblUserRoles",
                 schema: "dbo",
                 columns: table => new
                 {
@@ -287,25 +287,25 @@ namespace FStudyForum.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserRoles", x => new { x.UserId, x.RoleId });
+                    table.PrimaryKey("PK_tblUserRoles", x => new { x.UserId, x.RoleId });
                     table.ForeignKey(
-                        name: "FK_UserRoles_Roles_RoleId",
+                        name: "FK_tblUserRoles_tblRoles_RoleId",
                         column: x => x.RoleId,
                         principalSchema: "dbo",
-                        principalTable: "Roles",
+                        principalTable: "tblRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UserRoles_Users_UserId",
+                        name: "FK_tblUserRoles_tblUsers_UserId",
                         column: x => x.UserId,
                         principalSchema: "dbo",
-                        principalTable: "Users",
+                        principalTable: "tblUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserTokens",
+                name: "tblUserTokens",
                 schema: "dbo",
                 columns: table => new
                 {
@@ -316,18 +316,18 @@ namespace FStudyForum.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
+                    table.PrimaryKey("PK_tblUserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
                     table.ForeignKey(
-                        name: "FK_UserTokens_Users_UserId",
+                        name: "FK_tblUserTokens_tblUsers_UserId",
                         column: x => x.UserId,
                         principalSchema: "dbo",
-                        principalTable: "Users",
+                        principalTable: "tblUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Attachments",
+                name: "tblAttachments",
                 schema: "dbo",
                 columns: table => new
                 {
@@ -341,18 +341,18 @@ namespace FStudyForum.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Attachments", x => x.Id);
+                    table.PrimaryKey("PK_tblAttachments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Attachments_Posts_PostId",
+                        name: "FK_tblAttachments_tblPosts_PostId",
                         column: x => x.PostId,
                         principalSchema: "dbo",
-                        principalTable: "Posts",
+                        principalTable: "tblPosts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "SavedPosts",
+                name: "tblSavedPosts",
                 schema: "dbo",
                 columns: table => new
                 {
@@ -365,25 +365,25 @@ namespace FStudyForum.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SavedPosts", x => x.Id);
+                    table.PrimaryKey("PK_tblSavedPosts", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_SavedPosts_Posts_PostId",
+                        name: "FK_tblSavedPosts_tblPosts_PostId",
                         column: x => x.PostId,
                         principalSchema: "dbo",
-                        principalTable: "Posts",
+                        principalTable: "tblPosts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_SavedPosts_Users_UserId",
+                        name: "FK_tblSavedPosts_tblUsers_UserId",
                         column: x => x.UserId,
                         principalSchema: "dbo",
-                        principalTable: "Users",
+                        principalTable: "tblUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Comments",
+                name: "tblComments",
                 schema: "dbo",
                 columns: table => new
                 {
@@ -400,36 +400,36 @@ namespace FStudyForum.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Comments", x => x.Id);
+                    table.PrimaryKey("PK_tblComments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Comments_Attachments_AttachmentId",
+                        name: "FK_tblComments_tblAttachments_AttachmentId",
                         column: x => x.AttachmentId,
                         principalSchema: "dbo",
-                        principalTable: "Attachments",
+                        principalTable: "tblAttachments",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Comments_Comments_ReplyId",
+                        name: "FK_tblComments_tblComments_ReplyId",
                         column: x => x.ReplyId,
                         principalSchema: "dbo",
-                        principalTable: "Comments",
+                        principalTable: "tblComments",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Comments_Posts_PostId",
+                        name: "FK_tblComments_tblPosts_PostId",
                         column: x => x.PostId,
                         principalSchema: "dbo",
-                        principalTable: "Posts",
+                        principalTable: "tblPosts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Comments_Users_CreaterId",
+                        name: "FK_tblComments_tblUsers_CreaterId",
                         column: x => x.CreaterId,
                         principalSchema: "dbo",
-                        principalTable: "Users",
+                        principalTable: "tblUsers",
                         principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
-                name: "Votes",
+                name: "tblVotes",
                 schema: "dbo",
                 columns: table => new
                 {
@@ -444,173 +444,173 @@ namespace FStudyForum.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Votes", x => x.Id);
+                    table.PrimaryKey("PK_tblVotes", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Votes_Comments_CommentId",
+                        name: "FK_tblVotes_tblComments_CommentId",
                         column: x => x.CommentId,
                         principalSchema: "dbo",
-                        principalTable: "Comments",
+                        principalTable: "tblComments",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Votes_Posts_PostId",
+                        name: "FK_tblVotes_tblPosts_PostId",
                         column: x => x.PostId,
                         principalSchema: "dbo",
-                        principalTable: "Posts",
+                        principalTable: "tblPosts",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Votes_Users_VoterId",
+                        name: "FK_tblVotes_tblUsers_VoterId",
                         column: x => x.VoterId,
                         principalSchema: "dbo",
-                        principalTable: "Users",
+                        principalTable: "tblUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.InsertData(
                 schema: "dbo",
-                table: "Roles",
+                table: "tblRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "a8d56fe8-fdbc-4d9e-bcfb-282c4ae6e675", null, "User", "USER" },
-                    { "e18476f9-20f6-4141-a955-b888124e7c10", null, "Admin", "ADMIN" }
+                    { "2b6a3760-67c4-4d8d-97dd-edae3ac2fe6d", null, "Admin", "ADMIN" },
+                    { "5a94a933-4cee-4d48-a539-ae85706807ed", null, "User", "USER" }
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Attachments_PostId",
+                name: "IX_tblAttachments_PostId",
                 schema: "dbo",
-                table: "Attachments",
+                table: "tblAttachments",
                 column: "PostId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Comments_AttachmentId",
+                name: "IX_tblComments_AttachmentId",
                 schema: "dbo",
-                table: "Comments",
+                table: "tblComments",
                 column: "AttachmentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Comments_CreaterId",
+                name: "IX_tblComments_CreaterId",
                 schema: "dbo",
-                table: "Comments",
+                table: "tblComments",
                 column: "CreaterId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Comments_PostId",
+                name: "IX_tblComments_PostId",
                 schema: "dbo",
-                table: "Comments",
+                table: "tblComments",
                 column: "PostId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Comments_ReplyId",
+                name: "IX_tblComments_ReplyId",
                 schema: "dbo",
-                table: "Comments",
+                table: "tblComments",
                 column: "ReplyId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Posts_CreaterId",
+                name: "IX_tblPosts_CreaterId",
                 schema: "dbo",
-                table: "Posts",
+                table: "tblPosts",
                 column: "CreaterId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Posts_TopicId",
+                name: "IX_tblPosts_TopicId",
                 schema: "dbo",
-                table: "Posts",
+                table: "tblPosts",
                 column: "TopicId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Profiles_UserId",
+                name: "IX_tblProfiles_UserId",
                 schema: "dbo",
-                table: "Profiles",
+                table: "tblProfiles",
                 column: "UserId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Reports_CreaterId",
+                name: "IX_tblReports_CreaterId",
                 schema: "dbo",
-                table: "Reports",
+                table: "tblReports",
                 column: "CreaterId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RoleClaims_RoleId",
+                name: "IX_tblRoleClaims_RoleId",
                 schema: "dbo",
-                table: "RoleClaims",
+                table: "tblRoleClaims",
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
                 name: "RoleNameIndex",
                 schema: "dbo",
-                table: "Roles",
+                table: "tblRoles",
                 column: "NormalizedName",
                 unique: true,
                 filter: "[NormalizedName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SavedPosts_PostId",
+                name: "IX_tblSavedPosts_PostId",
                 schema: "dbo",
-                table: "SavedPosts",
+                table: "tblSavedPosts",
                 column: "PostId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SavedPosts_UserId",
+                name: "IX_tblSavedPosts_UserId",
                 schema: "dbo",
-                table: "SavedPosts",
+                table: "tblSavedPosts",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TopicCategories_TopicsId",
+                name: "IX_tblTopicCategories_TopicsId",
                 schema: "dbo",
-                table: "TopicCategories",
+                table: "tblTopicCategories",
                 column: "TopicsId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserClaims_UserId",
+                name: "IX_tblUserClaims_UserId",
                 schema: "dbo",
-                table: "UserClaims",
+                table: "tblUserClaims",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserLogins_UserId",
+                name: "IX_tblUserLogins_UserId",
                 schema: "dbo",
-                table: "UserLogins",
+                table: "tblUserLogins",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserRoles_RoleId",
+                name: "IX_tblUserRoles_RoleId",
                 schema: "dbo",
-                table: "UserRoles",
+                table: "tblUserRoles",
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
                 name: "EmailIndex",
                 schema: "dbo",
-                table: "Users",
+                table: "tblUsers",
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
                 schema: "dbo",
-                table: "Users",
+                table: "tblUsers",
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Votes_CommentId",
+                name: "IX_tblVotes_CommentId",
                 schema: "dbo",
-                table: "Votes",
+                table: "tblVotes",
                 column: "CommentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Votes_PostId",
+                name: "IX_tblVotes_PostId",
                 schema: "dbo",
-                table: "Votes",
+                table: "tblVotes",
                 column: "PostId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Votes_VoterId",
+                name: "IX_tblVotes_VoterId",
                 schema: "dbo",
-                table: "Votes",
+                table: "tblVotes",
                 column: "VoterId");
         }
 
@@ -618,71 +618,71 @@ namespace FStudyForum.Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Profiles",
+                name: "tblProfiles",
                 schema: "dbo");
 
             migrationBuilder.DropTable(
-                name: "Reports",
+                name: "tblReports",
                 schema: "dbo");
 
             migrationBuilder.DropTable(
-                name: "RoleClaims",
+                name: "tblRoleClaims",
                 schema: "dbo");
 
             migrationBuilder.DropTable(
-                name: "SavedPosts",
+                name: "tblSavedPosts",
                 schema: "dbo");
 
             migrationBuilder.DropTable(
-                name: "TopicCategories",
+                name: "tblTopicCategories",
                 schema: "dbo");
 
             migrationBuilder.DropTable(
-                name: "UserClaims",
+                name: "tblUserClaims",
                 schema: "dbo");
 
             migrationBuilder.DropTable(
-                name: "UserLogins",
+                name: "tblUserLogins",
                 schema: "dbo");
 
             migrationBuilder.DropTable(
-                name: "UserRoles",
+                name: "tblUserRoles",
                 schema: "dbo");
 
             migrationBuilder.DropTable(
-                name: "UserTokens",
+                name: "tblUserTokens",
                 schema: "dbo");
 
             migrationBuilder.DropTable(
-                name: "Votes",
+                name: "tblVotes",
                 schema: "dbo");
 
             migrationBuilder.DropTable(
-                name: "Categories",
+                name: "tblCategories",
                 schema: "dbo");
 
             migrationBuilder.DropTable(
-                name: "Roles",
+                name: "tblRoles",
                 schema: "dbo");
 
             migrationBuilder.DropTable(
-                name: "Comments",
+                name: "tblComments",
                 schema: "dbo");
 
             migrationBuilder.DropTable(
-                name: "Attachments",
+                name: "tblAttachments",
                 schema: "dbo");
 
             migrationBuilder.DropTable(
-                name: "Posts",
+                name: "tblPosts",
                 schema: "dbo");
 
             migrationBuilder.DropTable(
-                name: "Topics",
+                name: "tblTopics",
                 schema: "dbo");
 
             migrationBuilder.DropTable(
-                name: "Users",
+                name: "tblUsers",
                 schema: "dbo");
         }
     }
