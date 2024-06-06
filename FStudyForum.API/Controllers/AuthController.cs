@@ -295,9 +295,10 @@ public class AuthController : ControllerBase
         await SendConfirmationEmailAsync(resendEmailDTO.Email);
 
         return Ok(new Response
-            {
-                Status = ResponseStatus.SUCCESS,
-                Message = "Confirmation email resent, please check your email to confirm your account" });
+        {
+            Status = ResponseStatus.SUCCESS,
+            Message = "Confirmation email resent, please check your email to confirm your account"
+        });
     }
 
     private async Task SendConfirmationEmailAsync(string email)
@@ -307,7 +308,7 @@ public class AuthController : ControllerBase
         var emailContent =
             $@"<p>Dear user, {email}</p>
         <p>Welcome to FStudy!</p>
-        <p>Thank you for registering. Please confirm your email by clicking the link below:</p>
+        <p>Thank you for registering. Please confirm your email by follow the link below:</p>
         <p><a href='{confirmationLink}'>Confirm Email</a></p>";
 
         await _emailService.SendEmailAsync(email, "Confirm your email", emailContent);
@@ -322,9 +323,10 @@ public class AuthController : ControllerBase
             return Redirect("http://localhost:3000");
         }
         return BadRequest(new Response
-            {
-                Status = ResponseStatus.SUCCESS,
-                Message = "Confirm email failed!" });
+        {
+            Status = ResponseStatus.SUCCESS,
+            Message = "Confirm email failed!"
+        });
     }
 
 

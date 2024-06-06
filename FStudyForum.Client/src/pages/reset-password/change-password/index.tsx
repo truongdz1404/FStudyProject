@@ -3,8 +3,8 @@ import { useForm } from "react-hook-form";
 import UserService from "@/services/UserService";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
-import { useLocation } from "react-router-dom";
-import {Icons} from "@/components/Icons";
+import { Link, useLocation } from "react-router-dom";
+import { Icons } from "@/components/Icons";
 
 type ChangePasswordFormInputs = {
     password: string;
@@ -19,7 +19,6 @@ const validation = Yup.object().shape({
 const ChangePassword: FC = () => {
     const [loading, setLoading] = useState(false);
     const location = useLocation();
-    // Extract token and email from query string
     const searchParams = new URLSearchParams(location.search);
     const token = searchParams.get('token');
     const email = searchParams.get('email');
@@ -61,13 +60,13 @@ const ChangePassword: FC = () => {
         setLoading(false);
     };
 
-    
+
 
     return (
         <div className="flex flex-col justify-center items-center w-full h-screen">
             <div className="w-full max-w-2xl">
                 <div className="text-center mb-8">
-                    <Icons.logo className="mx-auto h-28"/>
+                    <Icons.logo className="mx-auto h-28" />
                     <h2 className="block text-black-700 font-bold mb-3 text-3xl text-center">FStudy.com</h2>
                     <h3 className="text-2xl text-gray-700 font-bold">Change your password</h3>
                 </div>
@@ -111,9 +110,11 @@ const ChangePassword: FC = () => {
                     </button>
                 </form>
                 <div className="text-center mt-6">
-                    
+
                     <p className="text-gray-700 mt-3 text-lg">
-                        Already have an account? <a href="http://localhost:3000/auth/signin" className="text-blue-500 hover:text-blue-700">Sign in</a>
+                        Already have an account? 
+                        <Link to="/auth/signin" className="text-blue-500 hover:text-blue-700"> Sign in</Link>
+
                     </p>
                 </div>
             </div>
