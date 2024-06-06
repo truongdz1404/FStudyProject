@@ -63,7 +63,7 @@ const Profile = () => {
           <div className="absolute left-32 pl-2 font-semibold text-md">
             {profile && profile.firstName + " " + profile.lastName}
           </div>
-          <div className="mt-2 absolute right-0">
+          <Link className="mt-2 absolute right-0" to="/profile/edit">
             <Button
               size="sm"
               variant="outlined"
@@ -71,17 +71,17 @@ const Profile = () => {
             >
               <div className="flex items-center">
                 <PencilLine size={"16"} />
-                <Link className="mx-1" to="/profile/edit">
+                <div className="mx-1">
                   <Typography className="text-xs capitalize font-normal hidden xl:block">
                     Edit Profile
                   </Typography>
                   <Typography className="text-xs capitalize font-normal block  xl:hidden">
                     Edit
                   </Typography>
-                </Link>
+                </div>
               </div>
             </Button>
-          </div>
+          </Link>
         </div>
       </div>
 

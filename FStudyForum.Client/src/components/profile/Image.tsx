@@ -33,20 +33,6 @@ const Image: React.FC<HeaderComponentProps> = ({
               onChange={handleFileChange}
             />
           </div>
-          <div className="mt-6 flex flex-wrap gap-4 justify-center">
-            <a
-              href="#"
-              className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded"
-            >
-              Contact
-            </a>
-            <a
-              href="#"
-              className="bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded"
-            >
-              Resume
-            </a>
-          </div>
         </div>
       </div>
     </div>

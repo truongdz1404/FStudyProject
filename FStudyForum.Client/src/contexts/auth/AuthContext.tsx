@@ -25,7 +25,7 @@ const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
   React.useEffect(() => {
     (async () => {
       try {
-        const user = await UserService.getInfo();
+        const user = await UserService.getProfile();
         dispatch(initialize({ isAuthenticated: true, user: user }));
       } catch {
         dispatch(initialize({ isAuthenticated: false, user: null }));

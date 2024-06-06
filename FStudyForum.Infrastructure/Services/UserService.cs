@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Identity;
 using FStudyForum.Core.Models.DTOs.Auth;
 using FStudyForum.Core.Exceptions;
 using FStudyForum.Core.Helpers;
+using FStudyForum.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace FStudyForum.Infrastructure.Services;
 
@@ -18,17 +20,20 @@ public class UserService : IUserService
     private readonly ITokenService _tokenService;
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
+    private readonly ApplicationDBContext _dbContext;
 
     public UserService(
         UserManager<ApplicationUser> userManager,
         ITokenService tokenService,
         IUserRepository userRepository,
-        IMapper mapper)
+        IMapper mapper,
+        ApplicationDBContext dbContext)
     {
         _userManager = userManager;
         _tokenService = tokenService;
         _userRepository = userRepository;
         _mapper = mapper;
+        _dbContext = dbContext;
     }
 
     private async Task<List<Claim>> GetClaimsAsync(ApplicationUser user)
@@ -78,6 +83,10 @@ public class UserService : IUserService
             ?? throw new Exception("UserName is invalid");
         var userDTO = _mapper.Map<UserDTO>(user);
         userDTO.Roles = await _userManager.GetRolesAsync(user);
+        var profile = await _dbContext.Profiles.Include(p => p.User)
+            .FirstOrDefaultAsync(p => p.User == user);
+        if (profile != null) 
+            userDTO.AvatarUrl = profile.AvatarUrl;
         return userDTO;
     }
 
@@ -110,10 +119,10 @@ public class UserService : IUserService
         return user != null;
     }
 
-       public async Task<string> GeneratePasswordResetTokenAsync(string email)
+    public async Task<string> GeneratePasswordResetTokenAsync(string email)
     {
         var user = await _userManager.FindByEmailAsync(email);
-         if (user == null)
+        if (user == null)
         {
             throw new NotFoundException("User not found");
         }

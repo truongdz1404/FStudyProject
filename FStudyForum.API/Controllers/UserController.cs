@@ -16,7 +16,7 @@ public class UserController : ControllerBase
         _userService = userService;
     }
 
-    [HttpGet("info")]
+    [HttpGet("profile")]
     [Authorize]
     public async Task<IActionResult> GetProfile()
     {
