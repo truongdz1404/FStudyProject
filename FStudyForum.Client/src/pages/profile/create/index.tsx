@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import ProfileService from "@/services/ProfileService";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import * as Yup from "yup";
 import { FormikProps, useFormik } from "formik";
 import type { Profile } from "@/types/profile";
@@ -86,6 +86,15 @@ const CreateProfile = () => {
             reader.readAsDataURL(file);
         }
     };
+    useEffect(() => {
+        const handleClick = () => {
+            toast.dismiss();
+        };
+        window.addEventListener("click", handleClick);
+        return () => {
+            window.removeEventListener("click", handleClick);
+        };
+    }, []);
     return (
         <div>
             <div className="bg-gray-100">
