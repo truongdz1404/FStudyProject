@@ -1,69 +1,56 @@
 import { List, ListItem, ListItemPrefix, Card } from "@material-tailwind/react";
-import { Home, StickyNote, Tags } from "lucide-react";
-import React from "react";
-import { useNavigate } from "react-router-dom";
-const Sidebar = () => {
-  const navigate = useNavigate();
-  enum TabType {
-    HOME = 1,
-    POST = 2,
-    TOPIC = 3,
-  }
-  const [activeTab, setActiveTab] = React.useState<TabType | number>(1);
-  const changeTab = (buttonType: TabType) => {
-    switch (buttonType) {
-      case 1:
-        navigate("/home");
-        break;
-      case 2:
-        navigate("/posts");
-        break;
-      case 3:
-        navigate("/topics");
-        break;
-      default:
-        navigate("/");
-        break;
-    }
-    setActiveTab(buttonType);
-  };
+import { Home, Rocket, Tags } from "lucide-react";
+import React, { FC } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+const sidebarListItems = [
+  {
+    label: "Home",
+    icon: Home,
+    path: "/home",
+  },
+  {
+    label: "Posts",
+    icon: Rocket,
+    path: "/posts",
+  },
+  {
+    label: "Topics",
+    icon: Tags,
+    path: "/topics",
+  },
+];
 
+type SidebarProps = {
+  handleClose?: () => void;
+};
+
+const Sidebar: FC<SidebarProps> = ({ handleClose }) => {
+  const navigate = useNavigate();
+  const handleOpen = (path: string) => {
+    handleClose?.();
+    navigate(path);
+  };
+  const location = useLocation();
   return (
     <Card
       color="transparent"
       shadow={false}
-      className="h-screen w-full rounded-none shadow-xl shadow-blue-gray-900/5"
+      className="min-h-screen w-full rounded-none shadow-xl shadow-blue-gray-900/5"
     >
       <List>
-        <ListItem
-          onClick={() => changeTab(TabType.HOME)}
-          selected={activeTab == TabType.HOME}
-        >
-          <ListItemPrefix>
-            <Home className="h-5 w-5" />
-          </ListItemPrefix>
-          Home
-        </ListItem>
-
-        <ListItem
-          onClick={() => changeTab(TabType.POST)}
-          selected={activeTab == TabType.POST}
-        >
-          <ListItemPrefix>
-            <StickyNote className="h-5 w-5" />
-          </ListItemPrefix>
-          Post
-        </ListItem>
-
-        <ListItem
-          onClick={() => changeTab(TabType.TOPIC)}
-          selected={activeTab == TabType.TOPIC}
-        >
-          <ListItemPrefix>
-            <Tags className="h-5 w-5" />
-          </ListItemPrefix>
-          Topic
-        </ListItem>
+        {sidebarListItems.map(({ label, icon, path }) => (
+          <ListItem
+            onClick={() => handleOpen(path)}
+            selected={location.pathname === path}
+            key={label}
+            className="text-sm"
+          >
+            <ListItemPrefix>
+              {React.createElement(icon, { className: "h-5 w-5" })}
+            </ListItemPrefix>
+            {label}
+          </ListItem>
+        ))}
         <hr className="my-2 border-blue-gray-50" />
       </List>
     </Card>

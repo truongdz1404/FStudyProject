@@ -9,6 +9,7 @@ export enum AuthActionType {
     INITIALIZE = "INITIALIZE",
     SIGN_IN = "SIGN_IN",
     SIGN_OUT = "SIGN_OUT",
+    SIGN_UP = "SIGN_UP",
 }
 
 const reducerHandlers = {
@@ -34,6 +35,14 @@ const reducerHandlers = {
             ...state,
             isAuthenticated: false,
             user: null,
+        };
+    },
+    SIGN_UP(state: AuthState, action: PayloadAction<AuthState>): AuthState {
+        const { user } = action.payload;
+        return {
+            ...state,
+            isAuthenticated: true,
+            user,
         };
     },
 };
@@ -62,5 +71,12 @@ export function signOut(): PayloadAction<AuthState> {
     return {
         type: AuthActionType.SIGN_OUT,
         payload: { user: null },
+    };
+    
+}
+export function signUp(payload: AuthState): PayloadAction<AuthState> {
+    return {
+        type: AuthActionType.SIGN_UP,
+        payload,
     };
 }

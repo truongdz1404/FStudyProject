@@ -2,11 +2,12 @@ using FStudyForum.Core.Constants;
 using FStudyForum.Core.Models.DTOs;
 using FStudyForum.Core.Models.DTOs.Auth;
 using FStudyForum.Core.Models.DTOs.Token;
-using FStudyForum.Core.Exceptions;
 using FStudyForum.Core.Interfaces.IServices;
 using FStudyForum.Core.Models.Configs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using FStudyForum.Core.Helpers;
+using Microsoft.AspNetCore.Authentication;
 
 namespace FStudyForum.API.Controllers;
 
@@ -17,50 +18,22 @@ public class AuthController : ControllerBase
     private readonly JwtConfig _jwtConfig;
     private readonly IUserService _userService;
     private readonly IIdentityService _identityService;
+    private readonly IEmailService _emailService;
 
 
     public AuthController(
         IOptions<JwtConfig> jwtConfig,
         IUserService accountService,
-        IIdentityService identityService)
+        IIdentityService identityService,
+        IEmailService emailService)
     {
         _jwtConfig = jwtConfig.Value;
         _userService = accountService;
         _identityService = identityService;
+        _emailService = emailService;
+
     }
 
-    [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] RegisterDTO registerDTO)
-    {
-        try
-        {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-            await _identityService.CreateUserAsync(registerDTO, [UserRole.User]);
-
-            return Ok(new Response
-            {
-                Status = ResponseStatus.SUCCESS,
-                Message = "Register successfully"
-            });
-        }
-        catch (ValidationException ex)
-        {
-            return BadRequest(new Response
-            {
-                Status = ResponseStatus.ERROR,
-                Message = ex.Errors
-            });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError,
-                    new Response
-                    {
-                        Status = ResponseStatus.ERROR,
-                        Message = ex.Message
-                    });
-        }
-    }
 
     [HttpPost("login")]
     public async Task<IActionResult> Authenticate([FromBody] LoginDTO loginDTO)
@@ -108,6 +81,32 @@ public class AuthController : ControllerBase
             Status = ResponseStatus.ERROR,
             Message = "Invalid External Authentication."
         });
+    }
+
+    [HttpGet("logout")]
+    public async Task<IActionResult> Logout()
+    {
+        try
+        {
+            var userName = (HttpContext.User?.Identity?.Name) ?? throw new Exception("User is not authenticated!");
+            var refreshToken = await _userService.GetRefreshTokenAsync(userName) ?? throw new Exception("Not found refresh token!");
+            await _userService.RemoveRefreshTokenAsync(refreshToken);
+            RemoveTokensInsideCookie(HttpContext);
+            await HttpContext.SignOutAsync();
+            return Ok(new Response
+            {
+                Status = ResponseStatus.SUCCESS,
+                Message = "Logout Successfully"
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new Response
+            {
+                Status = ResponseStatus.ERROR,
+                Message = $"Logout failed! Error: {ex.Message}"
+            });
+        }
     }
 
     [HttpGet("refresh-token")]
@@ -170,7 +169,154 @@ public class AuthController : ControllerBase
 
     private void RemoveTokensInsideCookie(HttpContext context)
     {
-        //TODO: Remove accesstoken and refeshtoken
+
+        context.Response.Cookies.Append(_jwtConfig.AccessTokenKey, "", new CookieOptions
+        {
+            HttpOnly = false,
+            Expires = DateTimeOffset.UtcNow.AddDays(-1)
+        });
     }
+
+    [HttpPost("forgot-password")]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequestDTO model)
+    {
+        var isExisted = await _userService.CheckEmailExistedAsync(model.Email);
+        if (!isExisted) return BadRequest("User not found");
+        var token = await _userService.GeneratePasswordResetTokenAsync(model.Email);
+        var resetLink = $"http://localhost:3000/reset-password/change-password?token={token}&email={model.Email}";
+        var emailContent = $@"
+        <p>Please click the link below to reset your password:</p>
+        <p><a href='{resetLink}'>Reset Password</a></p>";
+        await _emailService.SendEmailAsync(model.Email, "Reset Password", emailContent);
+
+        return Ok(new Response
+        {
+            Status = ResponseStatus.SUCCESS,
+            Message = "Send mail Successfully"
+        });
+    }
+
+
+    [HttpPost("change-password")]
+    public async Task<IActionResult> ChangePassword([FromQuery] string email, [FromQuery] string token, [FromBody] ResetPasswordBody resetPasswordBody)
+    {
+        var resetPasswordModelDTO = new ResetPasswordModelDTO
+        {
+            Email = email,
+            Password = resetPasswordBody.NewPassword,
+            Token = token,
+        };
+
+        var isExisted = await _userService.CheckEmailExistedAsync(email);
+        if (!isExisted)
+        {
+            return NotFound("Email not found.");
+        }
+
+        var result = await _userService.ResetPasswordAsync(resetPasswordModelDTO);
+        if (result.Succeeded)
+        {
+            return Ok(new Response
+            {
+                Status = ResponseStatus.SUCCESS,
+                Message = "Change password Successfully"
+            });
+        }
+
+        return BadRequest(new Response
+        {
+            Status = ResponseStatus.SUCCESS,
+            Message = "Error resetting password."
+        });
+    }
+
+
+
+    [HttpPost("register")]
+    public async Task<IActionResult> Register([FromBody] RegisterDTO registerDTO)
+    {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+        if (!EmailValidator.IsFptMail(registerDTO.Email)) return BadRequest("Not fpt email");
+        var userExists = await _identityService.CheckUserExistsAsync(registerDTO.Email);
+        if (userExists)
+        {
+            return BadRequest(new Response
+            {
+                Status = ResponseStatus.SUCCESS,
+                Message = "User already exists"
+            });
+        }
+
+        var (isSucceed, userId) = await _identityService.CreateUserAsync(registerDTO, [UserRole.User]);
+        if (!isSucceed)
+        {
+            return StatusCode(500, new Response
+            {
+                Status = ResponseStatus.SUCCESS,
+                Message = "An error occurred while creating the user"
+            });
+        }
+
+        await SendConfirmationEmailAsync(registerDTO.Email);
+
+        return Ok(new Response
+        {
+            Status = ResponseStatus.SUCCESS,
+            Message = "Registration successful, please check your email to confirm your account"
+        });
+    }
+
+    [HttpPost("resend-confirmation-email")]
+    public async Task<IActionResult> ResendConfirmationEmail([FromQuery] ResendEmailDTO resendEmailDTO)
+    {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+
+        var userExists = await _identityService.CheckUserExistsAsync(resendEmailDTO.Email);
+        if (!userExists)
+        {
+            return BadRequest(new Response
+            {
+                Status = ResponseStatus.SUCCESS,
+                Message = "User does not exist"
+            });
+        }
+
+        await SendConfirmationEmailAsync(resendEmailDTO.Email);
+
+        return Ok(new Response
+        {
+            Status = ResponseStatus.SUCCESS,
+            Message = "Confirmation email resent, please check your email to confirm your account"
+        });
+    }
+
+    private async Task SendConfirmationEmailAsync(string email)
+    {
+        var emailConfirmationToken = await _identityService.GenerateEmailConfirmationTokenAsync(email);
+        var confirmationLink = Url.Action(nameof(ConfirmEmail), "Auth", new { token = emailConfirmationToken, email = email, action = "register" }, Request.Scheme);
+        var emailContent =
+            $@"<p>Dear user, {email}</p>
+        <p>Welcome to FStudy!</p>
+        <p>Thank you for registering. Please confirm your email by follow the link below:</p>
+        <p><a href='{confirmationLink}'>Confirm Email</a></p>";
+
+        await _emailService.SendEmailAsync(email, "Confirm your email", emailContent);
+    }
+
+    [HttpGet("confirmemail")]
+    public async Task<IActionResult> ConfirmEmail(string token, string email)
+    {
+        var result = await _identityService.ConfirmEmailAsync(email, token);
+        if (result)
+        {
+            return Redirect("http://localhost:3000");
+        }
+        return BadRequest(new Response
+        {
+            Status = ResponseStatus.SUCCESS,
+            Message = "Confirm email failed!"
+        });
+    }
+
 
 }

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FStudyForum.Core.Models.Entities;
 
-[Table("Topics")]
+[Table("tblTopics")]
 public class Topic : BaseEntity
 {
     [MaxLength(255)]
