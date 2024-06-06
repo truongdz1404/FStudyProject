@@ -2,12 +2,10 @@ import { ServerResponse } from "@/contexts/auth/types";
 import api from "./api";
 import { ResponseWith } from "@/types/response";
 import { AxiosError } from "axios";
-import UserService from "./UserService";
 import { Profile } from "@/types/profile";
 
-const getProfileByUserName = async () => {
-    const profile = await UserService.getProfile();
-    const response = await api.get<ResponseWith<Profile>>(`/profile/getProfileByUsername/${profile.userName}`); 
+const getProfileByUserName = async (userName: string) => {
+    const response = await api.get<ResponseWith<Profile>>(`/profile/getProfileByUsername/${userName}`); 
     return (response.data).data;
 }
 const editProfile = async (username: string, profile: Profile) => {

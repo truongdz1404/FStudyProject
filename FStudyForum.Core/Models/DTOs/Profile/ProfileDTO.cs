@@ -16,7 +16,7 @@ namespace FStudyForum.Core.Models.DTOs.Profile
         [MaxLength(50, ErrorMessage = "The Last Name maximum length is 50 characters.")]
         public string? LastName { get; set; } 
         [Required]
-        [Range(1, 3, ErrorMessage = "Gender must be between 1 and 3.")]
+        [Range(0, 2, ErrorMessage = "Gender must be between 0 and 2.")]
         public int Gender { get; set; }
         [Required]
         [DataType(DataType.Date, ErrorMessage = "Invalid date format.")]

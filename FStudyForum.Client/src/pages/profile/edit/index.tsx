@@ -20,7 +20,7 @@ const EditProfile = () => {
     const fileInputRef = useRef<HTMLInputElement>(null);
     useEffect(() => {
         const fetchProfile = async () => {
-            const response = await ProfileService.getProfileByUserName();
+            const response = await ProfileService.getProfileByUserName(String(user?.userName));
             setProfile(response);
         };
         fetchProfile();
