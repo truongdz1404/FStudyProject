@@ -8,6 +8,7 @@ using FStudyForum.Core.Interfaces.IServices;
 using Microsoft.AspNetCore.Identity;
 using FStudyForum.Core.Models.DTOs.Auth;
 using FStudyForum.Core.Exceptions;
+using FStudyForum.Core.Helpers;
 
 namespace FStudyForum.Infrastructure.Services;
 
@@ -83,7 +84,8 @@ public class UserService : IUserService
     public async Task<UserDTO?> FindOrCreateUserAsync(ExternalAuthDTO externalAuth, List<string> roles)
     {
         var payload = await _tokenService.VerifyGoogleToken(externalAuth);
-        if (payload == null) return null;
+
+        if (payload == null || !EmailValidator.IsFptMail(payload.Email)) return null;
 
         var info = new UserLoginInfo(externalAuth.Provider, payload.Subject, externalAuth.Provider);
         var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);

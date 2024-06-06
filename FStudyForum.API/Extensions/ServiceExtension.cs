@@ -12,6 +12,7 @@ public static class ServiceExtension
         #region Services
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IProfileService, ProfileService>();
         services.AddScoped<IIdentityService, IdentityService>();
         services.AddScoped<IEmailService, EmailService>();
 

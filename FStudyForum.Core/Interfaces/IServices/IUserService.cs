@@ -1,7 +1,6 @@
 using FStudyForum.Core.Models.DTOs.Auth;
 using FStudyForum.Core.Models.DTOs.Token;
 using FStudyForum.Core.Models.DTOs.User;
-using FStudyForum.Core.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 namespace FStudyForum.Core.Interfaces.IServices;
 

@@ -50,12 +50,9 @@ const SignUp: FC = () => {
   return (
     <div className="flex h-screen font-inter">
       <div
-        className={cn(
-          "w-full bg-gray-200 lg:w-1/2",
-          "flex items-center justify-center"
-        )}
+        className={cn("w-full  lg:w-1/2", "flex items-center justify-center")}
       >
-        <div className="max-w-md w-full p-6">
+        <div className="max-w-md p-6">
           <h1
             className={cn("text-3xl font-bold mb-6", " text-black text-center")}
           >
@@ -154,7 +151,8 @@ const SignUp: FC = () => {
               sign up
             </Button>
           </form>
-          <div className="mt-4 text-sm text-gray-600 text-center">
+
+          <div className="mt-4 text-xs text-gray-600 text-center">
             <p>
               Already have an account?{" "}
               <Link to="/auth/signin" className="text-black hover:underline">

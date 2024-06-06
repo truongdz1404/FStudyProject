@@ -41,7 +41,7 @@ const SignIn: FC = () => {
     let message;
     try {
       message = await AuthService.login(form.username, form.password);
-      const user = await UserService.getProfile();
+      const user = await UserService.getInfo();
       dispatch(signIn({ user }));
       toast.success(String(message)); // Convert message to a string
       navigate("/");
@@ -58,7 +58,7 @@ const SignIn: FC = () => {
       const idToken = response.credential;
       if (!idToken) return;
       const message = await AuthService.loginGoogle(idToken);
-      const user = await UserService.getProfile();
+      const user = await UserService.getInfo();
       dispatch(signIn({ user }));
       toast.success(String(message));
       navigate("/");
@@ -68,14 +68,11 @@ const SignIn: FC = () => {
   };
 
   return (
-    <div className="flex h-screen font-inter">
+    <div className="flex h-screen ">
       <div
-        className={cn(
-          "w-full bg-gray-200 lg:w-1/2",
-          "flex items-center justify-center"
-        )}
+        className={cn("w-full lg:w-1/2", "flex items-center justify-center")}
       >
-        <div className="max-w-md w-full p-6">
+        <div className="max-w-md p-6">
           <h1
             className={cn("text-3xl font-bold mb-6", " text-black text-center")}
           >
@@ -92,8 +89,15 @@ const SignIn: FC = () => {
               }}
             />
           </div>
-          <div className="mt-4 text-sm text-gray-600 text-center">
-            <p>or with email</p>
+          <div className="relative py-4">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-b border-gray-300"></div>
+            </div>
+            <div className="relative flex justify-center">
+              <span className="bg-white px-4 text-xs text-gray-600">
+                Or with mail
+              </span>
+            </div>
           </div>
           <form
             onSubmit={handleSubmit(handleLogin)}
@@ -155,11 +159,8 @@ const SignIn: FC = () => {
             </div>
             <div className="-ml-2.5">
               <Checkbox
-                label={
-                  <Typography color="blue-gray" className="text-sm">
-                    Remember Me
-                  </Typography>
-                }
+                label={<Typography className="text-sm">Remember Me</Typography>}
+                className="w-4 h-4"
                 crossOrigin={undefined}
               />
             </div>
@@ -167,7 +168,7 @@ const SignIn: FC = () => {
               sign up
             </Button>
           </form>
-          <div className="mt-4 text-sm text-gray-600 text-center">
+          <div className="mt-4 text-xs text-gray-600 text-center">
             <p>
               You don't have an account?{" "}
               <Link to="/auth/register" className="text-black hover:underline">

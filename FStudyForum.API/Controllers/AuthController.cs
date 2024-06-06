@@ -6,6 +6,7 @@ using FStudyForum.Core.Interfaces.IServices;
 using FStudyForum.Core.Models.Configs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using FStudyForum.Core.Helpers;
 
 namespace FStudyForum.API.Controllers;
 
@@ -86,16 +87,8 @@ public class AuthController : ControllerBase
     {
         try
         {
-            var userName = HttpContext.User?.Identity?.Name;
-            if (userName is null)
-            {
-                throw new Exception("User is not authenticated!");
-            }
-            var refreshToken = await _userService.GetRefreshTokenAsync(userName);
-            if (refreshToken is null)
-            {
-                throw new Exception("Not found refresh token!");
-            }
+            var userName = (HttpContext.User?.Identity?.Name) ?? throw new Exception("User is not authenticated!");
+            var refreshToken = await _userService.GetRefreshTokenAsync(userName) ?? throw new Exception("Not found refresh token!");
             await _userService.RemoveRefreshTokenAsync(refreshToken);
             RemoveTokensInsideCookie(HttpContext);
             return Ok(new Response
@@ -237,7 +230,7 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Register([FromBody] RegisterDTO registerDTO)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
-
+        if (!EmailValidator.IsFptMail(registerDTO.Email)) return BadRequest("Not fpt email");
         var userExists = await _identityService.CheckUserExistsAsync(registerDTO.Email);
         if (userExists)
         {

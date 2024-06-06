@@ -1,10 +1,10 @@
 using System.Text.RegularExpressions;
 
-namespace FStudyForum.API.Extensions;
+namespace FStudyForum.Core.Helpers;
 
 public static class EmailValidator
 {
-    public static bool IsFptMail(this string email)
+    public static bool IsFptMail(string email)
     {
         string pattern = @"^[^\s@]+@fpt\.edu\.vn$";
         Regex emailRegex = new(pattern);

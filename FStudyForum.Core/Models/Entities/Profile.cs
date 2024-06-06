@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using FStudyForum.Core.Constants;
 
 namespace FStudyForum.Core.Models.Entities;
-[Table("Profiles")]
+[Table("tblProfiles")]
 public class Profile : BaseEntity
 {
     [MaxLength(25)]

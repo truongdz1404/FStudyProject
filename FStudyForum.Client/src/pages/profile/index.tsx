@@ -1,6 +1,7 @@
 import ContentLayout from "@/components/layout/ContentLayout";
 import ProfileDescription from "@/components/profile/ProfileDescription";
-import { useAuth } from "@/hooks/useAuth";
+import ProfileService from "@/services/ProfileService";
+import { Profile as ProdileModel } from "@/types/profile";
 import {
   Accordion,
   AccordionBody,
@@ -9,7 +10,7 @@ import {
   Button,
   Typography,
 } from "@material-tailwind/react";
-import { Camera, ChevronDown, ChevronUp, PencilLine, Plus } from "lucide-react";
+import { Camera, PencilLine, Plus } from "lucide-react";
 import React from "react";
 import { Link } from "react-router-dom";
 const tabItems = [
@@ -21,13 +22,19 @@ const tabItems = [
   },
 ];
 const Profile = () => {
-  const { user } = useAuth();
-  const [data] = React.useState([]);
+  const [profile, setProfile] = React.useState<ProdileModel>();
+  React.useEffect(() => {
+    (async () => {
+      const profile = await ProfileService.getProfile();
+      setProfile(profile);
+    })();
+  }, []);
   const [open, setOpen] = React.useState(0);
 
   const handleOpen = (value: number) => setOpen(open === value ? 0 : value);
+  if (!profile) return <></>;
   return (
-    <ContentLayout pannel={<ProfileDescription />}>
+    <ContentLayout pannel={<ProfileDescription profile={profile} />}>
       <div className="flex flex-col items-center w-full mb-24">
         <div className="relative w-full max-w-screen-lg">
           <img
@@ -38,20 +45,20 @@ const Profile = () => {
             <Avatar
               variant="circular"
               size="xxl"
-              alt="tania andrew"
-              src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1480&q=80"
+              alt="avatar user"
+              src={profile?.avatarUrl}
             />
             <div className="absolute bottom-0 right-0 bg-blue-gray-50 rounded-full">
               <Camera className="h-4 w-4 m-1" strokeWidth={1.5} />
             </div>
           </div>
 
-          <div className="absolute bottom-0 right-0 bg-blue-gray-50 rounded-full m-2 font-normal">
+          {/* <div className="absolute bottom-0 right-0 bg-blue-gray-50 rounded-full m-2 font-normal">
             <Camera className="h-4 w-4 m-1 " strokeWidth={1.5} />
-          </div>
+          </div> */}
 
           <div className="absolute left-32 pl-2 font-semibold text-md">
-            No name
+            {profile && profile.firstName + " " + profile.lastName}
           </div>
           <div className="mt-2 absolute right-0">
             <Button
@@ -80,11 +87,10 @@ const Profile = () => {
           onClick={() => handleOpen(1)}
           className="py-0 pb-2 text-md text-black font-semibold !justify-normal"
         >
-          Introduction{" "}
-          {open === 1 ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+          Introduction
         </AccordionHeader>
         <AccordionBody className="py-0 pt-2 ">
-          <ProfileDescription />
+          <ProfileDescription profile={profile} />
           <hr className="mt-4 border-blue-gray-50" />
         </AccordionBody>
       </Accordion>
@@ -113,11 +119,9 @@ const Profile = () => {
       </Button>
       <hr className="my-2 border-blue-gray-50" />
       <div className="flex justify-center h-screen">
-        {data && (
-          <Typography className="text-sm capitalize font-semibold">
-            {user?.userName} hasn't posts yet
-          </Typography>
-        )}
+        <Typography className="text-sm capitalize font-semibold">
+          Hasn't posts yet
+        </Typography>
       </div>
     </ContentLayout>
   );

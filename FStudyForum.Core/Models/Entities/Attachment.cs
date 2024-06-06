@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FStudyForum.Core.Models.Entities;
 
-[Table("Attachments")]
+[Table("tblAttachments")]
 public class Attachment : BaseEntity
 {
     public required string Type { get; set; }
