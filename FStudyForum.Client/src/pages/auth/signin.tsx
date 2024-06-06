@@ -41,7 +41,7 @@ const SignIn: FC = () => {
     let message;
     try {
       message = await AuthService.login(form.username, form.password);
-      const user = await UserService.getInfo();
+      const user = await UserService.getProfile();
       dispatch(signIn({ user }));
       toast.success(String(message)); // Convert message to a string
       navigate("/");
@@ -58,7 +58,7 @@ const SignIn: FC = () => {
       const idToken = response.credential;
       if (!idToken) return;
       const message = await AuthService.loginGoogle(idToken);
-      const user = await UserService.getInfo();
+      const user = await UserService.getProfile();
       dispatch(signIn({ user }));
       toast.success(String(message));
       navigate("/");

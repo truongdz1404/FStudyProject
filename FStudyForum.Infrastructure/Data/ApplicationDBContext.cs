@@ -20,7 +20,7 @@ public class ApplicationDBContext(DbContextOptions options)
         builder.Entity<IdentityUserRole<string>>().ToTable("tblUserRoles");
         builder.Entity<IdentityUserToken<string>>().ToTable("tblUserTokens");
         builder.Entity<IdentityUserLogin<string>>().ToTable("tblUserLogins");
-
+        
         builder.Entity<ApplicationUser>()
             .HasOne(u => u.Profile)
             .WithOne(p => p.User)
@@ -99,11 +99,6 @@ public class ApplicationDBContext(DbContextOptions options)
         }
         builder.Entity<IdentityRole>().HasData(roles);
     }
-    // <<<<<<< HEAD
-    //     public DbSet<ApplicationUser> ApplicationUsers { get; set; }
-    //     public DbSet<Profile> UserProfiles { get; set; }
-    // =======
-    // >>>>>>> 9e3b00c9c3455c98f6b4ceb3cf7638aba0b4c0c8
 
     public DbSet<Profile> Profiles { get; set; }
     public DbSet<Category> Categories { get; set; }
