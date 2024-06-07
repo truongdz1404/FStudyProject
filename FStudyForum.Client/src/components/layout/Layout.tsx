@@ -24,7 +24,7 @@ const Layout = () => {
         </div>
       </div>
       <Drawer open={isSidebarOpen} onClose={closeSidebar}>
-        <Sidebar />
+        <Sidebar handleClose={closeSidebar} />
       </Drawer>
     </div>
   );

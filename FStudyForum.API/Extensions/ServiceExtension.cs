@@ -13,15 +13,21 @@ public static class ServiceExtension
         #region Services
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IProfileService, ProfileService>();
         services.AddScoped<IIdentityService, IdentityService>();
+        services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<ITopicService, TopicService>();
+        services.AddScoped<IPostService, PostService>();
 
         #endregion
 
         #region Repositories
         services.AddTransient<IUserRepository, UserRepository>();
+        services.AddTransient<ITopicRepository, TopicRepository>();
         services.AddTransient<IBaseRepository<Profile>, BaseRepository<Profile>>();
-        services.AddTransient<IUserProfileRepository, UserProfileRepository>();
+        services.AddTransient<IProfileRepository, ProfileRepository>();
         services.AddTransient<IUserProfileService, UserProfileService>();
+        services.AddTransient<IPostRepository, PostRepository>();
         #endregion
         return services;
     }

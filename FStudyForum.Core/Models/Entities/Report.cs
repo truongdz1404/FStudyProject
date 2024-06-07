@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FStudyForum.Core.Models.Entities;
 
-[Table("Reports")]
+[Table("tblReports")]
 public class Report : BaseEntity
 {
     public string Type { get; set; } = string.Empty;

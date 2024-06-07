@@ -5,51 +5,34 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FStudyForum.Infrastructure.Repositories
 {
-    public class UserProfileRepository : BaseRepository<Profile>, IUserProfileRepository 
+    public class ProfileRepository : BaseRepository<Profile>, IProfileRepository
     {
-        public UserProfileRepository(ApplicationDBContext dbContext) : base(dbContext)
+        public ProfileRepository(ApplicationDBContext dbContext) : base(dbContext)
         {
         }
-        
-        public async Task<Profile> GetById<Tid>(Tid id)
+
+        public new async Task<Profile> GetById<Tid>(Tid id)
         {
-            var user = await _dbContext.UserProfiles.Where(u => u.Id.Equals(id)).FirstOrDefaultAsync();          
-            if(user == null)
+            var user = await _dbContext.Profiles.Where(u => u.Id.Equals(id)).FirstOrDefaultAsync();
+            if (user == null)
             {
                 throw new Exception("User not found");
             }
             return user;
         }
-        public Task<PaginatedDataDTO<Profile>> GetPaginatedData(int pageNumber, int pageSize)
+        public async Task<Profile?> GetProfileByName(string? username)
         {
-            throw new NotImplementedException();
-        }
-        public async Task<Profile?> GetProfileByName(string username)
-        {
-            var user = await _dbContext.UserProfiles
-                           .Where(u => u.User.UserName.Equals(username))
+            var user = await _dbContext.Profiles
                            .Include(u => u.User)
+                           .Where(u => (u.User.UserName ?? "NULL").Equals(username))
                            .FirstOrDefaultAsync();
             return user;
         }
-        public Task<bool> IsExists<Tvalue>(string key, Tvalue value)
-        {
-            throw new NotImplementedException();
-        }
 
-        public Task<bool> IsExistsForUpdate<Tid>(Tid id, string key, string value)
-        {
-            throw new NotImplementedException();
-        }
 
-        public Task SaveChangeAsync()
+        public new async Task Update(Profile model)
         {
-            throw new NotImplementedException();
-        }
-
-        public async Task Update(Profile model)
-        {
-            _dbContext.UserProfiles.Update(model);
+            _dbContext.Profiles.Update(model);
             await _dbContext.SaveChangesAsync();
         }
     }

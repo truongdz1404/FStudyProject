@@ -8,3 +8,9 @@ export type ResponseWith<T> = {
     message: object;
     data: T;
 };
+export type ResponseArray<T> = {
+    status: string;
+    message: object;
+    data: T[];
+};
+

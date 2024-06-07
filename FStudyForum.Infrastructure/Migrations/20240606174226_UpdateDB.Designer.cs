@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FStudyForum.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20240604080635_Update")]
-    partial class Update
+    [Migration("20240606174226_UpdateDB")]
+    partial class UpdateDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -21,7 +21,7 @@ namespace FStudyForum.Infrastructure.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("dbo")
-                .HasAnnotation("ProductVersion", "8.0.6")
+                .HasAnnotation("ProductVersion", "8.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -95,7 +95,7 @@ namespace FStudyForum.Infrastructure.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.ToTable("Users", "dbo");
+                    b.ToTable("tblUsers", "dbo");
                 });
 
             modelBuilder.Entity("FStudyForum.Core.Models.Entities.Attachment", b =>
@@ -127,7 +127,7 @@ namespace FStudyForum.Infrastructure.Migrations
 
                     b.HasIndex("PostId");
 
-                    b.ToTable("Attachments", "dbo");
+                    b.ToTable("tblAttachments", "dbo");
                 });
 
             modelBuilder.Entity("FStudyForum.Core.Models.Entities.Category", b =>
@@ -160,7 +160,7 @@ namespace FStudyForum.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories", "dbo");
+                    b.ToTable("tblCategories", "dbo");
                 });
 
             modelBuilder.Entity("FStudyForum.Core.Models.Entities.Comment", b =>
@@ -207,7 +207,7 @@ namespace FStudyForum.Infrastructure.Migrations
 
                     b.HasIndex("ReplyId");
 
-                    b.ToTable("Comments", "dbo");
+                    b.ToTable("tblComments", "dbo");
                 });
 
             modelBuilder.Entity("FStudyForum.Core.Models.Entities.Post", b =>
@@ -249,7 +249,7 @@ namespace FStudyForum.Infrastructure.Migrations
 
                     b.HasIndex("TopicId");
 
-                    b.ToTable("Posts", "dbo");
+                    b.ToTable("tblPosts", "dbo");
                 });
 
             modelBuilder.Entity("FStudyForum.Core.Models.Entities.Profile", b =>
@@ -296,7 +296,7 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Profiles", "dbo");
+                    b.ToTable("tblProfiles", "dbo");
                 });
 
             modelBuilder.Entity("FStudyForum.Core.Models.Entities.Report", b =>
@@ -332,7 +332,7 @@ namespace FStudyForum.Infrastructure.Migrations
 
                     b.HasIndex("CreaterId");
 
-                    b.ToTable("Reports", "dbo");
+                    b.ToTable("tblReports", "dbo");
                 });
 
             modelBuilder.Entity("FStudyForum.Core.Models.Entities.SavedPost", b =>
@@ -362,7 +362,7 @@ namespace FStudyForum.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("SavedPosts", "dbo");
+                    b.ToTable("tblSavedPosts", "dbo");
                 });
 
             modelBuilder.Entity("FStudyForum.Core.Models.Entities.Topic", b =>
@@ -393,7 +393,7 @@ namespace FStudyForum.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Topics", "dbo");
+                    b.ToTable("tblTopics", "dbo");
                 });
 
             modelBuilder.Entity("FStudyForum.Core.Models.Entities.Vote", b =>
@@ -431,7 +431,7 @@ namespace FStudyForum.Infrastructure.Migrations
 
                     b.HasIndex("VoterId");
 
-                    b.ToTable("Votes", "dbo");
+                    b.ToTable("tblVotes", "dbo");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -458,18 +458,18 @@ namespace FStudyForum.Infrastructure.Migrations
                         .HasDatabaseName("RoleNameIndex")
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
-                    b.ToTable("Roles", "dbo");
+                    b.ToTable("tblRoles", "dbo");
 
                     b.HasData(
                         new
                         {
-                            Id = "7481b6ec-a052-4499-8c55-85b1c2e6254a",
+                            Id = "6c6f3124-49f5-4b07-b41f-15d8b1ceb7d6",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "192fae5b-f1fa-4977-b08f-8bddcce9ff67",
+                            Id = "a27ce542-80ee-45ab-bb31-6b6f552c2fe5",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -497,7 +497,7 @@ namespace FStudyForum.Infrastructure.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("RoleClaims", "dbo");
+                    b.ToTable("tblRoleClaims", "dbo");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -522,7 +522,7 @@ namespace FStudyForum.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserClaims", "dbo");
+                    b.ToTable("tblUserClaims", "dbo");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
@@ -544,7 +544,7 @@ namespace FStudyForum.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserLogins", "dbo");
+                    b.ToTable("tblUserLogins", "dbo");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
@@ -559,7 +559,7 @@ namespace FStudyForum.Infrastructure.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("UserRoles", "dbo");
+                    b.ToTable("tblUserRoles", "dbo");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -578,10 +578,10 @@ namespace FStudyForum.Infrastructure.Migrations
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("UserTokens", "dbo");
+                    b.ToTable("tblUserTokens", "dbo");
                 });
 
-            modelBuilder.Entity("TopicCategories", b =>
+            modelBuilder.Entity("tblTopicCategories", b =>
                 {
                     b.Property<long>("CategoriesId")
                         .HasColumnType("bigint");
@@ -593,7 +593,7 @@ namespace FStudyForum.Infrastructure.Migrations
 
                     b.HasIndex("TopicsId");
 
-                    b.ToTable("TopicCategories", "dbo");
+                    b.ToTable("tblTopicCategories", "dbo");
                 });
 
             modelBuilder.Entity("FStudyForum.Core.Models.Entities.Attachment", b =>
@@ -772,7 +772,7 @@ namespace FStudyForum.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("TopicCategories", b =>
+            modelBuilder.Entity("tblTopicCategories", b =>
                 {
                     b.HasOne("FStudyForum.Core.Models.Entities.Category", null)
                         .WithMany()

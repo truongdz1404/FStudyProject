@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
-
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
@@ -27,10 +26,7 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
         options.UseSqlServer(connectionString);
     }
 );
-builder.Services.AddControllers().AddNewtonsoftJson(options =>
-{
-    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
-});
+
 builder.Services.AddCors(options =>
 {
 
@@ -51,8 +47,14 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
         options.Password.RequireUppercase =
             options.Password.RequireLowercase =
                 options.Password.RequireNonAlphanumeric = false;
+
+        options.User.RequireUniqueEmail = true;
+        options.SignIn.RequireConfirmedEmail = true;
+        options.Tokens.PasswordResetTokenProvider = TokenOptions.DefaultEmailProvider;
+        options.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultEmailProvider;
+        options.Tokens.AuthenticatorTokenProvider = TokenOptions.DefaultEmailProvider;
     }
-).AddEntityFrameworkStores<ApplicationDBContext>();
+).AddEntityFrameworkStores<ApplicationDBContext>().AddDefaultTokenProviders();
 
 builder.Services
     .AddAuthentication(options =>
