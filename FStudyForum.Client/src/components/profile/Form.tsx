@@ -125,7 +125,10 @@ const Form: React.FC<HeaderComponentProps> = ({
                     Select a Date
                   </label>
                 </div>
-                {formik.touched.birthDate && formik.errors.birthDate ? (
+                {formik.touched.birthDate 
+                  && formik.errors.birthDate 
+                  && formik.values.birthDate === null 
+                  ? (
                   <div className="text-red-500">{formik.errors.birthDate}</div>
                 ) : null}
               </div>

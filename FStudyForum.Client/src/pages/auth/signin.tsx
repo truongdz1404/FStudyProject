@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import AuthService from "@/services/AuthService";
 import UserService from "@/services/UserService";
 import { Link, useNavigate } from "react-router-dom";
-import { FC } from "react";
+import { FC ,useState } from "react";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
@@ -13,6 +13,8 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AxiosError } from "axios";
 import { Button, Input } from "@material-tailwind/react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 type LoginFormsInputs = {
   username: string;
   password: string;
@@ -35,11 +37,17 @@ const SignIn: FC = () => {
     register,
     handleSubmit,
     formState: { errors },
+    setError
   } = useForm<LoginFormsInputs>({ resolver: yupResolver(validation) });
+  const [loadingAPI, setLoadingAPI] = useState(false); 
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
 
   const handleLogin = async (form: LoginFormsInputs) => {
     let message;
     try {
+      setLoadingAPI(true);
       message = await AuthService.login(form.username, form.password);
       const user = await UserService.getProfile();
       dispatch(signIn({ user }));
@@ -47,11 +55,14 @@ const SignIn: FC = () => {
       navigate("/");
     } catch (error) {
       if (error instanceof AxiosError) {
-        toast.warning(error.message);
+        setError("password", { message: error.message});
       } else {
-        toast.warning("Login failed");
+        console.log("Login failed");
+        setError("password", { message: "Login failed"});
       }
-    }
+    } finally {
+      setLoadingAPI(false);
+    } 
   };
   const handleGoogleLogin = async (response: CredentialResponse) => {
     try {
@@ -65,6 +76,11 @@ const SignIn: FC = () => {
     } catch (error) {
       toast.warning("Login failed");
     }
+  };
+
+  const clearErrors = () => {
+    setError("password", { message: "" });
+    setError("username", { message: "" });
   };
 
   return (
@@ -123,14 +139,14 @@ const SignIn: FC = () => {
                 }}
                 containerProps={{ className: "min-w-[100px]" }}
                 crossOrigin={undefined}
-                {...register("username")}
+                {...register("username", {
+                  onChange: (e) => {
+                    setUsername(e.target.value);
+                    if (errors.password || errors.username)
+                      clearErrors();
+                  }
+                })}
               />
-
-              {errors.username && (
-                <p className={cn("text-red-500 text-xs m-2")}>
-                  {errors.username.message}
-                </p>
-              )}
             </div>
             <div>
               <label
@@ -149,11 +165,17 @@ const SignIn: FC = () => {
                 }}
                 containerProps={{ className: "min-w-[100px]" }}
                 crossOrigin={undefined}
-                {...register("password")}
+                {...register("password", {
+                  onChange: (e) => {
+                    setPassword(e.target.value);
+                    if (errors.password || errors.username)
+                      clearErrors();
+                  }
+                })}
               />
-              {errors.password && (
+              {(errors.password || errors.username) && (
                 <p className="text-red-500 text-xs m-2">
-                  {errors.password.message}
+                  {errors.password?.message || errors.username?.message}
                 </p>
               )}
             </div>
@@ -165,8 +187,14 @@ const SignIn: FC = () => {
                 Forgot password?
               </Link>
             </div>
-            <Button type="submit" className="mt-6" fullWidth>
-              sign in
+            <Button 
+              type="submit" 
+              className="mt-6" 
+              fullWidth
+              disabled={((username && password) || loadingAPI) ? false : true}
+            >
+              {loadingAPI && <FontAwesomeIcon icon={faSpinner} spin />} 
+              {" "}sign in
             </Button>
           </form>
           <div className="mt-4 text-xs text-gray-600 text-center">
