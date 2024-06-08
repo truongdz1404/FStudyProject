@@ -21,7 +21,7 @@ const EditProfile = () => {
   useEffect(() => {
     if (user == null) return;
     const fetchProfile = async () => {
-      const response = await ProfileService.getProfileByUserName(user.userName);
+      const response = await ProfileService.getProfileByUserName(user.username);
       setProfile(response);
     };
     fetchProfile();
@@ -60,7 +60,7 @@ const EditProfile = () => {
         }
         console.log(values.avatarUrl);
         message = await ProfileService.editProfile(
-          String(user?.userName),
+          String(user?.username),
           values as Profile
         );
         console.log(message);
@@ -98,14 +98,12 @@ const EditProfile = () => {
     <div>
       <div className="container mx-auto py-8">
         <div className="grid grid-cols-4 sm:grid-cols-12 gap-6 px-4">
-          {/* Header */}
           <Image
             fileInputRef={fileInputRef}
             profile={profile}
             handleImageClick={handleImageClick}
             handleFileChange={handleFileChange}
           />
-          {/* Body */}
           <Form
             formik={formik}
             fileInputRef={fileInputRef}

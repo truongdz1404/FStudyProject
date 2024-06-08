@@ -1,5 +1,4 @@
 export interface User {
-  userName: string;
-  avatarUrl?: string;
+  username: string;
   roles: Array<string>;
 }

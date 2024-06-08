@@ -25,9 +25,6 @@ import {
 import { cn } from "@/helpers/utils";
 import { Link, useNavigate } from "react-router-dom";
 import { Icons } from "../Icons";
-import { useAuth } from "@/hooks/useAuth";
-
-import defaultAvatar from "@/assets/images/default-avatar.svg";
 
 const profileMenuItems = [
   {
@@ -45,7 +42,6 @@ const profileMenuItems = [
 function ProfileMenu() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const navigate = useNavigate();
-  const { user } = useAuth();
 
   const handleNavigate = (path: string) => {
     navigate(path);
@@ -65,7 +61,7 @@ function ProfileMenu() {
             size="sm"
             alt="tania andrew"
             className="border border-gray-900 p-0.5"
-            src={user?.avatarUrl ?? defaultAvatar}
+            src={""}
           />
         </Button>
       </MenuHandler>

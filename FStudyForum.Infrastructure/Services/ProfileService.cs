@@ -51,7 +51,7 @@ public class ProfileService : IProfileService
         if (profileDto == null || !IsValidProfile(profileDto))
             throw new ArgumentNullException(nameof(profileDto) + "is not valid");
 
-        var appUser = await _userManager.FindByNameAsync(userDto.UserName)
+        var appUser = await _userManager.FindByNameAsync(userDto.Username)
             ?? throw new ArgumentNullException(nameof(userDto) + "is not valid");
 
         if (await NonDuplicatedProfile(appUser))

@@ -50,8 +50,8 @@ public class IdentityService : IIdentityService
     {
         var user = new ApplicationUser()
         {
-            UserName = registerDTO.Email,
-            Email = registerDTO.Email
+            UserName = registerDTO.UserName,
+            Email = registerDTO.UserName
         };
 
         var result = await _userManager.CreateAsync(user, registerDTO.Password);
@@ -192,7 +192,7 @@ public class IdentityService : IIdentityService
 
         return result.Succeeded;
     }
-     public async Task<bool> CheckUserExistsAsync(string email)
+    public async Task<bool> CheckUserExistsAsync(string email)
     {
         var user = await _userManager.FindByEmailAsync(email);
         return user != null;

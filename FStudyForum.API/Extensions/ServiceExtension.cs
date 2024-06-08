@@ -25,7 +25,6 @@ public static class ServiceExtension
         services.AddTransient<ITopicRepository, TopicRepository>();
         services.AddTransient<IBaseRepository<Profile>, BaseRepository<Profile>>();
         services.AddTransient<IProfileRepository, ProfileRepository>();
-        services.AddTransient<IUserProfileService, UserProfileService>();
         #endregion
         return services;
     }
