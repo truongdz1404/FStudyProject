@@ -20,7 +20,7 @@ const ResetPassword = lazy(() => import("@/pages/reset-password"));
 const Profile = lazy(() => import("@/pages/profile"));
 const SignIn = lazy(() => import("@/pages/auth/signin"));
 const Home = lazy(() => import("@/pages/home"));
-const TopicList = lazy(() => import("@/pages/topic"));
+const TopicsPage = lazy(() => import("@/pages/topic"));
 const SignOut = lazy(() => import("@/pages/auth/signout"));
 const Router: FC = () => {
   return useRoutes([
@@ -57,7 +57,7 @@ const Router: FC = () => {
           path: "topics",
           element: (
             <Suspense>
-              <TopicList/>
+              <TopicsPage/>
             </Suspense>
           ),
         },

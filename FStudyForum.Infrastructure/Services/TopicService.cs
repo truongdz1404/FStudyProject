@@ -47,11 +47,9 @@ public class TopicService : ITopicService
 
         if (existingTopic == null)
         {
-            return null;
+            throw new Exception("Topic not found");
         }
-
         _mapper.Map(topicDto, existingTopic);
-
         await _topicRepository.Update(existingTopic);
         await _topicRepository.SaveChangeAsync();
         return topicDto;
