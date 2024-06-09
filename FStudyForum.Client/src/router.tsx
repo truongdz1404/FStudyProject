@@ -6,6 +6,7 @@ import NotFound from "@/components/NotFound";
 import Layout from "@/components/layout/Layout";
 import ProfileGuard from "./helpers/guards/ProfileGuard";
 import NoProfileGuard from "./helpers/guards/NoProfileGuard";
+import Post from "./pages/post";
 
 const CreateProfile = lazy(() => import("@/pages/profile/create"));
 const EditProfile = lazy(() => import("@/pages/profile/edit"));
@@ -52,7 +53,7 @@ const Router: FC = () => {
         },
         {
           path: "posts",
-          element: <>Posts</>,
+          element: <Post />,
         },
         {
           path: "topics",

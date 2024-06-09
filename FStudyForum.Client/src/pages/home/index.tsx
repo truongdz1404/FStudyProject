@@ -17,6 +17,7 @@ const Home: React.FC = () => {
     });
     if (node) observer.current.observe(node);
   };
+  
   useEffect(() => {
     const fetchPosts = async () => {
       const response = await PostService.getPosts(page);
@@ -58,6 +59,7 @@ const Home: React.FC = () => {
         </div>
       </div>
       ))}
+      <img src="" alt="not found" />
     </div>
   );
 };

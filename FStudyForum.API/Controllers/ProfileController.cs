@@ -86,6 +86,7 @@ namespace FStudyForum.API.Controllers
         }
 
         [HttpPut("edit/{username}")]
+        [Authorize]
         public async Task<IActionResult> UpdateProfile([FromRoute] string? username, [FromBody] ProfileDTO profileDTO)
         {
             try

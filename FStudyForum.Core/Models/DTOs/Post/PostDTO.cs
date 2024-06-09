@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FStudyForum.Core.Models.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,5 +12,6 @@ namespace FStudyForum.Core.Models.DTOs.Post
         public string Title { get; set; } = string.Empty;
         public string Content { get; set; } = string.Empty;
         public bool IsDeleted { get; set; } = false;
+        public virtual IEnumerable<Vote> Votes { get; set; } = [];
     }
 }

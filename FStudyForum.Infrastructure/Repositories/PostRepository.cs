@@ -44,9 +44,9 @@ namespace FStudyForum.Infrastructure.Repositories
         public async Task<PaginatedDataDTO<Post>> GetPaginatedData(int pageNumber, int pageSize)
         {
             var query = _dbContext.Posts
-            .Skip((pageNumber - 1) * pageSize)
-            .Take(pageSize)
-            .AsNoTracking();
+              .AsNoTracking()                
+              .Skip((pageNumber - 1) * pageSize)  
+              .Take(pageSize);
             var data = await query.ToListAsync();
             var totalCount = await _dbContext.Posts.CountAsync();
             return new PaginatedDataDTO<Post>(data, totalCount);
