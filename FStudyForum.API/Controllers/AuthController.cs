@@ -153,7 +153,14 @@ public class AuthController : ControllerBase
                 Secure = true,
                 SameSite = SameSiteMode.Strict
             });
-
+        if (context.Response.Headers.ContainsKey(_jwtConfig.AccessTokenKey))
+        {
+            context.Response.Headers[_jwtConfig.AccessTokenKey] = tokenDTO.AccessToken;
+        }
+        else
+        {
+            context.Response.Headers.Append(_jwtConfig.AccessTokenKey, tokenDTO.AccessToken);
+        }
         const string refreshTokenPath = "/api/auth/refresh-token";
         context.Response.Cookies.Append(_jwtConfig.RefreshTokenKey, tokenDTO.RefreshToken,
             new CookieOptions

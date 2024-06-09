@@ -5,6 +5,7 @@ import NotFound from "@/components/NotFound";
 import Layout from "@/components/layout/Layout";
 import ProfileGuard from "./helpers/guards/ProfileGuard";
 import NoProfileGuard from "./helpers/guards/NoProfileGuard";
+import SignInGuard from "./helpers/guards/signin/SignInGuard";
 
 const CreateProfile = lazy(() => import("@/pages/profile/create"));
 const EditProfile = lazy(() => import("@/pages/profile/edit"));
@@ -104,9 +105,11 @@ const Router: FC = () => {
         {
           path: "signin",
           element: (
-            <Suspense>
-              <SignIn />
-            </Suspense>
+            <SignInGuard restricted={true}>
+              <Suspense>
+                <SignIn />
+              </Suspense>
+            </SignInGuard>
           ),
         },
         {
