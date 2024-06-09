@@ -3,6 +3,7 @@ using FStudyForum.Core.Models.DTOs.Paging;
 using FStudyForum.Core.Models.Entities;
 using FStudyForum.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace FStudyForum.Infrastructure.Repositories
 {
@@ -16,6 +17,12 @@ namespace FStudyForum.Infrastructure.Repositories
             _dbContext.Topics.Update(model);
             await _dbContext.SaveChangesAsync();
         }
+        // public IQueryable<Topic> GetAllTopics()
+        // {
+        //     var topics = _dbContext.Topics.Include(t => t.Categories).ToList();
+        //     return (IQueryable<Topic>)topics;
+
+        // }
         public new async Task<Topic> Create(Topic model)
         {
             using (var transaction = await _dbContext.Database.BeginTransactionAsync())
@@ -34,6 +41,16 @@ namespace FStudyForum.Infrastructure.Repositories
                 }
             }
         }
+
+        public async Task<List<Topic>> GetAllTopics()
+        {
+            var topics = await _dbContext.Topics
+                                    .Include(t => t.Categories)
+                                    .ToListAsync();
+
+            return topics;
+        }
+
 
 
     }

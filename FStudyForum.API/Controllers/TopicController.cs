@@ -2,6 +2,7 @@
 using FStudyForum.Core.Interfaces.IServices;
 using System.Threading.Tasks;
 using FStudyForum.Core.Models.DTOs.Topic;
+using FStudyForum.Infrastructure.Services;
 
 namespace FStudyForum.API.Controllers
 {
@@ -10,6 +11,7 @@ namespace FStudyForum.API.Controllers
     public class TopicController : ControllerBase
     {
         private readonly ITopicService _topicService;
+          
 
         // Constructor
         public TopicController(ITopicService topicService)
@@ -25,7 +27,7 @@ namespace FStudyForum.API.Controllers
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> CreateTopic([FromBody] TopicDTO topicDto)
+        public async Task<IActionResult> CreateTopic([FromBody] CreateTopicDTO topicDto)
         {
             if (ModelState.IsValid)
             {

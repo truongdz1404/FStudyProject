@@ -10,6 +10,7 @@ const CreateProfile = lazy(() => import("@/pages/profile/create"));
 const EditProfile = lazy(() => import("@/pages/profile/edit"));
 const Register = lazy(() => import("@/pages/auth/register"));
 const ConfirmEmail = lazy(() => import("@/pages/auth/confirm-email"));
+const TopicDetail = lazy(() => import("@/pages/topic/TopicDetail/TopicDetail"));
 const ChangePassword = lazy(
   () => import("@/pages/reset-password/change-password")
 );
@@ -61,7 +62,14 @@ const Router: FC = () => {
             </Suspense>
           ),
         },
-        
+        {
+          path: "topic/detail/:id", 
+          element: (
+            <Suspense>
+              <TopicDetail />
+            </Suspense>
+          ),
+        },
         {
           path: "profile",
           children: [

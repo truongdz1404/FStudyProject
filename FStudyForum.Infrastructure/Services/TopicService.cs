@@ -26,7 +26,7 @@ public class TopicService : ITopicService
         var activeTopicDTOs = _mapper.Map<List<TopicDTO>>(activeTopics);
         return activeTopicDTOs;
     }
-    public async Task<TopicDTO> CreateTopic(TopicDTO topicDto)
+    public async Task<TopicDTO> CreateTopic(CreateTopicDTO topicDto)
     {
         var topic = _mapper.Map<Topic>(topicDto);
         var createdTopic = await _topicRepository.Create(topic);
@@ -54,8 +54,6 @@ public class TopicService : ITopicService
         await _topicRepository.SaveChangeAsync();
         return topicDto;
     }
-
-
     public async Task<bool> DeleteTopic(long id)
     {
         var topic = await _topicRepository.GetById(id);
@@ -70,5 +68,9 @@ public class TopicService : ITopicService
         return true;
     }
 
+    // public Task<List<TopicDTO>> GetAllActiveCategory()
+    // {
+    //     throw new NotImplementedException();
+    // }
 }
 
