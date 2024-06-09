@@ -1,24 +1,27 @@
 import { User } from "@/types/user";
 import api from "./api";
-import { ResponseWith } from "@/types/response";
+import { Response, ResponseWith } from "@/types/response";
 
 const getProfile = async () => {
   const response = await api.get<ResponseWith<User>>("/user/profile");
   return response.data.data;
 };
 
-const forgotPassword = async (email: string): Promise<void> => {
-  await api.post<void>("/auth/forgot-password", { email });
+const forgotPassword = async (email: string) => {
+  await api.post("/auth/forgot-password", { email });
 };
 
 const changePassword = async (
   token: string,
   email: string,
-  newPassword: string
-): Promise<void> => {
-  await api.post<void>(`/auth/change-password?token=${token}&email=${email}`, {
-    newPassword,
+  password: string
+) => {
+  const response = await api.post<Response>("/auth/change-password", {
+    token,
+    email,
+    password,
   });
+  return response.data.message;
 };
 const UserService = {
   getProfile,

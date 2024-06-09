@@ -27,7 +27,8 @@ namespace FStudyForum.API.Controllers
         {
             try
             {
-                var userName = User.FindFirstValue(ClaimTypes.Name) ?? throw new Exception("User is not authenticated!");
+                var userName = User.FindFirstValue(ClaimTypes.Name)
+                    ?? throw new Exception("User is not authenticated!");
                 var profile = await _profileService.GetProfileByUserName(userName);
                 return Ok(new Response
                 {
@@ -129,7 +130,7 @@ namespace FStudyForum.API.Controllers
             {
                 var username = User.FindFirstValue(ClaimTypes.Name)
                     ?? throw new UnauthorizedAccessException("User is not authenticated!");
-                var userDto = await _userService.GetUserByUserName(username);
+                var userDto = await _userService.GetProfileByUserName(username);
                 var createdProfile = await _profileService.InsertIntoProfile(profile, userDto);
                 return Ok(new Response
                 {

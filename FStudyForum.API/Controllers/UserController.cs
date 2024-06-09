@@ -30,7 +30,7 @@ public class UserController : ControllerBase
         {
             Status = ResponseStatus.SUCCESS,
             Message = "Get profile successfully!",
-            Data = await _userService.GetUserByUserName(userName)
+            Data = await _userService.GetProfileByUserName(userName)
         });
     }
 }

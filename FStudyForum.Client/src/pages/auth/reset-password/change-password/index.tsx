@@ -1,28 +1,22 @@
-import AuthService from "@/services/AuthService";
 import { FC } from "react";
-import * as Yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
-import { checkEmail, cn } from "@/helpers/utils";
-import { Button, Input } from "@material-tailwind/react";
-import { Link, useNavigate } from "react-router-dom";
+import UserService from "@/services/UserService";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as Yup from "yup";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Icons } from "@/components/Icons";
+import { cn } from "@/helpers/utils";
+import { Button, Input } from "@material-tailwind/react";
 import React from "react";
 import { AxiosError } from "axios";
 import { Response } from "@/types/response";
 
-type RegisterFormInputs = {
-  username: string;
+type ChangePasswordFormInputs = {
   password: string;
   confirmPassword: string;
 };
 
 const validation = Yup.object().shape({
-  username: Yup.string()
-    .required("Email is required")
-    .test("is-mailFPT", "Email must have @fpt.edu.vn", (value) => {
-      return checkEmail(value);
-    }),
   password: Yup.string()
     .required("Password is required")
     .length(8, "Password must have at least 8 characters"),
@@ -31,25 +25,36 @@ const validation = Yup.object().shape({
     .oneOf([Yup.ref("password")], "Confirm password do not match"),
 });
 
-const SignUp: FC = () => {
+const ChangePassword: FC = () => {
   const navigate = useNavigate();
-  const [error, setError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState("");
+
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const token = searchParams.get("token");
+  const email = searchParams.get("email");
+
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<RegisterFormInputs>({
+  } = useForm<ChangePasswordFormInputs>({
     mode: "onTouched",
     resolver: yupResolver(validation),
   });
 
-  const handleRegister = async (form: RegisterFormInputs) => {
+  const handleChange = async (form: ChangePasswordFormInputs) => {
+    if (!token || !email) {
+      navigate("/auth/signin");
+      setLoading(false);
+      return;
+    }
+
     try {
-      setError("");
       setLoading(true);
-      await AuthService.register(form.username, form.password);
-      navigate(`/auth/confirm-email?email=${form.username}`);
+      await UserService.changePassword(token, email, form.password);
+      navigate("/auth/signin");
     } catch (e) {
       const error = e as AxiosError;
       setError((error?.response?.data as Response)?.message || error.message);
@@ -60,37 +65,11 @@ const SignUp: FC = () => {
 
   return (
     <>
-      <div className="flex flex-col mb-4 items-center">
-        <Icons.logo className="w-10 h-10" />
-        <span className="font-bold text-xl">Register</span>
+      <div className="text-center mb-8">
+        <Icons.logo className="w-10 h-10 mx-auto" />
+        <p className="text-lg font-semibold">Change your password</p>
       </div>
-      <form onSubmit={handleSubmit(handleRegister)} className="space-y-4">
-        <div>
-          <label htmlFor="username" className="block font-semibold text-sm m-1">
-            Username
-          </label>
-          <Input
-            id="username"
-            type="email"
-            placeholder="Email Address"
-            className={cn(
-              "!border !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent placeholder:opacity-100",
-              " focus:!border-gray-900 focus:!border-t-gray-900 focus:ring-gray-900/10  placeholder:text-gray-500",
-              Boolean(errors?.username?.message) &&
-                "focus:!border-red-600 focus:!border-t-red-600 focus:ring-red-600/10 !border-red-500  placeholder:text-red-500"
-            )}
-            labelProps={{ className: "hidden" }}
-            disabled={loading}
-            crossOrigin={undefined}
-            {...register("username")}
-          />
-
-          {errors.username && (
-            <span className={cn("text-red-500 text-xs ml-1")}>
-              {errors.username.message}
-            </span>
-          )}
-        </div>
+      <form onSubmit={handleSubmit(handleChange)} className="space-y-4">
         <div>
           <label
             htmlFor="password"
@@ -152,31 +131,25 @@ const SignUp: FC = () => {
             {error}
           </span>
         )}
-        <div>
-          <Button
-            type="submit"
-            className="mt-6 normal-case text-sm text-center"
-            fullWidth
-            disabled={loading}
-          >
-            Register
-          </Button>
-        </div>
+        <Button
+          type="submit"
+          className="mt-6 text-sm normal-case"
+          fullWidth
+          disabled={loading}
+        >
+          Change
+        </Button>
       </form>
-
-      <div className="mt-4 text-xs text-gray-600 text-center">
-        <span>
-          Already have an account?{" "}
-          <Link
-            to="/auth/signin"
-            className="font-medium text-black hover:underline "
-          >
+      <div className="text-center mt-6">
+        <p className="text-xs text-gray-600">
+          Go back to{" "}
+          <Link to="/auth/signin" className="hover:underline text-black">
             Sign in
           </Link>
-        </span>
+        </p>
       </div>
     </>
   );
 };
 
-export default SignUp;
+export default ChangePassword;

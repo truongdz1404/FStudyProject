@@ -54,7 +54,8 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
         options.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultEmailProvider;
         options.Tokens.AuthenticatorTokenProvider = TokenOptions.DefaultEmailProvider;
     }
-).AddEntityFrameworkStores<ApplicationDBContext>().AddDefaultTokenProviders();
+).AddEntityFrameworkStores<ApplicationDBContext>()
+.AddDefaultTokenProviders();
 
 builder.Services
     .AddAuthentication(options =>

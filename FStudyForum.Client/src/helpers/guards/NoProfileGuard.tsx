@@ -13,7 +13,7 @@ const NoProfileGuard: FC<PropsWithChildren> = ({ children }) => {
     const checkProfile = async () => {
       let profile;
       try {
-        profile = await ProfileService.getProfileByUserName(user.userName);
+        profile = await ProfileService.getProfileByUserName(user.username);
       } catch (error: unknown) {
         console.error(error);
       }
