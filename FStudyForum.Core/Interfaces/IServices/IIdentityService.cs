@@ -4,7 +4,7 @@ namespace FStudyForum.Core.Interfaces.IServices;
 
 public interface IIdentityService
 {
-    Task<(bool isSucceed, string userId)> CreateUserAsync(RegisterDTO registerDTO, List<string> roles);
+    Task<bool> CreateUserAsync(RegisterDTO registerDTO, List<string> roles);
     Task<bool> SigninUserAsync(LoginDTO loginDTO);
     Task<string> GetUserIdAsync(string userName);
     Task<string> GetUserNameAsync(string userId);
@@ -21,7 +21,7 @@ public interface IIdentityService
     Task<bool> AssignUserToRole(string userName, IList<string> roles);
 
     Task<bool> UpdateUsersRole(string userName, IList<string> usersRole);
-    Task<bool> CheckUserExistsAsync(string email);
+    Task<(bool, bool)> CheckUserExistsWithEmailConfirmedAsync(string email);
     Task<string> GenerateEmailConfirmationTokenAsync(string email);
     Task<bool> ConfirmEmailAsync(string email, string token);
 }

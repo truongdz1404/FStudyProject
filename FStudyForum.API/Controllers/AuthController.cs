@@ -221,16 +221,17 @@ public class AuthController : ControllerBase
                 Message = "Change password successfully"
             });
         }
-        catch (Exception)
+        catch
         {
             return BadRequest(new Response
             {
                 Status = ResponseStatus.SUCCESS,
-                Message = "Email or token is invalid"
+                Message = "Error resetting password."
             });
         }
-
     }
+
+
 
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterDTO registerDTO)
@@ -244,17 +245,30 @@ public class AuthController : ControllerBase
                 Message = "Email must be FPT email"
             });
         }
-        var userExists = await _identityService.CheckUserExistsAsync(registerDTO.Username);
+
+        var (userExists, isConfirmed) = await _identityService.CheckUserExistsWithEmailConfirmedAsync(registerDTO.Username);
         if (userExists)
         {
             return BadRequest(new Response
             {
-                Status = ResponseStatus.ERROR,
-                Message = "Email already exists"
+                Status = ResponseStatus.SUCCESS,
+                Message = "User already exists"
             });
         }
-
-        var (isSucceed, userId) = await _identityService.CreateUserAsync(registerDTO, [UserRole.User]);
+        if (userExists && !isConfirmed)
+        {
+            var userId = await _identityService.GetUserIdAsync(registerDTO.Username);
+            var result = await _identityService.DeleteUserAsync(userId);
+            if (!result)
+            {
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = "An error occurred while deleting the existing user"
+                });
+            }
+        }
+        var isSucceed = await _identityService.CreateUserAsync(registerDTO, [UserRole.User]);
         if (!isSucceed)
         {
             return StatusCode(500, new Response
@@ -279,7 +293,7 @@ public class AuthController : ControllerBase
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        var userExists = await _identityService.CheckUserExistsAsync(email);
+        var userExists = await _userService.CheckEmailExistedAsync(email);
         if (!userExists)
         {
             return BadRequest(new Response
