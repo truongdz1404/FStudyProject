@@ -225,7 +225,7 @@ public class AuthController : ControllerBase
 
         return BadRequest(new Response
         {
-            Status = ResponseStatus.SUCCESS,
+            Status = ResponseStatus.ERROR,
             Message = "Error resetting password."
         });
     }
@@ -237,17 +237,29 @@ public class AuthController : ControllerBase
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
         if (!EmailValidator.IsFptMail(registerDTO.Email)) return BadRequest("Not fpt email");
-        var userExists = await _identityService.CheckUserExistsAsync(registerDTO.Email);
-        if (userExists)
+        var (userExists, isConfirmed) = await _identityService.CheckUserExistsWithEmailConfirmedAsync(registerDTO.Email);
+        if (userExists && isConfirmed)
         {
             return BadRequest(new Response
             {
-                Status = ResponseStatus.SUCCESS,
+                Status = ResponseStatus.ERROR,
                 Message = "User already exists"
             });
         }
-
-        var (isSucceed, userId) = await _identityService.CreateUserAsync(registerDTO, [UserRole.User]);
+        if (userExists && !isConfirmed)
+        {
+            var userId = await _identityService.GetUserIdAsync(registerDTO.Email);
+            var result = await _identityService.DeleteUserAsync(userId);
+             if (!result)
+            {
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = "An error occurred while deleting the existing user"
+                });
+            }
+        }
+        var isSucceed = await _identityService.CreateUserAsync(registerDTO, [UserRole.User]);
         if (!isSucceed)
         {
             return StatusCode(500, new Response
@@ -271,7 +283,7 @@ public class AuthController : ControllerBase
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        var userExists = await _identityService.CheckUserExistsAsync(resendEmailDTO.Email);
+        var userExists = await _userService.CheckEmailExistedAsync(resendEmailDTO.Email);
         if (!userExists)
         {
             return BadRequest(new Response
