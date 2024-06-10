@@ -10,6 +10,7 @@ public class MapperProfile : AutoMapper.Profile
     {
         CreateMap<ApplicationUser, UserDTO>();
         CreateMap<Topic, TopicDTO>().ReverseMap();
+        CreateMap<CreateTopicDTO, Topic>().ForMember(dest => dest.Categories, opt => opt.Ignore());
         CreateMap<ProfileDTO, Profile>().ReverseMap();
     }
 }

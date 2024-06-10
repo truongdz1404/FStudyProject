@@ -17,7 +17,7 @@ public static class ServiceExtension
         services.AddScoped<IIdentityService, IdentityService>();
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<ITopicService, TopicService>();
-
+        
         #endregion
 
         #region Repositories

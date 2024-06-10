@@ -11,6 +11,6 @@ public class Category : BaseEntity
     public required string Description { get; set; }
     [MaxLength(50)]
     public required string Type { get; set; }
-    public virtual IEnumerable<Topic> Topics { get; set; } = [];
+    public virtual IEnumerable<Topic> Topics { get; set; } = new List<Topic>();
 
 }

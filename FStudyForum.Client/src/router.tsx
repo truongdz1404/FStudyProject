@@ -10,6 +10,7 @@ import AuthLayout from "./components/layout/AuthLayout";
 const Welcome = lazy(() => import("@/pages/welcome"));
 const Register = lazy(() => import("@/pages/auth/register"));
 const ConfirmEmail = lazy(() => import("@/pages/auth/confirm-email"));
+const TopicDetail = lazy(() => import("@/pages/topic/TopicDetail/TopicDetail"));
 const ChangePassword = lazy(
   () => import("@/pages/auth/reset-password/change-password")
 );
@@ -18,7 +19,7 @@ const ResetPassword = lazy(() => import("@/pages/auth/reset-password"));
 const Profile = lazy(() => import("@/pages/profile"));
 const SignIn = lazy(() => import("@/pages/auth/signin"));
 const Home = lazy(() => import("@/pages/home"));
-const TopicList = lazy(() => import("@/pages/topic"));
+const TopicsPage = lazy(() => import("@/pages/topic"));
 const SignOut = lazy(() => import("@/pages/auth/signout"));
 const Router: FC = () => {
   return useRoutes([
@@ -53,7 +54,15 @@ const Router: FC = () => {
           path: "topics",
           element: (
             <Suspense>
-              <TopicList />
+              <TopicsPage/>
+            </Suspense>
+          ),
+        },
+        {
+          path: "topic/detail/:id", 
+          element: (
+            <Suspense>
+              <TopicDetail />
             </Suspense>
           ),
         },
