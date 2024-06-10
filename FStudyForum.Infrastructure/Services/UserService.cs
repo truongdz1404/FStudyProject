@@ -72,7 +72,7 @@ public class UserService : IUserService
         return await CreateAuthTokenAsync(user);
     }
 
-    public async Task<UserDTO> GetUserByUserName(string userName)
+    public async Task<UserDTO> GetProfileByUserName(string userName)
     {
         var user = await _userManager.FindByNameAsync(userName)
             ?? throw new Exception("UserName is invalid");
@@ -84,9 +84,7 @@ public class UserService : IUserService
     public async Task<UserDTO?> FindOrCreateUserAsync(ExternalAuthDTO externalAuth, List<string> roles)
     {
         var payload = await _tokenService.VerifyGoogleToken(externalAuth);
-
-        if (payload == null || !EmailValidator.IsFptMail(payload.Email)) return null;
-
+        if (payload == null || !EmailValidator.IsFptMail(payload.Email)) throw new Exception("Email must be FPT email");
         var info = new UserLoginInfo(externalAuth.Provider, payload.Subject, externalAuth.Provider);
         var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
         if (user == null)
@@ -96,10 +94,11 @@ public class UserService : IUserService
             {
                 user = new ApplicationUser { Email = payload.Email, UserName = payload.Email, EmailConfirmed = true };
                 await _userManager.CreateAsync(user);
-                //TODO: Prepare and send an email for the email confirmation
                 await _userManager.AddToRolesAsync(user, roles);
+                await _userManager.AddLoginAsync(user, info);
             }
-            await _userManager.AddLoginAsync(user, info);
+            else
+                throw new Exception("Email already exists");
         }
         return user == null ? null : _mapper.Map<UserDTO>(user);
     }
@@ -107,26 +106,20 @@ public class UserService : IUserService
     public async Task<bool> CheckEmailExistedAsync(string email)
     {
         var user = await _userManager.FindByEmailAsync(email);
+
         return user != null;
     }
 
-       public async Task<string> GeneratePasswordResetTokenAsync(string email)
+    public async Task<string> GeneratePasswordResetTokenAsync(string email)
     {
-        var user = await _userManager.FindByEmailAsync(email);
-         if (user == null)
-        {
-            throw new NotFoundException("User not found");
-        }
+        var user = await _userManager.FindByEmailAsync(email) ?? throw new NotFoundException("User not found");
         return await _userManager.GeneratePasswordResetTokenAsync(user);
     }
 
 
-    public async Task<IdentityResult> ResetPasswordAsync(ResetPasswordModelDTO model)
+    public async Task<IdentityResult> ChangePasswordAsync(ChangePasswordDTO model)
     {
-        var user = await _userManager.FindByEmailAsync(model.Email);
-        if (user == null)
-            return IdentityResult.Failed(new IdentityError { Description = "User not found" });
-
+        var user = await _userManager.FindByEmailAsync(model.Email) ?? throw new Exception("User not found");
         return await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
     }
     public async Task RemoveRefreshTokenAsync(string refreshToken)

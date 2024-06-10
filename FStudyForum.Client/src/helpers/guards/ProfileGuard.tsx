@@ -25,7 +25,7 @@ const ProfileGuard: FC<PropsWithChildren> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     if (user == null) return;
-    checkHadProfile(user.userName, setIsVerified, setIsLoading);
+    checkHadProfile(user.username, setIsVerified, setIsLoading);
   }, [user]);
   if (isLoading) return <Loading />;
   if (!isVerified) {

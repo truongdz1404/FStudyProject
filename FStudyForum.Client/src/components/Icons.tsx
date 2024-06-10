@@ -54,5 +54,3 @@ export const Icons = {
   ),
   commentReply: MessageSquare,
 };
-
-// export default Icons;

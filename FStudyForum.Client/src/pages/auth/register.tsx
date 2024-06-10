@@ -4,165 +4,178 @@ import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import { checkEmail, cn } from "@/helpers/utils";
-import "react-toastify/dist/ReactToastify.css";
-import { AxiosError } from "axios";
 import { Button, Input } from "@material-tailwind/react";
 import { Link, useNavigate } from "react-router-dom";
+import { Icons } from "@/components/Icons";
+import React from "react";
+import { AxiosError } from "axios";
+import { Response } from "@/types/response";
 
 type RegisterFormInputs = {
-  email: string;
+  username: string;
   password: string;
   confirmPassword: string;
 };
 
 const validation = Yup.object().shape({
-  email: Yup.string().required("Email is required").test("is-mailFPT", "Email must have @fpt.edu.vn", (value) => {
-    return checkEmail(value);
-  }),
-  password: Yup.string().required("Password is required"),
-  confirmPassword: Yup.string().oneOf([Yup.ref("password"), undefined], "Passwords must match").defined(),
+  username: Yup.string()
+    .required("Email is required")
+    .test("is-mailFPT", "Email must have @fpt.edu.vn", (value) => {
+      return checkEmail(value);
+    }),
+  password: Yup.string()
+    .required("Password is required")
+    .length(8, "Password must have at least 8 characters"),
+  confirmPassword: Yup.string()
+    .required("Confirm password is required")
+    .oneOf([Yup.ref("password")], "Confirm password do not match"),
 });
 
 const SignUp: FC = () => {
   const navigate = useNavigate();
-
+  const [error, setError] = React.useState("");
+  const [loading, setLoading] = React.useState(false);
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<RegisterFormInputs>({ resolver: yupResolver(validation) });
+  } = useForm<RegisterFormInputs>({
+    mode: "onTouched",
+    resolver: yupResolver(validation),
+  });
 
   const handleRegister = async (form: RegisterFormInputs) => {
     try {
-       await AuthService.register(form.email, form.password);
-      navigate(`/auth/confirm-email?email=${form.email}`);
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        console.error(error.message);
-      } else {
-        console.error("Register failed!");
-      }
+      setError("");
+      setLoading(true);
+      await AuthService.register(form.username, form.password);
+      navigate(`/auth/confirm-email?email=${form.username}`);
+    } catch (e) {
+      const error = e as AxiosError;
+      setError((error?.response?.data as Response)?.message || error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="flex h-screen font-inter">
-      <div
-        className={cn("w-full  lg:w-1/2", "flex items-center justify-center")}
-      >
-        <div className="max-w-md p-6">
-          <h1
-            className={cn("text-3xl font-bold mb-6", " text-black text-center")}
+    <>
+      <div className="flex flex-col mb-4 items-center">
+        <Icons.logo className="w-10 h-10" />
+        <span className="font-bold text-xl">Register</span>
+      </div>
+      <form onSubmit={handleSubmit(handleRegister)} className="space-y-4">
+        <div>
+          <label htmlFor="username" className="block font-semibold text-sm m-1">
+            Username
+          </label>
+          <Input
+            id="username"
+            type="email"
+            placeholder="Email Address"
+            className={cn(
+              "!border !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent placeholder:opacity-100",
+              " focus:!border-gray-900 focus:!border-t-gray-900 focus:ring-gray-900/10  placeholder:text-gray-500",
+              Boolean(errors?.username?.message) &&
+                "focus:!border-red-600 focus:!border-t-red-600 focus:ring-red-600/10 !border-red-500  placeholder:text-red-500"
+            )}
+            labelProps={{ className: "hidden" }}
+            disabled={loading}
+            crossOrigin={undefined}
+            {...register("username")}
+          />
+
+          {errors.username && (
+            <span className={cn("text-red-500 text-xs ml-1")}>
+              {errors.username.message}
+            </span>
+          )}
+        </div>
+        <div>
+          <label
+            htmlFor="password"
+            className="block font-semibold  text-sm m-1"
+          >
+            Password
+          </label>
+          <Input
+            id="password"
+            type="password"
+            placeholder="Password"
+            className={cn(
+              "!border !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent placeholder:opacity-100",
+              " focus:!border-gray-900 focus:!border-t-gray-900 focus:ring-gray-900/10  placeholder:text-gray-500",
+              Boolean(errors?.password?.message) &&
+                "focus:!border-red-600 focus:!border-t-red-600 focus:ring-red-600/10 !border-red-500  placeholder:text-red-500"
+            )}
+            labelProps={{ className: "hidden" }}
+            disabled={loading}
+            crossOrigin={undefined}
+            {...register("password")}
+          />
+          {errors.password && (
+            <span className="text-red-500 text-xs ml-1">
+              {errors.password.message}
+            </span>
+          )}
+        </div>
+        <div>
+          <label
+            htmlFor="confirmPassword"
+            className="block text-sm font-semibold m-1"
+          >
+            Confirm password
+          </label>
+          <Input
+            id="confirmPassword"
+            type="password"
+            placeholder="Cofirm password"
+            className={cn(
+              "!border !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent placeholder:opacity-100",
+              " focus:!border-gray-900 focus:!border-t-gray-900 focus:ring-gray-900/10  placeholder:text-gray-500",
+              Boolean(errors?.confirmPassword?.message) &&
+                "focus:!border-red-600 focus:!border-t-red-600 focus:ring-red-600/10 !border-red-500  placeholder:text-red-500"
+            )}
+            labelProps={{ className: "hidden" }}
+            disabled={loading}
+            crossOrigin={undefined}
+            {...register("confirmPassword")}
+          />
+          {errors.confirmPassword && (
+            <span className="text-red-500 text-xs ml-1">
+              {errors.confirmPassword.message}
+            </span>
+          )}
+        </div>
+        {error && (
+          <span className="flex items-center tracking-wide text-xs text-red-500 mt-1 ml-1">
+            {error}
+          </span>
+        )}
+        <div>
+          <Button
+            type="submit"
+            className="mt-6 normal-case text-sm text-center"
+            fullWidth
+            disabled={loading}
           >
             Register
-          </h1>
-          <h1
-            className={cn(
-              "text-sm font-semibold mb-6",
-              " text-gray-500 text-center"
-            )}
-          >
-            Join to Our Community with all time access and free
-          </h1>
-          <div className={cn("mt-4 flex flex-col lg:flex-row justify-center")}>
-          </div>
-          <form
-            onSubmit={handleSubmit(handleRegister)}
-            method="POST"
-            className="space-y-4"
-          >
-            <div>
-              <label
-                htmlFor="username"
-                className="block text-sm font-semibold m-1"
-              >
-                Username
-              </label>
-              <Input
-                type="email"
-                id="username"
-                placeholder="Email Address"
-                className={cn(
-                  "!border !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-gray-900 focus:!border-t-gray-900 focus:ring-gray-900/10"
-                )}
-                labelProps={{
-                  className: "hidden",
-                }}
-                containerProps={{ className: "min-w-[100px]" }}
-                crossOrigin={undefined}
-                {...register("email")}
-              />
-
-              {errors.email && (
-                <p className={cn("text-red-500 text-xs m-2")}>
-                  {errors.email.message}
-                </p>
-              )}
-            </div>
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-semibold m-1"
-              >
-                Password
-              </label>
-              <Input
-                type="password"
-                id="password"
-                placeholder="Password"
-                className="!border !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-gray-900 focus:!border-t-gray-900 focus:ring-gray-900/10"
-                labelProps={{
-                  className: "hidden",
-                }}
-                containerProps={{ className: "min-w-[100px]" }}
-                crossOrigin={undefined}
-                {...register("password")}
-              />
-              {errors.password && (
-                <p className="text-red-500 text-xs m-2">
-                  {errors.password.message}
-                </p>
-              )}
-            </div>
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-semibold m-1"
-              >
-                Confirm Password
-              </label>
-              <Input
-                type="password"
-                id="confirmPassword"
-                placeholder="Confirm Password"
-                className="!border !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-gray-900 focus:!border-t-gray-900 focus:ring-gray-900/10"
-                labelProps={{
-                  className: "hidden",
-                }}
-                containerProps={{ className: "min-w-[100px]" }}
-                crossOrigin={undefined}
-                {...register("confirmPassword")}
-              />
-              {errors.confirmPassword && (
-                <p className="text-red-500 text-xs m-2">
-                  {errors.confirmPassword.message}
-                </p>
-              )}
-            </div>
-            <Button type="submit" className="mt-6" fullWidth>
-              Register
-            </Button>
-          </form>
-
-          <div className="mt-4 text-xs text-gray-600 text-center">
-            <p>
-              Already have an account?{" "}
-              <Link to="/auth/signin" className="font-medium text-black hover:underline "> Sign in</Link>
-            </p>
-          </div>
+          </Button>
         </div>
+      </form>
+
+      <div className="mt-4 text-xs text-gray-600 text-center">
+        <span>
+          Already have an account?{" "}
+          <Link
+            to="/auth/signin"
+            className="font-medium text-black hover:underline "
+          >
+            Sign in
+          </Link>
+        </span>
       </div>
-    </div>
+    </>
   );
 };
 

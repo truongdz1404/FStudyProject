@@ -9,10 +9,11 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 import { checkEmail, cn } from "@/helpers/utils";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { AxiosError } from "axios";
 import { Button, Input } from "@material-tailwind/react";
+import { Icons } from "@/components/Icons";
+import React from "react";
+import { Response } from "@/types/response";
 type LoginFormsInputs = {
   username: string;
   password: string;
@@ -30,156 +31,161 @@ const validation = Yup.object().shape({
 const SignIn: FC = () => {
   const { dispatch } = useAuth();
   const navigate = useNavigate();
-
+  const [error, setError] = React.useState("");
+  const [loading, setLoading] = React.useState(false);
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginFormsInputs>({ resolver: yupResolver(validation) });
+  } = useForm<LoginFormsInputs>({
+    mode: "onTouched",
+    resolver: yupResolver(validation),
+  });
 
   const handleLogin = async (form: LoginFormsInputs) => {
-    let message;
     try {
-      message = await AuthService.login(form.username, form.password);
-      const user = await UserService.getInfo();
+      setError("");
+      setLoading(true);
+      await AuthService.login(form.username, form.password);
+      const user = await UserService.getProfile();
       dispatch(signIn({ user }));
-      toast.success(String(message)); // Convert message to a string
       navigate("/");
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        toast.warning(error.message);
-      } else {
-        toast.warning("Login failed");
-      }
+    } catch (e) {
+      const error = e as AxiosError;
+      setError((error?.response?.data as Response)?.message || error.message);
+    } finally {
+      setLoading(false);
     }
   };
+
   const handleGoogleLogin = async (response: CredentialResponse) => {
     try {
+      setError("");
+      setLoading(true);
       const idToken = response.credential;
       if (!idToken) return;
-      const message = await AuthService.loginGoogle(idToken);
-      const user = await UserService.getInfo();
+      await AuthService.loginGoogle(idToken);
+      const user = await UserService.getProfile();
       dispatch(signIn({ user }));
-      toast.success(String(message));
       navigate("/");
-    } catch (error) {
-      toast.warning("Login failed");
+    } catch (e) {
+      const error = e as AxiosError;
+      setError((error?.response?.data as Response)?.message || error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="flex h-screen ">
-      <div
-        className={cn("w-full lg:w-1/2", "flex items-center justify-center")}
-      >
-        <div className="max-w-md p-6">
-          <h1
-            className={cn("text-3xl font-bold mb-6", " text-black text-center")}
-          >
-            Sign In
-          </h1>
-          <h1 className={cn("text-sm mb-6", " text-gray-500 text-center")}>
-            Join to Our Community with all time access and free
-          </h1>
-          <div className={cn("mt-4 flex flex-col lg:flex-row justify-center")}>
-            <GoogleLogin
-              onSuccess={handleGoogleLogin}
-              onError={() => {
-                console.log("Login Failed");
-              }}
-            />
-          </div>
-          <div className="relative py-4">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-b border-gray-300"></div>
-            </div>
-            <div className="relative flex justify-center">
-              <span className="bg-white px-4 text-xs text-gray-600">
-                Or with mail
-              </span>
-            </div>
-          </div>
-          <form
-            onSubmit={handleSubmit(handleLogin)}
-            method="POST"
-            className="space-y-4"
-          >
-            <div>
-              <label
-                htmlFor="username"
-                className="block text-sm font-semibold m-1"
-              >
-                Username
-              </label>
-              <Input
-                type="email"
-                id="username"
-                placeholder="Email Address"
-                className={cn(
-                  "!border !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-gray-900 focus:!border-t-gray-900 focus:ring-gray-900/10"
-                )}
-                labelProps={{
-                  className: "hidden",
-                }}
-                containerProps={{ className: "min-w-[100px]" }}
-                crossOrigin={undefined}
-                {...register("username")}
-              />
+    <>
+      <div className="flex flex-col mb-4 items-center">
+        <Icons.logo className="w-10 h-10" />
+        <span className="font-bold text-xl">Login</span>
+      </div>
 
-              {errors.username && (
-                <p className={cn("text-red-500 text-xs m-2")}>
-                  {errors.username.message}
-                </p>
-              )}
-            </div>
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-semibold m-1"
-              >
-                Password
-              </label>
-              <Input
-                type="password"
-                id="password"
-                placeholder="Password"
-                className="!border !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-gray-900 focus:!border-t-gray-900 focus:ring-gray-900/10"
-                labelProps={{
-                  className: "hidden",
-                }}
-                containerProps={{ className: "min-w-[100px]" }}
-                crossOrigin={undefined}
-                {...register("password")}
-              />
-              {errors.password && (
-                <p className="text-red-500 text-xs m-2">
-                  {errors.password.message}
-                </p>
-              )}
-            </div>
-            <div className="flex justify-end">
-              <Link
-                className="text-xs text-black hover:underline"
-                to={"/reset-password"}
-              >
-                Forgot password?
-              </Link>
-            </div>
-            <Button type="submit" className="mt-6" fullWidth>
-              sign in
-            </Button>
-          </form>
-          <div className="mt-4 text-xs text-gray-600 text-center">
-            <p>
-              You don't have an account?{" "}
-              <Link to="/auth/register" className="text-black hover:underline">
-                Register
-              </Link>
-            </p>
-          </div>
+      <form onSubmit={handleSubmit(handleLogin)} className="space-y-4">
+        <div>
+          <label htmlFor="username" className="block text-sm font-semibold m-1">
+            Username
+          </label>
+          <Input
+            type="email"
+            id="username"
+            placeholder="Email Address"
+            className={cn(
+              "!border !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent placeholder:opacity-100",
+              " focus:!border-gray-900 focus:!border-t-gray-900 focus:ring-gray-900/10  placeholder:text-gray-500",
+              Boolean(errors?.username?.message) &&
+                "focus:!border-red-600 focus:!border-t-red-600 focus:ring-red-600/10 !border-red-500  placeholder:text-red-500"
+            )}
+            labelProps={{ className: "hidden" }}
+            crossOrigin={undefined}
+            disabled={loading}
+            {...register("username")}
+          />
+
+          {errors.username && (
+            <span className={cn("text-red-500 text-xs ml-1")}>
+              {errors.username.message}
+            </span>
+          )}
+        </div>
+        <div>
+          <label htmlFor="password" className="block text-sm font-semibold m-1">
+            Password
+          </label>
+          <Input
+            type="password"
+            id="password"
+            placeholder="Password"
+            className={cn(
+              "!border !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent placeholder:opacity-100",
+              "focus:!border-gray-900 focus:!border-t-gray-900 focus:ring-gray-900/10  placeholder:text-gray-500",
+              Boolean(errors?.password?.message) &&
+                "focus:!border-red-700 focus:!border-t-red-700 focus:ring-red-600/10 !border-red-500  placeholder:text-red-500"
+            )}
+            labelProps={{ className: "hidden" }}
+            crossOrigin={undefined}
+            disabled={loading}
+            {...register("password")}
+          />
+          {errors.password && (
+            <span className="text-red-500 text-xs ml-1">
+              {errors.password.message}
+            </span>
+          )}
+        </div>
+        {error && (
+          <span className="flex items-center tracking-wide text-xs text-red-500 mt-1 ml-1">
+            {error}
+          </span>
+        )}
+        <div className="flex justify-end">
+          <Link
+            className="text-xs text-black hover:underline"
+            to={"/auth/reset-password"}
+          >
+            Forgot password?
+          </Link>
+        </div>
+
+        <Button
+          type="submit"
+          className="mt-6 text-sm normal-case"
+          fullWidth
+          disabled={loading}
+        >
+          Sign in
+        </Button>
+      </form>
+      <div className="mt-4 text-xs text-gray-600 text-center">
+        <p>
+          You don't have an account?{" "}
+          <Link to="/auth/register" className="text-black hover:underline">
+            Register
+          </Link>
+        </p>
+      </div>
+      <div className="relative py-4">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-b border-gray-300"></div>
+        </div>
+        <div className="relative flex justify-center">
+          <span className="bg-white px-4 text-xs text-gray-600">
+            Or continue with
+          </span>
         </div>
       </div>
-    </div>
+      <div className={cn("w-full flex justify-center font-inter")}>
+        <GoogleLogin
+          onSuccess={handleGoogleLogin}
+          onError={() => {
+            console.log("Login Failed");
+          }}
+          width={"120"}
+        />
+      </div>
+    </>
   );
 };
 export default SignIn;

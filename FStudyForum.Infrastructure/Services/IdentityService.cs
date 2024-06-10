@@ -50,8 +50,8 @@ public class IdentityService : IIdentityService
     {
         var user = new ApplicationUser()
         {
-            UserName = registerDTO.Email,
-            Email = registerDTO.Email
+            UserName = registerDTO.UserName,
+            Email = registerDTO.UserName
         };
 
         var result = await _userManager.CreateAsync(user, registerDTO.Password);
@@ -201,17 +201,6 @@ public class IdentityService : IIdentityService
         }
         return (false, false);
     }
-    // public async Task<bool> CheckEmailConfirmedAsync(string email)
-    // {
-    //     if (await CheckUserExistsAsync(email))
-    //     {
-    //         var user = await _userManager.FindByEmailAsync(email);
-
-    //     }
-    //     return user.EmailConfirmed;
-    // }
-
-
 
     public async Task<string> GenerateEmailConfirmationTokenAsync(string email)
     {
