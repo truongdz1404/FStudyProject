@@ -35,7 +35,7 @@ const Sidebar: FC<SidebarProps> = ({ handleClose }) => {
     <Card
       color="transparent"
       shadow={false}
-      className="min-h-screen w-full rounded-none shadow-xl shadow-blue-gray-900/5"
+      className="min-h-screen w-full rounded-none shadow-md shadow-blue-gray-900/5 border-r"
     >
       <List>
         {sidebarListItems.map(({ label, icon, path }) => (

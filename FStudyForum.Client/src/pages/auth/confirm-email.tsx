@@ -55,7 +55,9 @@ const ConfirmEmail: FC = () => {
           {countdown > 0 && (
             <span className="text-xs">
               If you don't receive email, you can resend it in{" "}
-              <span className="text-black font-semibold">{countdown}</span>{" "}
+              <span className="text-deep-orange-600 font-bold">
+                {countdown}
+              </span>{" "}
               seconds.
             </span>
           )}
@@ -73,9 +75,12 @@ const ConfirmEmail: FC = () => {
         </p>
 
         <p className="mt-6 text-gray-600 text-xs">
-          Back to{" "}
-          <Link to="/auth/signin" className="text-black hover:underline">
-            Login
+          Go back to{" "}
+          <Link
+            to="/auth/signin"
+            className="text-deep-orange-600 font-bold hover:underline"
+          >
+            Sign in
           </Link>
         </p>
       </div>

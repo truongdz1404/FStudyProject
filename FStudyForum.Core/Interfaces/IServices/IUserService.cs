@@ -6,7 +6,7 @@ namespace FStudyForum.Core.Interfaces.IServices;
 
 public interface IUserService
 {
-    Task<UserDTO> GetProfileByUserName(string userName);
+    Task<UserDTO> GetProfileByName(string userName);
     Task<UserDTO?> FindOrCreateUserAsync(ExternalAuthDTO externalAuth, List<string> roles);
     Task<TokenDTO> CreateAuthTokenAsync(string userName, int expDays = -1);
     Task<TokenDTO> RefeshAuthTokenAsync(string refeshToken);

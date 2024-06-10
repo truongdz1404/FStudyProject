@@ -1,5 +1,5 @@
 import { FC } from "react";
-import Panel from "../Panel";
+import Panel from "./Panel";
 
 type PageLayoutProps = {
   pannel?: React.ReactNode;

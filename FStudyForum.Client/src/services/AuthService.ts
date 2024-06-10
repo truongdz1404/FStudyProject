@@ -37,11 +37,25 @@ const refreshToken = async () => {
 
 const resendEmail = async (email: string) => {
   const response = await api.post<Response>(
-    `/auth/resend-confirm-email?email=${email}`,
-    {
-      params: { email },
-    }
+    `/auth/resend-confirm-email?email=${email}`
   );
+  return response.data.message;
+};
+
+const forgotPassword = async (email: string) => {
+  await api.post("/auth/forgot-password", { email });
+};
+
+const changePassword = async (
+  token: string,
+  email: string,
+  password: string
+) => {
+  const response = await api.post<Response>("/auth/change-password", {
+    token,
+    email,
+    password,
+  });
   return response.data.message;
 };
 
@@ -52,6 +66,8 @@ const AuthService = {
   logout,
   register,
   resendEmail,
+  forgotPassword,
+  changePassword,
 };
 
 export default AuthService;

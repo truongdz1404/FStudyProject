@@ -188,8 +188,10 @@ namespace FStudyForum.Infrastructure.Migrations
                     FirstName = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: false),
                     Gender = table.Column<int>(type: "int", nullable: false),
-                    BirthDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    AvatarUrl = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Major = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Bio = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Avatar = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Banner = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
@@ -472,8 +474,8 @@ namespace FStudyForum.Infrastructure.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "2b6a3760-67c4-4d8d-97dd-edae3ac2fe6d", null, "Admin", "ADMIN" },
-                    { "5a94a933-4cee-4d48-a539-ae85706807ed", null, "User", "USER" }
+                    { "84841df8-0baa-4127-b754-191e8992110e", null, "User", "USER" },
+                    { "ef8f2ccd-5b5e-4bd9-8857-9fb93b2e1f6e", null, "Admin", "ADMIN" }
                 });
 
             migrationBuilder.CreateIndex(

@@ -17,7 +17,11 @@ const AuthLayout = () => {
           </FadeInUp>
         </div>
       </div>
-      <div className="hidden w-1/2 lg:flex items-center justify-center bg-gradient-to-r from-red-300 via-orange-300 to-yellow-300">
+      <div
+        className={cn(
+          "hidden w-1/2 lg:flex items-center justify-center bg-gradient-to-r from-red-400 via-orange-300 to-yellow-300"
+        )}
+      >
         <img className="w-96 mx-auto my-auto" src={Thumbnail} />
       </div>
     </div>

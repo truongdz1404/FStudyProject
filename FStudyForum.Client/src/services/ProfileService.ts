@@ -1,36 +1,22 @@
 import { ServerResponse } from "@/contexts/auth/types";
 import api from "./api";
-import { ResponseWith } from "@/types/response";
-import axios, { AxiosError } from "axios";
-import { ProfileDTO, Profile } from "@/types/profile";
+import { Response, ResponseWith } from "@/types/response";
+import { AxiosError } from "axios";
+import { Profile } from "@/types/profile";
 
-const getProfile = async () => {
-  const response = await api.get<ResponseWith<ProfileDTO>>("/profile");
+const getByUsername = async (username: string) => {
+  const response = await api.get<ResponseWith<Profile>>(`/profile/${username}`);
   return response.data.data;
 };
-
-const getProfileByUserName = async (userName: string) => {
-  try {
-    const response = await api.get<ResponseWith<Profile>>(
-      `/profile/${userName}`
-    );
-    return response.data.data;
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response?.status === 404) {
-      throw new AxiosError("Profile not found, please create a profile first.");
-    }
-    throw error;
-  }
-};
-const editProfile = async (username: string, profile: Profile) => {
+const update = async (username: string, profile: Profile) => {
   let response;
   try {
     response = await api.put<Response>(`/profile/edit/${username}`, {
       firstName: profile.firstName,
       lastName: profile.lastName,
       gender: profile.gender,
-      birthDate: profile.birthDate,
-      avatarUrl: profile.avatarUrl,
+      // birthDate: profile.birthDate,
+      // avatarUrl: profile.avatarUrl,
     });
     return response.data;
   } catch (error: unknown) {
@@ -45,14 +31,13 @@ const editProfile = async (username: string, profile: Profile) => {
     }
   }
 };
-const createProfile = async (profile: Profile) => {
+const create = async (profile: Profile) => {
   const response = await api.post<Response>(`/profile/create`, profile);
   return response.data;
 };
 const ProfileService = {
-  getProfile,
-  getProfileByUserName,
-  editProfile,
-  createProfile,
+  getByUsername,
+  update,
+  create,
 };
 export default ProfileService;

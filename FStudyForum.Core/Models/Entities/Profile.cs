@@ -6,17 +6,18 @@ namespace FStudyForum.Core.Models.Entities;
 [Table("tblProfiles")]
 public class Profile : BaseEntity
 {
-
     [MaxLength(25)]
     public required string FirstName { get; set; }
     [MaxLength(25)]
     public required string LastName { get; set; }
     public Gender Gender { get; set; }
-    public DateTime BirthDate { get; set; }
+    public string Major { get; set; } = string.Empty;
+    public string Bio { get; set; } = string.Empty;
     [MaxLength(255)]
-    public string AvatarUrl { get; set; } = string.Empty;
+    public string Avatar { get; set; } = string.Empty;
+    [MaxLength(255)]
+    public string Banner { get; set; } = string.Empty;
     public required virtual ApplicationUser User { get; set; }
-
 }
 
 

@@ -50,8 +50,8 @@ public class IdentityService : IIdentityService
     {
         var user = new ApplicationUser()
         {
-            UserName = registerDTO.UserName,
-            Email = registerDTO.UserName
+            UserName = registerDTO.Username,
+            Email = registerDTO.Username
         };
 
         var result = await _userManager.CreateAsync(user, registerDTO.Password);
@@ -200,22 +200,15 @@ public class IdentityService : IIdentityService
 
     public async Task<string> GenerateEmailConfirmationTokenAsync(string email)
     {
-        var user = await _userManager.FindByEmailAsync(email);
-        if (user == null)
-        {
-            throw new NotFoundException("User not found");
-        }
+        var user = await _userManager.FindByEmailAsync(email)
+            ?? throw new NotFoundException("User not found by email");
         return await _userManager.GenerateEmailConfirmationTokenAsync(user);
     }
 
     public async Task<bool> ConfirmEmailAsync(string email, string token)
     {
-        var user = await _userManager.FindByEmailAsync(email);
-        if (user == null)
-        {
-            throw new NotFoundException("User not found");
-        }
-
+        var user = await _userManager.FindByEmailAsync(email)
+            ?? throw new NotFoundException("User not found by email");
         var result = await _userManager.ConfirmEmailAsync(user, token);
         return result.Succeeded;
     }

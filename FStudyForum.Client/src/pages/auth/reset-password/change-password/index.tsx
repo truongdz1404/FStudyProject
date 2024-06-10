@@ -1,6 +1,5 @@
 import { FC } from "react";
 import { useForm } from "react-hook-form";
-import UserService from "@/services/UserService";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -10,6 +9,8 @@ import { Button, Input } from "@material-tailwind/react";
 import React from "react";
 import { AxiosError } from "axios";
 import { Response } from "@/types/response";
+import AuthService from "@/services/AuthService";
+import { CircleAlert } from "lucide-react";
 
 type ChangePasswordFormInputs = {
   password: string;
@@ -53,7 +54,7 @@ const ChangePassword: FC = () => {
 
     try {
       setLoading(true);
-      await UserService.changePassword(token, email, form.password);
+      await AuthService.changePassword(token, email, form.password);
       navigate("/auth/signin");
     } catch (e) {
       const error = e as AxiosError;
@@ -71,11 +72,8 @@ const ChangePassword: FC = () => {
       </div>
       <form onSubmit={handleSubmit(handleChange)} className="space-y-4">
         <div>
-          <label
-            htmlFor="password"
-            className="block font-semibold  text-sm m-1"
-          >
-            Password
+          <label htmlFor="password" className="block text-gray-700 text-sm m-1">
+            New password
           </label>
           <Input
             id="password"
@@ -93,15 +91,15 @@ const ChangePassword: FC = () => {
             {...register("password")}
           />
           {errors.password && (
-            <span className="text-red-500 text-xs ml-1">
-              {errors.password.message}
+            <span className="text-red-500 text-xs mt-1 ml-1 flex gap-x-1 items-center">
+              <CircleAlert className="w-3 h-3" /> {errors.password.message}
             </span>
           )}
         </div>
         <div>
           <label
             htmlFor="confirmPassword"
-            className="block text-sm font-semibold m-1"
+            className="block text-sm text-gray-700 m-1"
           >
             Confirm password
           </label>
@@ -121,14 +119,15 @@ const ChangePassword: FC = () => {
             {...register("confirmPassword")}
           />
           {errors.confirmPassword && (
-            <span className="text-red-500 text-xs ml-1">
+            <span className="text-red-500 text-xs mt-1 ml-1 flex gap-x-1 items-center">
+              <CircleAlert className="w-3 h-3" />
               {errors.confirmPassword.message}
             </span>
           )}
         </div>
         {error && (
-          <span className="flex items-center tracking-wide text-xs text-red-500 mt-1 ml-1">
-            {error}
+          <span className="flex items-center tracking-wide text-xs text-red-500 mt-1 ml-1 gap-x-1">
+            <CircleAlert className="w-3 h-3" /> {error}
           </span>
         )}
         <Button
@@ -136,6 +135,8 @@ const ChangePassword: FC = () => {
           className="mt-6 text-sm normal-case"
           fullWidth
           disabled={loading}
+          variant="gradient"
+          color="deep-orange"
         >
           Change
         </Button>
@@ -143,7 +144,10 @@ const ChangePassword: FC = () => {
       <div className="text-center mt-6">
         <p className="text-xs text-gray-600">
           Go back to{" "}
-          <Link to="/auth/signin" className="hover:underline text-black">
+          <Link
+            to="/auth/signin"
+            className="hover:underline text-deep-orange-600 font-bold"
+          >
             Sign in
           </Link>
         </p>

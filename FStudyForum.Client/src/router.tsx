@@ -3,12 +3,11 @@ import { Navigate, useRoutes } from "react-router-dom";
 import AuthGuard from "@/helpers/guards/AuthGuard";
 import NotFound from "@/components/NotFound";
 import Layout from "@/components/layout/Layout";
-import ProfileGuard from "./helpers/guards/ProfileGuard";
-import NoProfileGuard from "./helpers/guards/NoProfileGuard";
+import WelcomeGuard from "./helpers/guards/WelcomeGuard";
 import AuthLayout from "./components/layout/AuthLayout";
 
-// const CreateProfile = lazy(() => import("@/pages/profile/create"));
 // const EditProfile = lazy(() => import("@/pages/profile/edit"));
+const Welcome = lazy(() => import("@/pages/welcome"));
 const Register = lazy(() => import("@/pages/auth/register"));
 const ConfirmEmail = lazy(() => import("@/pages/auth/confirm-email"));
 const ChangePassword = lazy(
@@ -27,9 +26,9 @@ const Router: FC = () => {
       path: "/",
       element: (
         <AuthGuard>
-          <ProfileGuard>
+          <WelcomeGuard>
             <Layout />
-          </ProfileGuard>
+          </WelcomeGuard>
         </AuthGuard>
       ),
 
@@ -58,7 +57,6 @@ const Router: FC = () => {
             </Suspense>
           ),
         },
-
         {
           path: "profile",
           children: [
@@ -79,16 +77,13 @@ const Router: FC = () => {
       ],
     },
     {
-      path: "/profile/create",
+      path: "welcome",
       element: (
-        <AuthGuard>
-          <NoProfileGuard>
-            <Suspense>{/* <CreateProfile /> */}</Suspense>
-          </NoProfileGuard>
-        </AuthGuard>
+        <Suspense>
+          <Welcome />
+        </Suspense>
       ),
     },
-
     {
       path: "auth",
       element: <AuthLayout />,

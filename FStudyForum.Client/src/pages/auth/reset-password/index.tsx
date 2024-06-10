@@ -1,6 +1,5 @@
 import { FC } from "react";
 import { useForm } from "react-hook-form";
-import UserService from "@/services/UserService";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { checkEmail, cn } from "@/helpers/utils";
 import * as Yup from "yup";
@@ -10,6 +9,8 @@ import { Icons } from "@/components/Icons";
 import { AxiosError } from "axios";
 import { Response } from "@/types/response";
 import React from "react";
+import AuthService from "@/services/AuthService";
+import { CircleAlert } from "lucide-react";
 
 type ForgotPasswordFormInputs = {
   email: string;
@@ -63,7 +64,7 @@ const ForgotPassword: FC = () => {
       setError("");
       setLoading(true);
       setCanSend(false);
-      await UserService.forgotPassword(form.email);
+      await AuthService.forgotPassword(form.email);
     } catch (e) {
       setCanSend(true);
       const error = e as AxiosError;
@@ -101,13 +102,18 @@ const ForgotPassword: FC = () => {
             {...register("email")}
           />
           {errors.email && (
-            <span className={cn("text-red-500 text-xs ml-1")}>
-              {errors.email.message}
+            <span
+              className={cn(
+                "text-red-500 text-xs mt-1 ml-1 flex gap-x-1 items-center"
+              )}
+            >
+              <CircleAlert className="w-3 h-3" /> {errors.email.message}
             </span>
           )}
         </div>
         {error && (
-          <span className="flex items-center tracking-wide text-xs text-red-500 mt-1 ml-1">
+          <span className="flex items-center tracking-wide text-xs text-red-500 mt-1 ml-1 gap-x-1">
+            <CircleAlert className="w-3 h-3" />
             {error}
           </span>
         )}
@@ -122,6 +128,8 @@ const ForgotPassword: FC = () => {
           type="submit"
           className="mt-4 text-sm normal-case"
           disabled={loading || !canSend}
+          variant="gradient"
+          color="deep-orange"
           fullWidth
         >
           Send instructions
@@ -130,7 +138,10 @@ const ForgotPassword: FC = () => {
       <div className="ml-1 mt-6">
         <p className="text-xs text-gray-600">
           Go back to{" "}
-          <Link to="/auth/signin" className="hover:underline text-black">
+          <Link
+            to="/auth/signin"
+            className="hover:underline text-deep-orange-600 font-bold"
+          >
             Sign in
           </Link>
         </p>

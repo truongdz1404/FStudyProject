@@ -3,7 +3,7 @@ import { FC, PropsWithChildren } from "react";
 
 const Panel: FC<PropsWithChildren> = ({ children }) => {
   return (
-    <Card className="min-h-[20rem] mx-4 rounded-sm shadow-sm bg-blue-gray-50 p-4">
+    <Card className="min-h-72 mx-4 rounded-sm shadow-sm bg-blue-gray-50 p-4">
       {children}
     </Card>
   );

@@ -10,6 +10,7 @@ import { Icons } from "@/components/Icons";
 import React from "react";
 import { AxiosError } from "axios";
 import { Response } from "@/types/response";
+import { CircleAlert } from "lucide-react";
 
 type RegisterFormInputs = {
   username: string;
@@ -19,13 +20,13 @@ type RegisterFormInputs = {
 
 const validation = Yup.object().shape({
   username: Yup.string()
-    .required("Email is required")
+    .required("Username is required")
     .test("is-mailFPT", "Email must have @fpt.edu.vn", (value) => {
       return checkEmail(value);
     }),
   password: Yup.string()
     .required("Password is required")
-    .length(8, "Password must have at least 8 characters"),
+    .min(8, "Password must have at least 8 characters"),
   confirmPassword: Yup.string()
     .required("Confirm password is required")
     .oneOf([Yup.ref("password")], "Confirm password do not match"),
@@ -62,11 +63,11 @@ const SignUp: FC = () => {
     <>
       <div className="flex flex-col mb-4 items-center">
         <Icons.logo className="w-10 h-10" />
-        <span className="font-bold text-xl">Register</span>
+        <span className="font-bold text-lg">Register</span>
       </div>
       <form onSubmit={handleSubmit(handleRegister)} className="space-y-4">
         <div>
-          <label htmlFor="username" className="block font-semibold text-sm m-1">
+          <label htmlFor="username" className="block text-gray-700 text-sm m-1">
             Username
           </label>
           <Input
@@ -86,16 +87,17 @@ const SignUp: FC = () => {
           />
 
           {errors.username && (
-            <span className={cn("text-red-500 text-xs ml-1")}>
-              {errors.username.message}
+            <span
+              className={cn(
+                "text-red-500 text-xs mt-1 ml-1 flex gap-x-1 items-center"
+              )}
+            >
+              <CircleAlert className="w-3 h-3" /> {errors.username.message}
             </span>
           )}
         </div>
         <div>
-          <label
-            htmlFor="password"
-            className="block font-semibold  text-sm m-1"
-          >
+          <label htmlFor="password" className="block text-gray-700 text-sm m-1">
             Password
           </label>
           <Input
@@ -114,15 +116,15 @@ const SignUp: FC = () => {
             {...register("password")}
           />
           {errors.password && (
-            <span className="text-red-500 text-xs ml-1">
-              {errors.password.message}
+            <span className="text-red-500 text-xs mt-1 ml-1 flex gap-x-1 items-center">
+              <CircleAlert className="w-3 h-3" /> {errors.password.message}
             </span>
           )}
         </div>
         <div>
           <label
             htmlFor="confirmPassword"
-            className="block text-sm font-semibold m-1"
+            className="block text-sm text-gray-700 m-1"
           >
             Confirm password
           </label>
@@ -142,14 +144,15 @@ const SignUp: FC = () => {
             {...register("confirmPassword")}
           />
           {errors.confirmPassword && (
-            <span className="text-red-500 text-xs ml-1">
+            <span className="text-red-500 text-xs mt-1 ml-1 flex gap-x-1 items-center">
+              <CircleAlert className="w-3 h-3" />
               {errors.confirmPassword.message}
             </span>
           )}
         </div>
         {error && (
-          <span className="flex items-center tracking-wide text-xs text-red-500 mt-1 ml-1">
-            {error}
+          <span className="flex items-center tracking-wide text-xs text-red-500 mt-1 ml-1 gap-x-1 ">
+            <CircleAlert className="w-3 h-3" /> {error}
           </span>
         )}
         <div>
@@ -158,6 +161,8 @@ const SignUp: FC = () => {
             className="mt-6 normal-case text-sm text-center"
             fullWidth
             disabled={loading}
+            variant="gradient"
+            color="deep-orange"
           >
             Register
           </Button>
@@ -169,7 +174,7 @@ const SignUp: FC = () => {
           Already have an account?{" "}
           <Link
             to="/auth/signin"
-            className="font-medium text-black hover:underline "
+            className="text-deep-orange-600 font-bold hover:underline "
           >
             Sign in
           </Link>

@@ -236,7 +236,7 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Register([FromBody] RegisterDTO registerDTO)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
-        if (!EmailValidator.IsFptMail(registerDTO.UserName))
+        if (!EmailValidator.IsFptMail(registerDTO.Username))
         {
             return BadRequest(new Response
             {
@@ -244,7 +244,7 @@ public class AuthController : ControllerBase
                 Message = "Email must be FPT email"
             });
         }
-        var userExists = await _identityService.CheckUserExistsAsync(registerDTO.UserName);
+        var userExists = await _identityService.CheckUserExistsAsync(registerDTO.Username);
         if (userExists)
         {
             return BadRequest(new Response
@@ -264,21 +264,22 @@ public class AuthController : ControllerBase
             });
         }
 
-        await SendConfirmationEmailAsync(registerDTO.UserName);
+        var token = await SendConfirmationEmailAsync(registerDTO.Username);
 
         return Ok(new Response
         {
             Status = ResponseStatus.SUCCESS,
-            Message = "Registration successful, please check your email to confirm your account"
+            Message = "Registration successful, please check your email to confirm your account",
+            Data = token
         });
     }
 
     [HttpPost("resend-confirm-email")]
-    public async Task<IActionResult> ResendConfirmationEmail([FromQuery] ResendEmailDTO resendEmailDTO)
+    public async Task<IActionResult> ResendConfirmationEmail([FromQuery] string email)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        var userExists = await _identityService.CheckUserExistsAsync(resendEmailDTO.Email);
+        var userExists = await _identityService.CheckUserExistsAsync(email);
         if (!userExists)
         {
             return BadRequest(new Response
@@ -288,19 +289,20 @@ public class AuthController : ControllerBase
             });
         }
 
-        await SendConfirmationEmailAsync(resendEmailDTO.Email);
+        var token = await SendConfirmationEmailAsync(email);
 
         return Ok(new Response
         {
             Status = ResponseStatus.SUCCESS,
-            Message = "Confirmation email resent, please check your email to confirm your account"
+            Message = "Confirmation email resent, please check your email to confirm your account",
+            Data = token
         });
     }
 
-    private async Task SendConfirmationEmailAsync(string email)
+    private async Task<string> SendConfirmationEmailAsync(string email)
     {
-        var emailConfirmationToken = await _identityService.GenerateEmailConfirmationTokenAsync(email);
-        var confirmationLink = Url.Action("confirm-email", "auth", new { token = emailConfirmationToken, email = email, action = "register" }, Request.Scheme);
+        var token = await _identityService.GenerateEmailConfirmationTokenAsync(email);
+        var confirmationLink = Url.Action(nameof(ConfirmEmail), "auth", new { token, email, action = "register" }, Request.Scheme);
         var emailContent =
             $@"<p>Dear user, {email}</p>
             <p>Welcome to FStudy!</p>
@@ -308,21 +310,31 @@ public class AuthController : ControllerBase
             <p><a href='{confirmationLink}'>Confirm Email</a></p>";
 
         await _emailService.SendEmailAsync(email, "Confirm your email", emailContent);
+        return token;
     }
 
     [HttpGet("confirm-email")]
-    public async Task<IActionResult> ConfirmEmail(string token, string email)
+    public async Task<IActionResult> ConfirmEmail([FromQuery] string token, [FromQuery] string email)
     {
-        var result = await _identityService.ConfirmEmailAsync(email, token);
-        if (result)
+        try
         {
-            return Redirect("http://localhost:3000");
+            var result = await _identityService.ConfirmEmailAsync(email, token);
+            if (!result) throw new Exception("Email or token invalid");
+            return Redirect(_jwtConfig.Audience);
+            // return Ok(new Response
+            // {
+            //     Status = ResponseStatus.SUCCESS,
+            //     Message = "Confirm email successfully"
+            // });
         }
-        return BadRequest(new Response
+        catch (Exception ex)
         {
-            Status = ResponseStatus.SUCCESS,
-            Message = "Confirm email failed!"
-        });
+            return BadRequest(new Response
+            {
+                Status = ResponseStatus.ERROR,
+                Message = ex.Message
+            });
+        }
     }
 
 

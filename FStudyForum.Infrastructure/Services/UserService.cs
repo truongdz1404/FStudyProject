@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using FStudyForum.Core.Models.DTOs.Auth;
 using FStudyForum.Core.Exceptions;
 using FStudyForum.Core.Helpers;
+using FStudyForum.Infrastructure.Repositories;
 
 namespace FStudyForum.Infrastructure.Services;
 
@@ -17,18 +18,21 @@ public class UserService : IUserService
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ITokenService _tokenService;
     private readonly IUserRepository _userRepository;
+    private readonly IProfileRepository _profileRepository;
     private readonly IMapper _mapper;
 
     public UserService(
         UserManager<ApplicationUser> userManager,
         ITokenService tokenService,
         IUserRepository userRepository,
-        IMapper mapper)
+        IMapper mapper,
+        IProfileRepository profileRepository)
     {
         _userManager = userManager;
         _tokenService = tokenService;
         _userRepository = userRepository;
         _mapper = mapper;
+        _profileRepository = profileRepository;
     }
 
     private async Task<List<Claim>> GetClaimsAsync(ApplicationUser user)
@@ -72,13 +76,24 @@ public class UserService : IUserService
         return await CreateAuthTokenAsync(user);
     }
 
-    public async Task<UserDTO> GetProfileByUserName(string userName)
+    public async Task<UserDTO> GetProfileByName(string username)
     {
-        var user = await _userManager.FindByNameAsync(userName)
+        var user = await _userManager.FindByNameAsync(username)
             ?? throw new Exception("UserName is invalid");
-        var userDTO = _mapper.Map<UserDTO>(user);
-        userDTO.Roles = await _userManager.GetRolesAsync(user);
-        return userDTO;
+
+        var profile = await _profileRepository.GetByName(username);
+
+        return new UserDTO
+        {
+            Username = username,
+            Roles = await _userManager.GetRolesAsync(user),
+            Fullname = profile == null ? string.Empty : $"{profile.FirstName} {profile.LastName}",
+            Avatar = profile?.Avatar ?? string.Empty,
+            Banner = string.Empty,
+            Gender = profile?.Gender ?? 0,
+            Bio = string.Empty,
+            Major = profile?.Major ?? string.Empty
+        };
     }
 
     public async Task<UserDTO?> FindOrCreateUserAsync(ExternalAuthDTO externalAuth, List<string> roles)

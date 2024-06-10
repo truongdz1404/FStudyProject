@@ -14,6 +14,7 @@ import { Button, Input } from "@material-tailwind/react";
 import { Icons } from "@/components/Icons";
 import React from "react";
 import { Response } from "@/types/response";
+import { CircleAlert } from "lucide-react";
 type LoginFormsInputs = {
   username: string;
   password: string;
@@ -80,12 +81,12 @@ const SignIn: FC = () => {
     <>
       <div className="flex flex-col mb-4 items-center">
         <Icons.logo className="w-10 h-10" />
-        <span className="font-bold text-xl">Login</span>
+        <span className="font-bold text-lg">Login</span>
       </div>
 
       <form onSubmit={handleSubmit(handleLogin)} className="space-y-4">
         <div>
-          <label htmlFor="username" className="block text-sm font-semibold m-1">
+          <label htmlFor="username" className="block text-sm m-1 text-gray-700">
             Username
           </label>
           <Input
@@ -105,13 +106,17 @@ const SignIn: FC = () => {
           />
 
           {errors.username && (
-            <span className={cn("text-red-500 text-xs ml-1")}>
-              {errors.username.message}
+            <span
+              className={cn(
+                "text-red-500 text-xs mt-1 ml-1 flex gap-x-1 items-center"
+              )}
+            >
+              <CircleAlert className="w-3 h-3" /> {errors.username.message}
             </span>
           )}
         </div>
         <div>
-          <label htmlFor="password" className="block text-sm font-semibold m-1">
+          <label htmlFor="password" className="block text-sm m-1 text-gray-700">
             Password
           </label>
           <Input
@@ -130,19 +135,19 @@ const SignIn: FC = () => {
             {...register("password")}
           />
           {errors.password && (
-            <span className="text-red-500 text-xs ml-1">
-              {errors.password.message}
+            <span className="text-red-500 text-xs mt-1 ml-1 flex gap-x-1 items-center">
+              <CircleAlert className="w-3 h-3" /> {errors.password.message}
             </span>
           )}
         </div>
         {error && (
-          <span className="flex items-center tracking-wide text-xs text-red-500 mt-1 ml-1">
-            {error}
+          <span className="flex items-center tracking-wide text-xs text-red-500 mt-1 ml-1 gap-x-1">
+            <CircleAlert className="w-3 h-3" /> {error}
           </span>
         )}
         <div className="flex justify-end">
           <Link
-            className="text-xs text-black hover:underline"
+            className="text-xs text-deep-orange-600 font-bold hover:underline"
             to={"/auth/reset-password"}
           >
             Forgot password?
@@ -154,6 +159,8 @@ const SignIn: FC = () => {
           className="mt-6 text-sm normal-case"
           fullWidth
           disabled={loading}
+          variant="gradient"
+          color="deep-orange"
         >
           Sign in
         </Button>
@@ -161,7 +168,10 @@ const SignIn: FC = () => {
       <div className="mt-4 text-xs text-gray-600 text-center">
         <p>
           You don't have an account?{" "}
-          <Link to="/auth/register" className="text-black hover:underline">
+          <Link
+            to="/auth/register"
+            className="text-deep-orange-600 font-bold hover:underline"
+          >
             Register
           </Link>
         </p>

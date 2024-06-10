@@ -67,7 +67,6 @@ export function signIn(payload: AuthState): PayloadAction<AuthState> {
 }
 
 export function signOut(): PayloadAction<AuthState> {
-  //TODO: Call API sign out
   return {
     type: AuthActionType.SIGN_OUT,
     payload: { user: null },
