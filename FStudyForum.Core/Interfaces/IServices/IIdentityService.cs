@@ -21,7 +21,7 @@ public interface IIdentityService
     Task<bool> AssignUserToRole(string userName, IList<string> roles);
 
     Task<bool> UpdateUsersRole(string userName, IList<string> usersRole);
-    Task<(bool, bool)> CheckUserExistsWithEmailConfirmedAsync(string email);
+    Task<(bool isUserExists, bool isConfirmed)> CheckUserExistsWithEmailConfirmedAsync(string email);
     Task<string> GenerateEmailConfirmationTokenAsync(string email);
     Task<bool> ConfirmEmailAsync(string email, string token);
 }

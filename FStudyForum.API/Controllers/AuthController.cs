@@ -221,22 +221,22 @@ public class AuthController : ControllerBase
                 Message = "Change password successfully"
             });
         }
-        catch
+        catch (Exception)
         {
             return BadRequest(new Response
             {
                 Status = ResponseStatus.SUCCESS,
-                Message = "Error resetting password."
+                Message = "Email or token is invalid"
             });
         }
     }
-
 
 
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterDTO registerDTO)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
+
         if (!EmailValidator.IsFptMail(registerDTO.Username))
         {
             return BadRequest(new Response
@@ -245,17 +245,17 @@ public class AuthController : ControllerBase
                 Message = "Email must be FPT email"
             });
         }
+        var (isUserExists, isConfirmed) = await _identityService.CheckUserExistsWithEmailConfirmedAsync(registerDTO.Username);
+        if (isUserExists && isConfirmed)
 
-        var (userExists, isConfirmed) = await _identityService.CheckUserExistsWithEmailConfirmedAsync(registerDTO.Username);
-        if (userExists)
         {
             return BadRequest(new Response
             {
-                Status = ResponseStatus.SUCCESS,
-                Message = "User already exists"
+                Status = ResponseStatus.ERROR,
+                Message = "Email already exists"
             });
         }
-        if (userExists && !isConfirmed)
+        if (isUserExists && !isConfirmed)
         {
             var userId = await _identityService.GetUserIdAsync(registerDTO.Username);
             var result = await _identityService.DeleteUserAsync(userId);
