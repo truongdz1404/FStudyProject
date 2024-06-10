@@ -11,49 +11,43 @@ using System.Threading.Tasks;
 
 namespace FStudyForum.Infrastructure.Repositories
 {
-    public class PostRepository : BaseRepository<Post>, IPostRepository
+    public class VoteRepository : BaseRepository<Vote> , IVoteRepository
     {
-        public PostRepository(ApplicationDBContext dbContext) : base(dbContext)
+        public VoteRepository(ApplicationDBContext dbContext) : base(dbContext)
         {
         }
-        public Task<Post> Create(Post model)
+
+        public Task<Vote> Create(Vote model)
         {
             throw new NotImplementedException();
         }
 
-        public Task CreateRange(List<Post> model)
+        public Task CreateRange(List<Vote> model)
         {
             throw new NotImplementedException();
         }
 
-        public Task Delete(Post model)
+        public Task Delete(Vote model)
         {
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<Post>> GetAll()
+        public async Task<IEnumerable<Vote>> GetAll()
         {
-            throw new NotImplementedException();
-        }
-
-        public Task<Post> GetById<Tid>(Tid id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<PaginatedDataDTO<Post>> GetPaginatedData(int pageNumber, int pageSize)
-        {
-            var query = _dbContext.Posts
-                .Include(c => c.Comments)
-                .ThenInclude(c => c.Creater)
-              .Skip((pageNumber - 1) * pageSize)
-              .Take(pageSize)
-            .AsNoTracking();
-            var data = await query
+            return await _dbContext.Votes.Include(v => v.Post)
                 .ToListAsync();
-            var totalCount = await _dbContext.Posts.CountAsync();
-            return new PaginatedDataDTO<Post>(data, totalCount);
         }
+
+        public Task<Vote> GetById<Tid>(Tid id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<PaginatedDataDTO<Vote>> GetPaginatedData(int pageNumber, int pageSize)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<bool> IsExists<Tvalue>(string key, Tvalue value)
         {
             throw new NotImplementedException();
@@ -69,7 +63,7 @@ namespace FStudyForum.Infrastructure.Repositories
             throw new NotImplementedException();
         }
 
-        public Task Update(Post model)
+        public Task Update(Vote model)
         {
             throw new NotImplementedException();
         }

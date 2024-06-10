@@ -1,4 +1,4 @@
-using System.Text;
+﻿using System.Text;
 using FStudyForum.API.Extensions;
 using FStudyForum.API.Mapper;
 using FStudyForum.Core.Constants;
@@ -11,28 +11,23 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
-
 var jwtSection = builder.Configuration.GetSection("JWT");
 builder.Services.Configure<JwtConfig>(jwtSection);
 builder.Services.Configure<GoogleConfig>(builder.Configuration.GetSection("Google"));
-
 var jwtConfig = jwtSection.Get<JwtConfig>()
     ?? throw new Exception("Jwt options have not been set!");
-
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
     {
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
         options.UseSqlServer(connectionString);
     }
 );
-
 builder.Services.AddCors(options =>
 {
-
-
     options.AddPolicy(Policy.SINGLE_PAGE_APP, policy =>
     {
         policy.WithOrigins(jwtConfig.Audience);
@@ -41,7 +36,11 @@ builder.Services.AddCors(options =>
         policy.AllowCredentials();
     });
 });
-
+builder.Services.AddControllersWithViews()
+            .AddNewtonsoftJson(options =>
+            {
+                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore; // Đảm bảo không bị vòng tròn
+            });
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<IQRCodeService, QRCodeService>();
 builder.Services.AddAutoMapper(typeof(MapperProfile));

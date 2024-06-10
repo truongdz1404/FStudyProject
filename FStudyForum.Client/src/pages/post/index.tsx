@@ -11,7 +11,7 @@ const Post = () => {
                 className="cursor-pointer text-orange-500"
                 onClick={getPaymentQR}
             >
-                Posdfghbngt
+                Post
             </h1>
         </div>
     );

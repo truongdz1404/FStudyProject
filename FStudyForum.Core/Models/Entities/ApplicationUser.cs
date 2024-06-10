@@ -9,7 +9,7 @@ public class ApplicationUser : IdentityUser
     public virtual Profile? Profile { get; set; }
     public virtual IEnumerable<SavedPost> SavedPosts { get; set; } = [];
     public virtual IEnumerable<Post> CreatedPosts { get; set; } = [];
-    public virtual IEnumerable<Vote> Votes { get; set; } = [];
+    public virtual IEnumerable<Vote> Votes { get; set; } = new List<Vote>();
     public virtual IEnumerable<Report> Reports { get; set; } = [];
-    public virtual IEnumerable<Comment> Comments { get; set; } = [];
+    public virtual IEnumerable<Comment> Comments { get; set; } = new List<Comment>();
 }
