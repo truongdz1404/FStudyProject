@@ -18,7 +18,7 @@ const ProfileDescription: FC<ProfileDescriptionProps> = ({ profile }) => {
   return (
     <div className="text-black">
       <Typography className="text-sm font-semibold ">About me</Typography>
-      <Typography className="text-xs">{profile.bio}</Typography>
+      <Typography className="text-xs">Major: {profile.major}</Typography>
       <Typography className="text-xs">
         Gender: {convertGenderToString(profile.gender)}
       </Typography>
