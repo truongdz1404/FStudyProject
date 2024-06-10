@@ -27,7 +27,7 @@ const CreateProfile = () => {
     gender: Yup.number()
       .oneOf([0, 1, 2], "Invalid gender")
       .required("Gender is required"),
-    birthDate: Yup.date().required("Birth date is required").nullable(),
+    birthDate: Yup.date().required("Birth date is required"),
     avatarUrl: Yup.mixed().required("A file is required"),
   });
 
@@ -58,7 +58,7 @@ const CreateProfile = () => {
         }
       } catch (error) {
         if (error instanceof AxiosError) {
-          toast.error(
+          console.log(
             "There was an unexpected error, please refresh the page and try again"
           );
         }
