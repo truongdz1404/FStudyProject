@@ -74,7 +74,4 @@ public class ProfileService : IProfileService
         await _profileRepository.Update(profile);
         return _mapper.Map<ProfileDTO>(profile);
     }
-
-
-
 }

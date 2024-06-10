@@ -1,6 +1,6 @@
 import React from "react";
 import Content from "./Content";
-import { Header } from "./Header";
+import Header from "./Header";
 import Sidebar from "./Sidebar";
 import { cn } from "@/helpers/utils";
 import { Drawer } from "@material-tailwind/react";
@@ -8,8 +8,8 @@ import { Drawer } from "@material-tailwind/react";
 const Layout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
 
-  const openSidebar = () => setIsSidebarOpen(true);
-  const closeSidebar = () => setIsSidebarOpen(false);
+  const openSidebar = React.useCallback(() => setIsSidebarOpen(true), []);
+  const closeSidebar = React.useCallback(() => setIsSidebarOpen(false), []);
   return (
     <div className="font-inter">
       <div className="sticky top-0 z-50 w-full">

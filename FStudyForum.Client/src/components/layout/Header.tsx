@@ -1,4 +1,4 @@
-import React from "react";
+import React, { FC } from "react";
 import {
   Navbar,
   Collapse,
@@ -137,9 +137,11 @@ function NavList() {
 type HeaderProps = {
   openSidebar: () => void;
 };
-export function Header({ openSidebar }: HeaderProps) {
+const Header: FC<HeaderProps> = ({ openSidebar }) => {
   const [isNavOpen, setIsNavOpen] = React.useState(false);
   const toggleIsNavOpen = () => setIsNavOpen((cur) => !cur);
+  console.log("loading again");
+
   React.useEffect(() => {
     window.addEventListener(
       "resize",
@@ -209,4 +211,5 @@ export function Header({ openSidebar }: HeaderProps) {
       </Collapse>
     </Navbar>
   );
-}
+};
+export default Header;

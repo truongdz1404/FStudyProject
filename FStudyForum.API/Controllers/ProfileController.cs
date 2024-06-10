@@ -1,10 +1,16 @@
+using AutoMapper;
+using FStudyForum.Core.Interfaces.IRepositories;
 using FStudyForum.Core.Interfaces.IServices;
 using FStudyForum.Core.Models.DTOs;
 using FStudyForum.Core.Models.DTOs.Profile;
+using FStudyForum.Core.Models.Entities;
+using FStudyForum.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Security.Claims;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using Profile = FStudyForum.Core.Models.Entities.Profile;
 
 namespace FStudyForum.API.Controllers
 {
