@@ -221,13 +221,14 @@ public class AuthController : ControllerBase
                 Message = "Change password successfully"
             });
         }
-
-        return BadRequest(new Response
+        catch (Exception)
         {
-            Status = ResponseStatus.SUCCESS,
-            Message = "Error resetting password."
-        });
-    }
+            return BadRequest(new Response
+            {
+                Status = ResponseStatus.SUCCESS,
+                Message = "Email or token is invalid"
+            });
+        }
 
     }
 
@@ -235,19 +236,28 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Register([FromBody] RegisterDTO registerDTO)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
-        if (!EmailValidator.IsFptMail(registerDTO.Email)) return BadRequest("Not fpt email");
-        var userExists = await _identityService.CheckUserExistsAsync(registerDTO.Email);
-        if (userExists)
+
+        if (!EmailValidator.IsFptMail(registerDTO.UserName))
         {
             return BadRequest(new Response
             {
-                Status = ResponseStatus.SUCCESS,
-                Message = "User already exists"
+                Status = ResponseStatus.ERROR,
+                Message = "Email must be FPT email"
             });
         }
-        if (userExists && !isConfirmed)
+        var (isUserExists, isConfirmed) = await _identityService.CheckUserExistsWithEmailConfirmedAsync(registerDTO.UserName);
+        if (isUserExists && isConfirmed)
+
         {
-            var userId = await _identityService.GetUserIdAsync(registerDTO.Email);
+            return BadRequest(new Response
+            {
+                Status = ResponseStatus.ERROR,
+                Message = "Email already exists"
+            });
+        }
+        if (isUserExists && !isConfirmed)
+        {
+            var userId = await _identityService.GetUserIdAsync(registerDTO.UserName);
             var result = await _identityService.DeleteUserAsync(userId);
              if (!result)
             {
@@ -304,7 +314,7 @@ public class AuthController : ControllerBase
     private async Task SendConfirmationEmailAsync(string email)
     {
         var emailConfirmationToken = await _identityService.GenerateEmailConfirmationTokenAsync(email);
-        var confirmationLink = Url.Action("confirm-email", "auth", new { token = emailConfirmationToken, email = email, action = "register" }, Request.Scheme);
+        var confirmationLink = Url.Action(nameof(ConfirmEmail), "auth", new { token = emailConfirmationToken, email = email, action = "register" }, Request.Scheme);
         var emailContent =
             $@"<p>Dear user, {email}</p>
             <p>Welcome to FStudy!</p>

@@ -18,7 +18,7 @@ const CreateProfile = () => {
   const handleImageClick = () => {
     if (fileInputRef.current != null) {
       fileInputRef.current.click();
-    }
+    } 
   };
 
   const validationSchema = Yup.object({
