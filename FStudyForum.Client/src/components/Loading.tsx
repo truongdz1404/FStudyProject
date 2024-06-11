@@ -1,11 +1,8 @@
-import { Spinner } from "@material-tailwind/react";
-
+import Spinner from "@/assets/images/rocket.gif";
 const Loading = () => {
   return (
-    <div className="h-screen w-full flex items-center justify-center">
-      <h1 className="uppercase tracking-widest text-gray-500">
-        <Spinner />
-      </h1>
+    <div className="h-screen w-screen flex items-center justify-center bg-white">
+      <img className="w-12 h-12" src={Spinner} />
     </div>
   );
 };

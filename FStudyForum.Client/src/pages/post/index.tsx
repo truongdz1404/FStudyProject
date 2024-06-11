@@ -1,19 +1,17 @@
+import ContentLayout from "@/components/layout/ContentLayout";
 import PaymentService from "@/services/PaymentService";
 
 const Post = () => {
-    const getPaymentQR = async () => {
-        const payment = await PaymentService.getPayMentQR();
-        console.log(payment);
-    };
-    return (
-        <div>
-            <h1
-                className="cursor-pointer text-orange-500"
-                onClick={getPaymentQR}
-            >
-                Post
-            </h1>
-        </div>
-    );
+  const getPaymentQR = async () => {
+    const payment = await PaymentService.getPayMentQR();
+    console.log(payment);
+  };
+  return (
+    <ContentLayout>
+      <h1 className="cursor-pointer text-orange-500" onClick={getPaymentQR}>
+        Post
+      </h1>
+    </ContentLayout>
+  );
 };
 export default Post;

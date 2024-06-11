@@ -49,7 +49,7 @@ public class AuthController : ControllerBase
             return Ok(new Response
             {
                 Status = ResponseStatus.SUCCESS,
-                Message = "Login Successfully"
+                Message = "Login successfully"
             });
         }
         return BadRequest(new Response
@@ -62,25 +62,32 @@ public class AuthController : ControllerBase
     [HttpPost("login-google")]
     public async Task<IActionResult> GoogleAuthenticate(ExternalAuthDTO externalAuth)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
-        var user = await _userService.FindOrCreateUserAsync(externalAuth, [UserRole.User]);
-        if (user != null)
+        try
         {
-            var tokenDTO = await _userService
-                .CreateAuthTokenAsync(user.UserName, _jwtConfig.RefreshTokenValidityInDays);
-            SetTokensInsideCookie(tokenDTO, HttpContext);
-
-            return Ok(new Response
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            var user = await _userService.FindOrCreateUserAsync(externalAuth, [UserRole.User]);
+            if (user != null)
             {
-                Status = ResponseStatus.SUCCESS,
-                Message = "Login Successfully"
+                var tokenDTO = await _userService
+                    .CreateAuthTokenAsync(user.Username, _jwtConfig.RefreshTokenValidityInDays);
+                SetTokensInsideCookie(tokenDTO, HttpContext);
+
+                return Ok(new Response
+                {
+                    Status = ResponseStatus.SUCCESS,
+                    Message = "Login successfully"
+                });
+            }
+            else throw new Exception("Invalid external authentication");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new Response
+            {
+                Status = ResponseStatus.ERROR,
+                Message = ex.Message
             });
         }
-        return BadRequest(new Response
-        {
-            Status = ResponseStatus.ERROR,
-            Message = "Invalid External Authentication."
-        });
     }
 
     [HttpGet("logout")]
@@ -96,7 +103,7 @@ public class AuthController : ControllerBase
             return Ok(new Response
             {
                 Status = ResponseStatus.SUCCESS,
-                Message = "Logout Successfully"
+                Message = "Logout successfully"
             });
         }
         catch (Exception ex)
@@ -178,12 +185,16 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("forgot-password")]
-    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequestDTO model)
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDTO model)
     {
         var isExisted = await _userService.CheckEmailExistedAsync(model.Email);
-        if (!isExisted) return BadRequest("User not found");
+        if (!isExisted) return BadRequest(new Response
+        {
+            Status = ResponseStatus.ERROR,
+            Message = "We cannot find your email"
+        });
         var token = await _userService.GeneratePasswordResetTokenAsync(model.Email);
-        var resetLink = $"http://localhost:3000/reset-password/change-password?token={token}&email={model.Email}";
+        var resetLink = $"http://localhost:3000/auth/reset-password/change-password?token={token}&email={model.Email}";
         var emailContent = $@"
         <p>Please click the link below to reset your password:</p>
         <p><a href='{resetLink}'>Reset Password</a></p>";
@@ -192,86 +203,97 @@ public class AuthController : ControllerBase
         return Ok(new Response
         {
             Status = ResponseStatus.SUCCESS,
-            Message = "Send mail Successfully"
+            Message = "Send mail successfully"
         });
     }
 
 
     [HttpPost("change-password")]
-    public async Task<IActionResult> ChangePassword([FromQuery] string email, [FromQuery] string token, [FromBody] ResetPasswordBody resetPasswordBody)
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDTO changePasswordDTO)
     {
-        var resetPasswordModelDTO = new ResetPasswordModelDTO
+        try
         {
-            Email = email,
-            Password = resetPasswordBody.NewPassword,
-            Token = token,
-        };
-
-        var isExisted = await _userService.CheckEmailExistedAsync(email);
-        if (!isExisted)
-        {
-            return NotFound("Email not found.");
-        }
-
-        var result = await _userService.ResetPasswordAsync(resetPasswordModelDTO);
-        if (result.Succeeded)
-        {
+            var result = await _userService.ChangePasswordAsync(changePasswordDTO);
+            if (!result.Succeeded) throw new Exception();
             return Ok(new Response
             {
                 Status = ResponseStatus.SUCCESS,
-                Message = "Change password Successfully"
+                Message = "Change password successfully"
             });
         }
-
-        return BadRequest(new Response
+        catch (Exception)
         {
-            Status = ResponseStatus.SUCCESS,
-            Message = "Error resetting password."
-        });
+            return BadRequest(new Response
+            {
+                Status = ResponseStatus.SUCCESS,
+                Message = "Email or token is invalid"
+            });
+        }
     }
-
 
 
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterDTO registerDTO)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
-        if (!EmailValidator.IsFptMail(registerDTO.Email)) return BadRequest("Not fpt email");
-        var userExists = await _identityService.CheckUserExistsAsync(registerDTO.Email);
-        if (userExists)
+
+        if (!EmailValidator.IsFptMail(registerDTO.Username))
         {
             return BadRequest(new Response
             {
-                Status = ResponseStatus.SUCCESS,
-                Message = "User already exists"
+                Status = ResponseStatus.ERROR,
+                Message = "Email must be FPT email"
             });
         }
+        var (isUserExists, isConfirmed) = await _identityService.CheckUserExistsWithEmailConfirmedAsync(registerDTO.Username);
+        if (isUserExists && isConfirmed)
 
-        var (isSucceed, userId) = await _identityService.CreateUserAsync(registerDTO, [UserRole.User]);
+        {
+            return BadRequest(new Response
+            {
+                Status = ResponseStatus.ERROR,
+                Message = "Email already exists"
+            });
+        }
+        if (isUserExists && !isConfirmed)
+        {
+            var userId = await _identityService.GetUserIdAsync(registerDTO.Username);
+            var result = await _identityService.DeleteUserAsync(userId);
+            if (!result)
+            {
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = "An error occurred while deleting the existing user"
+                });
+            }
+        }
+        var isSucceed = await _identityService.CreateUserAsync(registerDTO, [UserRole.User]);
         if (!isSucceed)
         {
             return StatusCode(500, new Response
             {
-                Status = ResponseStatus.SUCCESS,
+                Status = ResponseStatus.ERROR,
                 Message = "An error occurred while creating the user"
             });
         }
 
-        await SendConfirmationEmailAsync(registerDTO.Email);
+        var token = await SendConfirmationEmailAsync(registerDTO.Username);
 
         return Ok(new Response
         {
             Status = ResponseStatus.SUCCESS,
-            Message = "Registration successful, please check your email to confirm your account"
+            Message = "Registration successful, please check your email to confirm your account",
+            Data = token
         });
     }
 
-    [HttpPost("resend-confirmation-email")]
-    public async Task<IActionResult> ResendConfirmationEmail([FromQuery] ResendEmailDTO resendEmailDTO)
+    [HttpPost("resend-confirm-email")]
+    public async Task<IActionResult> ResendConfirmationEmail([FromQuery] string email)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        var userExists = await _identityService.CheckUserExistsAsync(resendEmailDTO.Email);
+        var userExists = await _userService.CheckEmailExistedAsync(email);
         if (!userExists)
         {
             return BadRequest(new Response
@@ -281,41 +303,52 @@ public class AuthController : ControllerBase
             });
         }
 
-        await SendConfirmationEmailAsync(resendEmailDTO.Email);
+        var token = await SendConfirmationEmailAsync(email);
 
         return Ok(new Response
         {
             Status = ResponseStatus.SUCCESS,
-            Message = "Confirmation email resent, please check your email to confirm your account"
+            Message = "Confirmation email resent, please check your email to confirm your account",
+            Data = token
         });
     }
 
-    private async Task SendConfirmationEmailAsync(string email)
+    private async Task<string> SendConfirmationEmailAsync(string email)
     {
-        var emailConfirmationToken = await _identityService.GenerateEmailConfirmationTokenAsync(email);
-        var confirmationLink = Url.Action(nameof(ConfirmEmail), "Auth", new { token = emailConfirmationToken, email = email, action = "register" }, Request.Scheme);
+        var token = await _identityService.GenerateEmailConfirmationTokenAsync(email);
+        var confirmationLink = Url.Action(nameof(ConfirmEmail), "auth", new { token, email, action = "register" }, Request.Scheme);
         var emailContent =
             $@"<p>Dear user, {email}</p>
-        <p>Welcome to FStudy!</p>
-        <p>Thank you for registering. Please confirm your email by follow the link below:</p>
-        <p><a href='{confirmationLink}'>Confirm Email</a></p>";
+            <p>Welcome to FStudy!</p>
+            <p>Thank you for registering. Please confirm your email by follow the link below:</p>
+            <p><a href='{confirmationLink}'>Confirm Email</a></p>";
 
         await _emailService.SendEmailAsync(email, "Confirm your email", emailContent);
+        return token;
     }
 
-    [HttpGet("confirmemail")]
-    public async Task<IActionResult> ConfirmEmail(string token, string email)
+    [HttpGet("confirm-email")]
+    public async Task<IActionResult> ConfirmEmail([FromQuery] string token, [FromQuery] string email)
     {
-        var result = await _identityService.ConfirmEmailAsync(email, token);
-        if (result)
+        try
         {
-            return Redirect("http://localhost:3000");
+            var result = await _identityService.ConfirmEmailAsync(email, token);
+            if (!result) throw new Exception("Email or token invalid");
+            return Redirect(_jwtConfig.Audience + "/auth/signin");
+            // return Ok(new Response
+            // {
+            //     Status = ResponseStatus.SUCCESS,
+            //     Message = "Confirm email successfully"
+            // });
         }
-        return BadRequest(new Response
+        catch (Exception ex)
         {
-            Status = ResponseStatus.SUCCESS,
-            Message = "Confirm email failed!"
-        });
+            return BadRequest(new Response
+            {
+                Status = ResponseStatus.ERROR,
+                Message = ex.Message
+            });
+        }
     }
 
 

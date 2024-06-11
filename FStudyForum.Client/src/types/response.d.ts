@@ -1,16 +1,8 @@
-export type Response = {
-    status: string;
-    message: object;
-};
+export interface Response {
+  status: string;
+  message: string;
+}
 
-export type ResponseWith<T> = {
-    status: string;
-    message: object;
-    data: T;
-};
-export type ResponseArray<T> = {
-    status: string;
-    message: object;
-    data: T[];
-};
-
+export interface ResponseWith<T> extends Response {
+  data: T;
+}

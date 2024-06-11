@@ -28,7 +28,7 @@ namespace FStudyForum.Infrastructure.Services
         }
         public async Task<ProfileDTO?> GetProfileByName(string? username)
         {
-            var profile = await _userProfileRepository.GetProfileByName(username);
+            var profile = await _userProfileRepository.GetByName(username);
             ProfileDTO result = _mapper.Map<ProfileDTO>(profile);
             return result;
         }
@@ -38,7 +38,7 @@ namespace FStudyForum.Infrastructure.Services
             if (profileDto == null || !IsValidProfile(profileDto))
                 throw new ArgumentNullException(nameof(profileDto) + "is not valid");
 
-            var appUser = await _userManager.FindByNameAsync(userDto.UserName)
+            var appUser = await _userManager.FindByNameAsync(userDto.Username)
                 ?? throw new ArgumentNullException(nameof(userDto) + "is not valid");
 
             if (await NonDuplicatedProfile(appUser))
@@ -74,7 +74,7 @@ namespace FStudyForum.Infrastructure.Services
 
         public async Task<ProfileDTO?> UpdateProfile(ProfileDTO profileDTO, string? name)
         {
-            var profile = await _userProfileRepository.GetProfileByName(name);
+            var profile = await _userProfileRepository.GetByName(name);
             if (profile == null)
             {
                 return null;

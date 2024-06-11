@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FStudyForum.Infrastructure.Repositories
 {
-    public class ProfileRepository : BaseRepository<Profile>, IProfileRepository
+    public class UserProfileRepository : BaseRepository<Profile>, IProfileRepository
     {
-        public ProfileRepository(ApplicationDBContext dbContext) : base(dbContext)
+        public UserProfileRepository(ApplicationDBContext dbContext) : base(dbContext)
         {
         }
         public new async Task<Profile> GetById<Tid>(Tid id)
@@ -18,7 +18,7 @@ namespace FStudyForum.Infrastructure.Repositories
             }
             return user;
         }
-        public async Task<Profile?> GetProfileByName(string? username)
+        public async Task<Profile?> GetByName(string? username)
         {
             var user = await _dbContext.Profiles
                            .Include(u => u.User)

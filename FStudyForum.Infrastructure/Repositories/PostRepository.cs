@@ -13,18 +13,21 @@ namespace FStudyForum.Infrastructure.Repositories
         {
         }
 
-        public override async Task<PaginatedDataDTO<Post>> GetPaginatedData(int pageNumber, int pageSize)
-        {
-            var query = _dbContext.Posts
-                .Include(c => c.Comments)
-                .ThenInclude(c => c.Creater)
-              .Skip((pageNumber - 1) * pageSize)
-              .Take(pageSize)
-            .AsNoTracking();
-            var data = await query
-                .ToListAsync();
-            var totalCount = await _dbContext.Posts.CountAsync();
-            return new PaginatedDataDTO<Post>(data, totalCount);
-        }
+// <<<<<<< HEAD
+//         public override async Task<PaginatedDataDTO<Post>> GetPaginatedData(int pageNumber, int pageSize)
+//         {
+//             var query = _dbContext.Posts
+//                 .Include(c => c.Comments)
+//                 .ThenInclude(c => c.Creater)
+//               .Skip((pageNumber - 1) * pageSize)
+//               .Take(pageSize)
+//             .AsNoTracking();
+//             var data = await query
+//                 .ToListAsync();
+//             var totalCount = await _dbContext.Posts.CountAsync();
+//             return new PaginatedDataDTO<Post>(data, totalCount);
+//         }
+// =======
+
     }
 }

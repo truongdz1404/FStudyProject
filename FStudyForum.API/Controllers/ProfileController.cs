@@ -27,38 +27,15 @@ namespace FStudyForum.API.Controllers
             _userService = userService;
             _profileService = profileService;
         }
-        [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> GetProfile()
-        {
-            try
-            {
-                var userName = User.FindFirstValue(ClaimTypes.Name) ?? throw new Exception("User is not authenticated!");
-                var profile = await _profileService.GetProfileByUserName(userName);
-                return Ok(new Response
-                {
-                    Status = ResponseStatus.SUCCESS,
-                    Message = "Get profile successfully",
-                    Data = profile
-                });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new Response
-                {
-                    Status = ResponseStatus.ERROR,
-                    Message = ex.Message
-                });
-            }
-        }
 
-        [HttpGet("{username}")]
-        [Authorize]
-        public async Task<IActionResult> GetProfile(string? username)
+
+        [HttpGet("{username}"), Authorize]
+        public async Task<IActionResult> GetProfile([FromRoute] string username)
         {
             try
             {
-                var user = await _profileService.GetProfileByName(username);
+                if (!ModelState.IsValid) return BadRequest(ModelState);
+                var user = await _profileService.GetByName(username);
                 if (user == null)
                 {
                     return NotFound(new Response
@@ -85,12 +62,12 @@ namespace FStudyForum.API.Controllers
             }
         }
 
-        [HttpPut("edit/{username}")]
-        [Authorize]
-        public async Task<IActionResult> UpdateProfile([FromRoute] string? username, [FromBody] ProfileDTO profileDTO)
+        [HttpPut("edit/{username}"), Authorize]
+        public async Task<IActionResult> UpdateProfile([FromRoute] string username, [FromBody] ProfileDTO profileDTO)
         {
             try
             {
+                if (!ModelState.IsValid) return BadRequest(ModelState);
                 var profile = await _profileService.UpdateProfile(profileDTO, username);
                 if (profile == null)
                 {
@@ -128,22 +105,23 @@ namespace FStudyForum.API.Controllers
             }
         }
 
-        [HttpPost("create")]
+        [HttpPost("create"), Authorize]
         public async Task<IActionResult> CreateProfile([FromBody] ProfileDTO profile)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+
             try
             {
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
                 var username = User.FindFirstValue(ClaimTypes.Name)
-                    ?? throw new UnauthorizedAccessException("User is not authenticated!");
-                var userDto = await _userService.GetUserByUserName(username);
-                var createdProfile = await _profileService.InsertIntoProfile(profile, userDto);
+                    ?? throw new Exception("User is not authenticated!");
+                var user = await _userService.GetProfileByName(username);
+                var createdProfile = await _profileService.Insert(profile, username);
                 return Ok(new Response
                 {
+                    Status = ResponseStatus.SUCCESS,
                     Data = createdProfile,
                     Message = "Profile created successfully",
-                    Status = "" + (int)HttpStatusCode.OK
                 });
             }
             catch (Exception ex)

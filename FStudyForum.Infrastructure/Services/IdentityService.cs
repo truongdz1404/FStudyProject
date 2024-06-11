@@ -46,12 +46,12 @@ public class IdentityService : IIdentityService
         return result.Succeeded;
     }
 
-    public async Task<(bool isSucceed, string userId)> CreateUserAsync(RegisterDTO registerDTO, List<string> roles)
+    public async Task<bool> CreateUserAsync(RegisterDTO registerDTO, List<string> roles)
     {
         var user = new ApplicationUser()
         {
-            UserName = registerDTO.Email,
-            Email = registerDTO.Email
+            UserName = registerDTO.Username,
+            Email = registerDTO.Username
         };
 
         var result = await _userManager.CreateAsync(user, registerDTO.Password);
@@ -63,7 +63,7 @@ public class IdentityService : IIdentityService
 
         if (!result.Succeeded)
             throw new ValidationException(result.Errors);
-        return (result.Succeeded, user.Id);
+        return result.Succeeded;
     }
 
     public async Task<bool> DeleteRoleAsync(string roleId)
@@ -192,30 +192,27 @@ public class IdentityService : IIdentityService
 
         return result.Succeeded;
     }
-     public async Task<bool> CheckUserExistsAsync(string email)
+    public async Task<(bool isUserExists, bool isConfirmed)> CheckUserExistsWithEmailConfirmedAsync(string email)
     {
         var user = await _userManager.FindByEmailAsync(email);
-        return user != null;
+        if (user != null)
+        {
+            return (true, user.EmailConfirmed);
+        }
+        return (false, false);
     }
 
     public async Task<string> GenerateEmailConfirmationTokenAsync(string email)
     {
-        var user = await _userManager.FindByEmailAsync(email);
-        if (user == null)
-        {
-            throw new NotFoundException("User not found");
-        }
+        var user = await _userManager.FindByEmailAsync(email)
+            ?? throw new NotFoundException("User not found by email");
         return await _userManager.GenerateEmailConfirmationTokenAsync(user);
     }
 
     public async Task<bool> ConfirmEmailAsync(string email, string token)
     {
-        var user = await _userManager.FindByEmailAsync(email);
-        if (user == null)
-        {
-            throw new NotFoundException("User not found");
-        }
-
+        var user = await _userManager.FindByEmailAsync(email)
+            ?? throw new NotFoundException("User not found by email");
         var result = await _userManager.ConfirmEmailAsync(user, token);
         return result.Succeeded;
     }

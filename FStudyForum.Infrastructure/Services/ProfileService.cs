@@ -1,10 +1,7 @@
-using System.ComponentModel.DataAnnotations;
 using AutoMapper;
 using FStudyForum.Core.Interfaces.IServices;
 using FStudyForum.Core.Models.DTOs.Profile;
-using FStudyForum.Core.Models.DTOs.User;
 using FStudyForum.Core.Models.Entities;
-using FStudyForum.Infrastructure.Data;
 using FStudyForum.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -15,67 +12,49 @@ namespace FStudyForum.Infrastructure.Services;
 public class ProfileService : IProfileService
 {
     private readonly IProfileRepository _profileRepository;
-    private readonly ApplicationDBContext _dbContext;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IMapper _mapper;
 
-    public ProfileService(ApplicationDBContext dbContext,
-        UserManager<ApplicationUser> userManager, IMapper mapper, IProfileRepository profileRepository)
+    public ProfileService(
+        UserManager<ApplicationUser> userManager,
+        IMapper mapper,
+        IProfileRepository profileRepository)
     {
-        _dbContext = dbContext;
         _userManager = userManager;
         _mapper = mapper;
         _profileRepository = profileRepository;
 
     }
 
-    public async Task<ViewProfileDTO> GetProfileByUserName(string username)
+    public async Task<ProfileDTO?> GetByName(string username)
     {
-        var user = await _userManager.FindByNameAsync(username)
-            ?? throw new Exception("UserName is invalid");
-        var profile = await _dbContext.Profiles.Include(p => p.User)
-            .FirstOrDefaultAsync(p => p.User == user)
-            ?? throw new Exception("User profile isn't created");
-
-        return _mapper.Map<ViewProfileDTO>(profile);
-    }
-    public async Task<ProfileDTO?> GetProfileByName(string? username)
-    {
-        var profile = await _profileRepository.GetProfileByName(username);
+        var profile = await _profileRepository.GetByName(username);
         ProfileDTO result = _mapper.Map<ProfileDTO>(profile);
         return result;
     }
 
-    public async Task<ProfileDTO> InsertIntoProfile(ProfileDTO profileDto, UserDTO userDto)
+    public async Task<ProfileDTO> Insert(ProfileDTO profileDTO, string username)
     {
-        if (profileDto == null || !IsValidProfile(profileDto))
-            throw new ArgumentNullException(nameof(profileDto) + "is not valid");
+        if (profileDTO == null)
+            throw new Exception(nameof(profileDTO) + "is not valid");
 
-        var appUser = await _userManager.FindByNameAsync(userDto.UserName)
-            ?? throw new ArgumentNullException(nameof(userDto) + "is not valid");
+        var appUser = await _userManager.FindByNameAsync(username)
+            ?? throw new Exception("User not found");
 
-        if (await NonDuplicatedProfile(appUser))
+        if (await NonDuplicated(appUser))
         {
-            var profile = _mapper.Map<Profile>(profileDto);
+            var profile = _mapper.Map<Profile>(profileDTO);
             profile.User = appUser;
             appUser.Profile = profile;
             await _userManager.UpdateAsync(appUser);
 
-            // convert the updated profile to DTO
             var updatedProfileDto = _mapper.Map<ProfileDTO>(profile);
             return updatedProfileDto;
         }
-        throw new InvalidOperationException("User has already had a profile");
-    }
-    private static bool IsValidProfile(ProfileDTO profileDto)
-    {
-        var validationContext = new ValidationContext(profileDto);
-        var validationResults = new List<ValidationResult>();
-        bool isValid = Validator.TryValidateObject(profileDto, validationContext, validationResults, true);
-        return isValid;
+        throw new Exception("User has already had a profile");
     }
 
-    private async Task<bool> NonDuplicatedProfile(ApplicationUser appUser)
+    private async Task<bool> NonDuplicated(ApplicationUser appUser)
     {
         var user = await _userManager.Users
             .Include(u => u.Profile)
@@ -84,9 +63,9 @@ public class ProfileService : IProfileService
     }
 
 
-    public async Task<ProfileDTO?> UpdateProfile(ProfileDTO profileDTO, string? name)
+    public async Task<ProfileDTO?> UpdateProfile(ProfileDTO profileDTO, string name)
     {
-        var profile = await _profileRepository.GetProfileByName(name);
+        var profile = await _profileRepository.GetByName(name);
         if (profile == null)
         {
             return null;

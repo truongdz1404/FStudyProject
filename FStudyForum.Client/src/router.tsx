@@ -4,41 +4,38 @@ import AuthGuard from "@/helpers/guards/AuthGuard";
 
 import NotFound from "@/components/NotFound";
 import Layout from "@/components/layout/Layout";
-import ProfileGuard from "./helpers/guards/ProfileGuard";
-import NoProfileGuard from "./helpers/guards/NoProfileGuard";
+import WelcomeGuard from "./helpers/guards/WelcomeGuard";
+import AuthLayout from "./components/layout/AuthLayout";
 import Post from "./pages/post";
 
-const CreateProfile = lazy(() => import("@/pages/profile/create"));
 const EditProfile = lazy(() => import("@/pages/profile/edit"));
+const Welcome = lazy(() => import("@/pages/welcome"));
 const Register = lazy(() => import("@/pages/auth/register"));
 const ConfirmEmail = lazy(() => import("@/pages/auth/confirm-email"));
+const TopicDetail = lazy(() => import("@/pages/topic/TopicDetail/TopicDetail"));
 const ChangePassword = lazy(
-  () => import("@/pages/reset-password/change-password")
+  () => import("@/pages/auth/reset-password/change-password")
 );
-const ConfirmResetEmail = lazy(
-  () => import("@/pages/reset-password/confirm-reset-email")
-);
-const ResetPassword = lazy(() => import("@/pages/reset-password"));
+
+const ResetPassword = lazy(() => import("@/pages/auth/reset-password"));
 const Profile = lazy(() => import("@/pages/profile"));
 const SignIn = lazy(() => import("@/pages/auth/signin"));
 const Home = lazy(() => import("@/pages/home"));
-const TopicList = lazy(() => import("@/pages/topic"));
+const Topic = lazy(() => import("@/pages/topic"));
 const SignOut = lazy(() => import("@/pages/auth/signout"));
 const Router: FC = () => {
   return useRoutes([
-    
     {
-      
       path: "/",
       element: (
         <AuthGuard>
-          <ProfileGuard>
+          <WelcomeGuard>
             <Layout />
-          </ProfileGuard>
+          </WelcomeGuard>
         </AuthGuard>
       ),
-      
-      children: [ 
+
+      children: [
         {
           index: true,
           element: <Navigate to="/home" replace />,
@@ -53,17 +50,28 @@ const Router: FC = () => {
         },
         {
           path: "posts",
-          element: <Post />,
+          element: (
+            <Suspense>
+              <Post />
+            </Suspense>
+          ),
         },
         {
           path: "topics",
           element: (
             <Suspense>
-              <TopicList/>
+              <Topic />
             </Suspense>
           ),
         },
-        
+        {
+          path: "topic/detail/:id",
+          element: (
+            <Suspense>
+              <TopicDetail />
+            </Suspense>
+          ),
+        },
         {
           path: "profile",
           children: [
@@ -88,20 +96,16 @@ const Router: FC = () => {
       ],
     },
     {
-      path: "/profile/create",
+      path: "welcome",
       element: (
-        <AuthGuard>
-          <NoProfileGuard>
-            <Suspense>
-              <CreateProfile />
-            </Suspense>
-          </NoProfileGuard>
-        </AuthGuard>
+        <Suspense>
+          <Welcome />
+        </Suspense>
       ),
     },
-
     {
       path: "auth",
+      element: <AuthLayout />,
       children: [
         {
           path: "signin",
@@ -127,7 +131,27 @@ const Router: FC = () => {
             </Suspense>
           ),
         },
-
+        {
+          path: "reset-password",
+          children: [
+            {
+              path: "change-password",
+              element: (
+                <Suspense>
+                  <ChangePassword />
+                </Suspense>
+              ),
+            },
+            {
+              index: true,
+              element: (
+                <Suspense>
+                  <ResetPassword />
+                </Suspense>
+              ),
+            },
+          ],
+        },
         {
           path: "confirm-email",
           element: (
@@ -138,35 +162,7 @@ const Router: FC = () => {
         },
       ],
     },
-    {
-      path: "reset-password",
-      children: [
-        {
-          path: "change-password",
-          element: (
-            <Suspense>
-              <ChangePassword />{" "}
-            </Suspense>
-          ),
-        },
-        {
-          index: true,
-          element: (
-            <Suspense>
-              <ResetPassword />
-            </Suspense>
-          ),
-        },
-        {
-          path: "confirm-reset-email",
-          element: (
-            <Suspense>
-              <ConfirmResetEmail />
-            </Suspense>
-          ),
-        },
-      ],
-    },
+
     {
       path: "*",
       element: <NotFound />,

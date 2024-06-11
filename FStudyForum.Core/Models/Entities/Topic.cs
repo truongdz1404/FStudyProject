@@ -10,7 +10,7 @@ public class Topic : BaseEntity
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public bool IsDeleted { get; set; } = false;
-    public virtual IEnumerable<Post> Posts { get; set; } = [];
-    public virtual IEnumerable<Category> Categories { get; set; } = [];
+    public virtual IEnumerable<Post> Posts { get; set; } = new List<Post>();
+    public virtual IEnumerable<Category> Categories { get; set; } = new List<Category>();
 
 }
