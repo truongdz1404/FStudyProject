@@ -1,9 +1,8 @@
-import { ProfileDTO } from "@/types/profile";
-import { Button, Typography } from "@material-tailwind/react";
-import { Plus } from "lucide-react";
+import { Profile } from "@/types/profile";
+import { Typography } from "@material-tailwind/react";
 import { FC } from "react";
 type ProfileDescriptionProps = {
-  profile: ProfileDTO;
+  profile: Profile;
 };
 const convertGenderToString = (gender: number) => {
   switch (gender) {
@@ -19,9 +18,7 @@ const ProfileDescription: FC<ProfileDescriptionProps> = ({ profile }) => {
   return (
     <div className="text-black">
       <Typography className="text-sm font-semibold ">About me</Typography>
-      <Typography className="text-xs">
-        Birth Date: {profile.birthDate}
-      </Typography>
+      <Typography className="text-xs">Major: {profile.major}</Typography>
       <Typography className="text-xs">
         Gender: {convertGenderToString(profile.gender)}
       </Typography>
@@ -38,7 +35,7 @@ const ProfileDescription: FC<ProfileDescriptionProps> = ({ profile }) => {
           <Typography className="text-xs">Comments</Typography>
         </div>
       </div>
-      <Typography className="text-sm font-semibold">Links</Typography>
+      {/* <Typography className="text-sm font-semibold">Links</Typography>
       <Button size="sm" variant="outlined" className="rounded-full mt-2">
         <div className="flex items-center">
           <Plus size={"16"} />
@@ -46,7 +43,7 @@ const ProfileDescription: FC<ProfileDescriptionProps> = ({ profile }) => {
             Add social link
           </Typography>
         </div>
-      </Button>
+      </Button> */}
     </div>
   );
 };

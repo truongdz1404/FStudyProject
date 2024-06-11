@@ -1,7 +1,8 @@
 import ContentLayout from "@/components/layout/ContentLayout";
 import ProfileDescription from "@/components/profile/ProfileDescription";
+import { useAuth } from "@/hooks/useAuth";
 import ProfileService from "@/services/ProfileService";
-import { ProfileDTO as ProdileModel } from "@/types/profile";
+import { Profile as ProfileDTO } from "@/types/profile";
 import {
   Accordion,
   AccordionBody,
@@ -22,13 +23,15 @@ const tabItems = [
   },
 ];
 const Profile = () => {
-  const [profile, setProfile] = React.useState<ProdileModel>();
+  const [profile, setProfile] = React.useState<ProfileDTO>();
+  const { user } = useAuth();
   React.useEffect(() => {
+    if (!user) return;
     (async () => {
-      const profile = await ProfileService.getProfile();
+      const profile = await ProfileService.getByUsername(user?.username);
       setProfile(profile);
     })();
-  }, []);
+  }, [user]);
   const [open, setOpen] = React.useState(0);
 
   const handleOpen = (value: number) => setOpen(open === value ? 0 : value);
@@ -45,8 +48,9 @@ const Profile = () => {
             <Avatar
               variant="circular"
               size="xxl"
-              alt="avatar user"
-              src={profile?.avatarUrl}
+              alt="avatar"
+              className="bg-white  p-0.5"
+              src={profile?.avatar}
             />
             <Link
               to={"/profile/edit"}
@@ -61,7 +65,7 @@ const Profile = () => {
           </div> */}
 
           <div className="absolute left-32 pl-2 font-semibold text-md">
-            {profile && profile.firstName + " " + profile.lastName}
+            {profile && profile.lastName + " " + profile.firstName}
           </div>
           <Link className="mt-2 absolute right-0" to="/profile/edit">
             <Button

@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+html{
+    overflow-y: scroll;
+}
+
 @layer utilities {
     .no-scrollbar::-webkit-scrollbar {
         display: none;

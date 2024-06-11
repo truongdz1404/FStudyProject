@@ -15,6 +15,5 @@ namespace FStudyForum.Infrastructure.Services
             var msg = MailHelper.CreateSingleEmail(from, to, subject, null, verificationLink);
             var response = await client.SendEmailAsync(msg);
         }
-
     }
 }

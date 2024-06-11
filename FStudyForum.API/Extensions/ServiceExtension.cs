@@ -8,25 +8,27 @@ namespace FStudyForum.API.Extensions;
 
 public static class ServiceExtension
 {
-    public static IServiceCollection RegisterService(this IServiceCollection services)
-    {
-        #region Services
-        services.AddScoped<ITokenService, TokenService>();
-        services.AddScoped<IUserService, UserService>();
-        services.AddScoped<IProfileService, ProfileService>();
-        services.AddScoped<IIdentityService, IdentityService>();
-        services.AddScoped<IEmailService, EmailService>();
-        services.AddScoped<ITopicService, TopicService>();
+        public static IServiceCollection RegisterService(this IServiceCollection services)
+        {
+                #region Services
+                services.AddScoped<ITokenService, TokenService>();
+                services.AddScoped<IUserService, UserService>();
+                services.AddScoped<IProfileService, ProfileService>();
+                services.AddScoped<IIdentityService, IdentityService>();
+                services.AddScoped<IEmailService, EmailService>();
+                services.AddScoped<ITopicService, TopicService>();
+                services.AddScoped<IPostService, PostService>();
+                services.AddScoped<IVoteService, VoteService>();
+                #endregion
 
-        #endregion
-
-        #region Repositories
-        services.AddTransient<IUserRepository, UserRepository>();
-        services.AddTransient<ITopicRepository, TopicRepository>();
-        services.AddTransient<IBaseRepository<Profile>, BaseRepository<Profile>>();
-        services.AddTransient<IProfileRepository, ProfileRepository>();
-        services.AddTransient<IUserProfileService, UserProfileService>();
-        #endregion
-        return services;
-    }
+                #region Repositories
+                services.AddTransient<IUserRepository, UserRepository>();
+                services.AddTransient<ITopicRepository, TopicRepository>();
+                services.AddTransient<IBaseRepository<Profile>, BaseRepository<Profile>>();
+                services.AddTransient<IProfileRepository, ProfileRepository>();
+                services.AddTransient<IPostRepository, PostRepository>();
+                services.AddTransient<IVoteRepository, VoteRepository>();
+                #endregion
+                return services;
+        }
 }
