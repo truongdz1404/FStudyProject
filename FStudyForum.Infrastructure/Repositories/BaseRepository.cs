@@ -17,7 +17,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
         _dbContext = dbContext;
     }
 
-    public async Task<IEnumerable<T>> GetAll()
+    public virtual async Task<IEnumerable<T>> GetAll()
     {
         var data = await _dbContext.Set<T>()
             .AsNoTracking()
@@ -38,7 +38,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
         return new PaginatedDataDTO<T>(data, totalCount);
     }
 
-    public async Task<T> GetById<Tid>(Tid id)
+    public virtual async Task<T> GetById<Tid>(Tid id)
     {
         var data = await _dbContext.Set<T>().FindAsync(id);
         if (data == null)
@@ -46,7 +46,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
         return data;
     }
 
-    public async Task<bool> IsExists<Tvalue>(string key, Tvalue value)
+    public virtual async Task<bool> IsExists<Tvalue>(string key, Tvalue value)
     {
         var parameter = Expression.Parameter(typeof(T), "x");
         var property = Expression.Property(parameter, key);
@@ -59,7 +59,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
 
     //Before update existence check
     // id = 1, key = "Name", value = "John"
-    public async Task<bool> IsExistsForUpdate<Tid>(Tid id, string key, string value)
+    public virtual async Task<bool> IsExistsForUpdate<Tid>(Tid id, string key, string value)
     {
         // parameter => x
         var parameter = Expression.Parameter(typeof(T), "x");
@@ -82,26 +82,26 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
     }
 
 
-    public async Task<T> Create(T model)
+    public virtual async Task<T> Create(T model)
     {
         await _dbContext.Set<T>().AddAsync(model);
         await _dbContext.SaveChangesAsync();
         return model;
     }
 
-    public async Task CreateRange(List<T> model)
+    public virtual async Task CreateRange(List<T> model)
     {
         await _dbContext.Set<T>().AddRangeAsync(model);
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task Update(T model)
+    public virtual async Task Update(T model)
     {
         _dbContext.Set<T>().Update(model);
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task Delete(T model)
+    public virtual async Task Delete(T model)
     {
         _dbContext.Set<T>().Remove(model);
         await _dbContext.SaveChangesAsync();

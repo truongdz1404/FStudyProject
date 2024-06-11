@@ -56,6 +56,7 @@ namespace FStudyForum.Infrastructure.Services
         }
         private static bool IsValidProfile(ProfileDTO profileDto)
         {
+            
             var validationContext = new ValidationContext(profileDto);
             var validationResults = new List<ValidationResult>();
             bool isValid = Validator.TryValidateObject(profileDto, validationContext, validationResults, true);

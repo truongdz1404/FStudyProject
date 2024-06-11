@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations.Schema;
+
 using Microsoft.AspNetCore.Identity;
 
 namespace FStudyForum.Core.Models.Entities;

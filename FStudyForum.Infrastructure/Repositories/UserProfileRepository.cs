@@ -1,5 +1,4 @@
-﻿using FStudyForum.Core.Models.DTOs.Paging;
-using FStudyForum.Core.Models.Entities;
+﻿using FStudyForum.Core.Models.Entities;
 using FStudyForum.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,7 +9,6 @@ namespace FStudyForum.Infrastructure.Repositories
         public ProfileRepository(ApplicationDBContext dbContext) : base(dbContext)
         {
         }
-
         public new async Task<Profile> GetById<Tid>(Tid id)
         {
             var user = await _dbContext.Profiles.Where(u => u.Id.Equals(id)).FirstOrDefaultAsync();
@@ -28,7 +26,6 @@ namespace FStudyForum.Infrastructure.Repositories
                            .FirstOrDefaultAsync();
             return user;
         }
-
 
         public new async Task Update(Profile model)
         {

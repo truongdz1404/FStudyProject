@@ -2,12 +2,7 @@
 using FStudyForum.Core.Models.DTOs.Paging;
 using FStudyForum.Core.Models.Entities;
 using FStudyForum.Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace FStudyForum.Infrastructure.Repositories
 {
@@ -17,55 +12,48 @@ namespace FStudyForum.Infrastructure.Repositories
         {
         }
 
-        public Task<Vote> Create(Vote model)
+        public override async Task<Vote> Create(Vote model)
         {
-            throw new NotImplementedException();
+            return await base.Create(model);
         }
 
-        public Task CreateRange(List<Vote> model)
+        public override async Task CreateRange(List<Vote> model)
         {
-            throw new NotImplementedException();
+            await base.CreateRange(model);
         }
 
-        public Task Delete(Vote model)
+        public override async Task Delete(Vote model)
         {
-            throw new NotImplementedException();
+            await base.Delete(model);
         }
 
-        public async Task<IEnumerable<Vote>> GetAll()
+        public override async Task<IEnumerable<Vote>> GetAll()
         {
-            return await _dbContext.Votes.Include(v => v.Post)
-                .ToListAsync();
+            return await base.GetAll();
         }
 
-        public Task<Vote> GetById<Tid>(Tid id)
+        public override async Task<Vote> GetById<Tid>(Tid id)
         {
-            throw new NotImplementedException();
+           return await base.GetById(id);
         }
 
-        public Task<PaginatedDataDTO<Vote>> GetPaginatedData(int pageNumber, int pageSize)
+        public override async Task<PaginatedDataDTO<Vote>> GetPaginatedData(int pageNumber, int pageSize)
         {
-            throw new NotImplementedException();
+            return await base.GetPaginatedData(pageNumber, pageSize);
         }
 
-        public Task<bool> IsExists<Tvalue>(string key, Tvalue value)
+        public override async Task<bool> IsExists<Tvalue>(string key, Tvalue value)
         {
-            throw new NotImplementedException();
+            return await base.IsExists(key, value);
         }
 
-        public Task<bool> IsExistsForUpdate<Tid>(Tid id, string key, string value)
+        public override async Task<bool> IsExistsForUpdate<Tid>(Tid id, string key, string value)
         {
-            throw new NotImplementedException();
+           return await base.IsExistsForUpdate(id, key, value);
         }
-
-        public Task SaveChangeAsync()
+        public override async Task Update(Vote model)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task Update(Vote model)
-        {
-            throw new NotImplementedException();
+            await base.Update(model);
         }
     }
 }
