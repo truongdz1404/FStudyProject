@@ -3,7 +3,7 @@ import SemesterFilter from "@/components/topic/Filter/SemesterFilter";
 import MajorFilter from "@/components/topic/Filter/MajorFilter";
 import TopicList from "@/components/topic/TopicList";
 import AddButton from "@/components/topic/Button/ButtonAdd";
-import AddTopicPopup from "@/components/topic/AddTopicPopup/AddTopicPopup";
+import AddTopicPopup from "@/components/topic/Popup/AddTopicPopup";
 
 const TopicsPage: React.FC = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -26,7 +26,7 @@ const TopicsPage: React.FC = () => {
 
   return (
     <div>
-      <div className="text-3xl border border-gray-400 bg-gray-200 p-4 flex items-center justify-between"> {/* Thay đổi flex thành justify-between */}
+      <div className="text-3xl border border-gray-400 bg-gray-200 p-4 flex items-center justify-between"> 
         <div className="flex"> 
           <SemesterFilter onSelect={handleSemesterSelect} />
           <MajorFilter onSelect={handleMajorSelect} />
