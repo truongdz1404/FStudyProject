@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FStudyForum.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20240610153345_Init")]
+    [Migration("20240611044426_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -297,6 +297,10 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -473,13 +477,13 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "69fa1d4a-b0dc-4b0a-b32c-1af41f3d0b79",
+                            Id = "44f1e592-8f34-4273-b457-14330d72bfd6",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "9600045b-ee0b-4217-a443-6d4f10cf57e8",
+                            Id = "2a057ef4-a323-4a56-b4b2-010af452b775",
                             Name = "User",
                             NormalizedName = "USER"
                         });

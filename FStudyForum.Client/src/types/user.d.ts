@@ -1,9 +1,12 @@
 export interface User {
   username: string;
   roles: Array<string>;
-  fullname: string;
+  firstName: string;
+  lastName: string;
   avatar: string;
   banner: string;
+  phone: string;
   gender: number;
+  major: string;
   bio: string;
 }

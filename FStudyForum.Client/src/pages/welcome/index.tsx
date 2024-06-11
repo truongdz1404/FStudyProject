@@ -26,9 +26,10 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
+import { PhoneRegExp } from "@/helpers/constants";
 
 interface WelcomeFormInputs {
-  fisrtName: string;
+  firstName: string;
   lastName: string;
   phone?: string;
   gender: number;
@@ -36,14 +37,14 @@ interface WelcomeFormInputs {
 }
 
 const validation = Yup.object().shape({
-  fisrtName: Yup.string()
+  firstName: Yup.string()
     .required("First name is required")
     .max(20, "First name must no more than 20 characters"),
   lastName: Yup.string()
     .required("Last name is required")
     .max(20, "Last name must no more than 20 characters"),
   gender: Yup.number().required("Gender is required"),
-  phone: Yup.string(),
+  phone: Yup.string().matches(PhoneRegExp, "Phone number is not valid"),
 });
 
 const Welcome = () => {
@@ -91,7 +92,7 @@ const Welcome = () => {
     let isValid = false;
     switch (activeStep) {
       case 0:
-        isValid = await trigger(["fisrtName", "lastName", "gender"]);
+        isValid = await trigger(["firstName", "lastName", "gender"]);
         break;
       default:
         isValid = true;
@@ -106,12 +107,14 @@ const Welcome = () => {
     try {
       setLoading(true);
       const payload = {
-        firstName: form.fisrtName,
+        firstName: form.firstName,
         lastName: form.lastName,
         major: selectedMajor,
         gender: form.gender,
         avatar: "/src/assets/images/user.png",
+        phone: form.phone,
       };
+
       await ProfileService.create(payload);
       const user = await UserService.getProfile();
       dispatch(signIn({ user }));
@@ -128,14 +131,14 @@ const Welcome = () => {
       <>
         <div className={cn(step != 0 && "hidden")}>
           <div className="mb-6">
-            <p className="text-lg font-semibold">Basic Info</p>
+            <p className="text-xl font-semibold">Basic Info</p>
             <p className="text-xs text-gray-600 text-left">
               Tell us a bit about yourself to get started on our forum
             </p>
           </div>
 
-          <div className="flex lg:justify-between lg:flex-row flex-col gap-y-4 lg:gap-x-4">
-            <div className="w-full lg:w-1/2">
+          <div className="flex xl:justify-between xl:flex-row flex-col gap-y-4 xl:gap-x-4">
+            <div className="w-full xl:w-1/2">
               <label
                 htmlFor="firstName"
                 className="block text-gray-700 text-sm m-1"
@@ -147,27 +150,28 @@ const Welcome = () => {
                 type="text"
                 placeholder="ex: Bac"
                 className={cn(
-                  "!border !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent placeholder:opacity-100",
-                  " focus:!border-gray-900 focus:!border-t-gray-900 focus:ring-gray-900/10  placeholder:text-gray-500",
-                  Boolean(errors.fisrtName?.message) &&
+                  "!border !border-gray-300 bg-white text-gray-900 shadow-xl shadow-gray-900/5 ring-4 ring-transparent placeholder:opacity-100",
+                  " focus:!border-gray-900 focus:!border-t-gray-900 focus:ring-gray-900/10  placeholder:text-gray-500 !min-w-[100px]",
+                  Boolean(errors.firstName?.message) &&
                     "focus:!border-red-600 focus:!border-t-red-600 focus:ring-red-600/10 !border-red-500  placeholder:text-red-500"
                 )}
+                containerProps={{ className: "min-w-full" }}
                 labelProps={{ className: "hidden" }}
                 crossOrigin={undefined}
-                {...register("fisrtName")}
+                {...register("firstName")}
               />
-              {errors.fisrtName && (
+              {errors.firstName && (
                 <span
                   className={cn(
                     "text-red-500 text-xs mt-1 ml-1 flex gap-x-1 items-center"
                   )}
                 >
-                  <CircleAlert className="w-3 h-3" /> {errors.fisrtName.message}
+                  <CircleAlert className="w-3 h-3" /> {errors.firstName.message}
                 </span>
               )}
             </div>
 
-            <div className="w-full lg:w-1/2">
+            <div className="w-full xl:w-1/2">
               <label
                 htmlFor="lastName"
                 className="block text-gray-700 text-sm m-1"
@@ -179,11 +183,12 @@ const Welcome = () => {
                 type="text"
                 placeholder="ex: Ngo Xuan"
                 className={cn(
-                  "!border !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent placeholder:opacity-100",
+                  "!border !border-gray-300 bg-white text-gray-900 shadow-xl shadow-gray-900/5 ring-4 ring-transparent placeholder:opacity-100",
                   " focus:!border-gray-900 focus:!border-t-gray-900 focus:ring-gray-900/10  placeholder:text-gray-500",
                   Boolean(errors.lastName?.message) &&
                     "focus:!border-red-600 focus:!border-t-red-600 focus:ring-red-600/10 !border-red-500  placeholder:text-red-500"
                 )}
+                containerProps={{ className: "min-w-full" }}
                 labelProps={{ className: "hidden" }}
                 crossOrigin={undefined}
                 {...register("lastName")}
@@ -208,7 +213,7 @@ const Welcome = () => {
               type="text"
               placeholder="ex: 0123456789"
               className={cn(
-                "!border !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent placeholder:opacity-100",
+                "!border !border-gray-300 bg-white text-gray-900 shadow-xl shadow-gray-900/5 ring-4 ring-transparent placeholder:opacity-100",
                 " focus:!border-gray-900 focus:!border-t-gray-900 focus:ring-gray-900/10  placeholder:text-gray-500",
                 Boolean(errors.phone?.message) &&
                   "focus:!border-red-600 focus:!border-t-red-600 focus:ring-red-600/10 !border-red-500  placeholder:text-red-500"
@@ -261,7 +266,7 @@ const Welcome = () => {
 
         <div className={cn(step != 1 && "hidden", "max-h-full")}>
           <div className="mb-6">
-            <p className="text-lg font-semibold">Select your major</p>
+            <p className="text-xl font-semibold">Select your major</p>
             <p className="text-xs text-gray-600 text-left">
               Share your major with us to receive relevant topic suggestions
             </p>
@@ -288,7 +293,7 @@ const Welcome = () => {
         <div className={cn(step != 2 && "hidden")}>
           <div className="mt-6  flex flex-col items-center justify-center">
             <img className="w-20 h-20" src={Success} />
-            <p className="text-lg font-semibold">
+            <p className="text-xl font-semibold">
               Get ready to explore a new world!
             </p>
             <Button
@@ -311,11 +316,11 @@ const Welcome = () => {
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ ease: "easeInOut", duration: 0.75 }}
-        className="w-full max-w-screen-sm lg:w-1/3 h-full lg:h-[88%] lg:border lg:rounded-md lg:shadow-md p-8 flex flex-col"
+        className="w-full max-w-screen-sm xl:w-1/3 h-full xl:h-[88%] xl:border xl:rounded-md xl:shadow-md p-8 flex flex-col"
       >
         <div className="text-center mb-4">
           <Icons.logo className="w-10 h-10 mx-auto" />
-          <span className="font-bold text-lg ">Welcome to FStudy</span>
+          <span className="font-bold text-xl ">Welcome to FStudy</span>
         </div>
         <Stepper
           activeStep={activeStep}

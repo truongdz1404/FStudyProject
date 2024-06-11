@@ -7,10 +7,8 @@ import Layout from "@/components/layout/Layout";
 import WelcomeGuard from "./helpers/guards/WelcomeGuard";
 import AuthLayout from "./components/layout/AuthLayout";
 import Post from "./pages/post";
-import Home from "./pages/home";
-import Topic from "./pages/topic";
 
-// const EditProfile = lazy(() => import("@/pages/profile/edit"));
+const EditProfile = lazy(() => import("@/pages/profile/edit"));
 const Welcome = lazy(() => import("@/pages/welcome"));
 const Register = lazy(() => import("@/pages/auth/register"));
 const ConfirmEmail = lazy(() => import("@/pages/auth/confirm-email"));
@@ -22,8 +20,8 @@ const ChangePassword = lazy(
 const ResetPassword = lazy(() => import("@/pages/auth/reset-password"));
 const Profile = lazy(() => import("@/pages/profile"));
 const SignIn = lazy(() => import("@/pages/auth/signin"));
-// const Home = lazy(() => import("@/pages/home"));
-// const Topic = lazy(() => import("@/pages/topic"));
+const Home = lazy(() => import("@/pages/home"));
+const Topic = lazy(() => import("@/pages/topic"));
 const SignOut = lazy(() => import("@/pages/auth/signout"));
 const Router: FC = () => {
   return useRoutes([
@@ -44,15 +42,27 @@ const Router: FC = () => {
         },
         {
           path: "home",
-          element: <Home />,
+          element: (
+            <Suspense>
+              <Home />
+            </Suspense>
+          ),
         },
         {
           path: "posts",
-          element: <Post />,
+          element: (
+            <Suspense>
+              <Post />
+            </Suspense>
+          ),
         },
         {
           path: "topics",
-          element: <Topic />,
+          element: (
+            <Suspense>
+              <Topic />
+            </Suspense>
+          ),
         },
         {
           path: "topic/detail/:id",
@@ -75,7 +85,11 @@ const Router: FC = () => {
             },
             {
               path: "edit",
-              element: <Suspense>{/* <EditProfile /> */}</Suspense>,
+              element: (
+                <Suspense>
+                  <EditProfile />
+                </Suspense>
+              ),
             },
           ],
         },

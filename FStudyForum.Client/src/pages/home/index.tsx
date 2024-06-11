@@ -6,6 +6,7 @@ import { Profile } from "@/types/profile";
 import ProfileService from "@/services/ProfileService";
 import MenuItemPost from "@/components/post/MenuItem";
 import { AxiosError } from "axios";
+import ContentLayout from "@/components/layout/ContentLayout";
 const Home: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [page, setPage] = useState(1);
@@ -63,12 +64,12 @@ const Home: React.FC = () => {
     });
   }, [posts, profiles]);
   return (
-    <div className="h-[200vh]">
+    <ContentLayout>
       {posts.map((post, index) => (
         <div
           key={index}
           ref={posts.length === index + 1 ? lastPostElementRef : null}
-          className="rounded-lg shadow-md p-6 mb-[5%]"
+          className="rounded-lg shadow-md p-6 mb-[5%] w-full"
         >
           <div>
             <div className="flex justify-between">
@@ -119,7 +120,7 @@ const Home: React.FC = () => {
           </div>
         </div>
       ))}
-    </div>
+    </ContentLayout>
   );
 };
 export default Home;

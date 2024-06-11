@@ -7,13 +7,10 @@ const getByUsername = async (username: string) => {
   return response.data.data;
 };
 const update = async (username: string, profile: Profile) => {
-  const response = await api.put<Response>(`/profile/edit/${username}`, {
-    firstName: profile.firstName,
-    lastName: profile.lastName,
-    gender: profile.gender,
-    // birthDate: profile.birthDate,
-    // avatarUrl: profile.avatarUrl,
-  });
+  const response = await api.put<Response>(
+    `/profile/edit/${username}`,
+    profile
+  );
   return response.data;
 };
 const create = async (profile: Profile) => {

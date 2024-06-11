@@ -1,3 +1,4 @@
+import ContentLayout from "@/components/layout/ContentLayout";
 import PaymentService from "@/services/PaymentService";
 
 const Post = () => {
@@ -6,14 +7,11 @@ const Post = () => {
     console.log(payment);
   };
   return (
-    <div>
-      <h1
-        className="cursor-pointer text-orange-500 h-[200vh]"
-        onClick={getPaymentQR}
-      >
+    <ContentLayout>
+      <h1 className="cursor-pointer text-orange-500" onClick={getPaymentQR}>
         Post
       </h1>
-    </div>
+    </ContentLayout>
   );
 };
 export default Post;
