@@ -34,6 +34,8 @@ const SignIn: FC = () => {
   const navigate = useNavigate();
   const [error, setError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
+  const [username, setUsername] = React.useState("");
+  const [password, setPassword] = React.useState("");
   const {
     register,
     handleSubmit,
@@ -102,7 +104,9 @@ const SignIn: FC = () => {
             labelProps={{ className: "hidden" }}
             crossOrigin={undefined}
             disabled={loading}
-            {...register("username")}
+            {...register("username", {
+              onChange: (e) => setUsername(e.target.value),
+            })}
           />
 
           {errors.username && (
@@ -132,7 +136,9 @@ const SignIn: FC = () => {
             labelProps={{ className: "hidden" }}
             crossOrigin={undefined}
             disabled={loading}
-            {...register("password")}
+            {...register("password", { 
+              onChange: (e) => setPassword(e.target.value) 
+            })}
           />
           {errors.password && (
             <span className="text-red-500 text-xs mt-1 ml-1 flex gap-x-1 items-center">
@@ -158,9 +164,9 @@ const SignIn: FC = () => {
           type="submit"
           className="mt-6 text-sm normal-case"
           fullWidth
-          disabled={loading}
           variant="gradient"
           color="deep-orange"
+          disabled={(loading || (username && password))? false : true}
         >
           Sign in
         </Button>
