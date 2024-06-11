@@ -38,9 +38,11 @@ interface WelcomeFormInputs {
 
 const validation = Yup.object().shape({
   firstName: Yup.string()
+    .trim()
     .required("First name is required")
     .max(20, "First name must no more than 20 characters"),
   lastName: Yup.string()
+    .trim()
     .required("Last name is required")
     .max(20, "Last name must no more than 20 characters"),
   gender: Yup.number().required("Gender is required"),
