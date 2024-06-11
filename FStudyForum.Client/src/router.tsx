@@ -7,6 +7,7 @@ import Layout from "@/components/layout/Layout";
 import WelcomeGuard from "./helpers/guards/WelcomeGuard";
 import AuthLayout from "./components/layout/AuthLayout";
 import Post from "./pages/post";
+import SignInGuard from "./helpers/guards/signin/SignInGuard";
 
 const EditProfile = lazy(() => import("@/pages/profile/edit"));
 const Welcome = lazy(() => import("@/pages/welcome"));
@@ -110,9 +111,11 @@ const Router: FC = () => {
         {
           path: "signin",
           element: (
-            <Suspense>
-              <SignIn />
-            </Suspense>
+            <SignInGuard>
+              <Suspense>
+                <SignIn />
+              </Suspense>
+            </SignInGuard>
           ),
         },
         {
