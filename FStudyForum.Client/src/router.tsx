@@ -99,9 +99,11 @@ const Router: FC = () => {
     {
       path: "welcome",
       element: (
-        <Suspense>
-          <Welcome />
-        </Suspense>
+        <AuthGuard>
+          <Suspense>
+            <Welcome />
+          </Suspense>
+        </AuthGuard>
       ),
     },
     {
