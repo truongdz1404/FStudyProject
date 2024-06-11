@@ -3,6 +3,8 @@ using FStudyForum.Core.Interfaces.IServices;
 using System.Threading.Tasks;
 using FStudyForum.Core.Models.DTOs.Topic;
 using FStudyForum.Infrastructure.Services;
+using FStudyForum.Core.Models.DTOs;
+using System.Net;
 
 namespace FStudyForum.API.Controllers
 {
@@ -37,6 +39,38 @@ namespace FStudyForum.API.Controllers
                 return BadRequest(ModelState);
             }
         }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetPostsByTopicId(long id)
+        {
+            try
+            {
+                var posts = await _topicService.GetPostsByTopicId(id);
+                if (posts.Count == 0)
+                {
+                    return NotFound(new Response
+                    {
+                        Message = "Posts not found",
+                        Status = (int)HttpStatusCode.NotFound + ""
+                    });
+                }
+                return Ok(new Response
+                {
+                    Message = "Found!",
+                    Status = (int)HttpStatusCode.OK + "",
+                    Data = posts
+                }); ;
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = ex.Message
+                });
+            }
+        }
+
         private async Task<IActionResult> GetTopicById(long id)
         {
             var topic = await _topicService.GetTopicById(id);

@@ -2,6 +2,7 @@
 using AutoMapper;
 using FStudyForum.Core.Interfaces.IRepositories;
 using FStudyForum.Core.Interfaces.IServices;
+using FStudyForum.Core.Models.DTOs.Post;
 using FStudyForum.Core.Models.DTOs.Topic;
 using FStudyForum.Core.Models.Entities;
 namespace FStudyForum.Infrastructure.Services;
@@ -76,6 +77,19 @@ public class TopicService : ITopicService
         await _topicRepository.Update(topic);
         await _topicRepository.SaveChangeAsync();
         return true;
+    }
+
+    public async Task<List<PostDTO>> GetPostsByTopicId(long id)
+    {
+        var topic = await _topicRepository.GetTopicWithPostsById(id) 
+            ?? throw new Exception("Topic not found");
+        return topic.Posts.Select(p => new PostDTO
+        {
+            Title = p.Title,
+            Content = p.Content,
+            IsDeleted = p.IsDeleted,
+            Comments = p.Comments
+        }).ToList();
     }
 
     // public Task<List<TopicDTO>> GetAllActiveCategory()

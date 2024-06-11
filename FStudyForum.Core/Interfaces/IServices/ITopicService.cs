@@ -1,3 +1,4 @@
+using FStudyForum.Core.Models.DTOs.Post;
 using FStudyForum.Core.Models.DTOs.Topic;
 
 namespace FStudyForum.Core.Interfaces.IServices;
@@ -9,5 +10,5 @@ public interface ITopicService
     public Task<TopicDTO> GetTopicById(long id);
     public Task<TopicDTO> UpdateTopic(long id, TopicDTO topicDto);
     public Task<bool> DeleteTopic(long id);
-
+    public Task<List<PostDTO>> GetPostsByTopicId(long id);
 }

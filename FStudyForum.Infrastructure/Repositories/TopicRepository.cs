@@ -51,8 +51,14 @@ namespace FStudyForum.Infrastructure.Repositories
             return topics;
         }
 
-
-
+        public async Task<Topic?> GetTopicWithPostsById(long id)
+        {
+            return await _dbContext.Topics
+                .AsSplitQuery() // split query to avoid multiple queries
+                .Include(t => t.Posts)
+                .ThenInclude(p => p.Comments)
+                .FirstOrDefaultAsync(t => t.Id == id);
+        }
     }
 
 }
