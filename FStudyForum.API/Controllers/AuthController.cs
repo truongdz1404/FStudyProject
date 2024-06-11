@@ -334,7 +334,7 @@ public class AuthController : ControllerBase
         {
             var result = await _identityService.ConfirmEmailAsync(email, token);
             if (!result) throw new Exception("Email or token invalid");
-            return Redirect(_jwtConfig.Audience);
+            return Redirect(_jwtConfig.Audience + "/auth/signin");
             // return Ok(new Response
             // {
             //     Status = ResponseStatus.SUCCESS,

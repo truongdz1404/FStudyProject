@@ -69,7 +69,7 @@ const Home: React.FC = () => {
         <div
           key={index}
           ref={posts.length === index + 1 ? lastPostElementRef : null}
-          className="rounded-lg shadow-md p-6 mb-[5%] w-full"
+          className="rounded-lg shadow-sm p-6 mb-6 w-full border"
         >
           <div>
             <div className="flex justify-between">
