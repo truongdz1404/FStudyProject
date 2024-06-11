@@ -1,6 +1,6 @@
 import { List, ListItem, ListItemPrefix, Card } from "@material-tailwind/react";
 import { Home, Rocket, Tags } from "lucide-react";
-import React, { FC } from "react";
+import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 const sidebarListItems = [
   {
@@ -24,7 +24,7 @@ type SidebarProps = {
   handleClose?: () => void;
 };
 
-const Sidebar: FC<SidebarProps> = ({ handleClose }) => {
+const Sidebar = React.memo(({ handleClose }: SidebarProps) => {
   const navigate = useNavigate();
   const handleOpen = (path: string) => {
     handleClose?.();
@@ -55,6 +55,6 @@ const Sidebar: FC<SidebarProps> = ({ handleClose }) => {
       </List>
     </Card>
   );
-};
+});
 
 export default Sidebar;

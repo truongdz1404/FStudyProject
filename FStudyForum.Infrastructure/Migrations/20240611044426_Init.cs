@@ -190,6 +190,7 @@ namespace FStudyForum.Infrastructure.Migrations
                     Gender = table.Column<int>(type: "int", nullable: false),
                     Major = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Bio = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Avatar = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     Banner = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -474,8 +475,8 @@ namespace FStudyForum.Infrastructure.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "84841df8-0baa-4127-b754-191e8992110e", null, "User", "USER" },
-                    { "ef8f2ccd-5b5e-4bd9-8857-9fb93b2e1f6e", null, "Admin", "ADMIN" }
+                    { "2a057ef4-a323-4a56-b4b2-010af452b775", null, "User", "USER" },
+                    { "44f1e592-8f34-4273-b457-14330d72bfd6", null, "Admin", "ADMIN" }
                 });
 
             migrationBuilder.CreateIndex(

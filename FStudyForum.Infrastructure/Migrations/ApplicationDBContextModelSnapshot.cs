@@ -294,6 +294,10 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -470,13 +474,13 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "ef8f2ccd-5b5e-4bd9-8857-9fb93b2e1f6e",
+                            Id = "44f1e592-8f34-4273-b457-14330d72bfd6",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "84841df8-0baa-4127-b754-191e8992110e",
+                            Id = "2a057ef4-a323-4a56-b4b2-010af452b775",
                             Name = "User",
                             NormalizedName = "USER"
                         });

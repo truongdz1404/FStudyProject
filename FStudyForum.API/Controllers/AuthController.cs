@@ -43,7 +43,7 @@ public class AuthController : ControllerBase
         if (isValid)
         {
             var tokenDTO = await _userService
-                .CreateAuthTokenAsync(loginDTO.UserName, _jwtConfig.RefreshTokenValidityInDays);
+            .CreateAuthTokenAsync(loginDTO.UserName, _jwtConfig.RefreshTokenValidityInDays);
             SetTokensInsideCookie(tokenDTO, HttpContext);
 
             return Ok(new Response

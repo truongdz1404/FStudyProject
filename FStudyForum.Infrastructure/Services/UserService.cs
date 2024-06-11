@@ -87,11 +87,13 @@ public class UserService : IUserService
         {
             Username = username,
             Roles = await _userManager.GetRolesAsync(user),
-            Fullname = profile == null ? string.Empty : $"{profile.FirstName} {profile.LastName}",
+            FirstName = profile?.FirstName ?? string.Empty,
+            LastName = profile?.LastName ?? string.Empty,
+            Phone = profile?.Phone ?? string.Empty,
             Avatar = profile?.Avatar ?? string.Empty,
             Banner = string.Empty,
             Gender = profile?.Gender ?? 0,
-            Bio = string.Empty,
+            Bio = profile?.Bio ?? string.Empty,
             Major = profile?.Major ?? string.Empty
         };
     }

@@ -137,9 +137,10 @@ function NavList() {
 type HeaderProps = {
   openSidebar: () => void;
 };
-export function Header({ openSidebar }: HeaderProps) {
+const Header = React.memo(({ openSidebar }: HeaderProps) => {
   const [isNavOpen, setIsNavOpen] = React.useState(false);
   const toggleIsNavOpen = () => setIsNavOpen((cur) => !cur);
+
   React.useEffect(() => {
     window.addEventListener(
       "resize",
@@ -157,14 +158,14 @@ export function Header({ openSidebar }: HeaderProps) {
             className="xl:hidden"
             onClick={openSidebar}
           >
-            <AlignJustify className="h-5 w-5" />
+            <AlignJustify className="h-5 w-5 text-blue-gray-600" />
           </IconButton>
 
           <Link
             to="/"
             className="mx-2 xl:mx-4 cursor-pointer py-1.5 font-medium flex items-center select-none"
           >
-            <Icons.logo className="h-8 w-8 sm:h-6 sm:w-6" />
+            <Icons.logo className="h-8 w-8" />
             <span className="hidden text-zinc-700 text-md font-bold md:block">
               Study
             </span>
@@ -179,7 +180,7 @@ export function Header({ openSidebar }: HeaderProps) {
             containerProps={{ className: "min-w-full" }}
             crossOrigin={undefined}
             className={cn(
-              "placeholder:text-gray-500 placeholder:opacity-100 focus:!border-gray-900 focus:!border-t-gray-900",
+              "placeholder:text-gray-500 placeholder:opacity-100 focus:!border-gray-900 focus:!border-t-gray-900 ",
               "rounded-full !border-2 !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent"
             )}
           />
@@ -209,4 +210,6 @@ export function Header({ openSidebar }: HeaderProps) {
       </Collapse>
     </Navbar>
   );
-}
+});
+
+export default Header;

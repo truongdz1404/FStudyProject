@@ -1,8 +1,17 @@
+import ContentLayout from "@/components/layout/ContentLayout";
+import PaymentService from "@/services/PaymentService";
+
 const Post = () => {
-    return (
-        <div>
-        <h1>Post</h1>
-        </div>
-    );
-    }
-    export default Post;
+  const getPaymentQR = async () => {
+    const payment = await PaymentService.getPayMentQR();
+    console.log(payment);
+  };
+  return (
+    <ContentLayout>
+      <h1 className="cursor-pointer text-orange-500" onClick={getPaymentQR}>
+        Post
+      </h1>
+    </ContentLayout>
+  );
+};
+export default Post;
