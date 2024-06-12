@@ -1,20 +1,22 @@
+// src/components/topic/TopicCard.tsx
 import React, { useState } from "react";
 import { Card, CardBody, CardFooter, Typography, Button } from "@material-tailwind/react";
 import { Link } from "react-router-dom";
 import { Edit, Delete } from "@material-ui/icons";
 import type { Topic as TopicType } from "@/types/topic";
 import UpdateTopicPopup from "@/components/topic/Popup/UpdateTopicPopup";
-import DeleteTopicPopup from "@/components/topic/Popup/DeleteTopicPopup"; 
-import TopicService from "@/services/TopicService"; 
+import DeleteTopicPopup from "@/components/topic/Popup/DeleteTopicPopup";
+import TopicService from "@/services/TopicService";
 
 interface TopicProps {
   topic: TopicType;
   onTopicDeleted: (id: number) => void;
+  onTopicUpdated: () => void;
 }
 
-const TopicCard: React.FC<TopicProps> = ({ topic, onTopicDeleted }) => {
+const TopicCard: React.FC<TopicProps> = ({ topic, onTopicDeleted, onTopicUpdated }) => {
   const [isUpdatePopupOpen, setIsUpdatePopupOpen] = useState(false);
-  const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false); 
+  const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
 
   const handleEditClick = () => {
     setIsUpdatePopupOpen(true);
@@ -31,7 +33,7 @@ const TopicCard: React.FC<TopicProps> = ({ topic, onTopicDeleted }) => {
   const handleDeleteConfirm = async () => {
     try {
       await TopicService.Delete(topic.id);
-      onTopicDeleted(topic.id); 
+      onTopicDeleted(topic.id);
       setIsDeletePopupOpen(false);
     } catch (error) {
       console.error("Error deleting topic:", error);
@@ -61,7 +63,14 @@ const TopicCard: React.FC<TopicProps> = ({ topic, onTopicDeleted }) => {
           </div>
         </CardFooter>
       </Card>
-      {isUpdatePopupOpen && <UpdateTopicPopup onClose={handleCloseUpdatePopup} />}
+      {isUpdatePopupOpen && (
+        <UpdateTopicPopup
+          open={isUpdatePopupOpen}
+          topic={topic}
+          onClose={handleCloseUpdatePopup}
+          onUpdate={onTopicUpdated}
+        />
+      )}
       {isDeletePopupOpen && (
         <DeleteTopicPopup
           open={isDeletePopupOpen}

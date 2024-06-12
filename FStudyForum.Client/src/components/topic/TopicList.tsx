@@ -2,8 +2,7 @@
 import React, { useEffect, useState } from "react";
 import TopicCard from "@/components/topic/topic";
 import TopicService from "@/services/TopicService";
-import type { Topic as TopicType } from "@/types/topic";
-import { Spinner, Typography } from "@material-tailwind/react";
+import { Topic as TopicType } from "@/types/topic";
 
 const TopicList: React.FC = () => {
   const [topics, setTopics] = useState<TopicType[]>([]);
@@ -29,13 +28,22 @@ const TopicList: React.FC = () => {
     setTopics(prevTopics => prevTopics.filter(topic => topic.id !== id));
   };
 
-  if (loading) return <div className="flex justify-center items-center"><Spinner /></div>;
-  if (error) return <Typography color="red">{error}</Typography>;
+  const handleTopicUpdated = async () => {
+    try {
+      const data = await TopicService.getAllActiveTopics();
+      setTopics(data);
+    } catch (error) {
+      setError("Failed to update topics");
+    }
+  };
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {topics.map((topic) => (
-        <TopicCard key={topic.id} topic={topic} onTopicDeleted={handleTopicDeleted} />
+        <TopicCard key={topic.id} topic={topic} onTopicDeleted={handleTopicDeleted} onTopicUpdated={handleTopicUpdated} />
       ))}
     </div>
   );
