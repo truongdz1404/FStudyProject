@@ -20,7 +20,7 @@ type ChangePasswordFormInputs = {
 const validation = Yup.object().shape({
   password: Yup.string()
     .required("Password is required")
-    .length(8, "Password must have at least 8 characters"),
+    .min(8, "Password must have at least 8 characters"),
   confirmPassword: Yup.string()
     .required("Confirm password is required")
     .oneOf([Yup.ref("password")], "Confirm password do not match"),

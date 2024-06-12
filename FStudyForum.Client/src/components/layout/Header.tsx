@@ -20,7 +20,6 @@ import {
   Plus,
   Bell,
   ChevronUp,
-  ChevronDown,
 } from "lucide-react";
 import { cn } from "@/helpers/utils";
 import { Link, useNavigate } from "react-router-dom";
@@ -149,7 +148,7 @@ const Header = React.memo(({ openSidebar }: HeaderProps) => {
   }, []);
 
   return (
-    <Navbar className="max-w-screen-3xl rounded-none p-1 shadow-sm">
+    <Navbar className="max-w-screen-3xl rounded-none p-1 shadow-sm ">
       <div className="relative mx-auto flex items-center justify-between text-blue-gray-900">
         <div className="flex items-center w-1/4 lg:w-1/3">
           <IconButton
@@ -194,13 +193,13 @@ const Header = React.memo(({ openSidebar }: HeaderProps) => {
             color="blue-gray"
             variant="text"
             onClick={toggleIsNavOpen}
-            className="mr-2 lg:hidden"
+            className="mr-2 lg:hidden "
           >
-            {isNavOpen ? (
-              <ChevronUp className="h-5 w-5" />
-            ) : (
-              <ChevronDown className="h-5 w-5" />
-            )}
+            <ChevronUp
+              className={`mx-auto w-5 h-5 transition-transform ${
+                isNavOpen ? "rotate-180" : ""
+              }`}
+            />
           </IconButton>
           <ProfileMenu />
         </div>

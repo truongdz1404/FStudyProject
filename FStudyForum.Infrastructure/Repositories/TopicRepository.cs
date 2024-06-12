@@ -59,6 +59,18 @@ namespace FStudyForum.Infrastructure.Repositories
                 .ThenInclude(p => p.Comments)
                 .FirstOrDefaultAsync(t => t.Id == id);
         }
+        public async Task<bool> TopicExists(string topicName, long? topicId = null)
+        {
+            if (topicId.HasValue)
+            {
+                return await _dbContext.Topics.AnyAsync(t => t.Name == topicName && t.Id != topicId.Value);
+            }
+            else
+            {
+                return await _dbContext.Topics.AnyAsync(t => t.Name == topicName);
+            }
+        }
+
     }
 
 }

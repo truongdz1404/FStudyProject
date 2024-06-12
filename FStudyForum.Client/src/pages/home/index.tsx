@@ -77,7 +77,7 @@ const Home: React.FC = () => {
   };
   return (
     <div>
-      <div className="ml-12">
+      <div className="flex justify-center">
         <FilterComponent 
           onAllTopicClick={() => handleTopicEvent(false)}
           onTopicClick={handleTopicEvent}

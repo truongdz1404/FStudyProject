@@ -4,6 +4,8 @@
 
 html{
     overflow-y: scroll;
+    overflow-x: hidden;
+    overscroll-behavior: none;
 }
 
 @layer utilities {
@@ -13,5 +15,5 @@ html{
     .no-scrollbar {
         -ms-overflow-style: none; 
         scrollbar-width: none; 
-  }
+    }
 }
