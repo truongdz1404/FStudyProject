@@ -28,7 +28,11 @@ public static class ServiceExtension
         services.AddTransient<IProfileRepository, ProfileRepository>();
         services.AddTransient<IPostRepository, PostRepository>();
         services.AddTransient<IVoteRepository, VoteRepository>();
+        services.AddTransient<ICategoryRepository, CategoryRepository>();
+
         #endregion
+
+
         return services;
     }
 
