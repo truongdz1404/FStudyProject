@@ -22,7 +22,7 @@ namespace FStudyForum.API.Controllers
             var activeTopics = await _topicService.GetAllActiveTopics();
             return Ok(activeTopics);
         }
-        
+
         [HttpPost("create")]
         public async Task<IActionResult> CreateTopic([FromBody] CreateTopicDTO topicDto)
         {
@@ -31,19 +31,19 @@ namespace FStudyForum.API.Controllers
         }
 
         [HttpGet("{id}")]
-public async Task<IActionResult> GetTopicById(long id)
-{
-    try
-    {
-        var topic = await _topicService.GetTopicById(id);
-        return Ok(topic);
-    }
-    catch (Exception ex)
-    {
-        return NotFound(ex.Message);
-    }
-}
-        [HttpPut("{id}")]
+        public async Task<IActionResult> GetTopicById(long id)
+        {
+            try
+            {
+                var topic = await _topicService.GetTopicById(id);
+                return Ok(topic);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+        [HttpPut("update/{id}")]
         public async Task<IActionResult> UpdateTopic(long id, [FromBody] UpdateTopicDTO topicDto)
         {
             try
@@ -59,7 +59,7 @@ public async Task<IActionResult> GetTopicById(long id)
         }
 
 
-        [HttpDelete("{id}")]
+        [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteTopic(long id)
         {
             var isDeleted = await _topicService.DeleteTopic(id);

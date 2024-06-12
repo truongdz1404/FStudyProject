@@ -1,46 +1,33 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Progress, Alert } from "@material-tailwind/react";
-
+import TopicService from "@/services/TopicService";
+import { Topic } from "@/types/topic";
+import { MessageSquare, Share, ArrowUp, ArrowDown, Award } from "lucide-react";
 const TopicDetail: React.FC = () => {
   const { id } = useParams<{ id?: string }>();
-  const [topic, setTopic] = useState<{ name: string; description: string } | null>(null);
+  const [topic, setTopic] = useState<Topic | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!id) {
-      setLoading(false);
-      return;
-    }
-
-    const fetchTopicById = async (id: string) => {
+    const fetchTopic = async () => {
       try {
-        const response = await fetch(`/api/Topic/${id}`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch topic");
-        }
-        const data = await response.json();
+        const data = await TopicService.GetTopicById(Number(id));
         setTopic(data);
       } catch (error) {
-        console.error("Error fetching topic:", error);
-        setError("Error fetching topic. Please try again later.");
+        setError("Failed to fetch topic");
       } finally {
         setLoading(false);
       }
     };
-    
 
-    fetchTopicById(id);
+    if (id) {
+      fetchTopic();
+    } else {
+      setLoading(false);
+    }
   }, [id]);
-
-  if (!id) {
-    return (
-      <div className="p-4">
-        <Alert color="red">Topic ID is missing.</Alert>
-      </div>
-    );
-  }
 
   if (loading) {
     return (
@@ -61,19 +48,149 @@ const TopicDetail: React.FC = () => {
   if (!topic) {
     return (
       <div className="p-4">
-        <Alert color="red">No topic found for ID: {id}.</Alert>
+        <Alert color="red">No topic found.</Alert>
       </div>
     );
   }
 
   return (
-    <div className="max-w-md mx-auto p-4">
-      <h2 className="text-2xl font-bold mb-4">Chi Tiết Chủ Đề</h2>
-      <div className="bg-white p-6 rounded-lg shadow-md">
-        <p className="text-lg font-semibold mb-2">Tên:</p>
-        <p className="text-gray-700 mb-4">{topic.name}</p>
-        <p className="text-lg font-semibold mb-2">Mô tả:</p>
-        <p className="text-gray-700">{topic.description}</p>
+    <div className="max-w-screen-xl mx-auto p-4">
+      <div className="mb-8">
+        <h2 className="text-2xl font-bold mb-4">Chi Tiết Chủ Đề</h2>
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <p className="text-lg font-semibold mb-2">Tên:</p>
+          <p className="text-gray-700 mb-4">{topic.name}</p>
+          <p className="text-lg font-semibold mb-2">Mô tả:</p>
+          <p className="text-gray-700">{topic.description}</p>
+        </div>
+      </div>
+      <div>
+        {/* Hard coded content */}
+        <h2 className="text-2xl font-bold mb-4">Posts</h2>
+        <div className="flex justify-center">
+      <div className="rounded-lg shadow-md p-6">
+        <div>
+          <p className=" font-semibold mb-2">How to study prj301 well?</p>
+          <p className="text-gray-700">
+            Gain a solid understanding of the Java Servlet and JSP (JavaServer
+            Pages) technologies. Understand the different Java Web Application
+            components, such as Servlets, JSPs, and their respective lifecycles.
+          </p>
+        </div>
+        <div className="flex space-x-5 px-6 py-2">
+          <div className="flex items-center space-x-2 bg-gray-200 p-2 rounded-full hover:bg-gray-300 transition duration-200 ml-[-4%] cursor-pointer">
+            <ArrowUp className="w-4 h-4 text-gray-700 hover:text-red-500" />
+            <span className="text-gray-700">77</span>
+            <ArrowDown className="w-4 h-4 text-gray-700 hover:text-red-500" />
+          </div>
+          <div className="flex items-center space-x-2 bg-gray-200 p-2 rounded-full hover:bg-gray-300 transition duration-200 cursor-pointer">
+            <MessageSquare className="w-4 h-4 text-gray-700 hover:text-red-500" />
+            <span className="text-gray-700">68</span>
+          </div>
+          <div className="flex items-center space-x-2 bg-gray-200 p-2 rounded-full hover:bg-gray-300 transition duration-200 cursor-pointer">
+            <Award className="w-4 h-4 text-gray-700 hover:text-red-500" />
+            <span className="text-gray-700">Award</span>
+          </div>
+          <div className="flex items-center space-x-2 bg-gray-200 p-2 rounded-full hover:bg-gray-300 transition duration-200 cursor-pointer">
+            <Share className="w-4 h-4 text-gray-700 hover:text-red-500" />
+            <span className="text-gray-700">Share</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div className="flex justify-center">
+      <div className="rounded-lg shadow-md p-6">
+        <div>
+          <p className=" font-semibold mb-2">What is Prj301?</p>
+          <p className="text-gray-700">
+            Gain a solid understanding of the Java Servlet and JSP (JavaServer
+            Pages) technologies. Understand the different Java Web Application
+            components, such as Servlets, JSPs, and their respective lifecycles.
+          </p>
+        </div>
+        <div className="flex space-x-5 px-6 py-2">
+          <div className="flex items-center space-x-2 bg-gray-200 p-2 rounded-full hover:bg-gray-300 transition duration-200 ml-[-4%] cursor-pointer">
+            <ArrowUp className="w-4 h-4 text-gray-700 hover:text-red-500" />
+            <span className="text-gray-700">77</span>
+            <ArrowDown className="w-4 h-4 text-gray-700 hover:text-red-500" />
+          </div>
+          <div className="flex items-center space-x-2 bg-gray-200 p-2 rounded-full hover:bg-gray-300 transition duration-200 cursor-pointer">
+            <MessageSquare className="w-4 h-4 text-gray-700 hover:text-red-500" />
+            <span className="text-gray-700">68</span>
+          </div>
+          <div className="flex items-center space-x-2 bg-gray-200 p-2 rounded-full hover:bg-gray-300 transition duration-200 cursor-pointer">
+            <Award className="w-4 h-4 text-gray-700 hover:text-red-500" />
+            <span className="text-gray-700">Award</span>
+          </div>
+          <div className="flex items-center space-x-2 bg-gray-200 p-2 rounded-full hover:bg-gray-300 transition duration-200 cursor-pointer">
+            <Share className="w-4 h-4 text-gray-700 hover:text-red-500" />
+            <span className="text-gray-700">Share</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div className="flex justify-center">
+      <div className="rounded-lg shadow-md p-6">
+        <div>
+          <p className=" font-semibold mb-2">What make PRJ301 hard?</p>
+          <p className="text-gray-700">
+            Gain a solid understanding of the Java Servlet and JSP (JavaServer
+            Pages) technologies. Understand the different Java Web Application
+            components, such as Servlets, JSPs, and their respective lifecycles.
+          </p>
+        </div>
+        <div className="flex space-x-5 px-6 py-2">
+          <div className="flex items-center space-x-2 bg-gray-200 p-2 rounded-full hover:bg-gray-300 transition duration-200 ml-[-4%] cursor-pointer">
+            <ArrowUp className="w-4 h-4 text-gray-700 hover:text-red-500" />
+            <span className="text-gray-700">77</span>
+            <ArrowDown className="w-4 h-4 text-gray-700 hover:text-red-500" />
+          </div>
+          <div className="flex items-center space-x-2 bg-gray-200 p-2 rounded-full hover:bg-gray-300 transition duration-200 cursor-pointer">
+            <MessageSquare className="w-4 h-4 text-gray-700 hover:text-red-500" />
+            <span className="text-gray-700">68</span>
+          </div>
+          <div className="flex items-center space-x-2 bg-gray-200 p-2 rounded-full hover:bg-gray-300 transition duration-200 cursor-pointer">
+            <Award className="w-4 h-4 text-gray-700 hover:text-red-500" />
+            <span className="text-gray-700">Award</span>
+          </div>
+          <div className="flex items-center space-x-2 bg-gray-200 p-2 rounded-full hover:bg-gray-300 transition duration-200 cursor-pointer">
+            <Share className="w-4 h-4 text-gray-700 hover:text-red-500" />
+            <span className="text-gray-700">Share</span>
+          </div>
+        </div>
+      </div>
+    </div>  
+    <div className="flex justify-center">
+      <div className="rounded-lg shadow-md p-6">
+        <div>
+          <p className=" font-semibold mb-2">Anyone tell me the best way to learn this subject?</p>
+          <p className="text-gray-700">
+            Gain a solid understanding of the Java Servlet and JSP (JavaServer
+            Pages) technologies. Understand the different Java Web Application
+            components, such as Servlets, JSPs, and their respective lifecycles.
+          </p>
+        </div>
+        <div className="flex space-x-5 px-6 py-2">
+          <div className="flex items-center space-x-2 bg-gray-200 p-2 rounded-full hover:bg-gray-300 transition duration-200 ml-[-4%] cursor-pointer">
+            <ArrowUp className="w-4 h-4 text-gray-700 hover:text-red-500" />
+            <span className="text-gray-700">77</span>
+            <ArrowDown className="w-4 h-4 text-gray-700 hover:text-red-500" />
+          </div>
+          <div className="flex items-center space-x-2 bg-gray-200 p-2 rounded-full hover:bg-gray-300 transition duration-200 cursor-pointer">
+            <MessageSquare className="w-4 h-4 text-gray-700 hover:text-red-500" />
+            <span className="text-gray-700">68</span>
+          </div>
+          <div className="flex items-center space-x-2 bg-gray-200 p-2 rounded-full hover:bg-gray-300 transition duration-200 cursor-pointer">
+            <Award className="w-4 h-4 text-gray-700 hover:text-red-500" />
+            <span className="text-gray-700">Award</span>
+          </div>
+          <div className="flex items-center space-x-2 bg-gray-200 p-2 rounded-full hover:bg-gray-300 transition duration-200 cursor-pointer">
+            <Share className="w-4 h-4 text-gray-700 hover:text-red-500" />
+            <span className="text-gray-700">Share</span>
+          </div>
+        </div>
+      </div>
+    </div>
       </div>
     </div>
   );
