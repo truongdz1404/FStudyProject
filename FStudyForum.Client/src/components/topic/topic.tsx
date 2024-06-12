@@ -1,25 +1,45 @@
 import React, { useState } from "react";
-import { Card, CardBody, CardFooter, Typography, Button} from "@material-tailwind/react";
+import { Card, CardBody, CardFooter, Typography, Button } from "@material-tailwind/react";
 import { Link } from "react-router-dom";
-import { Edit, Delete } from "@material-ui/icons"; 
-import type { Topic as TopicType } from "@/types/topic"; 
+import { Edit, Delete } from "@material-ui/icons";
+import type { Topic as TopicType } from "@/types/topic";
 import UpdateTopicPopup from "@/components/topic/Popup/UpdateTopicPopup";
+import DeleteTopicPopup from "@/components/topic/Popup/DeleteTopicPopup"; 
+import TopicService from "@/services/TopicService"; 
 
 interface TopicProps {
-  topic: TopicType; 
+  topic: TopicType;
+  onTopicDeleted: (id: number) => void;
 }
 
-const TopicCard: React.FC<TopicProps> = ({ topic }) => {
-  const [isUpdatePopupOpen, setIsUpdatePopupOpen] = useState(false); 
- 
-  // Function to handle edit icon click
+const TopicCard: React.FC<TopicProps> = ({ topic, onTopicDeleted }) => {
+  const [isUpdatePopupOpen, setIsUpdatePopupOpen] = useState(false);
+  const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false); 
+
   const handleEditClick = () => {
-    setIsUpdatePopupOpen(true); 
+    setIsUpdatePopupOpen(true);
   };
 
-  // Function to handle closing the update topic popup
   const handleCloseUpdatePopup = () => {
     setIsUpdatePopupOpen(false);
+  };
+
+  const handleDeleteClick = () => {
+    setIsDeletePopupOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    try {
+      await TopicService.Delete(topic.id);
+      onTopicDeleted(topic.id); 
+      setIsDeletePopupOpen(false);
+    } catch (error) {
+      console.error("Error deleting topic:", error);
+    }
+  };
+
+  const handleCloseDeletePopup = () => {
+    setIsDeletePopupOpen(false);
   };
 
   return (
@@ -36,14 +56,19 @@ const TopicCard: React.FC<TopicProps> = ({ topic }) => {
             <Button>View</Button>
           </Link>
           <div>
-            {/* Handle click event on edit icon */}
             <Edit style={{ color: 'orange', cursor: 'pointer' }} onClick={handleEditClick} />
-            <Delete style={{ color: 'red', cursor: 'pointer' }} />
+            <Delete style={{ color: 'red', cursor: 'pointer' }} onClick={handleDeleteClick} />
           </div>
         </CardFooter>
       </Card>
-      {/* Render the update topic popup conditionally */}
       {isUpdatePopupOpen && <UpdateTopicPopup onClose={handleCloseUpdatePopup} />}
+      {isDeletePopupOpen && (
+        <DeleteTopicPopup
+          open={isDeletePopupOpen}
+          onClose={handleCloseDeletePopup}
+          onDelete={handleDeleteConfirm}
+        />
+      )}
     </>
   );
 };

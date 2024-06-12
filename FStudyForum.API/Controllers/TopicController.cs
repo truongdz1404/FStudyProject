@@ -59,7 +59,7 @@ namespace FStudyForum.API.Controllers
         }
 
 
-        [HttpDelete("delete/{id}")]
+        [HttpPut("delete/{id}")]
         public async Task<IActionResult> DeleteTopic(long id)
         {
             var isDeleted = await _topicService.DeleteTopic(id);
@@ -67,7 +67,8 @@ namespace FStudyForum.API.Controllers
             {
                 return NotFound();
             }
-            return NoContent();
+            return Ok("Topic deleted successfully");
         }
+
     }
 }

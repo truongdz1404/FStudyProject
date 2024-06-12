@@ -28,7 +28,7 @@ const update = async (id: number, topic: UpdateTopicDTO): Promise<Topic> => {
 
 // Xóa topic
 const Delete = async (id: number): Promise<void> => {
-  await api.delete(`/Topic/delete/${id}`);
+  await api.put<Topic>(`/Topic/delete/${id}`);
 };
 
 const TopicService = {

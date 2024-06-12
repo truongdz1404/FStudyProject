@@ -11,7 +11,6 @@ const UpdateTopicPopup: React.FC<UpdateTopicPopupProps> = ({ onClose }) => {
   const [major, setMajor] = useState("");
 
   const handleAddTopic = () => {
-    // Submit the form data
     const formData = {
       topicName,
       description,
@@ -19,8 +18,6 @@ const UpdateTopicPopup: React.FC<UpdateTopicPopupProps> = ({ onClose }) => {
       major
     };
     console.log(formData);
-
-    // Close the popup after adding topic
     onClose();
   };
 
@@ -42,7 +39,6 @@ const UpdateTopicPopup: React.FC<UpdateTopicPopupProps> = ({ onClose }) => {
             <option value="">Select Semester</option>
             <option value="1">Semester 1</option>
             <option value="2">Semester 2</option>
-            {/* Add more options as needed */}
           </select>
         </div>
         <div className="mb-4">
@@ -51,7 +47,6 @@ const UpdateTopicPopup: React.FC<UpdateTopicPopupProps> = ({ onClose }) => {
             <option value="">Select Major</option>
             <option value="computer-science">Computer Science</option>
             <option value="engineering">Engineering</option>
-            {/* Add more options as needed */}
           </select>
         </div>
         <div className="flex justify-between">

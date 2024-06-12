@@ -1,8 +1,9 @@
 // src/components/TopicList.tsx
 import React, { useEffect, useState } from "react";
-import Topic from "@/components/topic/topic";
+import TopicCard from "@/components/topic/topic";
 import TopicService from "@/services/TopicService";
-import { Topic as TopicType } from "@/types/topic";
+import type { Topic as TopicType } from "@/types/topic";
+import { Spinner, Typography } from "@material-tailwind/react";
 
 const TopicList: React.FC = () => {
   const [topics, setTopics] = useState<TopicType[]>([]);
@@ -24,13 +25,17 @@ const TopicList: React.FC = () => {
     fetchTopics();
   }, []);
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
+  const handleTopicDeleted = (id: number) => {
+    setTopics(prevTopics => prevTopics.filter(topic => topic.id !== id));
+  };
+
+  if (loading) return <div className="flex justify-center items-center"><Spinner /></div>;
+  if (error) return <Typography color="red">{error}</Typography>;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {topics.map((topic) => (
-        <Topic key={topic.id} topic={topic} />
+        <TopicCard key={topic.id} topic={topic} onTopicDeleted={handleTopicDeleted} />
       ))}
     </div>
   );
