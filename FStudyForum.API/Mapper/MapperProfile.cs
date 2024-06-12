@@ -11,8 +11,11 @@ public class MapperProfile : AutoMapper.Profile
     public MapperProfile()
     {
         CreateMap<ApplicationUser, UserDTO>();
+
         CreateMap<Topic, TopicDTO>().ReverseMap();
-        CreateMap<CreateTopicDTO, Topic>().ForMember(dest => dest.Categories, opt => opt.Ignore());
+
+        CreateMap<Topic, TopicDTO>()
+            .ForMember(dest => dest.Categories, opt => opt.MapFrom(src => src.Categories.Select(c => c.Id)));
         CreateMap<ProfileDTO, Profile>().ReverseMap();
         CreateMap<PaginatedDataDTO<Post>, PaginatedDataDTO<PostDTO>>().ReverseMap();
         CreateMap<Post, PostDTO>().ReverseMap();
