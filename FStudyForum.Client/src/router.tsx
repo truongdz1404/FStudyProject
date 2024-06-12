@@ -66,6 +66,35 @@ const Router: FC = () => {
           ),
         },
         {
+          path: "manager",
+          children: [
+            {
+              index: true,
+              element: (
+                <Suspense>
+                  <Dashboard />
+                </Suspense>
+              ),
+            },
+            {
+              path: "members",
+              element: (
+                <Suspense>
+                  <Memebers />
+                </Suspense>
+              ),
+            },
+            {
+              path: "analytics",
+              element: (
+                <Suspense>
+                  <>Analytics</>
+                </Suspense>
+              ),
+            },
+          ],
+        },
+        {
           path: "topic/detail/:id",
           element: (
             <Suspense>
@@ -111,27 +140,6 @@ const Router: FC = () => {
               <Welcome />
             </Suspense>
           ),
-        },
-        {
-          path: "dashboard",
-          children: [
-            {
-              index: true,
-              element: (
-                <Suspense>
-                  <Dashboard />
-                </Suspense>
-              ),
-            },
-            {
-              path: "members",
-              element: (
-                <Suspense>
-                  <Memebers />
-                </Suspense>
-              ),
-            },
-          ],
         },
       ],
     },
