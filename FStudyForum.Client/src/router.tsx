@@ -8,6 +8,7 @@ import WelcomeGuard from "./helpers/guards/WelcomeGuard";
 import AuthLayout from "./components/layout/AuthLayout";
 import Post from "./pages/post";
 import SignInGuard from "./helpers/guards/signin/SignInGuard";
+import { PostProvider } from "./contexts/PostContext";
 
 const EditProfile = lazy(() => import("@/pages/profile/edit"));
 const Welcome = lazy(() => import("@/pages/welcome"));
@@ -44,9 +45,11 @@ const Router: FC = () => {
         {
           path: "home",
           element: (
-            <Suspense>
-              <Home />
-            </Suspense>
+            <PostProvider>
+              <Suspense>
+                <Home />
+              </Suspense>
+            </PostProvider>
           ),
         },
         {

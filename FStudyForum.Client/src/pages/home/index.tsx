@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { MessageSquare, Share, ArrowUp, ArrowDown, Award } from "lucide-react";
-import { Post } from "@/types/post";
 import PostService from "@/services/PostService";
 import { Profile } from "@/types/profile";
 import ProfileService from "@/services/ProfileService";
@@ -8,16 +7,19 @@ import MenuItemPost from "@/components/post/MenuItem";
 import { AxiosError } from "axios";
 import ContentLayout from "@/components/layout/ContentLayout";
 import FilterComponent from "@/components/filter/Topic";
+import { usePosts } from "@/hooks/usePosts";
+import NullLayout from "@/components/layout/NullLayout";
 const Home: React.FC = () => {
-  const [posts, setPosts] = useState<Post[]>([]);
+  const {posts, setPosts} = usePosts();
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [isViewingTopic, setIsViewingTopic] = useState(false); // kiểm tra xem người dùng có đang xem topic nào cụ thể không
   const [profiles, setProfiles] = useState<{ [key: string]: Profile }>({});
   const observer = useRef<IntersectionObserver | null>(null);
   const lastPostElementRef = (node: HTMLElement | null) => {
     if (observer.current) observer.current.disconnect();
     observer.current = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && hasMore) {
+      if (entries[0].isIntersecting && hasMore && !isViewingTopic) {
         setPage((prevPage) => prevPage + 1);
       }
     });
@@ -40,7 +42,7 @@ const Home: React.FC = () => {
       }
     };
     fetchPosts();
-  }, [page, hasMore]);
+  }, [page, hasMore, setPosts]);
 
   useEffect(() => {
     const getProfile = async (userName: string) => {
@@ -64,14 +66,27 @@ const Home: React.FC = () => {
       });
     });
   }, [posts, profiles]);
-  const handlePostsUpdate = (newPosts: Post[]) => {
-    setPosts(newPosts);
+  // callback function to handle topic event
+  const handleTopicEvent = (isViewingTopic: boolean) => {
+    setIsViewingTopic(isViewingTopic);
+    if (!isViewingTopic) {
+      setPosts([]);
+      setPage(1);
+      setHasMore(true);
+    }
   };
   return (
     <div>
       <div className="ml-12">
-        <FilterComponent onPostsUpdate={handlePostsUpdate}/>
+        <FilterComponent 
+          onAllTopicClick={() => handleTopicEvent(false)}
+          onTopicClick={handleTopicEvent}
+        />
       </div>
+      {(posts.length === 0) && 
+        <NullLayout />
+      }
+      {(posts.length !== 0) && 
       <div>
         <ContentLayout>
           {posts.map((post, index) => (
@@ -130,7 +145,7 @@ const Home: React.FC = () => {
             </div>
           ))}
         </ContentLayout>
-      </div>
+      </div>}
     </div>
   );
 };
