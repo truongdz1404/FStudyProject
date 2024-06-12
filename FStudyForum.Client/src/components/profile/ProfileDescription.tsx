@@ -16,14 +16,11 @@ const convertGenderToString = (gender: number) => {
 };
 const ProfileDescription: FC<ProfileDescriptionProps> = ({ profile }) => {
   return (
-    <div className="text-black">
-      <Typography className="text-sm font-semibold ">About me</Typography>
-      <Typography className="text-xs">Major: {profile.major}</Typography>
-      <Typography className="text-xs">
-        Gender: {convertGenderToString(profile.gender)}
-      </Typography>
+    <div className="text-blue-gray-600">
+      <Typography className="text-sm font-semibold ">About me: </Typography>
+      <Typography className="text-xs">{profile.bio}</Typography>
       <Typography className="text-sm font-semibold mt-2">
-        Achievements
+        Achievements:
       </Typography>
       <div className="flex justify-around">
         <div className="flex flex-col items-center">
@@ -35,6 +32,17 @@ const ProfileDescription: FC<ProfileDescriptionProps> = ({ profile }) => {
           <Typography className="text-xs">Comments</Typography>
         </div>
       </div>
+      <Typography className="text-sm font-semibold mt-2">
+        Major: <span className="text-xs font-medium">{profile.major}</span>
+      </Typography>
+
+      <Typography className="text-sm font-semibold mt-2">
+        Gender:{" "}
+        <span className="text-xs font-medium">
+          {convertGenderToString(profile.gender)}
+        </span>
+      </Typography>
+
       {/* <Typography className="text-sm font-semibold">Links</Typography>
       <Button size="sm" variant="outlined" className="rounded-full mt-2">
         <div className="flex items-center">

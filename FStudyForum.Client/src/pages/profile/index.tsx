@@ -89,10 +89,10 @@ const Profile = () => {
         </div>
       </div>
 
-      <Accordion open={open === 1} className="xl:hidden mb-2 ">
+      <Accordion open={open === 1} className="xl:hidden mb-2">
         <AccordionHeader
           onClick={() => handleOpen(1)}
-          className="py-0 pb-2 text-md text-black font-semibold !justify-normal"
+          className="py-0 pb-2 text-md text-blue-gray-800 font-semibold !justify-normal"
         >
           Introduction
         </AccordionHeader>

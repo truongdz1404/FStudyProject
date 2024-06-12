@@ -1,6 +1,7 @@
 ﻿using FStudyForum.Core.Constants;
 using FStudyForum.Core.Interfaces.IServices;
 using FStudyForum.Core.Models.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.Net;
@@ -16,13 +17,13 @@ namespace FStudyForum.API.Controllers
         {
             _postService = postService;
         }
-        [HttpGet("{pageNumber}")]
+        [HttpGet("{pageNumber}"), Authorize]
         public async Task<IActionResult> GetPosts(int pageNumber)
         {
             try
             {
                 var posts = await _postService.GetPaginatedData(pageNumber, Paginated.PageSize);
-                if(posts.Data.IsNullOrEmpty())
+                if (posts.Data.IsNullOrEmpty())
                 {
                     return NotFound(new Response
                     {

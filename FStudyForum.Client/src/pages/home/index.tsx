@@ -76,12 +76,12 @@ const Home: React.FC = () => {
               <p className="font-semibold mb-2">{post.title}</p>
               <MenuItemPost />
             </div>
-            <p className="text-gray-700">{post.content}</p>
+            <p className="text-gray-700 text-sm">{post.content}</p>
           </div>
           <div className="flex space-x-5 px-6 py-2">
             <div className="flex items-center space-x-2 bg-gray-200 p-2 rounded-full hover:bg-gray-300 transition duration-200 ml-[-4%] cursor-pointer">
               <ArrowUp className="w-4 h-4 text-gray-700 hover:text-red-500" />
-              <span className="text-gray-700">77</span>
+              <span className="text-gray-700">0</span>
               <ArrowDown className="w-4 h-4 text-gray-700 hover:text-red-500" />
             </div>
             <div className="flex items-center space-x-2 bg-gray-200 p-2 rounded-full hover:bg-gray-300 transition duration-200 cursor-pointer">
