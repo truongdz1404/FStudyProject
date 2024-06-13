@@ -11,4 +11,4 @@ const fireBaseConfig = {
   measurementId: "G-GLQ59EM21R",
 };
 const app = initializeApp(fireBaseConfig);
-export const store = getStorage(app);
+export const storage = getStorage(app);

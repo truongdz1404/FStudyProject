@@ -17,6 +17,8 @@ public static class ServiceExtension
         services.AddScoped<IIdentityService, IdentityService>();
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<ITopicService, TopicService>();
+        services.AddScoped<IPostService, PostService>();
+        services.AddScoped<IVoteService, VoteService>();
         #endregion
 
         #region Repositories
@@ -24,8 +26,14 @@ public static class ServiceExtension
         services.AddTransient<ITopicRepository, TopicRepository>();
         services.AddTransient<IBaseRepository<Profile>, BaseRepository<Profile>>();
         services.AddTransient<IProfileRepository, ProfileRepository>();
-         services.AddTransient<ICategoryRepository, CategoryRepository>();
+        services.AddTransient<IPostRepository, PostRepository>();
+        services.AddTransient<IVoteRepository, VoteRepository>();
+        services.AddTransient<ICategoryRepository, CategoryRepository>();
+
         #endregion
+
+
         return services;
     }
+
 }

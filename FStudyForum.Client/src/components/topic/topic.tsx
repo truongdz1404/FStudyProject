@@ -1,12 +1,17 @@
-// src/components/topic/TopicCard.tsx
 import React, { useState } from "react";
-import { Card, CardBody, CardFooter, Typography, Button } from "@material-tailwind/react";
+import {
+  Card,
+  CardBody,
+  CardFooter,
+  Typography,
+  Button,
+} from "@material-tailwind/react";
 import { Link } from "react-router-dom";
-import { Edit, Delete } from "@material-ui/icons";
 import type { Topic as TopicType } from "@/types/topic";
-import UpdateTopicPopup from "@/components/topic/Popup/UpdateTopicPopup";
-import DeleteTopicPopup from "@/components/topic/Popup/DeleteTopicPopup";
+import UpdateTopicPopup from "@/components/topic/popup/UpdateTopicPopup";
+import DeleteTopicPopup from "@/components/topic/popup/DeleteTopicPopup";
 import TopicService from "@/services/TopicService";
+import { Pencil, Trash } from "lucide-react";
 
 interface TopicProps {
   topic: TopicType;
@@ -14,7 +19,11 @@ interface TopicProps {
   onTopicUpdated: () => void;
 }
 
-const TopicCard: React.FC<TopicProps> = ({ topic, onTopicDeleted, onTopicUpdated }) => {
+const TopicCard: React.FC<TopicProps> = ({
+  topic,
+  onTopicDeleted,
+  onTopicUpdated,
+}) => {
   const [isUpdatePopupOpen, setIsUpdatePopupOpen] = useState(false);
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
 
@@ -58,8 +67,14 @@ const TopicCard: React.FC<TopicProps> = ({ topic, onTopicDeleted, onTopicUpdated
             <Button>View</Button>
           </Link>
           <div>
-            <Edit style={{ color: 'orange', cursor: 'pointer' }} onClick={handleEditClick} />
-            <Delete style={{ color: 'red', cursor: 'pointer' }} onClick={handleDeleteClick} />
+            <Pencil
+              style={{ color: "orange", cursor: "pointer" }}
+              onClick={handleEditClick}
+            />
+            <Trash
+              style={{ color: "red", cursor: "pointer" }}
+              onClick={handleDeleteClick}
+            />
           </div>
         </CardFooter>
       </Card>

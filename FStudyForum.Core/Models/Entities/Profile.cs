@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using FStudyForum.Core.Constants;
 
@@ -13,6 +14,7 @@ public class Profile : BaseEntity
     public Gender Gender { get; set; }
     public string Major { get; set; } = string.Empty;
     public string Bio { get; set; } = string.Empty;
+    public string Phone { get; set; } = string.Empty;
     [MaxLength(255)]
     public string Avatar { get; set; } = string.Empty;
     [MaxLength(255)]

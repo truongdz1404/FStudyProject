@@ -9,5 +9,4 @@ public class Vote : BaseEntity
     public required virtual ApplicationUser Voter { get; set; }
     public virtual Post? Post { get; set; }
     public virtual Comment? Comment { get; set; }
-
 }

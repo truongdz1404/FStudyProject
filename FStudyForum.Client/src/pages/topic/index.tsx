@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import SemesterFilter from "@/components/topic/Filter/SemesterFilter";
+import SemesterFilter from "@/components/topic/filter/SemesterFilter";
 // import MajorFilter from "@/components/topic/Filter/MajorFilter";
 import TopicList from "@/components/topic/TopicList";
-import AddButton from "@/components/topic/Button/ButtonAdd";
-import AddTopicPopup from "@/components/topic/Popup/AddTopicPopup";
+import AddButton from "@/components/topic/button/ButtonAdd";
+import AddTopicPopup from "@/components/topic/popup/AddTopicPopup";
 
 const TopicsPage: React.FC = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);

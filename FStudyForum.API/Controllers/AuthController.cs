@@ -43,7 +43,7 @@ public class AuthController : ControllerBase
         if (isValid)
         {
             var tokenDTO = await _userService
-                .CreateAuthTokenAsync(loginDTO.UserName, _jwtConfig.RefreshTokenValidityInDays);
+            .CreateAuthTokenAsync(loginDTO.UserName, _jwtConfig.RefreshTokenValidityInDays);
             SetTokensInsideCookie(tokenDTO, HttpContext);
 
             return Ok(new Response
@@ -334,7 +334,7 @@ public class AuthController : ControllerBase
         {
             var result = await _identityService.ConfirmEmailAsync(email, token);
             if (!result) throw new Exception("Email or token invalid");
-            return Redirect(_jwtConfig.Audience);
+            return Redirect(_jwtConfig.Audience + "/auth/signin");
             // return Ok(new Response
             // {
             //     Status = ResponseStatus.SUCCESS,
