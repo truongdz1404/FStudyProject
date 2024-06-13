@@ -5,7 +5,7 @@ namespace FStudyForum.Core.Interfaces.IRepositories;
 public interface IBaseRepository<T> where T : class
 {
     Task<IEnumerable<T>> GetAll();
-    Task<PaginatedDataDTO<T>> GetPaginatedData(int pageNumber, int pageSize);
+    Task<PaginatedData<T>> GetPaginatedData(int pageNumber, int pageSize);
     Task<T> GetById<Tid>(Tid id);
     Task<bool> IsExists<Tvalue>(string key, Tvalue value);
     Task<bool> IsExistsForUpdate<Tid>(Tid id, string key, string value);

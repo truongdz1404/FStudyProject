@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using FStudyForum.Core.Interfaces.IServices;
-using System.Threading.Tasks;
 using FStudyForum.Core.Models.DTOs.Topic;
+using FStudyForum.Core.Models.DTOs;
 
 namespace FStudyForum.API.Controllers
 {
@@ -16,11 +16,23 @@ namespace FStudyForum.API.Controllers
             _topicService = topicService;
         }
 
-        [HttpGet("all")]
+        [HttpGet("active")]
         public async Task<IActionResult> GetAllActiveTopics()
         {
             var activeTopics = await _topicService.GetAllActiveTopics();
             return Ok(activeTopics);
+        }
+
+        [HttpGet("")]
+        public async Task<IActionResult> GetAll()
+        {
+            var topics = await _topicService.GetAllTopics();
+            return Ok(new Response
+            {
+                Message = "Get all topic successfully",
+                Status = ResponseStatus.SUCCESS,
+                Data = topics
+            });
         }
 
         [HttpPost("create")]

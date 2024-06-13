@@ -1,38 +1,39 @@
-// src/services/TopicService.ts
+import { ResponseWith } from "@/types/response";
 import api from "./api";
 import { Topic, CreateTopicDTO, UpdateTopicDTO } from "@/types/topic";
 
-// get all
-const getAllActiveTopics = async (): Promise<Topic[]> => {
-  const response = await api.get<Topic[]>("/Topic/all");
+const getActiveTopics = async (): Promise<Topic[]> => {
+  const response = await api.get<Topic[]>("/topic/active");
   return response.data;
 };
 
-// get by id
+const getTopics = async () => {
+  const response = await api.get<ResponseWith<Topic[]>>("/topic");
+  return response.data.data;
+};
+
 const GetTopicById = async (id: number): Promise<Topic> => {
-  const response = await api.get<Topic>(`/Topic/${id}`);
+  const response = await api.get<Topic>(`/topic/${id}`);
   return response.data;
 };
 
-// add topic
 const create = async (topic: CreateTopicDTO): Promise<Topic> => {
-  const response = await api.post<Topic>("/Topic/create", topic);
+  const response = await api.post<Topic>("/topic/create", topic);
   return response.data;
 };
 
-// update topic
 const update = async (id: number, topic: UpdateTopicDTO): Promise<Topic> => {
-  const response = await api.put<Topic>(`/Topic/update/${id}`, topic);
+  const response = await api.put<Topic>(`/topic/update/${id}`, topic);
   return response.data;
 };
 
-// Xóa topic
 const Delete = async (id: number): Promise<void> => {
-  await api.put<Topic>(`/Topic/delete/${id}`);
+  await api.put<Topic>(`/topic/delete/${id}`);
 };
 
 const TopicService = {
-  getAllActiveTopics,
+  getTopics,
+  getActiveTopics,
   GetTopicById,
   create,
   update,

@@ -46,12 +46,13 @@ public class IdentityService : IIdentityService
         return result.Succeeded;
     }
 
-    public async Task<bool> CreateUserAsync(RegisterDTO registerDTO, List<string> roles)
+    public async Task<bool> CreateUserAsync(RegisterDTO registerDTO, List<string> roles, bool confirm = false)
     {
         var user = new ApplicationUser()
         {
             UserName = registerDTO.Username,
-            Email = registerDTO.Username
+            Email = registerDTO.Username,
+            EmailConfirmed = confirm
         };
 
         var result = await _userManager.CreateAsync(user, registerDTO.Password);

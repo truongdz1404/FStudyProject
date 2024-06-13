@@ -1,11 +1,11 @@
 namespace FStudyForum.Core.Models.DTOs.Paging;
 
-public class PaginatedDataDTO<T>
+public class PaginatedData<T>
 {
     public IEnumerable<T> Data { get; set; }
     public int TotalCount { get; set; }
 
-    public PaginatedDataDTO(IEnumerable<T> data, int totalCount)
+    public PaginatedData(IEnumerable<T> data, int totalCount)
     {
         Data = data;
         TotalCount = totalCount;

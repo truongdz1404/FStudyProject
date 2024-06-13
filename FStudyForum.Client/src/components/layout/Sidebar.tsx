@@ -9,6 +9,7 @@ import {
   Accordion,
 } from "@material-tailwind/react";
 import {
+  Album,
   AreaChart,
   BookUser,
   ChevronDown,
@@ -62,6 +63,11 @@ const sidebarListItems = [
             icon: BookUser,
             path: "/manager/members",
           },
+          {
+            label: "Topics",
+            icon: Album,
+            path: "/manager/topics",
+          },
         ],
       },
     ],
@@ -74,16 +80,24 @@ type SidebarProps = {
 
 const Sidebar = React.memo(({ handleClose }: SidebarProps) => {
   const navigate = useNavigate();
-  const [open, setOpen] = React.useState("");
-  const handleOpen = (value: string) => {
-    setOpen(open === value ? "" : value);
+  const { pathname } = useLocation();
+  const segments = pathname.split("/").filter((s) => s !== "");
+
+  const [collapse, setCollapse] = React.useState(
+    segments.length != 0 ? segments[0] : ""
+  );
+
+  const switchCollapse = (label: string) => {
+    setCollapse(isCollapse(label) ? "" : label);
   };
+
+  const isCollapse = (label: string) =>
+    collapse.toLowerCase() === label.toLowerCase();
 
   const handleView = (path: string) => {
     handleClose?.();
     navigate(path);
   };
-  const location = useLocation();
   return (
     <Card
       color="transparent"
@@ -97,7 +111,7 @@ const Sidebar = React.memo(({ handleClose }: SidebarProps) => {
               items.length == 0 ? (
                 <ListItem
                   onClick={() => handleView(path)}
-                  selected={location.pathname === path}
+                  selected={pathname === path}
                   key={label}
                   className="text-sm"
                 >
@@ -109,17 +123,17 @@ const Sidebar = React.memo(({ handleClose }: SidebarProps) => {
               ) : (
                 <Accordion
                   key={label}
-                  open={open === label}
+                  open={isCollapse(label)}
                   icon={
                     <ChevronDown
                       className={`mx-auto h-4 w-4 transition-transform ${
-                        open === label ? "rotate-180" : ""
+                        isCollapse(label) ? "rotate-180" : ""
                       }`}
                     />
                   }
                 >
                   <AccordionHeader
-                    onClick={() => handleOpen(label)}
+                    onClick={() => switchCollapse(label)}
                     className="border-b-0 p-3 hover:bg-gray-50 rounded-md"
                   >
                     <ListItemPrefix>
@@ -132,7 +146,7 @@ const Sidebar = React.memo(({ handleClose }: SidebarProps) => {
                       {items.map(({ label, icon, path }) => (
                         <ListItem
                           onClick={() => handleView(path)}
-                          selected={location.pathname === path}
+                          selected={pathname === path}
                           key={label}
                           className="text-sm"
                         >

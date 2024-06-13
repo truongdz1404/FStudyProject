@@ -14,5 +14,6 @@ public class UserDTO
     public string Bio { get; set; } = string.Empty;
     public string Major { get; set; } = string.Empty;
     public IList<string> Roles { get; set; } = [];
+    public bool IsActive;
 
 }
