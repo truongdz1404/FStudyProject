@@ -8,15 +8,15 @@ import WelcomeGuard from "./helpers/guards/WelcomeGuard";
 import AuthLayout from "./components/layout/AuthLayout";
 
 const Popular = lazy(() => import("@/pages/popular"));
-const Memebers = lazy(() => import("@/pages/dashboard/members"));
+const Memebers = lazy(() => import("@/pages/manager/members"));
 const Welcome = lazy(() => import("@/pages/welcome"));
 const Register = lazy(() => import("@/pages/auth/register"));
 const ConfirmEmail = lazy(() => import("@/pages/auth/confirm-email"));
-const Dashboard = lazy(() => import("@/pages/dashboard"));
+const Dashboard = lazy(() => import("@/pages/manager"));
 const ChangePassword = lazy(
   () => import("@/pages/auth/reset-password/change-password")
 );
-
+const TopcicManager = lazy(() => import("@/pages/manager/topics"));
 const ResetPassword = lazy(() => import("@/pages/auth/reset-password"));
 const Profile = lazy(() => import("@/pages/profile"));
 const EditProfile = lazy(() => import("@/pages/profile/edit"));
@@ -89,6 +89,14 @@ const Router: FC = () => {
               element: (
                 <Suspense>
                   <>Analytics</>
+                </Suspense>
+              ),
+            },
+            {
+              path: "topics",
+              element: (
+                <Suspense>
+                  <TopcicManager />
                 </Suspense>
               ),
             },

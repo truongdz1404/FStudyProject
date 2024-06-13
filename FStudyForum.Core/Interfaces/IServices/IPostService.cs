@@ -10,6 +10,6 @@ namespace FStudyForum.Core.Interfaces.IServices
 {
     public interface IPostService
     {
-        Task<PaginatedDataDTO<PostDTO>> GetPaginatedData(int pageNumber, int pageSize);
+        Task<PaginatedData<PostDTO>> GetPaginatedData(int pageNumber, int pageSize);
     }
 }

@@ -66,7 +66,7 @@ const TopicCard: React.FC<TopicProps> = ({
           <Link to={`/topic/detail/${topic.id}`}>
             <Button>View</Button>
           </Link>
-          <div>
+          <div className="hidden">
             <Pencil
               style={{ color: "orange", cursor: "pointer" }}
               onClick={handleEditClick}

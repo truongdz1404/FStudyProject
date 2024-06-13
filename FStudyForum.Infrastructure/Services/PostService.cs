@@ -16,9 +16,9 @@ namespace FStudyForum.Infrastructure.Services
             _postRepository = postRepository;
             _mapper = mapper;
         }
-        public async Task<PaginatedDataDTO<PostDTO>> GetPaginatedData(int pageNumber, int pageSize)
+        public async Task<PaginatedData<PostDTO>> GetPaginatedData(int pageNumber, int pageSize)
         {
-            return _mapper.Map<PaginatedDataDTO<PostDTO>>(await _postRepository.GetPaginatedData(pageNumber, pageSize));
+            return _mapper.Map<PaginatedData<PostDTO>>(await _postRepository.GetPaginatedData(pageNumber, pageSize));
         }
     }
 }

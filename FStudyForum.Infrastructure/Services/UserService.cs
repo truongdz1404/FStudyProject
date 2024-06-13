@@ -10,6 +10,7 @@ using FStudyForum.Core.Models.DTOs.Auth;
 using FStudyForum.Core.Exceptions;
 using FStudyForum.Core.Helpers;
 using FStudyForum.Infrastructure.Repositories;
+using FStudyForum.Core.Models.DTOs.Paging;
 
 namespace FStudyForum.Infrastructure.Services;
 
@@ -80,23 +81,33 @@ public class UserService : IUserService
     {
         var user = await _userManager.FindByNameAsync(username)
             ?? throw new Exception("UserName is invalid");
+        return await ConvertToDTO(user);
+    }
 
-        var profile = await _profileRepository.GetByName(username);
-
+    private async Task<UserDTO> ConvertToDTO(ApplicationUser user)
+    {
+        var profile = await _profileRepository.GetByName(user.UserName!);
+        if (profile == null) return new UserDTO
+        {
+            Username = user.UserName!,
+            Roles = await _userManager.GetRolesAsync(user),
+        };
         return new UserDTO
         {
-            Username = username,
+            Username = user.UserName!,
             Roles = await _userManager.GetRolesAsync(user),
-            FirstName = profile?.FirstName ?? string.Empty,
-            LastName = profile?.LastName ?? string.Empty,
-            Phone = profile?.Phone ?? string.Empty,
-            Avatar = profile?.Avatar ?? string.Empty,
+            FirstName = profile.FirstName,
+            LastName = profile.LastName,
+            Phone = profile.Phone,
+            Avatar = profile.Avatar,
             Banner = string.Empty,
-            Gender = profile?.Gender ?? 0,
-            Bio = profile?.Bio ?? string.Empty,
-            Major = profile?.Major ?? string.Empty
+            Gender = profile.Gender,
+            Bio = profile.Bio,
+            Major = profile.Major,
+            // IsActive = user.
         };
     }
+
 
     public async Task<UserDTO?> FindOrCreateUserAsync(ExternalAuthDTO externalAuth, List<string> roles)
     {
@@ -133,7 +144,6 @@ public class UserService : IUserService
         return await _userManager.GeneratePasswordResetTokenAsync(user);
     }
 
-
     public async Task<IdentityResult> ChangePasswordAsync(ChangePasswordDTO model)
     {
         var user = await _userManager.FindByEmailAsync(model.Email) ?? throw new Exception("User not found");
@@ -156,5 +166,15 @@ public class UserService : IUserService
     {
         var user = await _userManager.FindByNameAsync(userName);
         return user?.RefreshToken;
+    }
+
+    public async Task<PaginatedData<UserDTO>> GetPaginatedData(int pageNumber, int pageSize)
+    {
+        var paginated = await _userRepository.GetPaginatedData(pageNumber, pageSize);
+        var users = new List<UserDTO>();
+        foreach (var user in paginated.Data)
+            users.Add(await ConvertToDTO(user));
+
+        return new(users, paginated.TotalCount);
     }
 }

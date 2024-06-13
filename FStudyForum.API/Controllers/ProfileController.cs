@@ -42,14 +42,14 @@ namespace FStudyForum.API.Controllers
                     {
                         Data = user,
                         Message = "User is not found.",
-                        Status = (int)HttpStatusCode.NotFound + ""
+                        Status = ResponseStatus.ERROR
                     });
                 }
                 return Ok(new Response
                 {
                     Data = user,
                     Message = "Find Profile successfully",
-                    Status = (int)HttpStatusCode.OK + "",
+                    Status = ResponseStatus.SUCCESS,
                 });
             }
             catch (Exception ex)
@@ -74,7 +74,7 @@ namespace FStudyForum.API.Controllers
                     return NotFound(new Response
                     {
                         Message = "User is not found.",
-                        Status = (int)HttpStatusCode.NotFound + ""
+                        Status = ResponseStatus.ERROR
                     });
                 }
                 if (!ModelState.IsValid)
@@ -84,7 +84,7 @@ namespace FStudyForum.API.Controllers
                                .ToList();
                     var responseNotFound = new Response
                     {
-                        Status = (int)HttpStatusCode.BadRequest + "",
+                        Status = ResponseStatus.SUCCESS,
                         Message = string.Join("; ", errors)
                     };
                     return BadRequest(responseNotFound);

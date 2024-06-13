@@ -14,14 +14,14 @@ interface UpdateTopicPopupProps {
 const UpdateTopicPopup: React.FC<UpdateTopicPopupProps> = ({ open, topic, onClose, onUpdate }) => {
   const [topicName, setTopicName] = useState(topic.name);
   const [description, setDescription] = useState(topic.description);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>(topic.categories.map(String));
+  const [categories, setCategories] = useState<string[]>(topic.categories.map(String));
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   useEffect(() => {
     setTopicName(topic.name);
     setDescription(topic.description);
-    setSelectedCategories(topic.categories.map(String));
+    setCategories(topic.categories.map(String));
   }, [topic]);
 
   const handleUpdateTopic = async () => {
@@ -29,7 +29,7 @@ const UpdateTopicPopup: React.FC<UpdateTopicPopupProps> = ({ open, topic, onClos
       const updatedTopic: UpdateTopicDTO = {
         name: topicName,
         description,
-        categories: selectedCategories.map(Number),
+        categories: categories.map(Number),
       };
 
       await TopicService.update(topic.id, updatedTopic);
@@ -76,8 +76,8 @@ const UpdateTopicPopup: React.FC<UpdateTopicPopupProps> = ({ open, topic, onClos
           <label htmlFor="categories" className="block font-bold mb-1">Categories:</label>
           <select
             id="categories"
-            value={selectedCategories}
-            onChange={(e) => setSelectedCategories(Array.from(e.target.selectedOptions, option => option.value))}
+            value={categories}
+            onChange={(e) => setCategories(Array.from(e.target.selectedOptions, option => option.value))}
             className="border border-gray-300 rounded px-2 py-1 w-full"
           >
             <option value="1">Semester 1</option>

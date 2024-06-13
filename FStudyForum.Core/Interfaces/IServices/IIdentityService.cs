@@ -4,7 +4,7 @@ namespace FStudyForum.Core.Interfaces.IServices;
 
 public interface IIdentityService
 {
-    Task<bool> CreateUserAsync(RegisterDTO registerDTO, List<string> roles);
+    Task<bool> CreateUserAsync(RegisterDTO registerDTO, List<string> roles, bool confirm = false);
     Task<bool> SigninUserAsync(LoginDTO loginDTO);
     Task<string> GetUserIdAsync(string userName);
     Task<string> GetUserNameAsync(string userId);
