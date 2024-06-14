@@ -4,6 +4,7 @@ import UpdateTopicPopup from "@/components/topic/popup/UpdateTopicPopup";
 import { cn } from "@/helpers/utils";
 import TopicService from "@/services/TopicService";
 import { Topic } from "@/types/topic";
+import { useQuery } from "@tanstack/react-query";
 import {
   Card,
   CardHeader,
@@ -21,19 +22,11 @@ import React from "react";
 const titles = ["Name", "Description", "Action"];
 
 const Topics = () => {
-  const [topics, setTopics] = React.useState<Topic[]>([]);
-  const [selectTopic, setSelectTopic] = React.useState<Topic | undefined>(
-    undefined
-  );
-  const [popupOpen, setPopupOpen] = React.useState(0);
-
   const openAddPopup = () => {
     setPopupOpen(1);
   };
 
   const openEditPopup = (topic: Topic) => {
-    console.log("Edit clcik");
-
     setSelectTopic(topic);
     setPopupOpen(2);
   };
@@ -47,7 +40,7 @@ const Topics = () => {
   };
 
   const reloadTopics = () => {
-    setReload(true);
+    // setReload(true);
   };
 
   const handleDelete = async () => {
@@ -60,24 +53,21 @@ const Topics = () => {
       console.error("Error deleting topic:", error);
     }
   };
-  const [loading, setLoading] = React.useState(false);
-  const [reload, setReload] = React.useState(false);
 
-  React.useEffect(() => {
-    const fetchTopics = async () => {
-      setLoading(true);
-      try {
-        const topics = await TopicService.getActiveTopics();
-        setTopics(topics);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-        setReload(false);
-      }
-    };
-    fetchTopics();
-  }, [reload]);
+  const [selectTopic, setSelectTopic] = React.useState<Topic | undefined>(
+    undefined
+  );
+  const [popupOpen, setPopupOpen] = React.useState(0);
+
+  const fetchTopics = async () => {
+    return await TopicService.getActiveTopics();
+  };
+
+  const { isPending, data } = useQuery({
+    queryKey: ["todos"],
+    queryFn: fetchTopics,
+  });
+
   return (
     <>
       <Card className="h-full w-full">
@@ -126,9 +116,9 @@ const Topics = () => {
                 ))}
               </tr>
             </thead>
-            <tbody className={cn(loading && "hidden")}>
-              {topics.map((topic, index) => {
-                const isLast = index === topics.length - 1;
+            <tbody className={cn(isPending && "hidden")}>
+              {data?.map((topic, index) => {
+                const isLast = index === data.length - 1;
                 const classes = isLast
                   ? "p-4"
                   : "p-4 border-b border-blue-gray-50";

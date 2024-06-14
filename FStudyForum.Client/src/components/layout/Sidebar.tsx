@@ -86,6 +86,7 @@ const Sidebar = React.memo(({ handleClose }: SidebarProps) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { user } = useAuth();
+  console.log(user);
 
   const segments = pathname.split("/").filter((s) => s !== "");
 
