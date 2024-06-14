@@ -4,9 +4,9 @@ using FStudyForum.Core.Models.DTOs.Profile;
 using FStudyForum.Core.Models.DTOs.User;
 using FStudyForum.Core.Models.Entities;
 using FStudyForum.Infrastructure.Repositories;
-
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Profile = FStudyForum.Core.Models.Entities.Profile;
 
 
@@ -28,6 +28,10 @@ namespace FStudyForum.Infrastructure.Services
         }
         public async Task<ProfileDTO?> GetProfileByName(string? username)
         {
+            if(username == null)
+            {
+                return null;
+            }
             var profile = await _userProfileRepository.GetByName(username);
             ProfileDTO result = _mapper.Map<ProfileDTO>(profile);
             return result;
@@ -47,7 +51,6 @@ namespace FStudyForum.Infrastructure.Services
                 profile.User = appUser;
                 appUser.Profile = profile;
                 await _userManager.UpdateAsync(appUser);
-
                 // convert the updated profile to DTO
                 var updatedProfileDto = _mapper.Map<ProfileDTO>(profile);
                 return updatedProfileDto;
@@ -74,6 +77,10 @@ namespace FStudyForum.Infrastructure.Services
 
         public async Task<ProfileDTO?> UpdateProfile(ProfileDTO profileDTO, string? name)
         {
+            if(name == null)
+            {
+                return null;
+            }
             var profile = await _userProfileRepository.GetByName(name);
             if (profile == null)
             {

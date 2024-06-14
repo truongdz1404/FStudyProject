@@ -94,6 +94,7 @@ builder.Services
 builder.Services.RegisterService();
 
 var app = builder.Build();
+app.UseWebSockets(new WebSocketOptions { KeepAliveInterval = TimeSpan.FromSeconds(2) });
 app.UseCors(Policy.SINGLE_PAGE_APP);
 app.UseAuthentication();
 app.UseAuthorization();

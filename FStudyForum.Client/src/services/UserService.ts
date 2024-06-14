@@ -10,5 +10,4 @@ const getProfile = async () => {
 const UserService = {
   getProfile,
 };
-
 export default UserService;

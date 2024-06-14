@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using FStudyForum.Core.Interfaces.IServices;
-using System.Threading.Tasks;
 using FStudyForum.Core.Models.DTOs.Topic;
-using FStudyForum.Infrastructure.Services;
 
 namespace FStudyForum.API.Controllers
 {

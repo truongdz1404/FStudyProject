@@ -80,7 +80,6 @@ public class UserService : IUserService
     {
         var user = await _userManager.FindByNameAsync(username)
             ?? throw new Exception("UserName is invalid");
-
         var profile = await _profileRepository.GetByName(username);
 
         return new UserDTO

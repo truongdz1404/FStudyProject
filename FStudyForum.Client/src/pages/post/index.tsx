@@ -1,16 +1,24 @@
 import ContentLayout from "@/components/layout/ContentLayout";
 import PaymentService from "@/services/PaymentService";
+import { useEffect, useState } from "react";
+import WebSocketComponent from "../websocket";
 
 const Post = () => {
-  const getPaymentQR = async () => {
-    const payment = await PaymentService.getPayMentQR();
-    console.log(payment);
-  };
+  const[qrcode, setQrcode] = useState<string>("");
+  useEffect(() => {
+    const getPaymentQR = async () => {
+      const payment = await PaymentService.getPayMentQR();
+      setQrcode(payment.qrDataURL);
+    };
+    getPaymentQR();
+  }, []);
   return (
     <ContentLayout>
-      <h1 className="cursor-pointer text-orange-500" onClick={getPaymentQR}>
+      <img src={qrcode} alt="QR Code" />
+      <h1 className="cursor-pointer text-orange-500">
         Post
       </h1>
+      <WebSocketComponent />
     </ContentLayout>
   );
 };

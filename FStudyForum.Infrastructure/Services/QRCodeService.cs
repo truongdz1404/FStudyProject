@@ -14,19 +14,19 @@ namespace FStudyForum.Infrastructure.Services
         {
             _httpClientFactory = httpClientFactory;
         }
-        public async Task<QRCodeDTO?> GenerateVietQRCodeAsync(QRCode qrCode)
+        public async Task<QRCodeDTO?> GenerateVietQRCodeAsync()
         {
             var client = _httpClientFactory.CreateClient();
             var url = "https://api.vietqr.io/v2/generate";
             var requestBody = new
             {
-                accountNo = long.Parse(qrCode.AccountNo),
-                accountName = qrCode.AccountName,
-                acqId = Convert.ToInt32( qrCode.AcqId),
-                amount = Convert.ToInt32(qrCode.Amount),
-                addInfo = qrCode.AddInfo,
-                format = qrCode.Format,
-                template = qrCode.Template
+                accountNo = long.Parse("4271017225"),
+                accountName = "BUI DUC TRONG",
+                acqId = Convert.ToInt32("970418"),
+                amount = Convert.ToInt32("100000"),
+                addInfo = "Donate Study",
+                format = "text",
+                template = "compact2"
             };
             var content = new StringContent(JsonSerializer.Serialize(requestBody), Encoding.UTF8, "application/json");
             var response = await client.PostAsync(url, content);

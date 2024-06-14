@@ -22,7 +22,6 @@ const Home: React.FC = () => {
     });
     if (node) observer.current.observe(node);
   };
-
   useEffect(() => {
     const fetchPosts = async () => {
       if (!hasMore) return;
@@ -74,7 +73,7 @@ const Home: React.FC = () => {
           <div>
             <div className="flex justify-between">
               <p className="font-semibold mb-2">{post.title}</p>
-              <MenuItemPost />
+              <MenuItemPost post={post}/>
             </div>
             <p className="text-gray-700">{post.content}</p>
           </div>

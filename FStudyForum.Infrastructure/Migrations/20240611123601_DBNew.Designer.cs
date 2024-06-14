@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FStudyForum.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20240611044426_Init")]
-    partial class Init
+    [Migration("20240611123601_DBNew")]
+    partial class DBNew
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -477,13 +477,13 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "44f1e592-8f34-4273-b457-14330d72bfd6",
+                            Id = "1e5cd930-1d5d-4239-982e-5ca31e1c8dc9",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "2a057ef4-a323-4a56-b4b2-010af452b775",
+                            Id = "db845250-97e3-4a43-be6d-86e9d4058a19",
                             Name = "User",
                             NormalizedName = "USER"
                         });

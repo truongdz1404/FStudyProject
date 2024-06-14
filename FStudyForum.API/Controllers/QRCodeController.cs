@@ -1,6 +1,5 @@
 ﻿using FStudyForum.Core.Interfaces.IServices;
 using FStudyForum.Core.Models.DTOs;
-using FStudyForum.Core.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FStudyForum.API.Controllers
@@ -14,12 +13,12 @@ namespace FStudyForum.API.Controllers
         {
             _qrCodeService = qrCodeService;
         }
-        [HttpPost("generate")]
-        public async Task<IActionResult> GenerateQrCode([FromBody] QRCode qrCode)
+        [HttpGet("generate")]
+        public async Task<IActionResult> GenerateQrCode()
         {
             try
             {
-                var qrCodeData = await _qrCodeService.GenerateVietQRCodeAsync(qrCode);
+                var qrCodeData = await _qrCodeService.GenerateVietQRCodeAsync();
                 if(qrCodeData == null)
                 {
                     return BadRequest(new Response

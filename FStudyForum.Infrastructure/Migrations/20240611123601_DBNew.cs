@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace FStudyForum.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class DBNew : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -475,8 +475,8 @@ namespace FStudyForum.Infrastructure.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "2a057ef4-a323-4a56-b4b2-010af452b775", null, "User", "USER" },
-                    { "44f1e592-8f34-4273-b457-14330d72bfd6", null, "Admin", "ADMIN" }
+                    { "1e5cd930-1d5d-4239-982e-5ca31e1c8dc9", null, "Admin", "ADMIN" },
+                    { "db845250-97e3-4a43-be6d-86e9d4058a19", null, "User", "USER" }
                 });
 
             migrationBuilder.CreateIndex(

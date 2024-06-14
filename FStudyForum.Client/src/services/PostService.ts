@@ -1,4 +1,4 @@
-import { ResponseArray, ResponseWith } from "@/types/response";
+import { ResponseArray} from "@/types/response";
 import api from "./api"
 import { Post } from "@/types/post";
 

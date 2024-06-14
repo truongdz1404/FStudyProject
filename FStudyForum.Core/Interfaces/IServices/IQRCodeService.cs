@@ -10,6 +10,6 @@ namespace FStudyForum.Core.Interfaces.IServices
 {
     public interface IQRCodeService
     {
-        Task<QRCodeDTO?> GenerateVietQRCodeAsync(QRCode qrCode);
+        Task<QRCodeDTO?> GenerateVietQRCodeAsync();
     }
 }
