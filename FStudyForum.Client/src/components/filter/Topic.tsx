@@ -58,6 +58,7 @@ const FilterComponent: React.FC<FilterComponentProps> = (props) => {
                         setPosts(posts);
                     } else {
                         console.log("Error fetching posts");
+                        setPosts([]);
                     }
                 } catch (error) {
                     setPosts([]);

@@ -16,7 +16,7 @@ const Register = lazy(() => import("@/pages/auth/register"));
 const ConfirmEmail = lazy(() => import("@/pages/auth/confirm-email"));
 const Dashboard = lazy(() => import("@/pages/dashboard"));
 const ChangePassword = lazy(
-  () => import("@/pages/auth/reset-password/change-password")
+    () => import("@/pages/auth/reset-password/change-password")
 );
 
 const ResetPassword = lazy(() => import("@/pages/auth/reset-password"));
@@ -28,196 +28,196 @@ const TopicDetail = lazy(() => import("@/pages/topic/detail"));
 const Topic = lazy(() => import("@/pages/topic"));
 const SignOut = lazy(() => import("@/pages/auth/signout"));
 const Router: FC = () => {
-  return useRoutes([
-    {
-      path: "/",
-      element: (
-        <AuthGuard>
-          <WelcomeGuard>
-            <Layout />
-          </WelcomeGuard>
-        </AuthGuard>
-      ),
-      children: [
+    return useRoutes([
         {
-          index: true,
-          element: <Navigate to="/home" replace />,
+            path: "/",
+            element: (
+                <AuthGuard>
+                    <WelcomeGuard>
+                        <Layout />
+                    </WelcomeGuard>
+                </AuthGuard>
+            ),
+            children: [
+                {
+                    index: true,
+                    element: <Navigate to="/home" replace />,
+                },
+                {
+                    path: "home",
+                    element: (
+                        <PostProvider>
+                            <Suspense>
+                                <Home />
+                            </Suspense>
+                        </PostProvider>
+                    ),
+                },
+                {
+                    path: "popular",
+                    element: (
+                        <Suspense>
+                            <Popular />
+                        </Suspense>
+                    ),
+                },
+                {
+                    path: "topics",
+                    element: (
+                        <Suspense>
+                            <Topic />
+                        </Suspense>
+                    ),
+                },
+                {
+                    path: "manager",
+                    children: [
+                        {
+                            index: true,
+                            element: (
+                                <Suspense>
+                                    <Dashboard />
+                                </Suspense>
+                            ),
+                        },
+                        {
+                            path: "members",
+                            element: (
+                                <Suspense>
+                                    <Memebers />
+                                </Suspense>
+                            ),
+                        },
+                        {
+                            path: "analytics",
+                            element: (
+                                <Suspense>
+                                    <>Analytics</>
+                                </Suspense>
+                            ),
+                        },
+                    ],
+                },
+                {
+                    path: "topic/detail/:id",
+                    element: (
+                        <Suspense>
+                            <TopicDetail />
+                        </Suspense>
+                    ),
+                },
+                {
+                    path: "profile",
+                    children: [
+                        {
+                            index: true,
+                            element: (
+                                <Suspense>
+                                    <Profile />
+                                </Suspense>
+                            ),
+                        },
+                        {
+                            path: "edit",
+                            element: (
+                                <Suspense>
+                                    <EditProfile />
+                                </Suspense>
+                            ),
+                        },
+                    ],
+                },
+            ],
         },
         {
-          path: "home",
-          element: (
-            <PostProvider>
-              <Suspense>
-                <Home />
-              </Suspense>
-            </PostProvider>
-          ),
+            path: "/",
+            element: (
+                <AuthGuard>
+                    <Suspense>
+                        <Welcome />
+                    </Suspense>
+                    <Outlet />
+                </AuthGuard>
+            ),
+            children: [
+                {
+                    path: "welcome",
+                    element: (
+                        <Suspense>
+                            <Welcome />
+                        </Suspense>
+                    ),
+                },
+            ],
         },
-        {
-          path: "popular",
-          element: (
-            <Suspense>
-              <Popular />
-            </Suspense>
-          ),
-        },
-        {
-          path: "topics",
-          element: (
-            <Suspense>
-              <Topic />
-            </Suspense>
-          ),
-        },
-        {
-          path: "manager",
-          children: [
-            {
-              index: true,
-              element: (
-                <Suspense>
-                  <Dashboard />
-                </Suspense>
-              ),
-            },
-            {
-              path: "members",
-              element: (
-                <Suspense>
-                  <Memebers />
-                </Suspense>
-              ),
-            },
-            {
-              path: "analytics",
-              element: (
-                <Suspense>
-                  <>Analytics</>
-                </Suspense>
-              ),
-            },
-          ],
-        },
-        {
-          path: "topic/detail/:id",
-          element: (
-            <Suspense>
-              <TopicDetail />
-            </Suspense>
-          ),
-        },
-        {
-          path: "profile",
-          children: [
-            {
-              index: true,
-              element: (
-                <Suspense>
-                  <Profile />
-                </Suspense>
-              ),
-            },
-            {
-              path: "edit",
-              element: (
-                <Suspense>
-                  <EditProfile />
-                </Suspense>
-              ),
-            },
-          ],
-        },
-      ],
-    },
-    {
-      path: "/",
-      element: (
-        <AuthGuard>
-          <Suspense>
-            <Welcome />
-          </Suspense>
-          <Outlet />
-        </AuthGuard>
-      ),
-      children: [
-        {
-          path: "welcome",
-          element: (
-            <Suspense>
-              <Welcome />
-            </Suspense>
-          ),
-        },
-      ],
-    },
 
-    {
-      path: "auth",
-      element: <AuthLayout />,
-      children: [
         {
-          path: "signin",
-          element: (
-            <SignInGuard>
-              <Suspense>
-                <SignIn />
-              </Suspense>
-            </SignInGuard>
-          ),
+            path: "auth",
+            element: <AuthLayout />,
+            children: [
+                {
+                    path: "signin",
+                    element: (
+                        <SignInGuard>
+                            <Suspense>
+                                <SignIn />
+                            </Suspense>
+                        </SignInGuard>
+                    ),
+                },
+                {
+                    path: "signout",
+                    element: (
+                        <Suspense>
+                            <SignOut />
+                        </Suspense>
+                    ),
+                },
+                {
+                    path: "register",
+                    element: (
+                        <Suspense>
+                            <Register />
+                        </Suspense>
+                    ),
+                },
+                {
+                    path: "reset-password",
+                    children: [
+                        {
+                            path: "change-password",
+                            element: (
+                                <Suspense>
+                                    <ChangePassword />
+                                </Suspense>
+                            ),
+                        },
+                        {
+                            index: true,
+                            element: (
+                                <Suspense>
+                                    <ResetPassword />
+                                </Suspense>
+                            ),
+                        },
+                    ],
+                },
+                {
+                    path: "confirm-email",
+                    element: (
+                        <Suspense>
+                            <ConfirmEmail />
+                        </Suspense>
+                    ),
+                },
+            ],
         },
-        {
-          path: "signout",
-          element: (
-            <Suspense>
-              <SignOut />
-            </Suspense>
-          ),
-        },
-        {
-          path: "register",
-          element: (
-            <Suspense>
-              <Register />
-            </Suspense>
-          ),
-        },
-        {
-          path: "reset-password",
-          children: [
-            {
-              path: "change-password",
-              element: (
-                <Suspense>
-                  <ChangePassword />
-                </Suspense>
-              ),
-            },
-            {
-              index: true,
-              element: (
-                <Suspense>
-                  <ResetPassword />
-                </Suspense>
-              ),
-            },
-          ],
-        },
-        {
-          path: "confirm-email",
-          element: (
-            <Suspense>
-              <ConfirmEmail />
-            </Suspense>
-          ),
-        },
-      ],
-    },
 
-    {
-      path: "*",
-      element: <NotFound />,
-    },
-  ]);
+        {
+            path: "*",
+            element: <NotFound />,
+        },
+    ]);
 };
 
 export default Router;
