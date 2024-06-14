@@ -1,5 +1,5 @@
 using System.Linq.Expressions;
-using FStudyForum.Core.Models.DTOs.Paging;
+using FStudyForum.Core.Models.DTOs;
 using FStudyForum.Core.Exceptions;
 using FStudyForum.Core.Interfaces.IRepositories;
 using FStudyForum.Infrastructure.Data;

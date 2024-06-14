@@ -6,13 +6,14 @@ import NotFound from "@/components/NotFound";
 import Layout from "@/components/layout/Layout";
 import WelcomeGuard from "./helpers/guards/WelcomeGuard";
 import AuthLayout from "./components/layout/AuthLayout";
+import RoleBasedGuard from "./helpers/guards/RoleBasedGuard";
+import { Role } from "./helpers/constants";
 
 const Popular = lazy(() => import("@/pages/popular"));
 const Memebers = lazy(() => import("@/pages/manager/members"));
 const Welcome = lazy(() => import("@/pages/welcome"));
 const Register = lazy(() => import("@/pages/auth/register"));
 const ConfirmEmail = lazy(() => import("@/pages/auth/confirm-email"));
-const Dashboard = lazy(() => import("@/pages/manager"));
 const ChangePassword = lazy(
   () => import("@/pages/auth/reset-password/change-password")
 );
@@ -67,15 +68,12 @@ const Router: FC = () => {
         },
         {
           path: "manager",
+          element: (
+            <RoleBasedGuard accessibleRoles={[Role.Admin]}>
+              <Outlet />
+            </RoleBasedGuard>
+          ),
           children: [
-            {
-              index: true,
-              element: (
-                <Suspense>
-                  <Dashboard />
-                </Suspense>
-              ),
-            },
             {
               path: "members",
               element: (

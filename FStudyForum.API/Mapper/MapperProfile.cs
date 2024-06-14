@@ -2,7 +2,7 @@ using FStudyForum.Core.Models.DTOs.Profile;
 using FStudyForum.Core.Models.DTOs.User;
 using FStudyForum.Core.Models.Entities;
 using FStudyForum.Core.Models.DTOs.Topic;
-using FStudyForum.Core.Models.DTOs.Paging;
+using FStudyForum.Core.Models.DTOs;
 using FStudyForum.Core.Models.DTOs.Post;
 namespace FStudyForum.API.Mapper;
 

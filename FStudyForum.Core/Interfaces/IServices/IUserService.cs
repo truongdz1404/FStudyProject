@@ -1,5 +1,5 @@
 using FStudyForum.Core.Models.DTOs.Auth;
-using FStudyForum.Core.Models.DTOs.Paging;
+using FStudyForum.Core.Models.DTOs;
 using FStudyForum.Core.Models.DTOs.Token;
 using FStudyForum.Core.Models.DTOs.User;
 using Microsoft.AspNetCore.Identity;

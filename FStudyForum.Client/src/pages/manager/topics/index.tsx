@@ -10,7 +10,7 @@ import {
   Typography,
   Button,
   CardBody,
-  Chip,
+  // Chip,
   //   CardFooter,
   IconButton,
   Tooltip,
@@ -18,7 +18,7 @@ import {
 import { ChevronsUpDown, Pencil, Plus, Trash } from "lucide-react";
 import React from "react";
 
-const titles = ["Name", "Description", "Status", "Action"];
+const titles = ["Name", "Description", "Action"];
 
 const Topics = () => {
   const [topics, setTopics] = React.useState<Topic[]>([]);
@@ -67,7 +67,7 @@ const Topics = () => {
     const fetchTopics = async () => {
       setLoading(true);
       try {
-        const topics = await TopicService.getTopics();
+        const topics = await TopicService.getActiveTopics();
         setTopics(topics);
       } catch (error) {
         console.error(error);
@@ -157,7 +157,7 @@ const Topics = () => {
                         {topic.description}
                       </Typography>
                     </td>
-                    <td className={classes}>
+                    {/* <td className={classes}>
                       <div className="w-max">
                         <Chip
                           variant="ghost"
@@ -166,7 +166,7 @@ const Topics = () => {
                           color={!topic.isDeleted ? "green" : "blue-gray"}
                         />
                       </div>
-                    </td>
+                    </td> */}
                     <td className={cn(classes)}>
                       <Tooltip content="Edit topic">
                         <IconButton

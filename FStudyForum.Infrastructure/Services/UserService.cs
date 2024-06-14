@@ -10,7 +10,7 @@ using FStudyForum.Core.Models.DTOs.Auth;
 using FStudyForum.Core.Exceptions;
 using FStudyForum.Core.Helpers;
 using FStudyForum.Infrastructure.Repositories;
-using FStudyForum.Core.Models.DTOs.Paging;
+using FStudyForum.Core.Models.DTOs;
 
 namespace FStudyForum.Infrastructure.Services;
 

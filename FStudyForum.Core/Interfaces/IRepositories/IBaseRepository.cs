@@ -1,4 +1,4 @@
-using FStudyForum.Core.Models.DTOs.Paging;
+using FStudyForum.Core.Models.DTOs;
 
 namespace FStudyForum.Core.Interfaces.IRepositories;
 

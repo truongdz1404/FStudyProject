@@ -2,6 +2,8 @@
 using FStudyForum.Core.Interfaces.IServices;
 using FStudyForum.Core.Models.DTOs.Topic;
 using FStudyForum.Core.Models.DTOs;
+using Microsoft.AspNetCore.Authorization;
+using FStudyForum.Core.Constants;
 
 namespace FStudyForum.API.Controllers
 {
@@ -16,14 +18,14 @@ namespace FStudyForum.API.Controllers
             _topicService = topicService;
         }
 
-        [HttpGet("active")]
+        [HttpGet("active"), Authorize]
         public async Task<IActionResult> GetAllActiveTopics()
         {
             var activeTopics = await _topicService.GetAllActiveTopics();
             return Ok(activeTopics);
         }
 
-        [HttpGet("")]
+        [HttpGet(""), Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> GetAll()
         {
             var topics = await _topicService.GetAllTopics();
@@ -35,7 +37,7 @@ namespace FStudyForum.API.Controllers
             });
         }
 
-        [HttpPost("create")]
+        [HttpPost("create"), Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> CreateTopic([FromBody] CreateTopicDTO topicDto)
         {
             var createdTopic = await _topicService.CreateTopic(topicDto);
@@ -55,7 +57,7 @@ namespace FStudyForum.API.Controllers
                 return NotFound(ex.Message);
             }
         }
-        [HttpPut("update/{id}")]
+        [HttpPut("update/{id}"), Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> UpdateTopic(long id, [FromBody] UpdateTopicDTO topicDto)
         {
             try
@@ -65,13 +67,12 @@ namespace FStudyForum.API.Controllers
             }
             catch (Exception ex)
             {
-                // Xử lý các trường hợp lỗi
                 return StatusCode(500, ex.Message);
             }
         }
 
 
-        [HttpPut("delete/{id}")]
+        [HttpPut("delete/{id}"), Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> DeleteTopic(long id)
         {
             var isDeleted = await _topicService.DeleteTopic(id);

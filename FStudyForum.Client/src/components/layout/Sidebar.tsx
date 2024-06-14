@@ -1,3 +1,5 @@
+import { Role } from "@/helpers/constants";
+import { useAuth } from "@/hooks/useAuth";
 import {
   List,
   ListItem,
@@ -24,6 +26,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 const sidebarListItems = [
   {
     group: "user",
+    access: [Role.User, Role.Admin],
     items: [
       {
         label: "Home",
@@ -47,6 +50,7 @@ const sidebarListItems = [
   },
   {
     group: "admin",
+    access: [Role.Admin],
     items: [
       {
         label: "Manager",
@@ -81,6 +85,8 @@ type SidebarProps = {
 const Sidebar = React.memo(({ handleClose }: SidebarProps) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const { user } = useAuth();
+
   const segments = pathname.split("/").filter((s) => s !== "");
 
   const [collapse, setCollapse] = React.useState(
@@ -105,69 +111,74 @@ const Sidebar = React.memo(({ handleClose }: SidebarProps) => {
       className="min-h-screen w-full rounded-none shadow-md shadow-blue-gray-900/5 border-r"
     >
       <List>
-        {sidebarListItems.map(({ group, items }, index) => (
-          <div key={group}>
-            {items.map(({ label, icon, path, items }) =>
-              items.length == 0 ? (
-                <ListItem
-                  onClick={() => handleView(path)}
-                  selected={pathname === path}
-                  key={label}
-                  className="text-sm"
-                >
-                  <ListItemPrefix>
-                    {React.createElement(icon, { className: "h-5 w-5" })}
-                  </ListItemPrefix>
-                  {label}
-                </ListItem>
-              ) : (
-                <Accordion
-                  key={label}
-                  open={isCollapse(label)}
-                  icon={
-                    <ChevronDown
-                      className={`mx-auto h-4 w-4 transition-transform ${
-                        isCollapse(label) ? "rotate-180" : ""
-                      }`}
-                    />
-                  }
-                >
-                  <AccordionHeader
-                    onClick={() => switchCollapse(label)}
-                    className="border-b-0 p-3 hover:bg-gray-50 rounded-md"
-                  >
-                    <ListItemPrefix>
-                      <SquareGanttChart className="h-5 w-5" />
-                    </ListItemPrefix>
-                    <Typography className="mr-auto text-sm">{label}</Typography>
-                  </AccordionHeader>
-                  <AccordionBody className="py-1">
-                    <List className="p-0 pl-2 text-sm">
-                      {items.map(({ label, icon, path }) => (
-                        <ListItem
-                          onClick={() => handleView(path)}
-                          selected={pathname === path}
-                          key={label}
-                          className="text-sm"
-                        >
-                          <ListItemPrefix>
-                            {React.createElement(icon, {
-                              className: "h-5 w-5",
-                            })}
-                          </ListItemPrefix>
+        {sidebarListItems.map(
+          ({ group, items, access }, index) =>
+            (user?.roles.some((r) => access.includes(r)) ?? false) && (
+              <div key={group}>
+                {items.map(({ label, icon, path, items }) =>
+                  items.length == 0 ? (
+                    <ListItem
+                      onClick={() => handleView(path)}
+                      selected={pathname === path}
+                      key={label}
+                      className="text-sm"
+                    >
+                      <ListItemPrefix>
+                        {React.createElement(icon, { className: "h-5 w-5" })}
+                      </ListItemPrefix>
+                      {label}
+                    </ListItem>
+                  ) : (
+                    <Accordion
+                      key={label}
+                      open={isCollapse(label)}
+                      icon={
+                        <ChevronDown
+                          className={`mx-auto h-4 w-4 transition-transform ${
+                            isCollapse(label) ? "rotate-180" : ""
+                          }`}
+                        />
+                      }
+                    >
+                      <AccordionHeader
+                        onClick={() => switchCollapse(label)}
+                        className="border-b-0 p-3 hover:bg-gray-50 rounded-md"
+                      >
+                        <ListItemPrefix>
+                          <SquareGanttChart className="h-5 w-5" />
+                        </ListItemPrefix>
+                        <Typography className="mr-auto text-sm">
                           {label}
-                        </ListItem>
-                      ))}
-                    </List>
-                  </AccordionBody>
-                </Accordion>
-              )
-            )}
-            {index != sidebarListItems.length - 1 && (
-              <hr className="my-2 border-blue-gray-50" />
-            )}
-          </div>
-        ))}
+                        </Typography>
+                      </AccordionHeader>
+                      <AccordionBody className="py-1">
+                        <List className="p-0 pl-2 text-sm">
+                          {items.map(({ label, icon, path }) => (
+                            <ListItem
+                              onClick={() => handleView(path)}
+                              selected={pathname === path}
+                              key={label}
+                              className="text-sm"
+                            >
+                              <ListItemPrefix>
+                                {React.createElement(icon, {
+                                  className: "h-5 w-5",
+                                })}
+                              </ListItemPrefix>
+                              {label}
+                            </ListItem>
+                          ))}
+                        </List>
+                      </AccordionBody>
+                    </Accordion>
+                  )
+                )}
+                {index != sidebarListItems.length - 1 && (
+                  <hr className="my-2 border-blue-gray-50" />
+                )}
+              </div>
+            )
+        )}
       </List>
     </Card>
   );
