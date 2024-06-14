@@ -37,7 +37,7 @@ namespace FStudyForum.Infrastructure.Repositories
             }
         }
 
-        public async Task<List<Topic>> GetAllTopics()
+        public async Task<List<Topic>> GetTopics()
         {
             var topics = await _dbContext.Topics
                 .Include(t => t.Categories)

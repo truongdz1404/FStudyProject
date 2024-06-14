@@ -23,11 +23,11 @@ namespace FStudyForum.Infrastructure.Migrations
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
                     Type = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -56,11 +56,11 @@ namespace FStudyForum.Infrastructure.Migrations
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -73,7 +73,7 @@ namespace FStudyForum.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    RefreshToken = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RefreshToken = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     RefreshTokenExpiryTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -146,6 +146,58 @@ namespace FStudyForum.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "tblDonations",
+                schema: "dbo",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Amount = table.Column<long>(type: "bigint", nullable: false),
+                    Message = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_tblDonations", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_tblDonations_tblUsers_UserId",
+                        column: x => x.UserId,
+                        principalSchema: "dbo",
+                        principalTable: "tblUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "tblModerators",
+                schema: "dbo",
+                columns: table => new
+                {
+                    ModeratedByUsersId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ModeratedTopicsId = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_tblModerators", x => new { x.ModeratedByUsersId, x.ModeratedTopicsId });
+                    table.ForeignKey(
+                        name: "FK_tblModerators_tblTopics_ModeratedTopicsId",
+                        column: x => x.ModeratedTopicsId,
+                        principalSchema: "dbo",
+                        principalTable: "tblTopics",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_tblModerators_tblUsers_ModeratedByUsersId",
+                        column: x => x.ModeratedByUsersId,
+                        principalSchema: "dbo",
+                        principalTable: "tblUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "tblPosts",
                 schema: "dbo",
                 columns: table => new
@@ -156,9 +208,9 @@ namespace FStudyForum.Infrastructure.Migrations
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     TopicId = table.Column<long>(type: "bigint", nullable: false),
-                    CreaterId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    CreaterId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -194,8 +246,8 @@ namespace FStudyForum.Infrastructure.Migrations
                     Avatar = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     Banner = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -220,8 +272,8 @@ namespace FStudyForum.Infrastructure.Migrations
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ResponseContent = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreaterId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -336,11 +388,11 @@ namespace FStudyForum.Infrastructure.Migrations
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FileUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    FileUrl = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     PostId = table.Column<long>(type: "bigint", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -355,30 +407,26 @@ namespace FStudyForum.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "tblSavedPosts",
+                name: "tblSavePosts",
                 schema: "dbo",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    PostId = table.Column<long>(type: "bigint", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    SavedByUsersId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    SavedPostsId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_tblSavedPosts", x => x.Id);
+                    table.PrimaryKey("PK_tblSavePosts", x => new { x.SavedByUsersId, x.SavedPostsId });
                     table.ForeignKey(
-                        name: "FK_tblSavedPosts_tblPosts_PostId",
-                        column: x => x.PostId,
+                        name: "FK_tblSavePosts_tblPosts_SavedPostsId",
+                        column: x => x.SavedPostsId,
                         principalSchema: "dbo",
                         principalTable: "tblPosts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_tblSavedPosts_tblUsers_UserId",
-                        column: x => x.UserId,
+                        name: "FK_tblSavePosts_tblUsers_SavedByUsersId",
+                        column: x => x.SavedByUsersId,
                         principalSchema: "dbo",
                         principalTable: "tblUsers",
                         principalColumn: "Id",
@@ -397,9 +445,9 @@ namespace FStudyForum.Infrastructure.Migrations
                     CreaterId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     PostId = table.Column<long>(type: "bigint", nullable: false),
                     AttachmentId = table.Column<long>(type: "bigint", nullable: true),
-                    ReplyId = table.Column<long>(type: "bigint", nullable: true),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    ReplyToId = table.Column<long>(type: "bigint", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -411,8 +459,8 @@ namespace FStudyForum.Infrastructure.Migrations
                         principalTable: "tblAttachments",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_tblComments_tblComments_ReplyId",
-                        column: x => x.ReplyId,
+                        name: "FK_tblComments_tblComments_ReplyToId",
+                        column: x => x.ReplyToId,
                         principalSchema: "dbo",
                         principalTable: "tblComments",
                         principalColumn: "Id");
@@ -442,8 +490,8 @@ namespace FStudyForum.Infrastructure.Migrations
                     VoterId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     PostId = table.Column<long>(type: "bigint", nullable: true),
                     CommentId = table.Column<long>(type: "bigint", nullable: true),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -475,8 +523,9 @@ namespace FStudyForum.Infrastructure.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "2a057ef4-a323-4a56-b4b2-010af452b775", null, "User", "USER" },
-                    { "44f1e592-8f34-4273-b457-14330d72bfd6", null, "Admin", "ADMIN" }
+                    { "2038a58e-1ea5-4684-a920-d5f190b43d39", null, "User", "USER" },
+                    { "adfd2b24-4a89-4036-b5ed-ed7e850e6e01", null, "Admin", "ADMIN" },
+                    { "e1b4361d-4e92-471f-845f-1d083eda8e0c", null, "Moderator", "MODERATOR" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -504,10 +553,22 @@ namespace FStudyForum.Infrastructure.Migrations
                 column: "PostId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_tblComments_ReplyId",
+                name: "IX_tblComments_ReplyToId",
                 schema: "dbo",
                 table: "tblComments",
-                column: "ReplyId");
+                column: "ReplyToId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_tblDonations_UserId",
+                schema: "dbo",
+                table: "tblDonations",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_tblModerators_ModeratedTopicsId",
+                schema: "dbo",
+                table: "tblModerators",
+                column: "ModeratedTopicsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_tblPosts_CreaterId",
@@ -549,22 +610,23 @@ namespace FStudyForum.Infrastructure.Migrations
                 filter: "[NormalizedName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_tblSavedPosts_PostId",
+                name: "IX_tblSavePosts_SavedPostsId",
                 schema: "dbo",
-                table: "tblSavedPosts",
-                column: "PostId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_tblSavedPosts_UserId",
-                schema: "dbo",
-                table: "tblSavedPosts",
-                column: "UserId");
+                table: "tblSavePosts",
+                column: "SavedPostsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_tblTopicCategories_TopicsId",
                 schema: "dbo",
                 table: "tblTopicCategories",
                 column: "TopicsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_tblTopics_Name",
+                schema: "dbo",
+                table: "tblTopics",
+                column: "Name",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_tblUserClaims_UserId",
@@ -621,6 +683,14 @@ namespace FStudyForum.Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "tblDonations",
+                schema: "dbo");
+
+            migrationBuilder.DropTable(
+                name: "tblModerators",
+                schema: "dbo");
+
+            migrationBuilder.DropTable(
                 name: "tblProfiles",
                 schema: "dbo");
 
@@ -633,7 +703,7 @@ namespace FStudyForum.Infrastructure.Migrations
                 schema: "dbo");
 
             migrationBuilder.DropTable(
-                name: "tblSavedPosts",
+                name: "tblSavePosts",
                 schema: "dbo");
 
             migrationBuilder.DropTable(

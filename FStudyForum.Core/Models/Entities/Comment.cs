@@ -10,7 +10,7 @@ public class Comment : BaseEntity
     public required virtual ApplicationUser Creater { get; set; }
     public required virtual Post Post { get; set; }
     public virtual Attachment? Attachment { get; set; }
-    public virtual Comment? Reply { get; set; }
-    public virtual IEnumerable<Comment> Replies { get; set; } = new List<Comment>();
-    public virtual IEnumerable<Vote> Votes { get; set; } = new List<Vote>();
+    public virtual Comment? ReplyTo { get; set; }
+    public virtual ICollection<Comment> Replies { get; set; } = new List<Comment>();
+    public virtual ICollection<Vote> Votes { get; set; } = new List<Vote>();
 }

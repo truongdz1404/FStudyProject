@@ -7,7 +7,7 @@ namespace FStudyForum.Core.Interfaces.IServices;
 
 public interface IUserService
 {
-    Task<PaginatedData<UserDTO>> GetPaginatedData(int pageNumber, int pageSize);
+    Task<PaginatedData<UserDTO>> GetAll(QueryUserDTO query);
     Task<UserDTO> GetProfileByName(string userName);
     Task<UserDTO?> FindOrCreateUserAsync(ExternalAuthDTO externalAuth, List<string> roles);
     Task<TokenDTO> CreateAuthTokenAsync(string userName, int expDays = -1);

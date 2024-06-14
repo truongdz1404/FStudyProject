@@ -4,8 +4,8 @@ namespace FStudyForum.Core.Interfaces.IServices;
 
 public interface ITopicService
 {
-    public Task<List<TopicDTO>> GetAllActiveTopics();
-    public Task<List<TopicDTO>> GetAllTopics();
+    public Task<List<TopicDTO>> GetActiveTopics();
+    public Task<List<TopicDTO>> GetTopics();
 
     public Task<TopicDTO> CreateTopic(CreateTopicDTO topicDto);
     public Task<TopicDTO> GetTopicById(long id);

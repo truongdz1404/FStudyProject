@@ -21,14 +21,14 @@ namespace FStudyForum.API.Controllers
         [HttpGet("active"), Authorize]
         public async Task<IActionResult> GetAllActiveTopics()
         {
-            var activeTopics = await _topicService.GetAllActiveTopics();
+            var activeTopics = await _topicService.GetActiveTopics();
             return Ok(activeTopics);
         }
 
         [HttpGet(""), Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> GetAll()
         {
-            var topics = await _topicService.GetAllTopics();
+            var topics = await _topicService.GetTopics();
             return Ok(new Response
             {
                 Message = "Get all topic successfully",

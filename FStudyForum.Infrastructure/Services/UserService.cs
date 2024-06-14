@@ -104,7 +104,6 @@ public class UserService : IUserService
             Gender = profile.Gender,
             Bio = profile.Bio,
             Major = profile.Major,
-            // IsActive = user.
         };
     }
 
@@ -168,13 +167,15 @@ public class UserService : IUserService
         return user?.RefreshToken;
     }
 
-    public async Task<PaginatedData<UserDTO>> GetPaginatedData(int pageNumber, int pageSize)
+    public async Task<PaginatedData<UserDTO>> GetAll(QueryUserDTO query)
     {
-        var paginated = await _userRepository.GetPaginatedData(pageNumber, pageSize);
-        var users = new List<UserDTO>();
-        foreach (var user in paginated.Data)
-            users.Add(await ConvertToDTO(user));
+        var users = await _userRepository.GetQuery(query);
+        var totalCount = await _userRepository.CountAsync();
 
-        return new(users, paginated.TotalCount);
+        var userDTOs = new List<UserDTO>();
+        foreach (var user in users)
+            userDTOs.Add(await ConvertToDTO(user));
+
+        return new(userDTOs, totalCount);
     }
 }

@@ -2,6 +2,7 @@
 using AutoMapper;
 using FStudyForum.Core.Interfaces.IRepositories;
 using FStudyForum.Core.Interfaces.IServices;
+using FStudyForum.Core.Models.DTOs;
 using FStudyForum.Core.Models.DTOs.Topic;
 using FStudyForum.Core.Models.Entities;
 namespace FStudyForum.Infrastructure.Services;
@@ -22,9 +23,9 @@ public class TopicService : ITopicService
         _mapper = mapper;
     }
 
-    public async Task<List<TopicDTO>> GetAllActiveTopics()
+    public async Task<List<TopicDTO>> GetActiveTopics()
     {
-        var topics = await _topicRepository.GetAllTopics();
+        var topics = await _topicRepository.GetTopics();
         var activeTopics = topics.Where(t => !t.IsDeleted).ToList();
         var activeTopicDTOs = new List<TopicDTO>();
         foreach (var topic in activeTopics)
@@ -115,9 +116,9 @@ public class TopicService : ITopicService
         return true;
     }
 
-    public async Task<List<TopicDTO>> GetAllTopics()
+    public async Task<List<TopicDTO>> GetTopics()
     {
-        var topics = await _topicRepository.GetAllTopics();
+        var topics = await _topicRepository.GetTopics();
         var topicDTOs = new List<TopicDTO>();
         foreach (var topic in topics)
         {
@@ -132,5 +133,7 @@ public class TopicService : ITopicService
         }
         return topicDTOs;
     }
+
+
 }
 
