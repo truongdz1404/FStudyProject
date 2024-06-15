@@ -86,7 +86,7 @@ const Sidebar = React.memo(({ handleClose }: SidebarProps) => {
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const { user } = useAuth()
-  console.log(user)
+  console.log(user?.roles)
 
   const segments = pathname.split("/").filter(s => s !== "")
 
@@ -113,8 +113,8 @@ const Sidebar = React.memo(({ handleClose }: SidebarProps) => {
     >
       <List>
         {sidebarListItems.map(
-          ({ group, items, access }, index) =>
-            (user?.roles.some(r => access.includes(r)) ?? false) && (
+          ({ group, items }, index) =>
+            // (user?.roles.some(r => access.includes(r)) ?? false) && (
               <div key={group}>
                 {items.map(({ label, icon, path, items }) =>
                   items.length == 0 ? (
@@ -178,7 +178,7 @@ const Sidebar = React.memo(({ handleClose }: SidebarProps) => {
                   <hr className="my-2 border-blue-gray-50" />
                 )}
               </div>
-            )
+            // )
         )}
       </List>
     </Card>

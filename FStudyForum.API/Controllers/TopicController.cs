@@ -4,6 +4,7 @@ using FStudyForum.Core.Models.DTOs.Topic;
 using FStudyForum.Core.Models.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using FStudyForum.Core.Constants;
+using System.Net;
 
 namespace FStudyForum.API.Controllers
 {
@@ -43,6 +44,30 @@ namespace FStudyForum.API.Controllers
             var createdTopic = await _topicService.CreateTopic(topicDto);
             return CreatedAtAction(nameof(GetTopicById), new { id = createdTopic.Id }, createdTopic);
         }
+
+         [HttpGet("{id}/posts")]
+        public async Task<IActionResult> GetPostsByTopicId(long id)
+        {
+            try
+            {
+                var posts = await _topicService.GetPostsByTopicId(id);
+                return Ok(new Response
+                {
+                    Message = "Found!",
+                    Status = (int)HttpStatusCode.OK + "",
+                    Data = posts
+                }); ;
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = ex.Message
+                });
+            }
+        }
+
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetTopicById(long id)

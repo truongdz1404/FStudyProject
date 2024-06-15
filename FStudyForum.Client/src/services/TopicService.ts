@@ -1,11 +1,18 @@
 import { ResponseWith } from "@/types/response"
 import api from "./api"
 import { Topic, CreateTopicDTO, UpdateTopicDTO } from "@/types/topic"
+import { Post } from "@/types/post"
 
 const getActiveTopics = async (): Promise<Topic[]> => {
   const response = await api.get<Topic[]>("/topic/active")
   return response.data
 }
+
+const getPostsByTopic = async (topicId: number): Promise<Post[]> => {
+  const response = await api.get<ResponseWith<Post[]>>(`/topic/${topicId}/posts`);
+  return response.data.data;
+}
+
 
 const getTopics = async () => {
   const response = await api.get<ResponseWith<Topic[]>>("/topic")
@@ -34,6 +41,7 @@ const Delete = async (id: number): Promise<void> => {
 const TopicService = {
   getTopics,
   getActiveTopics,
+  getPostsByTopic,
   GetTopicById,
   create,
   update,
