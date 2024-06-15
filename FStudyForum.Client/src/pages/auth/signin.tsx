@@ -45,7 +45,7 @@ const SignIn: FC = () => {
 
   const { mutate: handleLogin, isPending: pending } = useMutation({
     mutationFn: async (form: LoginFormsInputs) => {
-      await AuthService.register(form.username, form.password)
+      await AuthService.login(form.username, form.password)
     },
     onSuccess: async () => {
       const user = await UserService.getProfile()
