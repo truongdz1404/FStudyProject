@@ -1,18 +1,18 @@
 import api from "./api";
 import { Response } from "@/types/response";
 
-const login = async (username: string, password: string) => {
+const login = async (email: string, password: string) => {
   const response = await api.post<Response>("/auth/login", {
-    username,
-    password,
+    email,
+    password
   });
   return response.data.message;
 };
 
-const register = async (username: string, password: string) => {
+const register = async (email: string, password: string) => {
   const response = await api.post<Response>("/auth/register", {
-    username,
-    password,
+    email,
+    password
   });
   return response.data.message;
 };
@@ -20,18 +20,13 @@ const register = async (username: string, password: string) => {
 const loginGoogle = async (idToken: string) => {
   const response = await api.post<Response>("/auth/login-google", {
     provider: "Google",
-    idToken,
+    idToken
   });
   return response.data.message;
 };
 
 const logout = async () => {
-  const response = await api.get<Response>("/auth/logout");
-  return response.data.message;
-};
-
-const refreshToken = async () => {
-  const response = await api.get<Response>("/auth/refresh-token");
+  const response = await api.post<Response>("/auth/logout");
   return response.data.message;
 };
 
@@ -54,20 +49,19 @@ const changePassword = async (
   const response = await api.post<Response>("/auth/change-password", {
     token,
     email,
-    password,
+    password
   });
   return response.data.message;
 };
 
 const AuthService = {
-  refreshToken,
   login,
   loginGoogle,
   logout,
   register,
   resendEmail,
   forgotPassword,
-  changePassword,
+  changePassword
 };
 
 export default AuthService;

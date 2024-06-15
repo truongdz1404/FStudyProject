@@ -2,6 +2,7 @@
 using AutoMapper;
 using FStudyForum.Core.Interfaces.IRepositories;
 using FStudyForum.Core.Interfaces.IServices;
+using FStudyForum.Core.Models.DTOs;
 using FStudyForum.Core.Models.DTOs.Topic;
 using FStudyForum.Core.Models.Entities;
 namespace FStudyForum.Infrastructure.Services;
@@ -9,19 +10,22 @@ namespace FStudyForum.Infrastructure.Services;
 public class TopicService : ITopicService
 {
     private readonly ITopicRepository _topicRepository;
+    private readonly ICategoryRepository _categoryRepository;
     private readonly IMapper _mapper;
 
     public TopicService(
         ITopicRepository topicRepository,
+        ICategoryRepository cateRepository,
         IMapper mapper)
     {
         _topicRepository = topicRepository;
+        _categoryRepository = cateRepository;
         _mapper = mapper;
     }
 
-    public async Task<List<TopicDTO>> GetAllActiveTopics()
+    public async Task<List<TopicDTO>> GetActiveTopics()
     {
-        var topics = await _topicRepository.GetAllTopics();
+        var topics = await _topicRepository.GetTopics();
         var activeTopics = topics.Where(t => !t.IsDeleted).ToList();
         var activeTopicDTOs = new List<TopicDTO>();
         foreach (var topic in activeTopics)
@@ -31,42 +35,76 @@ public class TopicService : ITopicService
                 Id = topic.Id,
                 Name = topic.Name,
                 Description = topic.Description,
-                CategoryIds = topic.Categories.Select(c => c.Id).ToList()
+                Categories = topic.Categories.Select(c => c.Id).ToList()
             });
         }
         return activeTopicDTOs;
     }
     public async Task<TopicDTO> CreateTopic(CreateTopicDTO topicDto)
     {
-        var topic = _mapper.Map<Topic>(topicDto);
+        if (await _topicRepository.TopicExists(topicDto.Name))
+        {
+            var errorMessage = "Topic Exist";
+            throw new Exception(errorMessage);
+        }
+
+        var categories = await _categoryRepository.GetCategoriesByIds(topicDto.Categories);
+        var topic = new Topic
+        {
+            Name = topicDto.Name,
+            Description = topicDto.Description,
+            Categories = categories
+        };
         var createdTopic = await _topicRepository.Create(topic);
         await _topicRepository.SaveChangeAsync();
         var createdTopicDto = _mapper.Map<TopicDTO>(createdTopic);
         return createdTopicDto;
     }
-
-    public async Task<TopicDTO> GetTopicById(long id)
+    public async Task<TopicDTO> GetTopicByName(string name)
     {
-        var topic = await _topicRepository.GetById(id);
-        var topicDto = _mapper.Map<TopicDTO>(topic);
-        return topicDto;
-    }
-    public async Task<TopicDTO> UpdateTopic(long id, TopicDTO topicDto)
-    {
-        var existingTopic = await _topicRepository.GetById(id);
-
-        if (existingTopic == null)
+        var topic = await _topicRepository.GetByName(name);
+        if (topic == null)
         {
             throw new Exception("Topic not found");
         }
-        _mapper.Map(topicDto, existingTopic);
-        await _topicRepository.Update(existingTopic);
-        await _topicRepository.SaveChangeAsync();
+        var categoryIds = topic.Categories.Select(c => c.Id).ToList();
+        var topicDto = new TopicDTO
+        {
+            Id = topic.Id,
+            Name = topic.Name,
+            Description = topic.Description,
+            IsDeleted = topic.IsDeleted,
+            Categories = categoryIds
+        };
+
         return topicDto;
     }
-    public async Task<bool> DeleteTopic(long id)
+
+    public async Task<TopicDTO> UpdateTopic(string name, UpdateTopicDTO topicDto)
     {
-        var topic = await _topicRepository.GetById(id);
+        var existedTopic = await _topicRepository.GetByName(name)
+            ?? throw new Exception("Topic not found");
+
+        existedTopic.Name = topicDto.Name;
+        existedTopic.Description = topicDto.Description;
+        existedTopic.Categories.Clear();
+        await _topicRepository.Update(existedTopic);
+
+        var categories = await _categoryRepository.GetCategoriesByIds(topicDto.Categories);
+        foreach (var category in categories)
+        {
+            existedTopic.Categories.Add(category);
+        }
+
+        await _topicRepository.Update(existedTopic);
+
+        return _mapper.Map<TopicDTO>(existedTopic);
+    }
+
+
+    public async Task<bool> DeleteTopic(string name)
+    {
+        var topic = await _topicRepository.GetByName(name);
 
         if (topic == null)
         {
@@ -78,9 +116,24 @@ public class TopicService : ITopicService
         return true;
     }
 
-    // public Task<List<TopicDTO>> GetAllActiveCategory()
-    // {
-    //     throw new NotImplementedException();
-    // }
+    public async Task<List<TopicDTO>> GetTopics()
+    {
+        var topics = await _topicRepository.GetTopics();
+        var topicDTOs = new List<TopicDTO>();
+        foreach (var topic in topics)
+        {
+            topicDTOs.Add(new TopicDTO
+            {
+                Id = topic.Id,
+                Name = topic.Name,
+                Description = topic.Description,
+                IsDeleted = topic.IsDeleted,
+                Categories = topic.Categories.Select(c => c.Id).ToList()
+            });
+        }
+        return topicDTOs;
+    }
+
+
 }
 

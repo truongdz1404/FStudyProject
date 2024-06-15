@@ -2,11 +2,9 @@
 using FStudyForum.API.Extensions;
 using FStudyForum.API.Mapper;
 using FStudyForum.Core.Constants;
-using FStudyForum.Core.Interfaces.IServices;
 using FStudyForum.Core.Models.Configs;
 using FStudyForum.Core.Models.Entities;
 using FStudyForum.Infrastructure.Data;
-using FStudyForum.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -42,7 +40,6 @@ builder.Services.AddControllersWithViews()
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore; // Đảm bảo không bị vòng tròn
             });
 builder.Services.AddHttpClient();
-builder.Services.AddScoped<IQRCodeService, QRCodeService>();
 builder.Services.AddAutoMapper(typeof(MapperProfile));
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     {

@@ -20,7 +20,7 @@ public class ApplicationDBContext(DbContextOptions options)
         builder.Entity<IdentityUserRole<string>>().ToTable("tblUserRoles");
         builder.Entity<IdentityUserToken<string>>().ToTable("tblUserTokens");
         builder.Entity<IdentityUserLogin<string>>().ToTable("tblUserLogins");
-        
+
         builder.Entity<ApplicationUser>()
             .HasOne(u => u.Profile)
             .WithOne(p => p.User)
@@ -30,6 +30,16 @@ public class ApplicationDBContext(DbContextOptions options)
         builder.Entity<ApplicationUser>()
             .HasMany(u => u.Votes)
             .WithOne(v => v.Voter);
+
+        builder.Entity<ApplicationUser>()
+            .HasMany(u => u.Donations)
+            .WithOne(d => d.User);
+
+        builder.Entity<ApplicationUser>()
+            .HasMany(u => u.BannedByTopics)
+            .WithOne(b => b.User);
+
+
 
         builder.Entity<ApplicationUser>()
             .HasMany(u => u.Comments)
@@ -47,11 +57,13 @@ public class ApplicationDBContext(DbContextOptions options)
 
         builder.Entity<ApplicationUser>()
             .HasMany(u => u.SavedPosts)
-            .WithOne(sp => sp.User);
+            .WithMany(p => p.SavedByUsers)
+            .UsingEntity("tblSavePosts");
 
-        builder.Entity<Post>()
-            .HasMany(p => p.SavedByUsers)
-            .WithOne(sb => sb.Post);
+        builder.Entity<ApplicationUser>()
+            .HasMany(u => u.ModeratedTopics)
+            .WithMany(t => t.ModeratedByUsers)
+            .UsingEntity("tblModerators");
 
         builder.Entity<Category>()
             .HasMany(c => c.Topics)
@@ -62,6 +74,10 @@ public class ApplicationDBContext(DbContextOptions options)
             .HasMany(t => t.Posts)
             .WithOne(p => p.Topic)
             .IsRequired();
+
+        builder.Entity<Topic>()
+        .HasMany(t => t.BannedUser)
+        .WithOne(b => b.Topic);
 
         builder.Entity<Post>()
             .HasMany(p => p.Votes)
@@ -81,7 +97,7 @@ public class ApplicationDBContext(DbContextOptions options)
 
         builder.Entity<Comment>()
             .HasMany(c => c.Replies)
-            .WithOne(c => c.Reply);
+            .WithOne(c => c.ReplyTo);
 
         builder.Entity<Comment>()
             .HasMany(c => c.Votes)
@@ -104,10 +120,10 @@ public class ApplicationDBContext(DbContextOptions options)
     public DbSet<Category> Categories { get; set; }
     public DbSet<Topic> Topics { get; set; }
     public DbSet<Post> Posts { get; set; }
-    public DbSet<SavedPost> SavedPosts { get; set; }
     public DbSet<Report> Reports { get; set; }
     public DbSet<Report> Comments { get; set; }
     public DbSet<Vote> Votes { get; set; }
     public DbSet<Attachment> Attachments { get; set; }
+    public DbSet<Donation> Donations { get; set; }
 }
 

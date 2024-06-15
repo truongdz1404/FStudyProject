@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FStudyForum.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20240611044426_Init")]
+    [Migration("20240615143743_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -70,7 +70,8 @@ namespace FStudyForum.Infrastructure.Migrations
 
                     b.Property<string>("RefreshToken")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime>("RefreshTokenExpiryTime")
                         .HasColumnType("datetime2");
@@ -106,14 +107,15 @@ namespace FStudyForum.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
-                    b.Property<DateTime>("CreatedDate")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("FileUrl")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
-                    b.Property<DateTime>("ModifiedDate")
+                    b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<long>("PostId")
@@ -121,7 +123,8 @@ namespace FStudyForum.Infrastructure.Migrations
 
                     b.Property<string>("Type")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.HasKey("Id");
 
@@ -138,20 +141,21 @@ namespace FStudyForum.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
-                    b.Property<DateTime>("CreatedDate")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
-                    b.Property<DateTime>("ModifiedDate")
+                    b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Type")
                         .IsRequired()
@@ -178,7 +182,7 @@ namespace FStudyForum.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedDate")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreaterId")
@@ -188,13 +192,13 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("ModifiedDate")
+                    b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<long>("PostId")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("ReplyId")
+                    b.Property<long?>("ReplyToId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
@@ -205,9 +209,42 @@ namespace FStudyForum.Infrastructure.Migrations
 
                     b.HasIndex("PostId");
 
-                    b.HasIndex("ReplyId");
+                    b.HasIndex("ReplyToId");
 
                     b.ToTable("tblComments", "dbo");
+                });
+
+            modelBuilder.Entity("FStudyForum.Core.Models.Entities.Donation", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("Amount")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("tblDonations", "dbo");
                 });
 
             modelBuilder.Entity("FStudyForum.Core.Models.Entities.Post", b =>
@@ -222,17 +259,16 @@ namespace FStudyForum.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedDate")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreaterId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("ModifiedDate")
+                    b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Title")
@@ -274,7 +310,7 @@ namespace FStudyForum.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedDate")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("FirstName")
@@ -294,7 +330,7 @@ namespace FStudyForum.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("ModifiedDate")
+                    b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Phone")
@@ -325,14 +361,14 @@ namespace FStudyForum.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedDate")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreaterId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<DateTime>("ModifiedDate")
+                    b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("ResponseContent")
@@ -349,36 +385,6 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.ToTable("tblReports", "dbo");
                 });
 
-            modelBuilder.Entity("FStudyForum.Core.Models.Entities.SavedPost", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("ModifiedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long>("PostId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PostId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("tblSavedPosts", "dbo");
-                });
-
             modelBuilder.Entity("FStudyForum.Core.Models.Entities.Topic", b =>
                 {
                     b.Property<long>("Id")
@@ -387,27 +393,64 @@ namespace FStudyForum.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
-                    b.Property<DateTime>("CreatedDate")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("ModifiedDate")
+                    b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasMaxLength(25)
+                        .HasColumnType("nvarchar(25)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Name")
+                        .IsUnique();
+
                     b.ToTable("tblTopics", "dbo");
+                });
+
+            modelBuilder.Entity("FStudyForum.Core.Models.Entities.TopicBan", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("BannedTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("TopicId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TopicId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("tblTopicBans", "dbo");
                 });
 
             modelBuilder.Entity("FStudyForum.Core.Models.Entities.Vote", b =>
@@ -421,13 +464,13 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.Property<long?>("CommentId")
                         .HasColumnType("bigint");
 
-                    b.Property<DateTime>("CreatedDate")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsUp")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("ModifiedDate")
+                    b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<long?>("PostId")
@@ -477,15 +520,21 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "44f1e592-8f34-4273-b457-14330d72bfd6",
+                            Id = "9477c09e-575b-4c98-8aa0-091410f38787",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "2a057ef4-a323-4a56-b4b2-010af452b775",
+                            Id = "5bc1e67e-83c2-4454-8453-640f027d1aca",
                             Name = "User",
                             NormalizedName = "USER"
+                        },
+                        new
+                        {
+                            Id = "058c557c-fdc1-4d1e-bbc2-63d517e9ff5d",
+                            Name = "Moderator",
+                            NormalizedName = "MODERATOR"
                         });
                 });
 
@@ -595,6 +644,36 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.ToTable("tblUserTokens", "dbo");
                 });
 
+            modelBuilder.Entity("tblModerators", b =>
+                {
+                    b.Property<string>("ModeratedByUsersId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<long>("ModeratedTopicsId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("ModeratedByUsersId", "ModeratedTopicsId");
+
+                    b.HasIndex("ModeratedTopicsId");
+
+                    b.ToTable("tblModerators", "dbo");
+                });
+
+            modelBuilder.Entity("tblSavePosts", b =>
+                {
+                    b.Property<string>("SavedByUsersId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<long>("SavedPostsId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("SavedByUsersId", "SavedPostsId");
+
+                    b.HasIndex("SavedPostsId");
+
+                    b.ToTable("tblSavePosts", "dbo");
+                });
+
             modelBuilder.Entity("tblTopicCategories", b =>
                 {
                     b.Property<long>("CategoriesId")
@@ -639,9 +718,9 @@ namespace FStudyForum.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FStudyForum.Core.Models.Entities.Comment", "Reply")
+                    b.HasOne("FStudyForum.Core.Models.Entities.Comment", "ReplyTo")
                         .WithMany("Replies")
-                        .HasForeignKey("ReplyId");
+                        .HasForeignKey("ReplyToId");
 
                     b.Navigation("Attachment");
 
@@ -649,7 +728,18 @@ namespace FStudyForum.Infrastructure.Migrations
 
                     b.Navigation("Post");
 
-                    b.Navigation("Reply");
+                    b.Navigation("ReplyTo");
+                });
+
+            modelBuilder.Entity("FStudyForum.Core.Models.Entities.Donation", b =>
+                {
+                    b.HasOne("FStudyForum.Core.Models.Entities.ApplicationUser", "User")
+                        .WithMany("Donations")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("FStudyForum.Core.Models.Entities.Post", b =>
@@ -657,8 +747,7 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.HasOne("FStudyForum.Core.Models.Entities.ApplicationUser", "Creater")
                         .WithMany("CreatedPosts")
                         .HasForeignKey("CreaterId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("FStudyForum.Core.Models.Entities.Topic", "Topic")
                         .WithMany("Posts")
@@ -693,21 +782,21 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.Navigation("Creater");
                 });
 
-            modelBuilder.Entity("FStudyForum.Core.Models.Entities.SavedPost", b =>
+            modelBuilder.Entity("FStudyForum.Core.Models.Entities.TopicBan", b =>
                 {
-                    b.HasOne("FStudyForum.Core.Models.Entities.Post", "Post")
-                        .WithMany("SavedByUsers")
-                        .HasForeignKey("PostId")
+                    b.HasOne("FStudyForum.Core.Models.Entities.Topic", "Topic")
+                        .WithMany("BannedUser")
+                        .HasForeignKey("TopicId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("FStudyForum.Core.Models.Entities.ApplicationUser", "User")
-                        .WithMany("SavedPosts")
+                        .WithMany("BannedByTopics")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Post");
+                    b.Navigation("Topic");
 
                     b.Navigation("User");
                 });
@@ -786,6 +875,36 @@ namespace FStudyForum.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("tblModerators", b =>
+                {
+                    b.HasOne("FStudyForum.Core.Models.Entities.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("ModeratedByUsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FStudyForum.Core.Models.Entities.Topic", null)
+                        .WithMany()
+                        .HasForeignKey("ModeratedTopicsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("tblSavePosts", b =>
+                {
+                    b.HasOne("FStudyForum.Core.Models.Entities.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("SavedByUsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FStudyForum.Core.Models.Entities.Post", null)
+                        .WithMany()
+                        .HasForeignKey("SavedPostsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("tblTopicCategories", b =>
                 {
                     b.HasOne("FStudyForum.Core.Models.Entities.Category", null)
@@ -803,15 +922,17 @@ namespace FStudyForum.Infrastructure.Migrations
 
             modelBuilder.Entity("FStudyForum.Core.Models.Entities.ApplicationUser", b =>
                 {
+                    b.Navigation("BannedByTopics");
+
                     b.Navigation("Comments");
 
                     b.Navigation("CreatedPosts");
 
+                    b.Navigation("Donations");
+
                     b.Navigation("Profile");
 
                     b.Navigation("Reports");
-
-                    b.Navigation("SavedPosts");
 
                     b.Navigation("Votes");
                 });
@@ -834,13 +955,13 @@ namespace FStudyForum.Infrastructure.Migrations
 
                     b.Navigation("Comments");
 
-                    b.Navigation("SavedByUsers");
-
                     b.Navigation("Votes");
                 });
 
             modelBuilder.Entity("FStudyForum.Core.Models.Entities.Topic", b =>
                 {
+                    b.Navigation("BannedUser");
+
                     b.Navigation("Posts");
                 });
 #pragma warning restore 612, 618

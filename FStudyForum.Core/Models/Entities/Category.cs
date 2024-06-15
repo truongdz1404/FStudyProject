@@ -6,11 +6,12 @@ namespace FStudyForum.Core.Models.Entities;
 [Table("tblCategories")]
 public class Category : BaseEntity
 {
-    [MaxLength(255)]
+    [MaxLength(50)]
     public required string Name { get; set; }
+    [MaxLength(300)]
     public required string Description { get; set; }
     [MaxLength(50)]
     public required string Type { get; set; }
-    public virtual IEnumerable<Topic> Topics { get; set; } = new List<Topic>();
+    public virtual ICollection<Topic> Topics { get; set; } = new List<Topic>();
 
 }

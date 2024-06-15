@@ -5,9 +5,9 @@ import {
   Button,
   Input,
   Radio,
-  Textarea,
+  Textarea
 } from "@material-tailwind/react";
-import { Camera, CircleAlert } from "lucide-react";
+import { ArrowLeft, Camera, CircleAlert } from "lucide-react";
 import { useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { useAuth } from "@/hooks/useAuth";
@@ -15,12 +15,13 @@ import { PhoneRegExp } from "@/helpers/constants";
 import { AxiosError } from "axios";
 import { Response } from "@/types/response";
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import ProfileService from "@/services/ProfileService";
 import UserService from "@/services/UserService";
 import { signIn } from "@/contexts/auth/reduce";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { storage } from "@/helpers/storage";
+import { useQuery } from "@tanstack/react-query";
 const validation = Yup.object({
   firstName: Yup.string().required("First name is required"),
   lastName: Yup.string().required("Last name is required"),
@@ -28,7 +29,7 @@ const validation = Yup.object({
     .oneOf([0, 1, 2], "Invalid gender")
     .required("Gender is required"),
   avatar: Yup.string(),
-  phone: Yup.string().matches(PhoneRegExp, "Phone number is not valid"),
+  phone: Yup.string().matches(PhoneRegExp, "Phone number is not valid")
 });
 
 interface EditProfileInputs {
@@ -41,32 +42,40 @@ interface EditProfileInputs {
   bio?: string;
 }
 const metadata = {
-  contentType: "image/jpeg",
+  contentType: "image/jpeg"
 };
-const EditProfile = () => {
+const ProfileSettings = () => {
   const { user, dispatch } = useAuth();
   const [error, setError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
   const [avatar, setAvatar] = React.useState(user!.avatar);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
-
   const [file, setFile] = React.useState<File>();
   const navigate = useNavigate();
+
+  const { data: profile } = useQuery({
+    queryKey: [`profile-${user?.username}`],
+    queryFn: () => ProfileService.getByUsername(user!.username),
+    enabled: !!user
+  });
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors }
   } = useForm<EditProfileInputs>({
     mode: "onTouched",
-    defaultValues: {
-      firstName: user?.firstName,
-      lastName: user?.lastName,
-      gender: user?.gender,
-      phone: user?.phone,
-      bio: user?.bio,
-    },
-    resolver: yupResolver(validation),
+    defaultValues: React.useMemo(() => {
+      return {
+        firstName: profile?.firstName,
+        lastName: profile?.lastName,
+        gender: profile?.gender,
+        avatar: profile?.avatar,
+        phone: profile?.phone,
+        bio: profile?.bio
+      };
+    }, [profile]),
+    resolver: yupResolver(validation)
   });
 
   React.useEffect(() => {
@@ -97,13 +106,13 @@ const EditProfile = () => {
           lastName: form.lastName,
           gender: form.gender,
           avatar: url,
-          major: user.major,
+          major: form.marjor,
           phone: form.phone,
-          bio: form.bio,
+          bio: form.bio
         });
         const newUser = await UserService.getProfile();
         dispatch(signIn({ user: newUser }));
-        navigate("/profile");
+        navigate("/profile/" + user.username);
       } catch (e) {
         const error = e as AxiosError;
         setError((error?.response?.data as Response)?.message || error.message);
@@ -118,11 +127,11 @@ const EditProfile = () => {
       uploadTask.on(
         "state_changed",
         () => {},
-        (error) => {
+        error => {
           console.error(error);
         },
         () => {
-          getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
+          getDownloadURL(uploadTask.snapshot.ref).then(async downloadURL => {
             setFile(undefined);
             url = downloadURL;
             save();
@@ -136,7 +145,15 @@ const EditProfile = () => {
   return (
     <>
       <div className="mb-6">
-        <p className="text-xl font-semibold">Edit Profile</p>
+        <p className="text-md font-semibold flex gap-x-2 items-center">
+          <Link
+            to={`/profile/${user?.username}`}
+            className="rounded-full bg-blue-gray-50 hover:bg-blue-gray-100 p-2 -ml-10"
+          >
+            <ArrowLeft className="w-4 h-4" />
+          </Link>
+          Edit Profile
+        </p>
         <p className="text-xs text-gray-600 text-left">
           Tell us a bit about yourself to get started on our forum
         </p>
@@ -269,7 +286,7 @@ const EditProfile = () => {
             <Radio
               color="orange"
               label={<p className="text-sm">Male</p>}
-              defaultChecked={user?.gender == 0}
+              defaultChecked={profile?.gender == 0}
               crossOrigin={undefined}
               className="w-4 h-4"
               value={0}
@@ -278,7 +295,7 @@ const EditProfile = () => {
             />
             <Radio
               color="orange"
-              defaultChecked={user?.gender == 1}
+              defaultChecked={profile?.gender == 1}
               label={<p className="text-sm">Female</p>}
               crossOrigin={undefined}
               className="w-4 h-4"
@@ -288,7 +305,7 @@ const EditProfile = () => {
             />
             <Radio
               color="orange"
-              defaultChecked={user?.gender == 2}
+              defaultChecked={profile?.gender == 2}
               label={<p className="text-sm">Other</p>}
               crossOrigin={undefined}
               className="w-4 h-4"
@@ -332,4 +349,4 @@ const EditProfile = () => {
   );
 };
 
-export default EditProfile;
+export default ProfileSettings;

@@ -12,8 +12,8 @@ public class Post : BaseEntity
     public bool IsDeleted { get; set; } = false;
     public required virtual Topic Topic { get; set; }
     public required virtual ApplicationUser Creater { get; set; }
-    public virtual IEnumerable<Vote> Votes { get; set; } = new List<Vote>();
-    public virtual IEnumerable<Comment> Comments { get; set; } = new List<Comment>();
-    public virtual IEnumerable<Attachment> Attachments { get; set; } = new List<Attachment>();
-    public virtual IEnumerable<SavedPost> SavedByUsers { get; set; } = new List<SavedPost>();
+    public virtual ICollection<Vote> Votes { get; set; } = new List<Vote>();
+    public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
+    public virtual ICollection<Attachment> Attachments { get; set; } = new List<Attachment>();
+    public virtual ICollection<ApplicationUser> SavedByUsers { get; set; } = new List<ApplicationUser>();
 }
