@@ -8,7 +8,7 @@ import WelcomeGuard from "./helpers/guards/WelcomeGuard"
 import AuthLayout from "./components/layout/AuthLayout"
 import RoleBasedGuard from "./helpers/guards/RoleBasedGuard"
 import { Role } from "./helpers/constants"
-import { PostProvider } from "./contexts/posts/PostContext"
+import { PostProvider } from "./contexts/PostContext"
 
 const Popular = lazy(() => import("@/pages/popular"))
 const Memebers = lazy(() => import("@/pages/manager/members"))
@@ -47,11 +47,10 @@ const Router: FC = () => {
           path: "home",
           element: (
             <PostProvider>
-                <Suspense>
-                    <Home />
-                </Suspense>
+              <Suspense>
+                <Home />
+              </Suspense>
             </PostProvider>
-
           )
         },
         {

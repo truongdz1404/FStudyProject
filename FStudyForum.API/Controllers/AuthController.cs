@@ -160,7 +160,6 @@ public class AuthController : ControllerBase
                 Secure = true,
                 SameSite = SameSiteMode.Strict
             });
-
         const string refreshTokenPath = "/api/auth/refresh-token";
         context.Response.Cookies.Append(_jwtConfig.RefreshTokenKey, tokenDTO.RefreshToken,
             new CookieOptions

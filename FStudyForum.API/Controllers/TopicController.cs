@@ -67,8 +67,6 @@ namespace FStudyForum.API.Controllers
                 });
             }
         }
-
-
         [HttpGet("{id}")]
         public async Task<IActionResult> GetTopicById(long id)
         {
