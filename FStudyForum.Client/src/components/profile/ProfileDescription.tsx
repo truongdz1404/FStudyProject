@@ -1,19 +1,19 @@
-import { Profile } from "@/types/profile";
-import { Typography } from "@material-tailwind/react";
-import { FC } from "react";
+import { Profile } from "@/types/profile"
+import { Typography } from "@material-tailwind/react"
+import { FC } from "react"
 type ProfileDescriptionProps = {
-  profile: Profile;
-};
+  profile: Profile
+}
 const convertGenderToString = (gender: number) => {
   switch (gender) {
     case 0:
-      return "Male";
+      return "Male"
     case 1:
-      return "Female";
+      return "Female"
     default:
-      return "Other";
+      return "Other"
   }
-};
+}
 const ProfileDescription: FC<ProfileDescriptionProps> = ({ profile }) => {
   return (
     <div className="text-blue-gray-600">
@@ -53,7 +53,7 @@ const ProfileDescription: FC<ProfileDescriptionProps> = ({ profile }) => {
         </div>
       </Button> */}
     </div>
-  );
-};
+  )
+}
 
-export default ProfileDescription;
+export default ProfileDescription

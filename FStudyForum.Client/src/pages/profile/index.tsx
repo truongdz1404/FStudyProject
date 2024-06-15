@@ -1,41 +1,41 @@
-import ContentLayout from "@/components/layout/ContentLayout";
-import ProfileDescription from "@/components/profile/ProfileDescription";
-import { useAuth } from "@/hooks/useAuth";
-import ProfileService from "@/services/ProfileService";
-import { Profile as ProfileDTO } from "@/types/profile";
+import ContentLayout from "@/components/layout/ContentLayout"
+import ProfileDescription from "@/components/profile/ProfileDescription"
+import { useAuth } from "@/hooks/useAuth"
+import ProfileService from "@/services/ProfileService"
+import { Profile as ProfileDTO } from "@/types/profile"
 import {
   Accordion,
   AccordionBody,
   AccordionHeader,
   Avatar,
   Button,
-  Typography,
-} from "@material-tailwind/react";
-import { Camera, PencilLine, Plus } from "lucide-react";
-import React from "react";
-import { Link } from "react-router-dom";
+  Typography
+} from "@material-tailwind/react"
+import { Camera, PencilLine, Plus } from "lucide-react"
+import React from "react"
+import { Link } from "react-router-dom"
 const tabItems = [
   {
-    label: "Overview",
+    label: "Overview"
   },
   {
-    label: "Posts",
-  },
-];
+    label: "Posts"
+  }
+]
 const Profile = () => {
-  const [profile, setProfile] = React.useState<ProfileDTO>();
-  const { user } = useAuth();
+  const [profile, setProfile] = React.useState<ProfileDTO>()
+  const { user } = useAuth()
   React.useEffect(() => {
-    if (!user) return;
-    (async () => {
-      const profile = await ProfileService.getByUsername(user?.username);
-      setProfile(profile);
-    })();
-  }, [user]);
-  const [open, setOpen] = React.useState(0);
+    if (!user) return
+    ;(async () => {
+      const profile = await ProfileService.getByUsername(user?.username)
+      setProfile(profile)
+    })()
+  }, [user])
+  const [open, setOpen] = React.useState(0)
 
-  const handleOpen = (value: number) => setOpen(open === value ? 0 : value);
-  if (!profile) return <></>;
+  const handleOpen = (value: number) => setOpen(open === value ? 0 : value)
+  if (!profile) return <></>
   return (
     <ContentLayout pannel={<ProfileDescription profile={profile} />}>
       <div className="flex flex-col items-center w-full mb-24">
@@ -131,7 +131,7 @@ const Profile = () => {
         </Typography>
       </div>
     </ContentLayout>
-  );
-};
+  )
+}
 
-export default Profile;
+export default Profile

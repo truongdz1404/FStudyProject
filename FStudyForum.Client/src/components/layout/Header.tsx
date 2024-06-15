@@ -1,4 +1,4 @@
-import React from "react";
+import React from "react"
 import {
   Navbar,
   Collapse,
@@ -10,8 +10,8 @@ import {
   Avatar,
   IconButton,
   Input,
-  Typography,
-} from "@material-tailwind/react";
+  Typography
+} from "@material-tailwind/react"
 import {
   PowerIcon,
   Search,
@@ -19,34 +19,34 @@ import {
   AlignJustify,
   Plus,
   Bell,
-  ChevronUp,
-} from "lucide-react";
-import { cn } from "@/helpers/utils";
-import { Link, useNavigate } from "react-router-dom";
-import { Icons } from "../Icons";
-import { useAuth } from "@/hooks/useAuth";
+  ChevronUp
+} from "lucide-react"
+import { cn } from "@/helpers/utils"
+import { Link, useNavigate } from "react-router-dom"
+import { Icons } from "../Icons"
+import { useAuth } from "@/hooks/useAuth"
 
 const profileMenuItems = [
   {
     label: "My Profile",
     icon: UserCircleIcon,
-    path: "/profile",
+    path: "/profile"
   },
   {
     label: "Sign Out",
     icon: PowerIcon,
-    path: "/auth/signout",
-  },
-];
+    path: "/auth/signout"
+  }
+]
 
 function ProfileMenu() {
-  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-  const navigate = useNavigate();
-  const { user } = useAuth();
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false)
+  const navigate = useNavigate()
+  const { user } = useAuth()
   const handleNavigate = (path: string) => {
-    navigate(path);
-    setIsMenuOpen(false);
-  };
+    navigate(path)
+    setIsMenuOpen(false)
+  }
 
   return (
     <Menu open={isMenuOpen} handler={setIsMenuOpen} placement="bottom-end">
@@ -67,7 +67,7 @@ function ProfileMenu() {
       </MenuHandler>
       <MenuList className="p-1">
         {profileMenuItems.map(({ label, icon, path }, key) => {
-          const isLastItem = key === profileMenuItems.length - 1;
+          const isLastItem = key === profileMenuItems.length - 1
           return (
             <MenuItem
               key={label}
@@ -79,7 +79,7 @@ function ProfileMenu() {
             >
               {React.createElement(icon, {
                 className: `h-4 w-4 ${isLastItem ? "text-red-500" : ""}`,
-                strokeWidth: 2,
+                strokeWidth: 2
               })}
               <Typography
                 as={"span"}
@@ -91,11 +91,11 @@ function ProfileMenu() {
                 {label}
               </Typography>
             </MenuItem>
-          );
+          )
         })}
       </MenuList>
     </Menu>
-  );
+  )
 }
 
 const navListItems = [
@@ -103,15 +103,15 @@ const navListItems = [
     label: "Create",
     icon: Plus,
     showLabel: true,
-    path: "/create",
+    path: "/create"
   },
   {
     label: "Notification",
     icon: Bell,
     showLabel: false,
-    path: "/notification",
-  },
-];
+    path: "/notification"
+  }
+]
 
 function NavList() {
   return (
@@ -131,21 +131,21 @@ function NavList() {
         </Link>
       ))}
     </div>
-  );
+  )
 }
 type HeaderProps = {
-  openSidebar: () => void;
-};
+  openSidebar: () => void
+}
 const Header = React.memo(({ openSidebar }: HeaderProps) => {
-  const [isNavOpen, setIsNavOpen] = React.useState(false);
-  const toggleIsNavOpen = () => setIsNavOpen((cur) => !cur);
+  const [isNavOpen, setIsNavOpen] = React.useState(false)
+  const toggleIsNavOpen = () => setIsNavOpen(cur => !cur)
 
   React.useEffect(() => {
     window.addEventListener(
       "resize",
       () => window.innerWidth >= 960 && setIsNavOpen(false)
-    );
-  }, []);
+    )
+  }, [])
 
   return (
     <Navbar className="max-w-screen-3xl rounded-none p-1 shadow-sm ">
@@ -174,7 +174,7 @@ const Header = React.memo(({ openSidebar }: HeaderProps) => {
           <Input
             icon={<Search className="h-5 w-5" />}
             labelProps={{
-              className: "hidden",
+              className: "hidden"
             }}
             containerProps={{ className: "min-w-full" }}
             crossOrigin={undefined}
@@ -208,7 +208,7 @@ const Header = React.memo(({ openSidebar }: HeaderProps) => {
         <NavList />
       </Collapse>
     </Navbar>
-  );
-});
+  )
+})
 
-export default Header;
+export default Header

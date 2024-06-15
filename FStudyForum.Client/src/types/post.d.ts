@@ -1,7 +1,7 @@
-import { Comment } from './comment';
+import { Comment } from "./comment"
 export interface Post {
-    title: string;
-    content: string;
-    IsDeleted : boolean;
-    comments: Comment[];
+  title: string
+  content: string
+  IsDeleted: boolean
+  comments: Comment[]
 }

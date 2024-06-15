@@ -1,29 +1,29 @@
-import { Ellipsis, Flag, Save } from "lucide-react";
-import React from "react";
+import { Ellipsis, Flag, Save } from "lucide-react"
+import React from "react"
 import {
   Button,
   Menu,
   MenuHandler,
   MenuList,
   MenuItem,
-  Typography,
-} from "@material-tailwind/react";
-import { cn } from "@/helpers/utils";
+  Typography
+} from "@material-tailwind/react"
+import { cn } from "@/helpers/utils"
 const MenuItemPost = () => {
-  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false)
 
   const PostItem = [
     {
       icon: Save,
       label: "Save",
-      path: "/save",
+      path: "/save"
     },
     {
       icon: Flag,
       label: "Report",
-      path: "/report",
-    },
-  ];
+      path: "/report"
+    }
+  ]
   return (
     <Menu open={isMenuOpen} handler={setIsMenuOpen} placement="bottom-end">
       <MenuHandler>
@@ -37,7 +37,7 @@ const MenuItemPost = () => {
       </MenuHandler>
       <MenuList className="p-1">
         {PostItem.map(({ label, icon }, key) => {
-          const isLastItem = key === PostItem.length - 1;
+          const isLastItem = key === PostItem.length - 1
           return (
             <MenuItem
               key={label}
@@ -48,7 +48,7 @@ const MenuItemPost = () => {
             >
               {React.createElement(icon, {
                 className: `h-4 w-4 ${isLastItem ? "text-red-500" : ""}`,
-                strokeWidth: 2,
+                strokeWidth: 2
               })}
               <Typography
                 as={"span"}
@@ -60,10 +60,10 @@ const MenuItemPost = () => {
                 {label}
               </Typography>
             </MenuItem>
-          );
+          )
         })}
       </MenuList>
     </Menu>
-  );
-};
-export default MenuItemPost;
+  )
+}
+export default MenuItemPost

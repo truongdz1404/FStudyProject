@@ -1,31 +1,31 @@
-import { FC, Suspense, lazy } from "react";
-import { Navigate, Outlet, useRoutes } from "react-router-dom";
+import { FC, Suspense, lazy } from "react"
+import { Navigate, Outlet, useRoutes } from "react-router-dom"
 
-import AuthGuard from "@/helpers/guards/AuthGuard";
-import NotFound from "@/components/NotFound";
-import Layout from "@/components/layout/Layout";
-import WelcomeGuard from "./helpers/guards/WelcomeGuard";
-import AuthLayout from "./components/layout/AuthLayout";
-import RoleBasedGuard from "./helpers/guards/RoleBasedGuard";
-import { Role } from "./helpers/constants";
+import AuthGuard from "@/helpers/guards/AuthGuard"
+import NotFound from "@/components/NotFound"
+import Layout from "@/components/layout/Layout"
+import WelcomeGuard from "./helpers/guards/WelcomeGuard"
+import AuthLayout from "./components/layout/AuthLayout"
+import RoleBasedGuard from "./helpers/guards/RoleBasedGuard"
+import { Role } from "./helpers/constants"
 
-const Popular = lazy(() => import("@/pages/popular"));
-const Memebers = lazy(() => import("@/pages/manager/members"));
-const Welcome = lazy(() => import("@/pages/welcome"));
-const Register = lazy(() => import("@/pages/auth/register"));
-const ConfirmEmail = lazy(() => import("@/pages/auth/confirm-email"));
+const Popular = lazy(() => import("@/pages/popular"))
+const Memebers = lazy(() => import("@/pages/manager/members"))
+const Welcome = lazy(() => import("@/pages/welcome"))
+const Register = lazy(() => import("@/pages/auth/register"))
+const ConfirmEmail = lazy(() => import("@/pages/auth/confirm-email"))
 const ChangePassword = lazy(
   () => import("@/pages/auth/reset-password/change-password")
-);
-const TopcicManager = lazy(() => import("@/pages/manager/topics"));
-const ResetPassword = lazy(() => import("@/pages/auth/reset-password"));
-const Profile = lazy(() => import("@/pages/profile"));
-const EditProfile = lazy(() => import("@/pages/profile/edit"));
-const SignIn = lazy(() => import("@/pages/auth/signin"));
-const Home = lazy(() => import("@/pages/home"));
-const TopicDetail = lazy(() => import("@/pages/topic/detail"));
-const Topic = lazy(() => import("@/pages/topic"));
-const SignOut = lazy(() => import("@/pages/auth/signout"));
+)
+const TopcicManager = lazy(() => import("@/pages/manager/topics"))
+const ResetPassword = lazy(() => import("@/pages/auth/reset-password"))
+const Profile = lazy(() => import("@/pages/profile"))
+const EditProfile = lazy(() => import("@/pages/profile/edit"))
+const SignIn = lazy(() => import("@/pages/auth/signin"))
+const Home = lazy(() => import("@/pages/home"))
+const TopicDetail = lazy(() => import("@/pages/topic/detail"))
+const Topic = lazy(() => import("@/pages/topic"))
+const SignOut = lazy(() => import("@/pages/auth/signout"))
 const Router: FC = () => {
   return useRoutes([
     {
@@ -40,7 +40,7 @@ const Router: FC = () => {
       children: [
         {
           index: true,
-          element: <Navigate to="/home" replace />,
+          element: <Navigate to="/home" replace />
         },
         {
           path: "home",
@@ -48,7 +48,7 @@ const Router: FC = () => {
             <Suspense>
               <Home />
             </Suspense>
-          ),
+          )
         },
         {
           path: "popular",
@@ -56,7 +56,7 @@ const Router: FC = () => {
             <Suspense>
               <Popular />
             </Suspense>
-          ),
+          )
         },
         {
           path: "topics",
@@ -64,7 +64,7 @@ const Router: FC = () => {
             <Suspense>
               <Topic />
             </Suspense>
-          ),
+          )
         },
         {
           path: "manager",
@@ -80,7 +80,7 @@ const Router: FC = () => {
                 <Suspense>
                   <Memebers />
                 </Suspense>
-              ),
+              )
             },
             {
               path: "analytics",
@@ -88,7 +88,7 @@ const Router: FC = () => {
                 <Suspense>
                   <>Analytics</>
                 </Suspense>
-              ),
+              )
             },
             {
               path: "topics",
@@ -96,9 +96,9 @@ const Router: FC = () => {
                 <Suspense>
                   <TopcicManager />
                 </Suspense>
-              ),
-            },
-          ],
+              )
+            }
+          ]
         },
         {
           path: "topic/detail/:id",
@@ -106,7 +106,7 @@ const Router: FC = () => {
             <Suspense>
               <TopicDetail />
             </Suspense>
-          ),
+          )
         },
         {
           path: "profile",
@@ -117,7 +117,7 @@ const Router: FC = () => {
                 <Suspense>
                   <Profile />
                 </Suspense>
-              ),
+              )
             },
             {
               path: "edit",
@@ -125,11 +125,11 @@ const Router: FC = () => {
                 <Suspense>
                   <EditProfile />
                 </Suspense>
-              ),
-            },
-          ],
-        },
-      ],
+              )
+            }
+          ]
+        }
+      ]
     },
     {
       path: "/",
@@ -145,9 +145,9 @@ const Router: FC = () => {
             <Suspense>
               <Welcome />
             </Suspense>
-          ),
-        },
-      ],
+          )
+        }
+      ]
     },
 
     {
@@ -160,7 +160,7 @@ const Router: FC = () => {
             <Suspense>
               <SignIn />
             </Suspense>
-          ),
+          )
         },
         {
           path: "signout",
@@ -168,7 +168,7 @@ const Router: FC = () => {
             <Suspense>
               <SignOut />
             </Suspense>
-          ),
+          )
         },
         {
           path: "register",
@@ -176,7 +176,7 @@ const Router: FC = () => {
             <Suspense>
               <Register />
             </Suspense>
-          ),
+          )
         },
         {
           path: "reset-password",
@@ -187,7 +187,7 @@ const Router: FC = () => {
                 <Suspense>
                   <ChangePassword />
                 </Suspense>
-              ),
+              )
             },
             {
               index: true,
@@ -195,9 +195,9 @@ const Router: FC = () => {
                 <Suspense>
                   <ResetPassword />
                 </Suspense>
-              ),
-            },
-          ],
+              )
+            }
+          ]
         },
         {
           path: "confirm-email",
@@ -205,16 +205,16 @@ const Router: FC = () => {
             <Suspense>
               <ConfirmEmail />
             </Suspense>
-          ),
-        },
-      ],
+          )
+        }
+      ]
     },
 
     {
       path: "*",
-      element: <NotFound />,
-    },
-  ]);
-};
+      element: <NotFound />
+    }
+  ])
+}
 
-export default Router;
+export default Router

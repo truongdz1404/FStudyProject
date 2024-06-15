@@ -1,5 +1,5 @@
-import UserService from "@/services/UserService";
-import { User } from "@/types/user";
+import UserService from "@/services/UserService"
+import { User } from "@/types/user"
 import {
   Card,
   CardHeader,
@@ -13,47 +13,47 @@ import {
   Tab,
   Avatar,
   IconButton,
-  Tooltip,
-} from "@material-tailwind/react";
-import { ChevronsUpDown, Pencil, Plus, Search } from "lucide-react";
-import React from "react";
+  Tooltip
+} from "@material-tailwind/react"
+import { ChevronsUpDown, Pencil, Plus, Search } from "lucide-react"
+import React from "react"
 
 const tabs = [
   {
     label: "All",
-    value: "all",
+    value: "all"
   },
   {
     label: "Monitored",
-    value: "monitored",
+    value: "monitored"
   },
   {
     label: "Unmonitored",
-    value: "unmonitored",
-  },
-];
+    value: "unmonitored"
+  }
+]
 
-const tableHead = ["Member", "Role", "Action"];
+const tableHead = ["Member", "Role", "Action"]
 
 const Members = () => {
-  const [loading, setLoading] = React.useState(false);
-  const [users, setUsers] = React.useState<User[]>([]);
+  const [loading, setLoading] = React.useState(false)
+  const [users, setUsers] = React.useState<User[]>([])
   React.useEffect(() => {
     const fetchTopics = async () => {
-      setLoading(true);
+      setLoading(true)
       try {
-        const paginatedUsers = await UserService.getAll();
+        const paginatedUsers = await UserService.getAll()
         // console.log(paginatedUsers.data);
 
-        setUsers(paginatedUsers.data);
+        setUsers(paginatedUsers.data)
       } catch (error) {
-        console.error(error);
+        console.error(error)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
-    fetchTopics();
-  }, []);
+    }
+    fetchTopics()
+  }, [])
   return (
     <Card className="h-full w-full">
       <CardHeader floated={false} shadow={false} className="rounded-none">
@@ -116,10 +116,10 @@ const Members = () => {
           </thead>
           <tbody>
             {users.map(({ avatar, username, roles }, index) => {
-              const isLast = index === users.length - 1;
+              const isLast = index === users.length - 1
               const classes = isLast
                 ? "p-4"
-                : "p-4 border-b border-blue-gray-50";
+                : "p-4 border-b border-blue-gray-50"
 
               return (
                 <tr key={username}>
@@ -155,7 +155,7 @@ const Members = () => {
                     </Tooltip>
                   </td>
                 </tr>
-              );
+              )
             })}
           </tbody>
         </table>
@@ -174,6 +174,6 @@ const Members = () => {
         </div>
       </CardFooter>
     </Card>
-  );
-};
-export default Members;
+  )
+}
+export default Members

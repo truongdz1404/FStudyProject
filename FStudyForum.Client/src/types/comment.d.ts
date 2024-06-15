@@ -1,5 +1,5 @@
-import { Creater } from './creater';
+import { Creater } from "./creater"
 export interface Comment {
-    content: string;
-    creater: Creater;   
+  content: string
+  creater: Creater
 }

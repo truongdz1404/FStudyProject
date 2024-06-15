@@ -1,10 +1,10 @@
-import { FC } from "react";
-import Panel from "./Panel";
+import { FC } from "react"
+import Panel from "./Panel"
 
 type PageLayoutProps = {
-  pannel?: React.ReactNode;
-  children: React.ReactNode;
-};
+  pannel?: React.ReactNode
+  children: React.ReactNode
+}
 
 const ContentLayout: FC<PageLayoutProps> = ({ pannel, children }) => {
   return (
@@ -16,7 +16,7 @@ const ContentLayout: FC<PageLayoutProps> = ({ pannel, children }) => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default ContentLayout;
+export default ContentLayout

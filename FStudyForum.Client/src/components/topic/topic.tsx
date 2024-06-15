@@ -1,57 +1,57 @@
-import React, { useState } from "react";
+import React, { useState } from "react"
 import {
   Card,
   CardBody,
   CardFooter,
   Typography,
-  Button,
-} from "@material-tailwind/react";
-import { Link } from "react-router-dom";
-import type { Topic as TopicType } from "@/types/topic";
-import UpdateTopicPopup from "@/components/topic/popup/UpdateTopicPopup";
-import DeleteTopicPopup from "@/components/topic/popup/DeleteTopicPopup";
-import TopicService from "@/services/TopicService";
-import { Pencil, Trash } from "lucide-react";
+  Button
+} from "@material-tailwind/react"
+import { Link } from "react-router-dom"
+import type { Topic as TopicType } from "@/types/topic"
+import UpdateTopicPopup from "@/components/topic/popup/UpdateTopicPopup"
+import DeleteTopicPopup from "@/components/topic/popup/DeleteTopicPopup"
+import TopicService from "@/services/TopicService"
+import { Pencil, Trash } from "lucide-react"
 
 interface TopicProps {
-  topic: TopicType;
-  onTopicDeleted: (id: number) => void;
-  onTopicUpdated: () => void;
+  topic: TopicType
+  onTopicDeleted: (id: number) => void
+  onTopicUpdated: () => void
 }
 
 const TopicCard: React.FC<TopicProps> = ({
   topic,
   onTopicDeleted,
-  onTopicUpdated,
+  onTopicUpdated
 }) => {
-  const [isUpdatePopupOpen, setIsUpdatePopupOpen] = useState(false);
-  const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
+  const [isUpdatePopupOpen, setIsUpdatePopupOpen] = useState(false)
+  const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false)
 
   const handleEditClick = () => {
-    setIsUpdatePopupOpen(true);
-  };
+    setIsUpdatePopupOpen(true)
+  }
 
   const handleCloseUpdatePopup = () => {
-    setIsUpdatePopupOpen(false);
-  };
+    setIsUpdatePopupOpen(false)
+  }
 
   const handleDeleteClick = () => {
-    setIsDeletePopupOpen(true);
-  };
+    setIsDeletePopupOpen(true)
+  }
 
   const handleDeleteConfirm = async () => {
     try {
-      await TopicService.Delete(topic.id);
-      onTopicDeleted(topic.id);
-      setIsDeletePopupOpen(false);
+      await TopicService.Delete(topic.id)
+      onTopicDeleted(topic.id)
+      setIsDeletePopupOpen(false)
     } catch (error) {
-      console.error("Error deleting topic:", error);
+      console.error("Error deleting topic:", error)
     }
-  };
+  }
 
   const handleCloseDeletePopup = () => {
-    setIsDeletePopupOpen(false);
-  };
+    setIsDeletePopupOpen(false)
+  }
 
   return (
     <>
@@ -94,7 +94,7 @@ const TopicCard: React.FC<TopicProps> = ({
         />
       )}
     </>
-  );
-};
+  )
+}
 
-export default TopicCard;
+export default TopicCard

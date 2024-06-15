@@ -1,68 +1,68 @@
-import axios from "axios";
-import AuthService from "./AuthService";
+import axios from "axios"
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
-  withCredentials: true,
-});
+  headers: { "Content-Type": "application/json" },
+  withCredentials: true
+})
 
-let isRefreshing = false;
+let isRefreshing = false
 let failedQueue: {
-  resolve: (value?: unknown) => void;
-  reject: (reason?: unknown) => void;
-}[] = [];
+  resolve: (value?: unknown) => void
+  reject: (reason?: unknown) => void
+}[] = []
 
 const processQueue = (error: unknown) => {
-  failedQueue.forEach((prom) => {
+  failedQueue.forEach(prom => {
     if (error) {
-      prom.reject(error);
+      prom.reject(error)
     } else {
-      prom.resolve();
+      prom.resolve()
     }
-  });
-  failedQueue = [];
-};
+  })
+  failedQueue = []
+}
 const refreshToken = async () => {
   try {
-    await AuthService.refreshToken();
-    processQueue(null);
+    await api.get<Response>("/auth/refresh-token")
+    processQueue(null)
   } catch (error) {
-    processQueue(error);
-    throw error;
+    processQueue(error)
+    throw error
   }
-};
+}
 
 const getNewToken = async () => {
   if (!isRefreshing) {
-    isRefreshing = true;
-    await refreshToken();
-    isRefreshing = false;
-    return;
+    isRefreshing = true
+    await refreshToken()
+    isRefreshing = false
+    return
   }
   return new Promise((resolve, reject) => {
-    failedQueue.push({ resolve, reject });
-  });
-};
+    failedQueue.push({ resolve, reject })
+  })
+}
 
 api.interceptors.response.use(
-  (response) => {
-    return response;
+  response => {
+    return response
   },
-  async (error) => {
-    const { response, config } = error;
-    const status = response?.status;
-    const shouldRenewToken = status === 401 && !config._retry;
+  async error => {
+    const { response, config } = error
+    const status = response?.status
+    const shouldRenewToken = status === 401 && !config._retry
     if (shouldRenewToken) {
-      config._retry = true;
+      config._retry = true
       try {
-        await getNewToken();
-        return axios(config);
+        await getNewToken()
+        return axios(config)
       } catch (error) {
-        return Promise.reject(error);
+        return Promise.reject(error)
       }
     }
-    return Promise.reject(error);
+    return Promise.reject(error)
   }
-);
+)
 
-export default api;
+export default api

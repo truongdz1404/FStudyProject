@@ -1,82 +1,103 @@
-import React, { useState, useEffect } from "react";
-import { Alert } from "@material-tailwind/react"; 
-import { CreateTopicDTO } from "@/types/topic"; 
-import TopicService from "@/services/TopicService";
+import React, { useState, useEffect } from "react"
+import { Alert } from "@material-tailwind/react"
+import { CreateTopicDTO } from "@/types/topic"
+import TopicService from "@/services/TopicService"
 
 interface AddTopicPopupProps {
-  onClose: () => void;
-  onTopicCreated: () => void; 
+  onClose: () => void
+  onTopicCreated: () => void
 }
 
-const AddTopicPopup: React.FC<AddTopicPopupProps> = ({ onClose, onTopicCreated }) => {
-  const [topicName, setTopicName] = useState("");
-  const [description, setDescription] = useState("");
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]); 
-  const [error, setError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+const AddTopicPopup: React.FC<AddTopicPopupProps> = ({
+  onClose,
+  onTopicCreated
+}) => {
+  const [topicName, setTopicName] = useState("")
+  const [description, setDescription] = useState("")
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
+  const [error, setError] = useState<string | null>(null)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
   const handleAddTopic = async () => {
     try {
       const newTopic: CreateTopicDTO = {
         name: topicName,
         description,
-        categories: selectedCategories.map(category => parseInt(category)), 
-      };
+        categories: selectedCategories.map(category => parseInt(category))
+      }
 
-      await TopicService.create(newTopic);
-      setTopicName("");
-      setDescription("");
-      setSelectedCategories([]);
-      onClose();
-      onTopicCreated();
+      await TopicService.create(newTopic)
+      setTopicName("")
+      setDescription("")
+      setSelectedCategories([])
+      onClose()
+      onTopicCreated()
     } catch (error) {
-      console.error("Error creating topic:", error);
-      setError("Error creating topic. Please try again later.");
+      console.error("Error creating topic:", error)
+      setError("Error creating topic. Please try again later.")
     }
-  };
+  }
 
   useEffect(() => {
     if (successMessage) {
       const timeout = setTimeout(() => {
-        setSuccessMessage(null);
-      }, 3000);
+        setSuccessMessage(null)
+      }, 3000)
 
-      return () => clearTimeout(timeout);
+      return () => clearTimeout(timeout)
     }
-  }, [successMessage]);
+  }, [successMessage])
 
   return (
     <div className="fixed top-0 left-0 w-full h-full bg-gray-700 bg-opacity-50 flex justify-center items-center">
       <div className="bg-white p-8 rounded-md w-96">
         <h2 className="text-xl font-bold mb-4">Add Topic</h2>
-        {error && <Alert color="red" className="mb-4">{error}</Alert>}
-        {successMessage && <Alert color="green" className="mb-4">{successMessage}</Alert>}
+        {error && (
+          <Alert color="red" className="mb-4">
+            {error}
+          </Alert>
+        )}
+        {successMessage && (
+          <Alert color="green" className="mb-4">
+            {successMessage}
+          </Alert>
+        )}
         <div className="mb-4">
-          <label htmlFor="topicName" className="block font-bold mb-1">Topic Name:</label>
+          <label htmlFor="topicName" className="block font-bold mb-1">
+            Topic Name:
+          </label>
           <input
             type="text"
             id="topicName"
             value={topicName}
-            onChange={(e) => setTopicName(e.target.value)}
+            onChange={e => setTopicName(e.target.value)}
             className="border border-gray-300 rounded px-2 py-1 w-full"
           />
         </div>
         <div className="mb-4">
-          <label htmlFor="description" className="block font-bold mb-1">Description:</label>
+          <label htmlFor="description" className="block font-bold mb-1">
+            Description:
+          </label>
           <textarea
             id="description"
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={e => setDescription(e.target.value)}
             className="border border-gray-300 rounded px-2 py-1 w-full h-24 resize-none"
           ></textarea>
         </div>
         <div className="mb-4">
-          <label htmlFor="categories" className="block font-bold mb-1">Categories:</label>
+          <label htmlFor="categories" className="block font-bold mb-1">
+            Categories:
+          </label>
           <select
             id="categories"
             value={selectedCategories}
-            onChange={(e) => setSelectedCategories(Array.from(e.target.selectedOptions, option => option.value))}
-            className="border border-gray-300 rounded px-2 py-1 w-full" 
+            onChange={e =>
+              setSelectedCategories(
+                Array.from(e.target.selectedOptions, option => option.value)
+              )
+            }
+            className="border border-gray-300 rounded px-2 py-1 w-full"
           >
             <option value="1">Semester 1</option>
             <option value="2">Semester 2</option>
@@ -106,7 +127,7 @@ const AddTopicPopup: React.FC<AddTopicPopupProps> = ({ onClose, onTopicCreated }
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default AddTopicPopup;
+export default AddTopicPopup

@@ -1,81 +1,81 @@
-import { signIn } from "@/contexts/auth/reduce";
-import { useAuth } from "@/hooks/useAuth";
-import AuthService from "@/services/AuthService";
-import UserService from "@/services/UserService";
-import { Link, useNavigate } from "react-router-dom";
-import { FC } from "react";
-import * as Yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { useForm } from "react-hook-form";
-import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
-import { checkEmail, cn } from "@/helpers/utils";
-import { AxiosError } from "axios";
-import { Button, Input } from "@material-tailwind/react";
-import { Icons } from "@/components/Icons";
-import React from "react";
-import { Response } from "@/types/response";
-import { CircleAlert } from "lucide-react";
+import { signIn } from "@/contexts/auth/reduce"
+import { useAuth } from "@/hooks/useAuth"
+import AuthService from "@/services/AuthService"
+import UserService from "@/services/UserService"
+import { Link, useNavigate } from "react-router-dom"
+import { FC } from "react"
+import * as Yup from "yup"
+import { yupResolver } from "@hookform/resolvers/yup"
+import { useForm } from "react-hook-form"
+import { CredentialResponse, GoogleLogin } from "@react-oauth/google"
+import { checkEmail, cn } from "@/helpers/utils"
+import { AxiosError } from "axios"
+import { Button, Input } from "@material-tailwind/react"
+import { Icons } from "@/components/Icons"
+import React from "react"
+import { Response } from "@/types/response"
+import { CircleAlert } from "lucide-react"
+import { useMutation } from "@tanstack/react-query"
 type LoginFormsInputs = {
-  username: string;
-  password: string;
-};
+  username: string
+  password: string
+}
 
 const validation = Yup.object().shape({
   username: Yup.string()
     .required("Username is required")
-    .test("is-mailFPT", "Username must have @fpt.edu.vn", (value) => {
-      return checkEmail(value);
+    .test("is-mailFPT", "Username must have @fpt.edu.vn", value => {
+      return checkEmail(value)
     }),
-  password: Yup.string().required("Password is required"),
-});
+  password: Yup.string().required("Password is required")
+})
 
 const SignIn: FC = () => {
-  const { dispatch } = useAuth();
-  const navigate = useNavigate();
-  const [error, setError] = React.useState("");
-  const [loading, setLoading] = React.useState(false);
+  const { dispatch } = useAuth()
+  const navigate = useNavigate()
+  const [error, setError] = React.useState("")
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors }
   } = useForm<LoginFormsInputs>({
     mode: "onTouched",
-    resolver: yupResolver(validation),
-  });
+    resolver: yupResolver(validation)
+  })
 
-  const handleLogin = async (form: LoginFormsInputs) => {
-    try {
-      setError("");
-      setLoading(true);
-      await AuthService.login(form.username, form.password);
-      const user = await UserService.getProfile();
-      dispatch(signIn({ user }));
-      navigate("/");
-    } catch (e) {
-      const error = e as AxiosError;
-      setError((error?.response?.data as Response)?.message || error.message);
-    } finally {
-      setLoading(false);
+  const { mutate: handleLogin, isPending: pending } = useMutation({
+    mutationFn: async (form: LoginFormsInputs) => {
+      await AuthService.register(form.username, form.password)
+    },
+    onSuccess: async () => {
+      const user = await UserService.getProfile()
+      dispatch(signIn({ user }))
+      navigate("/")
+    },
+    onError: e => {
+      const error = e as AxiosError
+      setError((error?.response?.data as Response)?.message || error.message)
     }
-  };
+  })
 
-  const handleGoogleLogin = async (response: CredentialResponse) => {
-    try {
-      setError("");
-      setLoading(true);
-      const idToken = response.credential;
-      if (!idToken) return;
-      await AuthService.loginGoogle(idToken);
-      const user = await UserService.getProfile();
-      dispatch(signIn({ user }));
-      navigate("/");
-    } catch (e) {
-      const error = e as AxiosError;
-      setError((error?.response?.data as Response)?.message || error.message);
-    } finally {
-      setLoading(false);
+  const { mutate: handleGoogleLogin, isPending: googlePending } = useMutation({
+    mutationFn: async (response: CredentialResponse) => {
+      const idToken = response.credential
+      if (!idToken) return
+      await AuthService.loginGoogle(idToken)
+    },
+    onSuccess: async () => {
+      const user = await UserService.getProfile()
+      dispatch(signIn({ user }))
+      navigate("/")
+    },
+    onError: e => {
+      const error = e as AxiosError
+      setError((error?.response?.data as Response)?.message || error.message)
     }
-  };
+  })
+
+  const isPending = pending || googlePending
 
   return (
     <>
@@ -84,7 +84,10 @@ const SignIn: FC = () => {
         <span className="font-bold text-lg">Login</span>
       </div>
 
-      <form onSubmit={handleSubmit(handleLogin)} className="space-y-4">
+      <form
+        onSubmit={handleSubmit(form => handleLogin(form))}
+        className="space-y-4"
+      >
         <div>
           <label htmlFor="username" className="block text-sm m-1 text-gray-700">
             Username
@@ -101,7 +104,7 @@ const SignIn: FC = () => {
             )}
             labelProps={{ className: "hidden" }}
             crossOrigin={undefined}
-            disabled={loading}
+            disabled={isPending}
             {...register("username")}
           />
 
@@ -131,7 +134,7 @@ const SignIn: FC = () => {
             )}
             labelProps={{ className: "hidden" }}
             crossOrigin={undefined}
-            disabled={loading}
+            disabled={isPending}
             {...register("password")}
           />
           {errors.password && (
@@ -158,7 +161,7 @@ const SignIn: FC = () => {
           type="submit"
           className="mt-6 text-sm normal-case"
           fullWidth
-          disabled={loading}
+          disabled={isPending}
           variant="gradient"
           color="deep-orange"
         >
@@ -190,12 +193,12 @@ const SignIn: FC = () => {
         <GoogleLogin
           onSuccess={handleGoogleLogin}
           onError={() => {
-            console.log("Login Failed");
+            console.log("Login Failed")
           }}
           width={"120"}
         />
       </div>
     </>
-  );
-};
-export default SignIn;
+  )
+}
+export default SignIn

@@ -1,68 +1,68 @@
-import { useEffect, useRef, useState } from "react";
-import { MessageSquare, Share, ArrowUp, ArrowDown, Award } from "lucide-react";
-import { Post } from "@/types/post";
-import PostService from "@/services/PostService";
-import { Profile } from "@/types/profile";
-import ProfileService from "@/services/ProfileService";
-import MenuItemPost from "@/components/post/MenuItem";
-import { AxiosError } from "axios";
-import ContentLayout from "@/components/layout/ContentLayout";
+import { useEffect, useRef, useState } from "react"
+import { MessageSquare, Share, ArrowUp, ArrowDown, Award } from "lucide-react"
+import { Post } from "@/types/post"
+import PostService from "@/services/PostService"
+import { Profile } from "@/types/profile"
+import ProfileService from "@/services/ProfileService"
+import MenuItemPost from "@/components/post/MenuItem"
+import { AxiosError } from "axios"
+import ContentLayout from "@/components/layout/ContentLayout"
 const Home: React.FC = () => {
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-  const [profiles, setProfiles] = useState<{ [key: string]: Profile }>({});
-  const observer = useRef<IntersectionObserver | null>(null);
+  const [posts, setPosts] = useState<Post[]>([])
+  const [page, setPage] = useState(1)
+  const [hasMore, setHasMore] = useState(true)
+  const [profiles, setProfiles] = useState<{ [key: string]: Profile }>({})
+  const observer = useRef<IntersectionObserver | null>(null)
   const lastPostElementRef = (node: HTMLElement | null) => {
-    if (observer.current) observer.current.disconnect();
-    observer.current = new IntersectionObserver((entries) => {
+    if (observer.current) observer.current.disconnect()
+    observer.current = new IntersectionObserver(entries => {
       if (entries[0].isIntersecting && hasMore) {
-        setPage((prevPage) => prevPage + 1);
+        setPage(prevPage => prevPage + 1)
       }
-    });
-    if (node) observer.current.observe(node);
-  };
+    })
+    if (node) observer.current.observe(node)
+  }
 
   useEffect(() => {
     const fetchPosts = async () => {
-      if (!hasMore) return;
+      if (!hasMore) return
       try {
-        const response = await PostService.getPosts(page);
-        setPosts((prevPosts) => [...prevPosts, ...response.data]);
-        if (response.data.length === 0) {
-          setHasMore(false);
+        const posts = await PostService.getPosts(page)
+        setPosts(prevPosts => [...prevPosts, ...posts])
+        if (posts.length === 0) {
+          setHasMore(false)
         }
       } catch (error) {
         if (error instanceof AxiosError) {
-          setHasMore(false);
+          setHasMore(false)
         }
       }
-    };
-    fetchPosts();
-  }, [page, hasMore]);
+    }
+    fetchPosts()
+  }, [page, hasMore])
 
   useEffect(() => {
     const getProfile = async (userName: string) => {
       if (!profiles[userName]) {
         try {
-          const response = await ProfileService.getByUsername(userName);
-          setProfiles((prevProfiles) => ({
+          const response = await ProfileService.getByUsername(userName)
+          setProfiles(prevProfiles => ({
             ...prevProfiles,
-            [userName]: response,
-          }));
+            [userName]: response
+          }))
         } catch (error) {
-          console.error("Error fetching profile:", error);
+          console.error("Error fetching profile:", error)
         }
       }
-    };
-    posts.forEach((post) => {
-      post.comments.forEach((comment) => {
+    }
+    posts.forEach(post => {
+      post.comments.forEach(comment => {
         if (!profiles[comment.creater.userName]) {
-          getProfile(comment.creater.userName);
+          getProfile(comment.creater.userName)
         }
-      });
-    });
-  }, [posts, profiles]);
+      })
+    })
+  }, [posts, profiles])
   return (
     <ContentLayout>
       {posts.map((post, index) => (
@@ -121,6 +121,6 @@ const Home: React.FC = () => {
         </div>
       ))}
     </ContentLayout>
-  );
-};
-export default Home;
+  )
+}
+export default Home

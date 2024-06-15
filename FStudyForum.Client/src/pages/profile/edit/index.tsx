@@ -1,26 +1,26 @@
-import { cn } from "@/helpers/utils";
-import { yupResolver } from "@hookform/resolvers/yup";
+import { cn } from "@/helpers/utils"
+import { yupResolver } from "@hookform/resolvers/yup"
 import {
   Avatar,
   Button,
   Input,
   Radio,
-  Textarea,
-} from "@material-tailwind/react";
-import { Camera, CircleAlert } from "lucide-react";
-import { useForm } from "react-hook-form";
-import * as Yup from "yup";
-import { useAuth } from "@/hooks/useAuth";
-import { PhoneRegExp } from "@/helpers/constants";
-import { AxiosError } from "axios";
-import { Response } from "@/types/response";
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import ProfileService from "@/services/ProfileService";
-import UserService from "@/services/UserService";
-import { signIn } from "@/contexts/auth/reduce";
-import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
-import { storage } from "@/helpers/storage";
+  Textarea
+} from "@material-tailwind/react"
+import { Camera, CircleAlert } from "lucide-react"
+import { useForm } from "react-hook-form"
+import * as Yup from "yup"
+import { useAuth } from "@/hooks/useAuth"
+import { PhoneRegExp } from "@/helpers/constants"
+import { AxiosError } from "axios"
+import { Response } from "@/types/response"
+import React from "react"
+import { useNavigate } from "react-router-dom"
+import ProfileService from "@/services/ProfileService"
+import UserService from "@/services/UserService"
+import { signIn } from "@/contexts/auth/reduce"
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage"
+import { storage } from "@/helpers/storage"
 const validation = Yup.object({
   firstName: Yup.string().required("First name is required"),
   lastName: Yup.string().required("Last name is required"),
@@ -28,35 +28,35 @@ const validation = Yup.object({
     .oneOf([0, 1, 2], "Invalid gender")
     .required("Gender is required"),
   avatar: Yup.string(),
-  phone: Yup.string().matches(PhoneRegExp, "Phone number is not valid"),
-});
+  phone: Yup.string().matches(PhoneRegExp, "Phone number is not valid")
+})
 
 interface EditProfileInputs {
-  firstName: string;
-  lastName: string;
-  gender: number;
-  avatar?: string;
-  phone?: string;
-  marjor?: string;
-  bio?: string;
+  firstName: string
+  lastName: string
+  gender: number
+  avatar?: string
+  phone?: string
+  marjor?: string
+  bio?: string
 }
 const metadata = {
-  contentType: "image/jpeg",
-};
+  contentType: "image/jpeg"
+}
 const EditProfile = () => {
-  const { user, dispatch } = useAuth();
-  const [error, setError] = React.useState("");
-  const [loading, setLoading] = React.useState(false);
-  const [avatar, setAvatar] = React.useState(user!.avatar);
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const { user, dispatch } = useAuth()
+  const [error, setError] = React.useState("")
+  const [loading, setLoading] = React.useState(false)
+  const [avatar, setAvatar] = React.useState(user!.avatar)
+  const fileInputRef = React.useRef<HTMLInputElement>(null)
 
-  const [file, setFile] = React.useState<File>();
-  const navigate = useNavigate();
+  const [file, setFile] = React.useState<File>()
+  const navigate = useNavigate()
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors }
   } = useForm<EditProfileInputs>({
     mode: "onTouched",
     defaultValues: {
@@ -64,31 +64,31 @@ const EditProfile = () => {
       lastName: user?.lastName,
       gender: user?.gender,
       phone: user?.phone,
-      bio: user?.bio,
+      bio: user?.bio
     },
-    resolver: yupResolver(validation),
-  });
+    resolver: yupResolver(validation)
+  })
 
   React.useEffect(() => {
     return () => {
-      URL.revokeObjectURL(avatar);
-    };
-  }, [avatar]);
+      URL.revokeObjectURL(avatar)
+    }
+  }, [avatar])
 
   const handlePreviewAvatar = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!event.target.files) return;
-    const file = event.target.files[0];
-    if (!file) return;
-    setFile(file);
-    setAvatar(URL.createObjectURL(file));
-  };
+    if (!event.target.files) return
+    const file = event.target.files[0]
+    if (!file) return
+    setFile(file)
+    setAvatar(URL.createObjectURL(file))
+  }
 
   const handleEditProfile = async (form: EditProfileInputs) => {
     if (user == null) {
-      setError("User is not authenticated");
-      return;
+      setError("User is not authenticated")
+      return
     }
-    setLoading(true);
+    setLoading(true)
 
     const save = async () => {
       try {
@@ -99,40 +99,40 @@ const EditProfile = () => {
           avatar: url,
           major: user.major,
           phone: form.phone,
-          bio: form.bio,
-        });
-        const newUser = await UserService.getProfile();
-        dispatch(signIn({ user: newUser }));
-        navigate("/profile");
+          bio: form.bio
+        })
+        const newUser = await UserService.getProfile()
+        dispatch(signIn({ user: newUser }))
+        navigate("/profile")
       } catch (e) {
-        const error = e as AxiosError;
-        setError((error?.response?.data as Response)?.message || error.message);
+        const error = e as AxiosError
+        setError((error?.response?.data as Response)?.message || error.message)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
-    let url = avatar;
+    }
+    let url = avatar
     if (file) {
-      const storageRef = ref(storage, `images/avatar${user.username}`);
-      const uploadTask = uploadBytesResumable(storageRef, file, metadata);
+      const storageRef = ref(storage, `images/avatar${user.username}`)
+      const uploadTask = uploadBytesResumable(storageRef, file, metadata)
       uploadTask.on(
         "state_changed",
         () => {},
-        (error) => {
-          console.error(error);
+        error => {
+          console.error(error)
         },
         () => {
-          getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-            setFile(undefined);
-            url = downloadURL;
-            save();
-          });
+          getDownloadURL(uploadTask.snapshot.ref).then(async downloadURL => {
+            setFile(undefined)
+            url = downloadURL
+            save()
+          })
         }
-      );
+      )
     } else {
-      save();
+      save()
     }
-  };
+  }
   return (
     <>
       <div className="mb-6">
@@ -329,7 +329,7 @@ const EditProfile = () => {
         </Button>
       </form>
     </>
-  );
-};
+  )
+}
 
-export default EditProfile;
+export default EditProfile

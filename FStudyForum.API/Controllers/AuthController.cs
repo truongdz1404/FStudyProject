@@ -90,7 +90,7 @@ public class AuthController : ControllerBase
         }
     }
 
-    [HttpGet("logout")]
+    [HttpPost("logout")]
     public async Task<IActionResult> Logout()
     {
         try

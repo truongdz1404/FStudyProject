@@ -1,5 +1,5 @@
-import { Role } from "@/helpers/constants";
-import { useAuth } from "@/hooks/useAuth";
+import { Role } from "@/helpers/constants"
+import { useAuth } from "@/hooks/useAuth"
 import {
   List,
   ListItem,
@@ -8,8 +8,8 @@ import {
   AccordionBody,
   AccordionHeader,
   Typography,
-  Accordion,
-} from "@material-tailwind/react";
+  Accordion
+} from "@material-tailwind/react"
 import {
   Album,
   AreaChart,
@@ -18,10 +18,10 @@ import {
   Home,
   Rocket,
   SquareGanttChart,
-  Tags,
-} from "lucide-react";
-import React from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+  Tags
+} from "lucide-react"
+import React from "react"
+import { useLocation, useNavigate } from "react-router-dom"
 
 const sidebarListItems = [
   {
@@ -32,21 +32,21 @@ const sidebarListItems = [
         label: "Home",
         icon: Home,
         path: "/home",
-        items: [],
+        items: []
       },
       {
         label: "Popular",
         icon: Rocket,
         path: "/popular",
-        items: [],
+        items: []
       },
       {
         label: "Topics",
         icon: Tags,
         path: "/topics",
-        items: [],
-      },
-    ],
+        items: []
+      }
+    ]
   },
   {
     group: "admin",
@@ -60,51 +60,51 @@ const sidebarListItems = [
           {
             label: "Analytics",
             icon: AreaChart,
-            path: "/manager/analytics",
+            path: "/manager/analytics"
           },
           {
             label: "Members",
             icon: BookUser,
-            path: "/manager/members",
+            path: "/manager/members"
           },
           {
             label: "Topics",
             icon: Album,
-            path: "/manager/topics",
-          },
-        ],
-      },
-    ],
-  },
-];
+            path: "/manager/topics"
+          }
+        ]
+      }
+    ]
+  }
+]
 
 type SidebarProps = {
-  handleClose?: () => void;
-};
+  handleClose?: () => void
+}
 
 const Sidebar = React.memo(({ handleClose }: SidebarProps) => {
-  const navigate = useNavigate();
-  const { pathname } = useLocation();
-  const { user } = useAuth();
-  console.log(user);
+  const navigate = useNavigate()
+  const { pathname } = useLocation()
+  const { user } = useAuth()
+  console.log(user)
 
-  const segments = pathname.split("/").filter((s) => s !== "");
+  const segments = pathname.split("/").filter(s => s !== "")
 
   const [collapse, setCollapse] = React.useState(
     segments.length != 0 ? segments[0] : ""
-  );
+  )
 
   const switchCollapse = (label: string) => {
-    setCollapse(isCollapse(label) ? "" : label);
-  };
+    setCollapse(isCollapse(label) ? "" : label)
+  }
 
   const isCollapse = (label: string) =>
-    collapse.toLowerCase() === label.toLowerCase();
+    collapse.toLowerCase() === label.toLowerCase()
 
   const handleView = (path: string) => {
-    handleClose?.();
-    navigate(path);
-  };
+    handleClose?.()
+    navigate(path)
+  }
   return (
     <Card
       color="transparent"
@@ -114,7 +114,7 @@ const Sidebar = React.memo(({ handleClose }: SidebarProps) => {
       <List>
         {sidebarListItems.map(
           ({ group, items, access }, index) =>
-            (user?.roles.some((r) => access.includes(r)) ?? false) && (
+            (user?.roles.some(r => access.includes(r)) ?? false) && (
               <div key={group}>
                 {items.map(({ label, icon, path, items }) =>
                   items.length == 0 ? (
@@ -163,7 +163,7 @@ const Sidebar = React.memo(({ handleClose }: SidebarProps) => {
                             >
                               <ListItemPrefix>
                                 {React.createElement(icon, {
-                                  className: "h-5 w-5",
+                                  className: "h-5 w-5"
                                 })}
                               </ListItemPrefix>
                               {label}
@@ -182,7 +182,7 @@ const Sidebar = React.memo(({ handleClose }: SidebarProps) => {
         )}
       </List>
     </Card>
-  );
-});
+  )
+})
 
-export default Sidebar;
+export default Sidebar
