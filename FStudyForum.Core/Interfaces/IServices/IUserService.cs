@@ -1,4 +1,5 @@
 using FStudyForum.Core.Models.DTOs.Auth;
+using FStudyForum.Core.Models.DTOs.LockUser;
 using FStudyForum.Core.Models.DTOs.Token;
 using FStudyForum.Core.Models.DTOs.User;
 using Microsoft.AspNetCore.Identity;
@@ -16,4 +17,8 @@ public interface IUserService
     Task<IdentityResult> ChangePasswordAsync(ChangePasswordDTO model);
     Task RemoveRefreshTokenAsync(string refreshToken);
     Task<string?> GetRefreshTokenAsync(string userName);
+    Task<UserDTO> LockUser(LockUserDTO lockUserDTO);
+    Task<UserDTO> UnlockUser(LockUserDTO lockUserDTO);
+    Task<bool> IsUserLocked(string userName);
+    Task<DateTimeOffset?> GetUnlockTime(string userName);
 }

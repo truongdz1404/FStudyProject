@@ -1,6 +1,5 @@
-import { Ellipsis, Flag, Save } from "lucide-react";
+import { Ellipsis, Flag, Save, XCircle } from "lucide-react";
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import {  
     Button,
     Menu,
@@ -13,22 +12,40 @@ import { cn } from "@/helpers/utils";
 import { Post } from "@/types/post";
 import { useAuth } from "@/hooks/useAuth";
 import SavedPostService from "@/services/SavedPostService";
+import { AxiosError } from "axios";
+import { Response } from "@/types/response";
 type MenuItemPostProps = {
   post: Post;
 };
 
 const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
+  const [error, setError] = React.useState("");
+  const [isSaved, setIsSaved] = React.useState(false);
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const  {user} = useAuth();
-  const navigate = useNavigate();
   const handleNavigate = async (post: Post) => {
-    // const reponse = await SavedPostService.savedPost({username: username, postId: post.id});
-    console.log(user)
+    try {
+      let response;
+      if(!isSaved) {
+        response = await SavedPostService.savedPost({postId: post.id, username: user?.username ?? ""});
+        console.log(response);
+      } else {
+        response = await SavedPostService.deletePost(user?.username ?? "", post.id);
+        console.log(response); 
+      }
+      setIsSaved((prev) => !prev);
+    } catch (e) {
+      const error = e as AxiosError<Response>;
+      setError(
+        (error?.response?.data as Response)?.message ||
+        error.message
+      );
+    }
   };
   const PostItem = [
     {
-      icon: Save,
-      label: "Save",
+      icon: isSaved ? XCircle : Save,
+      label: isSaved ? "Remove" : "Save",
       path: "/save",
     },
     {
@@ -83,3 +100,5 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
 };
 
 export default MenuItemPost;
+
+

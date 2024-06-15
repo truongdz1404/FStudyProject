@@ -10,6 +10,8 @@ using FStudyForum.Core.Models.DTOs.Auth;
 using FStudyForum.Core.Exceptions;
 using FStudyForum.Core.Helpers;
 using FStudyForum.Infrastructure.Repositories;
+using FStudyForum.Core.Models.DTOs.LockUser;
+using Azure.Core;
 
 namespace FStudyForum.Infrastructure.Services;
 
@@ -155,5 +157,55 @@ public class UserService : IUserService
     {
         var user = await _userManager.FindByNameAsync(userName);
         return user?.RefreshToken;
+    }
+
+    public async Task<UserDTO> LockUser(LockUserDTO lockUserDTO)
+    {
+        if (string.IsNullOrEmpty(lockUserDTO.UserName) || lockUserDTO.LockoutDays <= 0)
+        {
+           throw new Exception("Invalid input");
+        }
+        var user = await _userManager.FindByNameAsync(lockUserDTO.UserName)
+            ?? throw new Exception("User not found");
+        var result = await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.Now.AddDays(lockUserDTO.LockoutDays));
+        if (result.Succeeded)
+        {           
+            return _mapper.Map<UserDTO>(user);
+        }
+        else
+        {
+            throw new Exception("Lockout failed");
+        }
+    }
+
+    public async Task<UserDTO> UnlockUser(LockUserDTO lockUserDTO)
+    {
+        if (string.IsNullOrEmpty(lockUserDTO.UserName))
+        {
+            throw new Exception("Invalid input");
+        }
+        var user = await _userManager.FindByNameAsync(lockUserDTO.UserName)
+            ?? throw new Exception("User not found");
+        var result = await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.UtcNow);
+        if (result.Succeeded)
+        {
+            return _mapper.Map<UserDTO>(user);
+        }
+        else
+        {
+            throw new Exception("Lockout failed");
+        }
+    }
+    public async Task<bool> IsUserLocked(string userName)
+    {
+        var user = await _userManager.FindByNameAsync(userName)
+            ?? throw new ApplicationException($"User '{userName}' not found.");       
+        return await _userManager.IsLockedOutAsync(user);
+    }
+    public async Task<DateTimeOffset?> GetUnlockTime(string userName)
+    {
+        var user = await _userManager.FindByNameAsync(userName)
+            ?? throw new ApplicationException($"User '{userName}' not found.");
+        return await _userManager.GetLockoutEndDateAsync(user);
     }
 }

@@ -19,7 +19,6 @@ public static class ServiceExtension
                 services.AddScoped<ITopicService, TopicService>();
                 services.AddScoped<IPostService, PostService>();
                 services.AddScoped<IVoteService, VoteService>();
-                services.AddScoped<ISavePostService, SavePostService>();
         #endregion
 
         #region Repositories
@@ -29,7 +28,6 @@ public static class ServiceExtension
                 services.AddTransient<IProfileRepository, ProfileRepository>();
                 services.AddTransient<IPostRepository, PostRepository>();
                 services.AddTransient<IVoteRepository, VoteRepository>();
-        services.AddTransient<ISavePostRepository, SavePostRepository>();
         #endregion
         return services;
         }
