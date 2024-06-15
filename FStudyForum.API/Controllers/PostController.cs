@@ -1,15 +1,12 @@
-﻿using FStudyForum.Core.Constants;
-using FStudyForum.Core.Interfaces.IServices;
+﻿using FStudyForum.Core.Interfaces.IServices;
 using FStudyForum.Core.Models.DTOs;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using System.Net;
 
 namespace FStudyForum.API.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class PostController : ControllerBase
     {
         private readonly IPostService _postService;
@@ -17,27 +14,27 @@ namespace FStudyForum.API.Controllers
         {
             _postService = postService;
         }
-        [HttpGet("{pageNumber}"), Authorize]
-        public async Task<IActionResult> GetPosts(int pageNumber)
+        [HttpGet("all")]
+        public async Task<IActionResult> GetPosts()
         {
             try
             {
-                var posts = await _postService.GetPaginatedData(pageNumber, Paginated.PageSize);
+                var posts = await _postService.GetPaginatedData(1, 10);
                 if (posts.Data.IsNullOrEmpty())
                 {
                     return NotFound(new Response
                     {
-                        Status = (int)HttpStatusCode.NotFound + "",
+                        Status = ResponseStatus.ERROR,
                         Message = "Posts not found",
                         Data = posts.Data
                     });
                 }
                 return Ok(new Response
                 {
-                    Message = "Find Post successfully",
-                    Status = (int)HttpStatusCode.OK + "",
+                    Message = "Get Posts successfully",
+                    Status = ResponseStatus.SUCCESS,
                     Data = posts.Data
-                }); ;
+                });
             }
             catch (Exception ex)
             {

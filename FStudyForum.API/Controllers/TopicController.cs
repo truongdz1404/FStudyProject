@@ -18,14 +18,14 @@ namespace FStudyForum.API.Controllers
             _topicService = topicService;
         }
 
-        [HttpGet("active"), Authorize]
+        [HttpGet("active-all"), Authorize]
         public async Task<IActionResult> GetAllActiveTopics()
         {
             var activeTopics = await _topicService.GetActiveTopics();
             return Ok(activeTopics);
         }
 
-        [HttpGet(""), Authorize(Roles = UserRole.Admin)]
+        [HttpGet("all"), Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> GetAll()
         {
             var topics = await _topicService.GetTopics();
@@ -41,15 +41,15 @@ namespace FStudyForum.API.Controllers
         public async Task<IActionResult> CreateTopic([FromBody] CreateTopicDTO topicDto)
         {
             var createdTopic = await _topicService.CreateTopic(topicDto);
-            return CreatedAtAction(nameof(GetTopicById), new { id = createdTopic.Id }, createdTopic);
+            return CreatedAtAction(nameof(GetTopicByName), new { id = createdTopic.Id }, createdTopic);
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetTopicById(long id)
+        [HttpGet("{name}")]
+        public async Task<IActionResult> GetTopicByName(string name)
         {
             try
             {
-                var topic = await _topicService.GetTopicById(id);
+                var topic = await _topicService.GetTopicByName(name);
                 return Ok(topic);
             }
             catch (Exception ex)
@@ -57,12 +57,12 @@ namespace FStudyForum.API.Controllers
                 return NotFound(ex.Message);
             }
         }
-        [HttpPut("update/{id}"), Authorize(Roles = UserRole.Admin)]
-        public async Task<IActionResult> UpdateTopic(long id, [FromBody] UpdateTopicDTO topicDto)
+        [HttpPut("update/{name}"), Authorize(Roles = UserRole.Admin)]
+        public async Task<IActionResult> UpdateTopic(string name, [FromBody] UpdateTopicDTO topicDto)
         {
             try
             {
-                var updatedTopic = await _topicService.UpdateTopic(id, topicDto);
+                var updatedTopic = await _topicService.UpdateTopic(name, topicDto);
                 return Ok(updatedTopic);
             }
             catch (Exception ex)
@@ -72,10 +72,10 @@ namespace FStudyForum.API.Controllers
         }
 
 
-        [HttpPut("delete/{id}"), Authorize(Roles = UserRole.Admin)]
-        public async Task<IActionResult> DeleteTopic(long id)
+        [HttpPut("delete/{name}"), Authorize(Roles = UserRole.Admin)]
+        public async Task<IActionResult> DeleteTopic(string name)
         {
-            var isDeleted = await _topicService.DeleteTopic(id);
+            var isDeleted = await _topicService.DeleteTopic(name);
             if (!isDeleted)
             {
                 return NotFound();

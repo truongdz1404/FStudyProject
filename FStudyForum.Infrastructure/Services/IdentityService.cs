@@ -4,6 +4,7 @@ using FStudyForum.Core.Exceptions;
 using FStudyForum.Core.Interfaces.IServices;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using FStudyForum.Core.Helpers;
 
 
 namespace FStudyForum.Infrastructure.Services;
@@ -50,8 +51,8 @@ public class IdentityService : IIdentityService
     {
         var user = new ApplicationUser()
         {
-            UserName = registerDTO.Username,
-            Email = registerDTO.Username,
+            UserName = EmailHelper.GetUsername(registerDTO.Email),
+            Email = registerDTO.Email,
             EmailConfirmed = confirm
         };
 
@@ -160,7 +161,7 @@ public class IdentityService : IIdentityService
 
     public async Task<bool> SigninUserAsync(LoginDTO loginDTO)
     {
-        var result = await _signInManager.PasswordSignInAsync(loginDTO.UserName, loginDTO.Password, true, false);
+        var result = await _signInManager.PasswordSignInAsync(EmailHelper.GetUsername(loginDTO.Email), loginDTO.Password, true, false);
         return result.Succeeded;
     }
 

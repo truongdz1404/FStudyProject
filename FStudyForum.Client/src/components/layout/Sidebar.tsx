@@ -1,5 +1,5 @@
-import { Role } from "@/helpers/constants"
-import { useAuth } from "@/hooks/useAuth"
+import { Role } from "@/helpers/constants";
+import { useAuth } from "@/hooks/useAuth";
 import {
   List,
   ListItem,
@@ -9,7 +9,7 @@ import {
   AccordionHeader,
   Typography,
   Accordion
-} from "@material-tailwind/react"
+} from "@material-tailwind/react";
 import {
   Album,
   AreaChart,
@@ -19,9 +19,9 @@ import {
   Rocket,
   SquareGanttChart,
   Tags
-} from "lucide-react"
-import React from "react"
-import { useLocation, useNavigate } from "react-router-dom"
+} from "lucide-react";
+import React from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const sidebarListItems = [
   {
@@ -76,46 +76,44 @@ const sidebarListItems = [
       }
     ]
   }
-]
+];
 
 type SidebarProps = {
-  handleClose?: () => void
-}
+  handleClose?: () => void;
+};
 
 const Sidebar = React.memo(({ handleClose }: SidebarProps) => {
-  const navigate = useNavigate()
-  const { pathname } = useLocation()
-  const { user } = useAuth()
-  console.log(user)
-
-  const segments = pathname.split("/").filter(s => s !== "")
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const { user } = useAuth();
+  const segments = pathname.split("/").filter(s => s !== "");
 
   const [collapse, setCollapse] = React.useState(
     segments.length != 0 ? segments[0] : ""
-  )
+  );
 
   const switchCollapse = (label: string) => {
-    setCollapse(isCollapse(label) ? "" : label)
-  }
+    setCollapse(isCollapse(label) ? "" : label);
+  };
 
   const isCollapse = (label: string) =>
-    collapse.toLowerCase() === label.toLowerCase()
+    collapse.toLowerCase() === label.toLowerCase();
 
   const handleView = (path: string) => {
-    handleClose?.()
-    navigate(path)
-  }
+    handleClose?.();
+    navigate(path);
+  };
   return (
     <Card
       color="transparent"
       shadow={false}
       className="min-h-screen w-full rounded-none shadow-md shadow-blue-gray-900/5 border-r"
     >
-      <List>
-        {sidebarListItems.map(
-          ({ group, items, access }, index) =>
-            (user?.roles.some(r => access.includes(r)) ?? false) && (
-              <div key={group}>
+      {sidebarListItems.map(
+        ({ group, items, access }, index) =>
+          (user?.roles.some(r => access.includes(r)) ?? false) && (
+            <div key={group}>
+              <List>
                 {items.map(({ label, icon, path, items }) =>
                   items.length == 0 ? (
                     <ListItem
@@ -148,7 +146,7 @@ const Sidebar = React.memo(({ handleClose }: SidebarProps) => {
                         <ListItemPrefix>
                           <SquareGanttChart className="h-5 w-5" />
                         </ListItemPrefix>
-                        <Typography className="mr-auto text-sm">
+                        <Typography className="mr-auto text-sm font-medium">
                           {label}
                         </Typography>
                       </AccordionHeader>
@@ -174,15 +172,15 @@ const Sidebar = React.memo(({ handleClose }: SidebarProps) => {
                     </Accordion>
                   )
                 )}
-                {index != sidebarListItems.length - 1 && (
-                  <hr className="my-2 border-blue-gray-50" />
-                )}
-              </div>
-            )
-        )}
-      </List>
+              </List>
+              {index != sidebarListItems.length - 1 && (
+                <hr className=" border-blue-gray-50" />
+              )}
+            </div>
+          )
+      )}
     </Card>
-  )
-})
+  );
+});
 
-export default Sidebar
+export default Sidebar;

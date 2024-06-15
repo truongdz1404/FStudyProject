@@ -1,4 +1,4 @@
-import React from "react"
+import React from "react";
 import {
   Navbar,
   Collapse,
@@ -11,7 +11,7 @@ import {
   IconButton,
   Input,
   Typography
-} from "@material-tailwind/react"
+} from "@material-tailwind/react";
 import {
   PowerIcon,
   Search,
@@ -20,33 +20,33 @@ import {
   Plus,
   Bell,
   ChevronUp
-} from "lucide-react"
-import { cn } from "@/helpers/utils"
-import { Link, useNavigate } from "react-router-dom"
-import { Icons } from "../Icons"
-import { useAuth } from "@/hooks/useAuth"
-
-const profileMenuItems = [
-  {
-    label: "My Profile",
-    icon: UserCircleIcon,
-    path: "/profile"
-  },
-  {
-    label: "Sign Out",
-    icon: PowerIcon,
-    path: "/auth/signout"
-  }
-]
+} from "lucide-react";
+import { cn } from "@/helpers/utils";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Icons } from "../Icons";
+import { useAuth } from "@/hooks/useAuth";
 
 function ProfileMenu() {
-  const [isMenuOpen, setIsMenuOpen] = React.useState(false)
-  const navigate = useNavigate()
-  const { user } = useAuth()
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const profileMenuItems = [
+    {
+      label: "My Profile",
+      icon: UserCircleIcon,
+      path: `/profile/${user?.username.toLowerCase()}`
+    },
+    {
+      label: "Sign Out",
+      icon: PowerIcon,
+      path: "/auth/signout"
+    }
+  ];
   const handleNavigate = (path: string) => {
-    navigate(path)
-    setIsMenuOpen(false)
-  }
+    navigate(path);
+    setIsMenuOpen(false);
+  };
 
   return (
     <Menu open={isMenuOpen} handler={setIsMenuOpen} placement="bottom-end">
@@ -67,7 +67,7 @@ function ProfileMenu() {
       </MenuHandler>
       <MenuList className="p-1">
         {profileMenuItems.map(({ label, icon, path }, key) => {
-          const isLastItem = key === profileMenuItems.length - 1
+          const isLastItem = key === profileMenuItems.length - 1;
           return (
             <MenuItem
               key={label}
@@ -91,12 +91,22 @@ function ProfileMenu() {
                 {label}
               </Typography>
             </MenuItem>
-          )
+          );
         })}
       </MenuList>
     </Menu>
-  )
+  );
 }
+
+const getCreatePath = (pathname: string) => {
+  const segments = pathname.split("/").filter(s => s !== "");
+  switch (segments[0]) {
+    case "topic":
+      return `${segments[0]}/${segments[1]}/create`;
+    default:
+      return "/create";
+  }
+};
 
 const navListItems = [
   {
@@ -111,18 +121,24 @@ const navListItems = [
     showLabel: false,
     path: "/notification"
   }
-]
+];
 
 function NavList() {
+  const { pathname } = useLocation();
+
   return (
     <div className="mt-2 mb-4 flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center">
       {navListItems.map(({ label, icon, showLabel, path }) => (
-        <Link key={label} to={path}>
+        <Link
+          key={label}
+          to={path === "/create" ? getCreatePath(pathname) : path}
+        >
           <Button
+            color="blue-gray"
             variant="text"
             className={cn(
               "flex p-2 items-center gap-2 lg:rounded-full",
-              "font-medium   text-sm normal-case"
+              "font-medium text-sm normal-case text-blue-gray-700"
             )}
           >
             {React.createElement(icon, { className: "h-5 w-5" })}
@@ -131,21 +147,22 @@ function NavList() {
         </Link>
       ))}
     </div>
-  )
+  );
 }
 type HeaderProps = {
-  openSidebar: () => void
-}
+  openSidebar: () => void;
+};
+
 const Header = React.memo(({ openSidebar }: HeaderProps) => {
-  const [isNavOpen, setIsNavOpen] = React.useState(false)
-  const toggleIsNavOpen = () => setIsNavOpen(cur => !cur)
+  const [isNavOpen, setIsNavOpen] = React.useState(false);
+  const toggleIsNavOpen = () => setIsNavOpen(cur => !cur);
 
   React.useEffect(() => {
     window.addEventListener(
       "resize",
       () => window.innerWidth >= 960 && setIsNavOpen(false)
-    )
-  }, [])
+    );
+  }, []);
 
   return (
     <Navbar className="max-w-screen-3xl rounded-none p-1 shadow-sm ">
@@ -208,7 +225,7 @@ const Header = React.memo(({ openSidebar }: HeaderProps) => {
         <NavList />
       </Collapse>
     </Navbar>
-  )
-})
+  );
+});
 
-export default Header
+export default Header;

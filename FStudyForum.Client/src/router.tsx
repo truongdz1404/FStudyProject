@@ -1,31 +1,31 @@
-import { FC, Suspense, lazy } from "react"
-import { Navigate, Outlet, useRoutes } from "react-router-dom"
+import { FC, Suspense, lazy } from "react";
+import { Navigate, Outlet, useRoutes } from "react-router-dom";
 
-import AuthGuard from "@/helpers/guards/AuthGuard"
-import NotFound from "@/components/NotFound"
-import Layout from "@/components/layout/Layout"
-import WelcomeGuard from "./helpers/guards/WelcomeGuard"
-import AuthLayout from "./components/layout/AuthLayout"
-import RoleBasedGuard from "./helpers/guards/RoleBasedGuard"
-import { Role } from "./helpers/constants"
+import AuthGuard from "@/helpers/guards/AuthGuard";
+import NotFound from "@/components/NotFound";
+import Layout from "@/components/layout/Layout";
+import WelcomeGuard from "./helpers/guards/WelcomeGuard";
+import AuthLayout from "./components/layout/AuthLayout";
+import RoleBasedGuard from "./helpers/guards/RoleBasedGuard";
+import { Role } from "./helpers/constants";
 
-const Popular = lazy(() => import("@/pages/popular"))
-const Memebers = lazy(() => import("@/pages/manager/members"))
-const Welcome = lazy(() => import("@/pages/welcome"))
-const Register = lazy(() => import("@/pages/auth/register"))
-const ConfirmEmail = lazy(() => import("@/pages/auth/confirm-email"))
+const Popular = lazy(() => import("@/pages/popular"));
+const Memebers = lazy(() => import("@/pages/manager/members"));
+const Welcome = lazy(() => import("@/pages/welcome"));
+const Register = lazy(() => import("@/pages/auth/register"));
+const ConfirmEmail = lazy(() => import("@/pages/auth/confirm-email"));
 const ChangePassword = lazy(
   () => import("@/pages/auth/reset-password/change-password")
-)
-const TopcicManager = lazy(() => import("@/pages/manager/topics"))
-const ResetPassword = lazy(() => import("@/pages/auth/reset-password"))
-const Profile = lazy(() => import("@/pages/profile"))
-const EditProfile = lazy(() => import("@/pages/profile/edit"))
-const SignIn = lazy(() => import("@/pages/auth/signin"))
-const Home = lazy(() => import("@/pages/home"))
-const TopicDetail = lazy(() => import("@/pages/topic/detail"))
-const Topic = lazy(() => import("@/pages/topic"))
-const SignOut = lazy(() => import("@/pages/auth/signout"))
+);
+const TopcicManager = lazy(() => import("@/pages/manager/topics"));
+const ResetPassword = lazy(() => import("@/pages/auth/reset-password"));
+const Profile = lazy(() => import("@/pages/profile"));
+const ProfileSettings = lazy(() => import("@/pages/settings/profile"));
+const SignIn = lazy(() => import("@/pages/auth/signin"));
+const Home = lazy(() => import("@/pages/home"));
+const TopicDetail = lazy(() => import("@/pages/topic/detail"));
+const Topic = lazy(() => import("@/pages/topic"));
+const SignOut = lazy(() => import("@/pages/auth/signout"));
 const Router: FC = () => {
   return useRoutes([
     {
@@ -60,11 +60,16 @@ const Router: FC = () => {
         },
         {
           path: "topics",
-          element: (
-            <Suspense>
-              <Topic />
-            </Suspense>
-          )
+          children: [
+            {
+              index: true,
+              element: (
+                <Suspense>
+                  <Topic />
+                </Suspense>
+              )
+            }
+          ]
         },
         {
           path: "manager",
@@ -92,16 +97,21 @@ const Router: FC = () => {
             },
             {
               path: "topics",
-              element: (
-                <Suspense>
-                  <TopcicManager />
-                </Suspense>
-              )
+              children: [
+                {
+                  index: true,
+                  element: (
+                    <Suspense>
+                      <TopcicManager />
+                    </Suspense>
+                  )
+                }
+              ]
             }
           ]
         },
         {
-          path: "topic/detail/:id",
+          path: "topic/:name",
           element: (
             <Suspense>
               <TopicDetail />
@@ -109,21 +119,21 @@ const Router: FC = () => {
           )
         },
         {
-          path: "profile",
+          path: "profile/:name",
+          element: (
+            <Suspense>
+              <Profile />
+            </Suspense>
+          )
+        },
+        {
+          path: "settings",
           children: [
             {
-              index: true,
+              path: "profile",
               element: (
                 <Suspense>
-                  <Profile />
-                </Suspense>
-              )
-            },
-            {
-              path: "edit",
-              element: (
-                <Suspense>
-                  <EditProfile />
+                  <ProfileSettings />
                 </Suspense>
               )
             }
@@ -214,7 +224,7 @@ const Router: FC = () => {
       path: "*",
       element: <NotFound />
     }
-  ])
-}
+  ]);
+};
 
-export default Router
+export default Router;
