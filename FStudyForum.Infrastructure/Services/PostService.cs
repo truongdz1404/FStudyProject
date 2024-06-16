@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using FStudyForum.Core.Interfaces.IRepositories;
 using FStudyForum.Core.Interfaces.IServices;
-using FStudyForum.Core.Models.DTOs.Paging;
+using FStudyForum.Core.Models.DTOs;
 using FStudyForum.Core.Models.DTOs.Post;
 using FStudyForum.Core.Models.DTOs.SavePost;
 using FStudyForum.Core.Models.Entities;
@@ -22,7 +22,6 @@ namespace FStudyForum.Infrastructure.Services
             _mapper = mapper;
             _userManager = userManager;
         }
-
         public async Task<SavePostDTO?> DeletePostByUser(SavePostDTO savedPost)
         {
             if(savedPost.UserName == null)
@@ -35,9 +34,10 @@ namespace FStudyForum.Infrastructure.Services
             return savedPost;
         }
 
-        public async Task<PaginatedDataDTO<PostDTO>> GetPaginatedData(int pageNumber, int pageSize)
+
+        public async Task<PaginatedData<PostDTO>> GetPaginatedData(int pageNumber, int pageSize)
         {
-            return _mapper.Map<PaginatedDataDTO<PostDTO>>(await _postRepository.GetPaginatedData(pageNumber, pageSize));
+            return _mapper.Map<PaginatedData<PostDTO>>(await _postRepository.GetPaginatedData(pageNumber, pageSize));
         }
 
         public async Task<SavePostDTO?> SavePostByUser(SavePostDTO savedPostDTO)

@@ -1,23 +1,22 @@
-import { Ellipsis, Flag, Save, XCircle } from "lucide-react";
-import React from "react";
-import {  
-    Button,
-    Menu,
-    MenuHandler,
-    MenuList,
-    MenuItem,
-    Typography,
-} from "@material-tailwind/react";
-import { cn } from "@/helpers/utils";
+import { Bookmark, Ellipsis, Flag, XCircle } from "lucide-react"
+import { Response } from "@/types/response";
+import React from "react"
+import {
+  Button,
+  Menu,
+  MenuHandler,
+  MenuList,
+  MenuItem,
+  Typography
+} from "@material-tailwind/react"
+import { cn } from "@/helpers/utils"
 import { Post } from "@/types/post";
 import { useAuth } from "@/hooks/useAuth";
 import SavedPostService from "@/services/SavedPostService";
 import { AxiosError } from "axios";
-import { Response } from "@/types/response";
 type MenuItemPostProps = {
   post: Post;
 };
-
 const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
   const [error, setError] = React.useState("");
   const [isSaved, setIsSaved] = React.useState(false);
@@ -30,7 +29,7 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
         response = await SavedPostService.savedPost({postId: post.id, username: user?.username ?? ""});
         console.log(response);
       } else {
-        response = await SavedPostService.deletePost(user?.username ?? "", post.id);
+        response = await SavedPostService.deletePost(user?.username ?? "", post.id);      
         console.log(response); 
       }
       setIsSaved((prev) => !prev);
@@ -42,37 +41,41 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
       );
     }
   };
-  const PostItem = [
+  const PostMenuItem = [
     {
-      icon: isSaved ? XCircle : Save,
-      label: isSaved ? "Remove" : "Save",
-      path: "/save",
+      icon: isSaved ? XCircle : Bookmark,
+      label:  isSaved ? "Remove" : "Save",
+      path: "/save"
+
     },
     {
       icon: Flag,
       label: "Report",
-      path: "/report",
-    }
-  ];
 
+      path: "/report"
+    }
+  ]
   return (
     <Menu open={isMenuOpen} handler={setIsMenuOpen} placement="bottom-end">
       <MenuHandler>
         <Button
           variant="text"
           color="blue-gray"
-          className="flex items-center rounded-full p-0"
+          className="flex items-center rounded-full p-0 px-1 text-black"
         >
-          <Ellipsis />
+
+          <Ellipsis className="w-4 h-4 " />
         </Button>
       </MenuHandler>
       <MenuList className="p-1">
-        {PostItem.map(({ label, icon, path }, key) => {
-          const isLastItem = key === PostItem.length - 1;
+        {PostMenuItem.map(({ label, icon }, key) => {
+          const isLastItem = key === PostMenuItem.length - 1
           return (
             <MenuItem
               key={label}
+
               onClick={() => handleNavigate(post)}
+
               className={`flex items-center gap-2 rounded ${
                 isLastItem &&
                 "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
@@ -80,7 +83,7 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
             >
               {React.createElement(icon, {
                 className: `h-4 w-4 ${isLastItem ? "text-red-500" : ""}`,
-                strokeWidth: 2,
+                strokeWidth: 2
               })}
               <Typography
                 as={"span"}
@@ -92,13 +95,12 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
                 {label}
               </Typography>
             </MenuItem>
-          );
+          )
         })}
       </MenuList>
     </Menu>
-  );
-};
 
-export default MenuItemPost;
-
+  )
+}
+export default MenuItemPost
 

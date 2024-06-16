@@ -1,15 +1,66 @@
-// src/services/TopicService.ts
+import { ResponseWith } from "@/types/response";
 import api from "./api";
-import { Topic } from "@/types/topic";
+import { Topic, CreateTopicDTO, UpdateTopicDTO, TopicBanDTO, Unlocktime } from "@/types/topic";
 
-const getAllActiveTopics = async (): Promise<Topic[]> => {
-
-    const response = await api.get<Topic[]>("/Topic/all");
-    return response.data;
-  
+const getActiveTopics = async (): Promise<Topic[]> => {
+  const response = await api.get<Topic[]>("/topic/active-all");
+  return response.data;
 };
+
+const getTopics = async () => {
+  const response = await api.get<ResponseWith<Topic[]>>("/topic/all");
+  return response.data.data;
+};
+
+const GetTopicByName = async (name: string): Promise<Topic> => {
+  const response = await api.get<Topic>(`/topic/${name}`);
+  return response.data;
+};
+
+const create = async (topic: CreateTopicDTO): Promise<Topic> => {
+  const response = await api.post<Topic>("/topic/create", topic);
+  return response.data;
+};
+
+const update = async (name: string, topic: UpdateTopicDTO): Promise<Topic> => {
+  const response = await api.put<Topic>(`/topic/update/${name}`, topic);
+  return response.data;
+};
+
+const Delete = async (name: string): Promise<void> => {
+  await api.put<Topic>(`/topic/delete/${name}`);
+};
+const isLoked = async(username: string, topicId: number) => {
+  const response = await api.post<ResponseWith<TopicBanDTO>>("/topic/is-locked",{
+    username,
+    topicId
+  });
+  return response.data;
+}
+const unlockTime = async(username: string, topicId: number) => {
+  const response = await api.post<ResponseWith<Unlocktime>>("/topic/unlock-time",{
+    username,
+    topicId
+  });
+  return response.data;
+}
+const unlocked = async(username: string, topicId: number) => {
+  const response = await api.post<ResponseWith<Unlocktime>>("/topic/unlocked",{
+    username,
+    topicId
+  });
+  return response.data;
+}
 const TopicService = {
-  getAllActiveTopics,
+  getTopics,
+  getActiveTopics,
+  GetTopicByName,
+  create,
+  update,
+  Delete,
+  isLoked,
+  unlockTime,
+  unlocked
 };
 
 export default TopicService;

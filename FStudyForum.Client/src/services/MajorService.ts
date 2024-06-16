@@ -1,13 +1,13 @@
-import api from "./api";
-import { ResponseWith } from "@/types/response";
+import api from "./api"
+import { ResponseWith } from "@/types/response"
 
 const getAll = async () => {
-  const response = await api.get<ResponseWith<Array<string>>>("/forum/major");
-  return response.data.data;
-};
+  const response = await api.get<ResponseWith<Array<string>>>("/forum/major")
+  return response.data.data
+}
 
 const MajorService = {
-  getAll,
-};
+  getAll
+}
 
-export default MajorService;
+export default MajorService

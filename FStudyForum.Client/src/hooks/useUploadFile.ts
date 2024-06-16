@@ -4,9 +4,9 @@ import {
   uploadBytesResumable,
   UploadMetadata,
   UploadResult,
-  UploadTaskSnapshot,
-} from "firebase/storage";
-import { useCallback, useState } from "react";
+  UploadTaskSnapshot
+} from "firebase/storage"
+import { useCallback, useState } from "react"
 
 export type UploadFileHook = [
   (
@@ -17,12 +17,12 @@ export type UploadFileHook = [
   boolean,
   UploadTaskSnapshot | undefined,
   StorageError | undefined
-];
+]
 
 export default (): UploadFileHook => {
-  const [error, setError] = useState<StorageError>();
-  const [uploading, setUploading] = useState<boolean>(false);
-  const [snapshot, setSnapshot] = useState<UploadTaskSnapshot>();
+  const [error, setError] = useState<StorageError>()
+  const [uploading, setUploading] = useState<boolean>(false)
+  const [snapshot, setSnapshot] = useState<UploadTaskSnapshot>()
 
   const uploadFile = useCallback(
     async (
@@ -30,33 +30,33 @@ export default (): UploadFileHook => {
       data: Blob | Uint8Array | ArrayBuffer,
       metadata?: UploadMetadata | undefined
     ): Promise<UploadResult | undefined> => {
-      return new Promise((resolve) => {
-        setUploading(true);
-        setError(undefined);
-        const uploadTask = uploadBytesResumable(storageRef, data, metadata);
+      return new Promise(resolve => {
+        setUploading(true)
+        setError(undefined)
+        const uploadTask = uploadBytesResumable(storageRef, data, metadata)
         uploadTask.on(
           "state_changed",
-          (snapshot) => {
-            setSnapshot(snapshot);
+          snapshot => {
+            setSnapshot(snapshot)
           },
-          (error) => {
-            setUploading(false);
-            setError(error);
-            resolve(undefined);
+          error => {
+            setUploading(false)
+            setError(error)
+            resolve(undefined)
           },
           () => {
-            setUploading(false);
-            setSnapshot(undefined);
+            setUploading(false)
+            setSnapshot(undefined)
             resolve({
               metadata: uploadTask.snapshot.metadata,
-              ref: uploadTask.snapshot.ref,
-            });
+              ref: uploadTask.snapshot.ref
+            })
           }
-        );
-      });
+        )
+      })
     },
     []
-  );
+  )
 
-  return [uploadFile, uploading, snapshot, error];
-};
+  return [uploadFile, uploading, snapshot, error]
+}

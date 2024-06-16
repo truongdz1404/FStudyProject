@@ -6,7 +6,8 @@ const getPayMentQR = async () => {
     const response = await api.get<ResponseWith<Payment>>("QRcode/generate")
     return response.data.data;
 };
+
 const PaymentService = {
-    getPayMentQR,
-};
-export default PaymentService;
+  getPayMentQR
+}
+export default PaymentService

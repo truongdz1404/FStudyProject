@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using FStudyForum.Core.Models.DTOs.Category; // Thêm using directive này để sử dụng List<T>
+using FStudyForum.Core.Models.DTOs.Category; 
 
 namespace FStudyForum.Core.Models.DTOs.Topic
 {
@@ -9,20 +9,20 @@ namespace FStudyForum.Core.Models.DTOs.Topic
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public bool IsDeleted { get; set; } = false;
-        public List<long> CategoryIds { get; set; } = [];
+        public List<long> Categories { get; set; } =  new List<long>();  
     }
     public class CreateTopicDTO
     {
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
-        public List<long> CategoryIds { get; set; } = [];
+        public List<long> Categories { get; set; } =  new List<long>();
 
     }
     public class UpdateTopicDTO
     {
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
-        public List<long> CategoryIds { get; set; } = [];
+        public List<long> Categories { get; set; } =  new List<long>();
     }
     public class DeleteTopicDTO
     {
@@ -33,6 +33,6 @@ namespace FStudyForum.Core.Models.DTOs.Topic
     {
         public long Id { get; set; }
         public bool IsDeleted { get; set; } = false;
-        public List<long> CategoryIds { get; set; } = new List<long>();
+        public List<long> Categories { get; set; } =  new List<long>();
     }
 }

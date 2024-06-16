@@ -1,4 +1,5 @@
 import withMT from "@material-tailwind/react/utils/withMT";
+import defaultTheme from "tailwindcss/defaultTheme"
 
 export default withMT({
   content: [
@@ -7,8 +8,8 @@ export default withMT({
   theme: {
     extend: {
       fontFamily: {
-        inter: ["Inter", "sans-serif"],
-        sans: ["Inter", "sans-serif"],
+        inter: ["Inter",...defaultTheme.fontFamily.sans],
+        sans: ["Inter", ...defaultTheme.fontFamily.sans],
       },
     },
   },

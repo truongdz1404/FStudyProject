@@ -1,9 +1,11 @@
 using System.Linq.Expressions;
-using FStudyForum.Core.Models.DTOs.Paging;
+using FStudyForum.Core.Models.DTOs;
 using FStudyForum.Core.Exceptions;
 using FStudyForum.Core.Interfaces.IRepositories;
 using FStudyForum.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Dynamic.Core;
+using FStudyForum.Core.Helpers;
 
 namespace FStudyForum.Infrastructure.Repositories;
 
@@ -25,24 +27,22 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
         return data;
     }
 
-    public virtual async Task<PaginatedDataDTO<T>> GetPaginatedData(int pageNumber, int pageSize)
+    public virtual async Task<PaginatedData<T>> GetPaginatedData(int pageNumber, int pageSize)
     {
-        var query = _dbContext.Set<T>()
+        var data = await _dbContext.Set<T>()
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
-            .AsNoTracking();
+            .ToListAsync();
 
-        var data = await query.ToListAsync();
         var totalCount = await _dbContext.Set<T>().CountAsync();
 
-        return new PaginatedDataDTO<T>(data, totalCount);
+        return new PaginatedData<T>(data, totalCount);
     }
 
     public virtual async Task<T> GetById<Tid>(Tid id)
     {
-        var data = await _dbContext.Set<T>().FindAsync(id);
-        if (data == null)
-            throw new NotFoundException("No data found");
+        var data = await _dbContext.Set<T>().FindAsync(id)
+            ?? throw new NotFoundException("No data found");
         return data;
     }
 
@@ -57,27 +57,17 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
         return await _dbContext.Set<T>().AnyAsync(lambda);
     }
 
-    //Before update existence check
-    // id = 1, key = "Name", value = "John"
-    public virtual async Task<bool> IsExistsForUpdate<Tid>(Tid id, string key, string value)
+
+    public async Task<bool> IsExistsForUpdate<Tid>(Tid id, string key, string value)
     {
-        // parameter => x
         var parameter = Expression.Parameter(typeof(T), "x");
-        // x.Name
         var property = Expression.Property(parameter, key);
-        // "John"
         var constant = Expression.Constant(value);
-        // x.Name == "John"
         var equality = Expression.Equal(property, constant);
-        // x.Id
         var idProperty = Expression.Property(parameter, "Id");
-        // x.Id != 1
         var idEquality = Expression.NotEqual(idProperty, Expression.Constant(id));
-        // x.Name == "John" && x.Id != 1
         var combinedExpression = Expression.AndAlso(equality, idEquality);
-        // x => x.Name == "John" && x.Id != 1
         var lambda = Expression.Lambda<Func<T, bool>>(combinedExpression, parameter);
-        // SELECT * FROM T WHERE Name = "John" AND Id != 1
         return await _dbContext.Set<T>().AnyAsync(lambda);
     }
 
@@ -112,4 +102,16 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
         await _dbContext.SaveChangesAsync();
     }
 
+    public virtual async Task<IEnumerable<T>> GetQuery(QueryParameters query)
+    {
+        return await _dbContext.Set<T>()
+            .Paginate(query.PageNumber, query.PageSize)
+            .Sort(query.OrderBy)
+            .ToListAsync();
+    }
+
+    public async Task<int> CountAsync()
+    {
+        return await _dbContext.Set<T>().CountAsync();
+    }
 }

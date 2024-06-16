@@ -1,5 +1,4 @@
 ﻿using FStudyForum.Core.Interfaces.IRepositories;
-using FStudyForum.Core.Models.DTOs.Paging;
 using FStudyForum.Core.Models.DTOs.SavePost;
 using FStudyForum.Core.Models.Entities;
 using FStudyForum.Infrastructure.Data;
