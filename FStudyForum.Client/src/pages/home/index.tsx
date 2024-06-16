@@ -79,7 +79,7 @@ const Home: React.FC = () => {
 
   return (
     <div>
-      <div className="flex justify-center">
+      <div className="flex justify-start m-4">
         <FilterComponent 
           onAllTopicClick={() => handleTopicEvent(false)}
           onTopicClick={handleTopicEvent}
