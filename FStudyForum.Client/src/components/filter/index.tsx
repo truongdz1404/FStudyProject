@@ -20,7 +20,7 @@ const FilterComponent: React.FC = () => {
       setTopics(topics)
     }
     fetchTopics()
-  })
+  }, [])
 
   const chooseTopic = (topicId: number | null) => {
     return async () => {
