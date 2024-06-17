@@ -36,6 +36,12 @@ public class ApplicationDBContext(DbContextOptions options)
             .WithOne(d => d.User);
 
         builder.Entity<ApplicationUser>()
+            .HasMany(u => u.BannedByTopics)
+            .WithOne(b => b.User);
+
+
+
+        builder.Entity<ApplicationUser>()
             .HasMany(u => u.Comments)
             .WithOne(c => c.Creater)
             .OnDelete(DeleteBehavior.NoAction);
@@ -68,6 +74,10 @@ public class ApplicationDBContext(DbContextOptions options)
             .HasMany(t => t.Posts)
             .WithOne(p => p.Topic)
             .IsRequired();
+
+        builder.Entity<Topic>()
+        .HasMany(t => t.BannedUser)
+        .WithOne(b => b.Topic);
 
         builder.Entity<Post>()
             .HasMany(p => p.Votes)

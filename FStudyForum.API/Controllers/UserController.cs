@@ -22,6 +22,10 @@ namespace FStudyForum.API.Controllers
             _identityService = identityService;
         }
 
+        public IActionResult GetTest()
+        {
+            return Ok("Hello World");
+        }
         [HttpGet("profile"), Authorize]
         public async Task<IActionResult> GetProfile()
         {
@@ -70,7 +74,7 @@ namespace FStudyForum.API.Controllers
             {
                 var isSucceed = await _identityService.CreateUserAsync(new RegisterDTO
                 {
-                    Username = createUserDTO.Username,
+                    Email = createUserDTO.Username,
                     Password = createUserDTO.Password
                 }, createUserDTO.Roles, true);
                 if (!isSucceed) throw new Exception("Username is existed");

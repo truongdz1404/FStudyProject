@@ -288,6 +288,38 @@ namespace FStudyForum.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "tblTopicBans",
+                schema: "dbo",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    TopicId = table.Column<long>(type: "bigint", nullable: false),
+                    BannedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_tblTopicBans", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_tblTopicBans_tblTopics_TopicId",
+                        column: x => x.TopicId,
+                        principalSchema: "dbo",
+                        principalTable: "tblTopics",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_tblTopicBans_tblUsers_UserId",
+                        column: x => x.UserId,
+                        principalSchema: "dbo",
+                        principalTable: "tblUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "tblUserClaims",
                 schema: "dbo",
                 columns: table => new
@@ -523,9 +555,9 @@ namespace FStudyForum.Infrastructure.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "2038a58e-1ea5-4684-a920-d5f190b43d39", null, "User", "USER" },
-                    { "adfd2b24-4a89-4036-b5ed-ed7e850e6e01", null, "Admin", "ADMIN" },
-                    { "e1b4361d-4e92-471f-845f-1d083eda8e0c", null, "Moderator", "MODERATOR" }
+                    { "058c557c-fdc1-4d1e-bbc2-63d517e9ff5d", null, "Moderator", "MODERATOR" },
+                    { "5bc1e67e-83c2-4454-8453-640f027d1aca", null, "User", "USER" },
+                    { "9477c09e-575b-4c98-8aa0-091410f38787", null, "Admin", "ADMIN" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -616,6 +648,18 @@ namespace FStudyForum.Infrastructure.Migrations
                 column: "SavedPostsId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_tblTopicBans_TopicId",
+                schema: "dbo",
+                table: "tblTopicBans",
+                column: "TopicId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_tblTopicBans_UserId",
+                schema: "dbo",
+                table: "tblTopicBans",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_tblTopicCategories_TopicsId",
                 schema: "dbo",
                 table: "tblTopicCategories",
@@ -704,6 +748,10 @@ namespace FStudyForum.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "tblSavePosts",
+                schema: "dbo");
+
+            migrationBuilder.DropTable(
+                name: "tblTopicBans",
                 schema: "dbo");
 
             migrationBuilder.DropTable(

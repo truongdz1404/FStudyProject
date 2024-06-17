@@ -13,5 +13,6 @@ namespace FStudyForum.Core.Models.DTOs.Post
         public string Content { get; set; } = string.Empty;
         public bool IsDeleted { get; set; } = false;
         public virtual IEnumerable<Comment> Comments { get; set; } = [];
+        
     }
 }

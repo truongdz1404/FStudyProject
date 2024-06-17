@@ -1,14 +1,14 @@
 // src/components/topic/Popup/UpdateTopicPopup.tsx
-import React, { useEffect, useState } from "react"
-import { Alert, Button } from "@material-tailwind/react"
-import TopicService from "@/services/TopicService"
-import { Topic as TopicType, UpdateTopicDTO } from "@/types/topic"
+import React, { useEffect, useState } from "react";
+import { Alert, Button } from "@material-tailwind/react";
+import TopicService from "@/services/TopicService";
+import { Topic as TopicType, UpdateTopicDTO } from "@/types/topic";
 
 interface UpdateTopicPopupProps {
-  open: boolean
-  topic: TopicType
-  onClose: () => void
-  onUpdate: () => void
+  open: boolean;
+  topic: TopicType;
+  onClose: () => void;
+  onUpdate: () => void;
 }
 
 const UpdateTopicPopup: React.FC<UpdateTopicPopupProps> = ({
@@ -17,19 +17,19 @@ const UpdateTopicPopup: React.FC<UpdateTopicPopupProps> = ({
   onClose,
   onUpdate
 }) => {
-  const [topicName, setTopicName] = useState(topic.name)
-  const [description, setDescription] = useState(topic.description)
+  const [topicName, setTopicName] = useState(topic.name);
+  const [description, setDescription] = useState(topic.description);
   const [categories, setCategories] = useState<string[]>(
     topic.categories.map(String)
-  )
-  const [error, setError] = useState<string | null>(null)
-  const [successMessage, setSuccessMessage] = useState<string | null>(null)
+  );
+  const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    setTopicName(topic.name)
-    setDescription(topic.description)
-    setCategories(topic.categories.map(String))
-  }, [topic])
+    setTopicName(topic.name);
+    setDescription(topic.description);
+    setCategories(topic.categories.map(String));
+  }, [topic]);
 
   const handleUpdateTopic = async () => {
     try {
@@ -37,22 +37,22 @@ const UpdateTopicPopup: React.FC<UpdateTopicPopupProps> = ({
         name: topicName,
         description,
         categories: categories.map(Number)
-      }
+      };
 
-      await TopicService.update(topic.id, updatedTopic)
-      setSuccessMessage("Topic updated successfully!")
+      await TopicService.update(topic.name, updatedTopic);
+      setSuccessMessage("Topic updated successfully!");
       setTimeout(() => {
-        setSuccessMessage(null)
-        onUpdate()
-        onClose()
-      }, 2000)
+        setSuccessMessage(null);
+        onUpdate();
+        onClose();
+      }, 2000);
     } catch (error) {
-      console.error("Error updating topic:", error)
-      setError("Error updating topic. Please try again later.")
+      console.error("Error updating topic:", error);
+      setError("Error updating topic. Please try again later.");
     }
-  }
+  };
 
-  if (!open) return null
+  if (!open) return null;
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-700 bg-opacity-50 z-50">
@@ -127,7 +127,7 @@ const UpdateTopicPopup: React.FC<UpdateTopicPopupProps> = ({
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default UpdateTopicPopup
+export default UpdateTopicPopup;

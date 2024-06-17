@@ -39,11 +39,12 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Authenticate([FromBody] LoginDTO loginDTO)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
-        var isValid = await _identityService.SigninUserAsync(loginDTO);
-        if (isValid)
+        try
         {
+            var isValid = await _identityService.SigninUserAsync(loginDTO);
+            if (!isValid) throw new Exception("Email or password is incorrect");
             var tokenDTO = await _userService
-            .CreateAuthTokenAsync(loginDTO.UserName, _jwtConfig.RefreshTokenValidityInDays);
+                .CreateAuthTokenAsync(EmailHelper.GetUsername(loginDTO.Email), _jwtConfig.RefreshTokenValidityInDays);
             SetTokensInsideCookie(tokenDTO, HttpContext);
 
             return Ok(new Response
@@ -52,11 +53,16 @@ public class AuthController : ControllerBase
                 Message = "Login successfully"
             });
         }
-        return BadRequest(new Response
+        catch (Exception ex)
         {
-            Status = ResponseStatus.ERROR,
-            Message = "Username or password is incorrect"
-        });
+            return BadRequest(new Response
+            {
+                Status = ResponseStatus.ERROR,
+                Message = ex.Message
+            });
+        }
+
+
     }
 
     [HttpPost("login-google")]
@@ -236,7 +242,7 @@ public class AuthController : ControllerBase
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        if (!EmailValidator.IsFptMail(registerDTO.Username))
+        if (!EmailHelper.IsFptMail(registerDTO.Email))
         {
             return BadRequest(new Response
             {
@@ -244,7 +250,7 @@ public class AuthController : ControllerBase
                 Message = "Email must be FPT email"
             });
         }
-        var (isUserExists, isConfirmed) = await _identityService.CheckUserExistsWithEmailConfirmedAsync(registerDTO.Username);
+        var (isUserExists, isConfirmed) = await _identityService.CheckUserExistsWithEmailConfirmedAsync(registerDTO.Email);
         if (isUserExists && isConfirmed)
 
         {
@@ -256,7 +262,7 @@ public class AuthController : ControllerBase
         }
         if (isUserExists && !isConfirmed)
         {
-            var userId = await _identityService.GetUserIdAsync(registerDTO.Username);
+            var userId = await _identityService.GetUserIdAsync(registerDTO.Email);
             var result = await _identityService.DeleteUserAsync(userId);
             if (!result)
             {
@@ -277,7 +283,7 @@ public class AuthController : ControllerBase
             });
         }
 
-        var token = await SendConfirmationEmailAsync(registerDTO.Username);
+        var token = await SendConfirmationEmailAsync(registerDTO.Email);
 
         return Ok(new Response
         {

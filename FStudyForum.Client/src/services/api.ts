@@ -13,11 +13,11 @@ let failedQueue: {
 }[] = []
 
 const processQueue = (error: unknown) => {
-  failedQueue.forEach(prom => {
+  failedQueue.forEach(({ resolve, reject }) => {
     if (error) {
-      prom.reject(error)
+      reject(error)
     } else {
-      prom.resolve()
+      resolve()
     }
   })
   failedQueue = []

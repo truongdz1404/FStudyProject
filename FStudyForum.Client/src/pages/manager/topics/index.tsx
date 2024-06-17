@@ -1,10 +1,10 @@
-import AddTopicPopup from "@/components/topic/popup/AddTopicPopup"
-import DeleteTopicPopup from "@/components/topic/popup/DeleteTopicPopup"
-import UpdateTopicPopup from "@/components/topic/popup/UpdateTopicPopup"
-import { cn } from "@/helpers/utils"
-import TopicService from "@/services/TopicService"
-import { Topic } from "@/types/topic"
-import { useQuery } from "@tanstack/react-query"
+import AddTopicPopup from "@/components/topic/popup/AddTopicPopup";
+import DeleteTopicPopup from "@/components/topic/popup/DeleteTopicPopup";
+import UpdateTopicPopup from "@/components/topic/popup/UpdateTopicPopup";
+import { cn } from "@/helpers/utils";
+import TopicService from "@/services/TopicService";
+import { Topic } from "@/types/topic";
+import { useQuery } from "@tanstack/react-query";
 import {
   Card,
   CardHeader,
@@ -15,54 +15,54 @@ import {
   //   CardFooter,
   IconButton,
   Tooltip
-} from "@material-tailwind/react"
-import { ChevronsUpDown, Pencil, Plus, Trash } from "lucide-react"
-import React from "react"
+} from "@material-tailwind/react";
+import { ChevronsUpDown, Pencil, Plus, Trash } from "lucide-react";
+import React from "react";
 
-const titles = ["Name", "Description", "Action"]
+const titles = ["Name", "Description", "Action"];
 
 const Topics = () => {
   const openAddPopup = () => {
-    setPopupOpen(1)
-  }
+    setPopupOpen(1);
+  };
 
   const openEditPopup = (topic: Topic) => {
-    setSelectTopic(topic)
-    setPopupOpen(2)
-  }
+    setSelectTopic(topic);
+    setPopupOpen(2);
+  };
 
   const openDeletePopup = (topic: Topic) => {
-    setSelectTopic(topic)
-    setPopupOpen(3)
-  }
+    setSelectTopic(topic);
+    setPopupOpen(3);
+  };
   const closePopup = () => {
-    setPopupOpen(0)
-  }
+    setPopupOpen(0);
+  };
 
   const reloadTopics = () => {
     // setReload(true);
-  }
+  };
 
   const handleDelete = async () => {
-    if (!selectTopic) return
+    if (!selectTopic) return;
     try {
-      await TopicService.Delete(selectTopic.id)
-      closePopup()
-      reloadTopics()
+      await TopicService.Delete(selectTopic.name);
+      closePopup();
+      reloadTopics();
     } catch (error) {
-      console.error("Error deleting topic:", error)
+      console.error("Error deleting topic:", error);
     }
-  }
+  };
 
   const [selectTopic, setSelectTopic] = React.useState<Topic | undefined>(
     undefined
-  )
-  const [popupOpen, setPopupOpen] = React.useState(0)
+  );
+  const [popupOpen, setPopupOpen] = React.useState(0);
 
   const { data, isLoading } = useQuery({
     queryKey: ["active-topics"],
     queryFn: TopicService.getActiveTopics
-  })
+  });
 
   return (
     <>
@@ -114,10 +114,10 @@ const Topics = () => {
             </thead>
             <tbody className={cn(isLoading && "hidden")}>
               {data?.map((topic, index) => {
-                const isLast = index === data.length - 1
+                const isLast = index === data.length - 1;
                 const classes = isLast
                   ? "p-4"
-                  : "p-4 border-b border-blue-gray-50"
+                  : "p-4 border-b border-blue-gray-50";
 
                 return (
                   <tr key={topic.name}>
@@ -173,7 +173,7 @@ const Topics = () => {
                       </Tooltip>
                     </td>
                   </tr>
-                )
+                );
               })}
             </tbody>
           </table>
@@ -213,6 +213,6 @@ const Topics = () => {
         />
       )}
     </>
-  )
-}
-export default Topics
+  );
+};
+export default Topics;

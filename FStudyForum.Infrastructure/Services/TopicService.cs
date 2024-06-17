@@ -61,9 +61,9 @@ public class TopicService : ITopicService
         var createdTopicDto = _mapper.Map<TopicDTO>(createdTopic);
         return createdTopicDto;
     }
-    public async Task<TopicDTO> GetTopicById(long id)
+    public async Task<TopicDTO> GetTopicByName(string name)
     {
-        var topic = await _topicRepository.GetById(id);
+        var topic = await _topicRepository.GetByName(name);
         if (topic == null)
         {
             throw new Exception("Topic not found");
@@ -81,9 +81,9 @@ public class TopicService : ITopicService
         return topicDto;
     }
 
-    public async Task<TopicDTO> UpdateTopic(long id, UpdateTopicDTO topicDto)
+    public async Task<TopicDTO> UpdateTopic(string name, UpdateTopicDTO topicDto)
     {
-        var existedTopic = await _topicRepository.GetById(id)
+        var existedTopic = await _topicRepository.GetByName(name)
             ?? throw new Exception("Topic not found");
 
         existedTopic.Name = topicDto.Name;
@@ -103,9 +103,9 @@ public class TopicService : ITopicService
     }
 
 
-    public async Task<bool> DeleteTopic(long id)
+    public async Task<bool> DeleteTopic(string name)
     {
-        var topic = await _topicRepository.GetById(id);
+        var topic = await _topicRepository.GetByName(name);
 
         if (topic == null)
         {
@@ -134,19 +134,6 @@ public class TopicService : ITopicService
         }
         return topicDTOs;
     }
-
-    public async Task<List<PostDTO>> GetPostsByTopicId(long id)
-    {
-        var topic = await _topicRepository.GetTopicWithPostsById(id) 
-            ?? throw new Exception("Topic not found");
-        return topic.Posts.Select(p => new PostDTO
-        {
-            Title = p.Title,
-            Content = p.Content,
-            IsDeleted = p.IsDeleted,
-            Comments = p.Comments
-        }).ToList();
-
-    }
+    
 }
 

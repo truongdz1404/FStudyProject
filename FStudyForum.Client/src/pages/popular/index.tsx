@@ -1,7 +1,7 @@
 import ContentLayout from "@/components/layout/ContentLayout"
 import PaymentService from "@/services/PaymentService"
 
-const Post = () => {
+const Popular = () => {
   const getPaymentQR = async () => {
     const payment = await PaymentService.getPayMentQR()
     console.log(payment)
@@ -14,4 +14,4 @@ const Post = () => {
     </ContentLayout>
   )
 }
-export default Post
+export default Popular

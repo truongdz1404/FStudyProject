@@ -1,9 +1,7 @@
 using FStudyForum.Core.Interfaces.IRepositories;
-using FStudyForum.Core.Models.DTOs;
 using FStudyForum.Core.Models.Entities;
 using FStudyForum.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 
 namespace FStudyForum.Infrastructure.Repositories
 {
@@ -46,30 +44,15 @@ namespace FStudyForum.Infrastructure.Repositories
             return topics;
         }
 
-        public async Task<Topic?> GetTopicWithPostsById(long id)
+        public async Task<bool> TopicExists(string topicName)
         {
-            return await _dbContext.Topics
-                .AsSplitQuery() // split query to avoid multiple queries
-                .Include(t => t.Posts)
-                .ThenInclude(p => p.Comments)
-                .FirstOrDefaultAsync(t => t.Id == id);
-        }
-        public async Task<bool> TopicExists(string topicName, long? topicId = null)
-        {
-            if (topicId.HasValue)
-            {
-                return await _dbContext.Topics.AnyAsync(t => t.Name == topicName && t.Id != topicId.Value);
-            }
-            else
-            {
-                return await _dbContext.Topics.AnyAsync(t => t.Name == topicName);
-            }
+            return await _dbContext.Topics.AnyAsync(t => t.Name == topicName);
         }
 
-        public async Task<Topic?> GetById(long id)
+        public async Task<Topic?> GetByName(string name)
         {
             var topic = await _dbContext.Topics
-               .Include(t => t.Categories).FirstOrDefaultAsync(t => t.Id == id);
+               .Include(t => t.Categories).FirstOrDefaultAsync(t => t.Name == name);
             return topic;
 
         }

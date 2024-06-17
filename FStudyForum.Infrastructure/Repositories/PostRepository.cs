@@ -13,5 +13,9 @@ namespace FStudyForum.Infrastructure.Repositories
         {
         }
 
+        public async Task<IEnumerable<Post>> GetByTopicId(long topicId)
+        {
+            return await _dbContext.Posts.Where(p => p.Topic.Id == topicId).ToListAsync();
+        }
     }
 }

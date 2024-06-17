@@ -1,44 +1,44 @@
-import { Profile } from "@/types/profile"
-import { Typography } from "@material-tailwind/react"
-import { FC } from "react"
+import { Profile } from "@/types/profile";
+import { Typography } from "@material-tailwind/react";
+import { FC } from "react";
 type ProfileDescriptionProps = {
-  profile: Profile
-}
+  profile: Profile;
+};
 const convertGenderToString = (gender: number) => {
   switch (gender) {
     case 0:
-      return "Male"
+      return "Male";
     case 1:
-      return "Female"
+      return "Female";
     default:
-      return "Other"
+      return "Other";
   }
-}
+};
 const ProfileDescription: FC<ProfileDescriptionProps> = ({ profile }) => {
   return (
-    <div className="text-blue-gray-600">
-      <Typography className="text-sm font-semibold ">About me: </Typography>
+    <div className="text-black">
+      <Typography className="text-xs font-semibold ">About me: </Typography>
       <Typography className="text-xs">{profile.bio}</Typography>
-      <Typography className="text-sm font-semibold mt-2">
+      <Typography className="text-xs font-semibold mt-2">
         Achievements:
       </Typography>
       <div className="flex justify-around">
-        <div className="flex flex-col items-center">
-          <Typography className="font-semibold">0</Typography>
-          <Typography className="text-xs">Posts</Typography>
+        <div className="flex flex-col items-center text-xs">
+          <Typography className="text-sm font-medium">0</Typography>
+          <Typography className="text-xs font-light">Posts</Typography>
         </div>
-        <div className="flex flex-col items-center">
-          <Typography className="font-semibold">0</Typography>
-          <Typography className="text-xs">Comments</Typography>
+        <div className="flex flex-col items-center text-xs">
+          <Typography className="text-sm font-medium">0</Typography>
+          <Typography className="text-xs font-light">Comments</Typography>
         </div>
       </div>
-      <Typography className="text-sm font-semibold mt-2">
-        Major: <span className="text-xs font-medium">{profile.major}</span>
+      <Typography className="text-xs font-semibold mt-2">
+        Major: <span className="font-light">{profile.major}</span>
       </Typography>
 
-      <Typography className="text-sm font-semibold mt-2">
+      <Typography className="text-xs font-semibold mt-2">
         Gender:{" "}
-        <span className="text-xs font-medium">
+        <span className=" font-light">
           {convertGenderToString(profile.gender)}
         </span>
       </Typography>
@@ -53,7 +53,7 @@ const ProfileDescription: FC<ProfileDescriptionProps> = ({ profile }) => {
         </div>
       </Button> */}
     </div>
-  )
-}
+  );
+};
 
-export default ProfileDescription
+export default ProfileDescription;

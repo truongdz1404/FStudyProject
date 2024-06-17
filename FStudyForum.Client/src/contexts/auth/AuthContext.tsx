@@ -20,24 +20,26 @@ export const AuthContext = React.createContext<AuthContextType>({
 })
 
 const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
-  const [state, dispatch] = React.useReducer(reducer, initialState)
+  const [authState, dispatchAuth] = React.useReducer(reducer, initialState);
 
   React.useEffect(() => {
-    (async () => {
+    const fetchUserProfile = async () => {
       try {
-        const user = await UserService.getProfile()
-        dispatch(initialize({ isAuthenticated: true, user: user }))
+        const user = await UserService.getProfile();
+        dispatchAuth(initialize({ isAuthenticated: true, user }));
       } catch {
-        dispatch(initialize({ isAuthenticated: false, user: null }))
+        dispatchAuth(initialize({ isAuthenticated: false, user: null }));
       }
-    })()
-  }, [])
+    };
+
+    fetchUserProfile();
+  }, []);
 
   return (
-    <AuthContext.Provider value={{ ...state, dispatch }}>
+    <AuthContext.Provider value={{ ...authState, dispatch: dispatchAuth }}>
       {children}
     </AuthContext.Provider>
-  )
-}
+  );
+};
 
 export default AuthProvider

@@ -9,5 +9,6 @@ namespace FStudyForum.Core.Interfaces.IRepositories
 {
     public interface IPostRepository : IBaseRepository<Post>
     {
+        Task<IEnumerable<Post>> GetByTopicId(long topicId);
     }
 }

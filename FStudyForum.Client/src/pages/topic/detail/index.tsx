@@ -1,40 +1,40 @@
-import React, { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
-import { Progress, Alert } from "@material-tailwind/react"
-import TopicService from "@/services/TopicService"
-import { Topic } from "@/types/topic"
-import { MessageSquare, Share, ArrowUp, ArrowDown, Award } from "lucide-react"
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { Alert } from "@material-tailwind/react";
+import TopicService from "@/services/TopicService";
+import { Topic } from "@/types/topic";
+import { MessageSquare, Share, ArrowUp, ArrowDown, Award } from "lucide-react";
 const TopicDetail: React.FC = () => {
-  const { id } = useParams<{ id?: string }>()
-  const [topic, setTopic] = useState<Topic | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const { name } = useParams<{ name: string }>();
+  const [topic, setTopic] = useState<Topic | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchTopic = async () => {
-      try {
-        const data = await TopicService.GetTopicById(Number(id))
-        setTopic(data)
-      } catch (error) {
-        setError("Failed to fetch topic")
-      } finally {
-        setLoading(false)
-      }
+    setLoading(true);
+    if (!name) {
+      setError("No topic found");
+      setLoading(false);
+      return;
     }
 
-    if (id) {
-      fetchTopic()
-    } else {
-      setLoading(false)
-    }
-  }, [id])
+    const fetchTopic = async () => {
+      try {
+        const data = await TopicService.GetTopicByName(name);
+        setTopic(data);
+      } catch (error) {
+        setError("Failed to fetch topic");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTopic();
+  }, [name]);
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-full">
-        <Progress value={50} color="blue" className="w-1/2" />
-      </div>
-    )
+      <div className="flex justify-center items-center h-full">Loading...</div>
+    );
   }
 
   if (error) {
@@ -42,7 +42,7 @@ const TopicDetail: React.FC = () => {
       <div className="p-4">
         <Alert color="red">{error}</Alert>
       </div>
-    )
+    );
   }
 
   if (!topic) {
@@ -50,7 +50,7 @@ const TopicDetail: React.FC = () => {
       <div className="p-4">
         <Alert color="red">No topic found.</Alert>
       </div>
-    )
+    );
   }
 
   return (
@@ -199,7 +199,7 @@ const TopicDetail: React.FC = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default TopicDetail
+export default TopicDetail;

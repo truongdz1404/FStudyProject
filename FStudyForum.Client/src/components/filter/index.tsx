@@ -1,25 +1,53 @@
 import { usePosts } from "@/hooks/usePosts"
 import PostService from "@/services/PostService"
-// import TopicService from "@/services/TopicService"
-import { ChevronDown, ChevronUp, Filter } from "lucide-react"
+import TopicService from "@/services/TopicService"
+import { Topic } from "@/types/topic"
+import { ChevronDown, ChevronRight, ChevronUp, Filter } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
-type FilterComponentProps = {
-  onAllTopicClick: () => void
-  onTopicClick: (isViewingTopic: boolean) => void
-}
-const FilterComponent: React.FC<FilterComponentProps> = props => {
+
+const FilterComponent: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false)
-//   const [subMenuOpen, setSubMenuOpen] = useState(false)
+  const [subMenuOpen, setSubMenuOpen] = useState(false)
   const [isChevronDown, setIsChevronDown] = useState(false)
   const { setPosts } = usePosts()
-//   const [selectedTopic, setSelectedTopic] = useState<number | null>(null)
+  const [topics, setTopics] = useState<Topic[]>([])
+  const [selectedTopic, setSelectedTopic] = useState<number | null>(null)
   const node = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const fetchTopics = async () => {
+      const topics = await TopicService.getActiveTopics();
+      setTopics(topics)
+    }
+    fetchTopics()
+  })
+
+  const chooseTopic = (topicId: number | null) => {
+    return async () => {
+      if (topicId !== null){
+        setSelectedTopic(topicId)
+        const fetchPosts = async () => {
+          try {
+            const posts = await PostService.getPostsByTopicId(topicId)
+            if (Array.isArray(posts)) {
+              setPosts(posts)
+            } else {
+              setPosts([])
+            }
+          } catch (error) {
+            setPosts([])
+          }
+        }
+        fetchPosts();
+      }
+    }
+  }
 
 
   const handleChooseNewest = () => {
     const fetchPosts = async () => {
       try {
-        const posts = await PostService.getPosts(1);
+        const posts = await PostService.getPosts();
         if (Array.isArray(posts)) {
           setPosts(posts)
         } else {
@@ -31,7 +59,6 @@ const FilterComponent: React.FC<FilterComponentProps> = props => {
       }
     }
     fetchPosts()
-    props.onTopicClick(false)
   }
 
 
@@ -55,7 +82,7 @@ const FilterComponent: React.FC<FilterComponentProps> = props => {
         <button
           onClick={() => {
             setIsOpen(!isOpen)
-          //   setSubMenuOpen(false)
+            setSubMenuOpen(false)
             setIsChevronDown(!isChevronDown)
           }}
           className="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-gray-100 focus:ring-blue-500"
@@ -67,13 +94,13 @@ const FilterComponent: React.FC<FilterComponentProps> = props => {
         {isOpen && (
           <div className="origin-top-left absolute left-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 px-2 py-2">
             <a
-          //     onMouseEnter={() => setSubMenuOpen(false)}
+              onMouseEnter={() => setSubMenuOpen(false)}
               onClick={handleChooseNewest}
               className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer"
             >
               Newest
             </a>
-            {/* <div className="relative">
+            <div className="relative">
               <button
                 onMouseEnter={() => setSubMenuOpen(true)}
                 className="flex justify-between items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 relative rounded-md"
@@ -88,6 +115,7 @@ const FilterComponent: React.FC<FilterComponentProps> = props => {
                       key={index}
                       target="_blank"
                       rel="noopener"
+                      onClick={chooseTopic(topic.id)}
                       className={
                         selectedTopic === topic.id
                           ? "bg-orange-400 flex px-4 py-2 text-sm text-gray-700 cursor-pointer rounded-md"
@@ -99,7 +127,7 @@ const FilterComponent: React.FC<FilterComponentProps> = props => {
                   ))}
                 </div>
               )}
-            </div> */}
+            </div>
           </div>
         )}
       </div>

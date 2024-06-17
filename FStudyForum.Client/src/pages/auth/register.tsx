@@ -1,29 +1,29 @@
-import AuthService from "@/services/AuthService"
-import { FC } from "react"
-import * as Yup from "yup"
-import { yupResolver } from "@hookform/resolvers/yup"
-import { useForm } from "react-hook-form"
-import { checkEmail, cn } from "@/helpers/utils"
-import { Button, Input } from "@material-tailwind/react"
-import { Link, useNavigate } from "react-router-dom"
-import { Icons } from "@/components/Icons"
-import React from "react"
-import { AxiosError } from "axios"
-import { Response } from "@/types/response"
-import { CircleAlert } from "lucide-react"
-import { useMutation } from "@tanstack/react-query"
+import AuthService from "@/services/AuthService";
+import { FC } from "react";
+import * as Yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useForm } from "react-hook-form";
+import { checkEmail, cn } from "@/helpers/utils";
+import { Button, Input } from "@material-tailwind/react";
+import { Link, useNavigate } from "react-router-dom";
+import { Icons } from "@/components/Icons";
+import React from "react";
+import { AxiosError } from "axios";
+import { Response } from "@/types/response";
+import { CircleAlert } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
 
 type RegisterFormInputs = {
-  username: string
-  password: string
-  confirmPassword: string
-}
+  email: string;
+  password: string;
+  confirmPassword: string;
+};
 
 const validation = Yup.object().shape({
-  username: Yup.string()
-    .required("Username is required")
+  email: Yup.string()
+    .required("Email is required")
     .test("is-mailFPT", "Email must have @fpt.edu.vn", value => {
-      return checkEmail(value)
+      return checkEmail(value);
     }),
   password: Yup.string()
     .required("Password is required")
@@ -31,11 +31,11 @@ const validation = Yup.object().shape({
   confirmPassword: Yup.string()
     .required("Confirm password is required")
     .oneOf([Yup.ref("password")], "Confirm password do not match")
-})
+});
 
 const SignUp: FC = () => {
-  const navigate = useNavigate()
-  const [error, setError] = React.useState("")
+  const navigate = useNavigate();
+  const [error, setError] = React.useState("");
   const {
     register,
     handleSubmit,
@@ -43,20 +43,20 @@ const SignUp: FC = () => {
   } = useForm<RegisterFormInputs>({
     mode: "onTouched",
     resolver: yupResolver(validation)
-  })
+  });
 
   const { mutate: handleRegister, isPending } = useMutation({
     mutationFn: async (form: RegisterFormInputs) => {
-      await AuthService.register(form.username, form.password)
+      await AuthService.register(form.email, form.password);
     },
     onSuccess: (_, variables) => {
-      navigate(`/auth/confirm-email?email=${variables.username}`)
+      navigate(`/auth/confirm-email?email=${variables.email}`);
     },
     onError: e => {
-      const error = e as AxiosError
-      setError((error?.response?.data as Response)?.message || error.message)
+      const error = e as AxiosError;
+      setError((error?.response?.data as Response)?.message || error.message);
     }
-  })
+  });
 
   return (
     <>
@@ -69,32 +69,32 @@ const SignUp: FC = () => {
         className="space-y-4"
       >
         <div>
-          <label htmlFor="username" className="block text-gray-700 text-sm m-1">
-            Username
+          <label htmlFor="email" className="block text-gray-700 text-sm m-1">
+            Email
           </label>
           <Input
-            id="username"
+            id="email"
             type="email"
             placeholder="Email Address"
             className={cn(
               "!border !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent placeholder:opacity-100",
               " focus:!border-gray-900 focus:!border-t-gray-900 focus:ring-gray-900/10  placeholder:text-gray-500",
-              Boolean(errors?.username?.message) &&
+              Boolean(errors?.email?.message) &&
                 "focus:!border-red-600 focus:!border-t-red-600 focus:ring-red-600/10 !border-red-500  placeholder:text-red-500"
             )}
             labelProps={{ className: "hidden" }}
             disabled={isPending}
             crossOrigin={undefined}
-            {...register("username")}
+            {...register("email")}
           />
 
-          {errors.username && (
+          {errors.email && (
             <span
               className={cn(
                 "text-red-500 text-xs mt-1 ml-1 flex gap-x-1 items-center"
               )}
             >
-              <CircleAlert className="w-3 h-3" /> {errors.username.message}
+              <CircleAlert className="w-3 h-3" /> {errors.email.message}
             </span>
           )}
         </div>
@@ -183,7 +183,7 @@ const SignUp: FC = () => {
         </span>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default SignUp
+export default SignUp;

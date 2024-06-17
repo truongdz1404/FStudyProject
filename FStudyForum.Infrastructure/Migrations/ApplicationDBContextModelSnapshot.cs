@@ -417,6 +417,39 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.ToTable("tblTopics", "dbo");
                 });
 
+            modelBuilder.Entity("FStudyForum.Core.Models.Entities.TopicBan", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("BannedTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("TopicId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TopicId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("tblTopicBans", "dbo");
+                });
+
             modelBuilder.Entity("FStudyForum.Core.Models.Entities.Vote", b =>
                 {
                     b.Property<long>("Id")
@@ -484,19 +517,19 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "adfd2b24-4a89-4036-b5ed-ed7e850e6e01",
+                            Id = "9477c09e-575b-4c98-8aa0-091410f38787",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "2038a58e-1ea5-4684-a920-d5f190b43d39",
+                            Id = "5bc1e67e-83c2-4454-8453-640f027d1aca",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "e1b4361d-4e92-471f-845f-1d083eda8e0c",
+                            Id = "058c557c-fdc1-4d1e-bbc2-63d517e9ff5d",
                             Name = "Moderator",
                             NormalizedName = "MODERATOR"
                         });
@@ -746,6 +779,25 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.Navigation("Creater");
                 });
 
+            modelBuilder.Entity("FStudyForum.Core.Models.Entities.TopicBan", b =>
+                {
+                    b.HasOne("FStudyForum.Core.Models.Entities.Topic", "Topic")
+                        .WithMany("BannedUser")
+                        .HasForeignKey("TopicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FStudyForum.Core.Models.Entities.ApplicationUser", "User")
+                        .WithMany("BannedByTopics")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Topic");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("FStudyForum.Core.Models.Entities.Vote", b =>
                 {
                     b.HasOne("FStudyForum.Core.Models.Entities.Comment", "Comment")
@@ -867,6 +919,8 @@ namespace FStudyForum.Infrastructure.Migrations
 
             modelBuilder.Entity("FStudyForum.Core.Models.Entities.ApplicationUser", b =>
                 {
+                    b.Navigation("BannedByTopics");
+
                     b.Navigation("Comments");
 
                     b.Navigation("CreatedPosts");
@@ -903,6 +957,8 @@ namespace FStudyForum.Infrastructure.Migrations
 
             modelBuilder.Entity("FStudyForum.Core.Models.Entities.Topic", b =>
                 {
+                    b.Navigation("BannedUser");
+
                     b.Navigation("Posts");
                 });
 #pragma warning restore 612, 618
