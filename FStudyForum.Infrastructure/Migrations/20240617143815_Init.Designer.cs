@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FStudyForum.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20240615143743_Init")]
+    [Migration("20240617143815_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -263,6 +263,7 @@ namespace FStudyForum.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreaterId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("IsDeleted")
@@ -385,6 +386,36 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.ToTable("tblReports", "dbo");
                 });
 
+            modelBuilder.Entity("FStudyForum.Core.Models.Entities.SavedPost", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("PostId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PostId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("tblSavedPosts", "dbo");
+                });
+
             modelBuilder.Entity("FStudyForum.Core.Models.Entities.Topic", b =>
                 {
                     b.Property<long>("Id")
@@ -392,6 +423,11 @@ namespace FStudyForum.Infrastructure.Migrations
                         .HasColumnType("bigint");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Avatar")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -411,6 +447,11 @@ namespace FStudyForum.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(25)
                         .HasColumnType("nvarchar(25)");
+
+                    b.Property<string>("Panner")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.HasKey("Id");
 
@@ -520,19 +561,19 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "9477c09e-575b-4c98-8aa0-091410f38787",
+                            Id = "ce639dfd-a954-44db-8880-9810aac3a2b6",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "5bc1e67e-83c2-4454-8453-640f027d1aca",
+                            Id = "fde39cc9-a7d8-4b7b-bae0-d2b5ca8946d6",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "058c557c-fdc1-4d1e-bbc2-63d517e9ff5d",
+                            Id = "8fd0351d-51a4-46fe-8d45-ddb329e82c7d",
                             Name = "Moderator",
                             NormalizedName = "MODERATOR"
                         });
@@ -659,21 +700,6 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.ToTable("tblModerators", "dbo");
                 });
 
-            modelBuilder.Entity("tblSavePosts", b =>
-                {
-                    b.Property<string>("SavedByUsersId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<long>("SavedPostsId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("SavedByUsersId", "SavedPostsId");
-
-                    b.HasIndex("SavedPostsId");
-
-                    b.ToTable("tblSavePosts", "dbo");
-                });
-
             modelBuilder.Entity("tblTopicCategories", b =>
                 {
                     b.Property<long>("CategoriesId")
@@ -747,7 +773,8 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.HasOne("FStudyForum.Core.Models.Entities.ApplicationUser", "Creater")
                         .WithMany("CreatedPosts")
                         .HasForeignKey("CreaterId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.HasOne("FStudyForum.Core.Models.Entities.Topic", "Topic")
                         .WithMany("Posts")
@@ -780,6 +807,25 @@ namespace FStudyForum.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Creater");
+                });
+
+            modelBuilder.Entity("FStudyForum.Core.Models.Entities.SavedPost", b =>
+                {
+                    b.HasOne("FStudyForum.Core.Models.Entities.Post", "Post")
+                        .WithMany("SavedByUsers")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FStudyForum.Core.Models.Entities.ApplicationUser", "User")
+                        .WithMany("SavedPosts")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Post");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("FStudyForum.Core.Models.Entities.TopicBan", b =>
@@ -890,21 +936,6 @@ namespace FStudyForum.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("tblSavePosts", b =>
-                {
-                    b.HasOne("FStudyForum.Core.Models.Entities.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("SavedByUsersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("FStudyForum.Core.Models.Entities.Post", null)
-                        .WithMany()
-                        .HasForeignKey("SavedPostsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("tblTopicCategories", b =>
                 {
                     b.HasOne("FStudyForum.Core.Models.Entities.Category", null)
@@ -934,6 +965,8 @@ namespace FStudyForum.Infrastructure.Migrations
 
                     b.Navigation("Reports");
 
+                    b.Navigation("SavedPosts");
+
                     b.Navigation("Votes");
                 });
 
@@ -954,6 +987,8 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.Navigation("Attachments");
 
                     b.Navigation("Comments");
+
+                    b.Navigation("SavedByUsers");
 
                     b.Navigation("Votes");
                 });

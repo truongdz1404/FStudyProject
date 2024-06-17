@@ -2,7 +2,6 @@
 using AutoMapper;
 using FStudyForum.Core.Interfaces.IRepositories;
 using FStudyForum.Core.Interfaces.IServices;
-using FStudyForum.Core.Models.DTOs;
 using FStudyForum.Core.Models.DTOs.Topic;
 using FStudyForum.Core.Models.Entities;
 namespace FStudyForum.Infrastructure.Services;
@@ -134,6 +133,19 @@ public class TopicService : ITopicService
         return topicDTOs;
     }
 
+    public async Task<IEnumerable<TopicDTO>> Search(string value, int size)
+    {
+        var topics = await _topicRepository.Search(value, size);
 
+        return topics.Select(t =>
+        {
+            return new TopicDTO
+            {
+                Name = t.Name,
+                Avatar = t.Avatar,
+                PostCount = t.Posts.Count
+            };
+        });
+    }
 }
 

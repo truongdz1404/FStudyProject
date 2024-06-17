@@ -5,11 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FStudyForum.Infrastructure.Repositories
 {
-    public class TopicRepository : BaseRepository<Topic>, ITopicRepository
+    public class TopicRepository(ApplicationDBContext dbContext)
+        : BaseRepository<Topic>(dbContext), ITopicRepository
     {
-        public TopicRepository(ApplicationDBContext dbContext) : base(dbContext)
-        {
-        }
         public new async Task Update(Topic model)
         {
             _dbContext.Topics.Update(model);
@@ -54,7 +52,17 @@ namespace FStudyForum.Infrastructure.Repositories
             var topic = await _dbContext.Topics
                .Include(t => t.Categories).FirstOrDefaultAsync(t => t.Name == name);
             return topic;
+        }
 
+        public async Task<List<Topic>> Search(string value, int size)
+        {
+            var topics = await _dbContext.Topics
+                .Where(t => t.IsDeleted == false && t.Name.Contains(value))
+                .Include(t => t.Posts)
+                .Take(size)
+                .ToListAsync();
+
+            return topics;
         }
     }
 

@@ -2,17 +2,27 @@ import PostService from "@/services/PostService";
 import ContentLayout from "@/components/layout/ContentLayout";
 import PostItem from "@/components/post/PostItem";
 import { useQuery } from "@tanstack/react-query";
-import { Spinner } from "@material-tailwind/react";
+import { Alert, Spinner } from "@material-tailwind/react";
 
-const Home: React.FC = () => {
-  const { data: posts } = useQuery({
+const HomePage: React.FC = () => {
+  const {
+    data: posts,
+    error,
+    isLoading
+  } = useQuery({
     queryKey: ["home"],
     queryFn: () => PostService.getPosts()
   });
-  if (!posts) return <Spinner className="mx-auto" />;
+  if (error)
+    return (
+      <Alert color="red" className="p-4">
+        Can't fetch posts
+      </Alert>
+    );
+  if (isLoading) return <Spinner className="mx-auto" />;
   return (
     <ContentLayout>
-      {posts.map((post, index) => (
+      {posts?.map((post, index) => (
         <div key={index}>
           <PostItem key={index} data={post} />
           <hr className="my-1 border-blue-gray-50" />
@@ -21,4 +31,4 @@ const Home: React.FC = () => {
     </ContentLayout>
   );
 };
-export default Home;
+export default HomePage;
