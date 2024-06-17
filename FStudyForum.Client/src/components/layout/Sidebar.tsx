@@ -9,7 +9,7 @@ const sidebarListItems = [
     path: "/home",
   },
   {
-    label: "Posts",
+    label: "Popular",
     icon: Rocket,
     path: "/posts",
   },
