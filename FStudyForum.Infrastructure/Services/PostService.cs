@@ -60,5 +60,9 @@ namespace FStudyForum.Infrastructure.Services
             await _postRepository.SavePostByUser(savedPost);
             return savedPostDTO;
         }
+        public async Task<bool> IsPostExists(SavePostDTO savedPostDTO)
+        {
+            return await _postRepository.IsPostExists(savedPostDTO);
+        }
     }
 }

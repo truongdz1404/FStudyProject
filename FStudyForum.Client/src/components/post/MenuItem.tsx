@@ -1,6 +1,6 @@
 import { Bookmark, Ellipsis, Flag, XCircle } from "lucide-react"
 import { Response } from "@/types/response";
-import React from "react"
+import React, { useEffect } from "react"
 import {
   Button,
   Menu,
@@ -22,6 +22,15 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
   const [isSaved, setIsSaved] = React.useState(false);
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const  {user} = useAuth();
+  useEffect(() => {
+    const checkPostByUserExist = async () => {
+      const isPostExists = await SavedPostService.isPostSaved(user?.username ?? "", post.id);
+      if(isPostExists.data) {
+        setIsSaved(true);     
+      }
+    }
+    checkPostByUserExist();
+  },[])
   const handleNavigate = async (post: Post) => {
     try {
       let response;

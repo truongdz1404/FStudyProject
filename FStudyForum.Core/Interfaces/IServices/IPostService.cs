@@ -9,6 +9,6 @@ namespace FStudyForum.Core.Interfaces.IServices
         Task<PaginatedData<PostDTO>> GetPaginatedData(int pageNumber, int pageSize);
         Task<SavePostDTO?> SavePostByUser(SavePostDTO savedPost);
         Task<SavePostDTO?> DeletePostByUser(SavePostDTO savedPost);
-
+        Task<bool> IsPostExists(SavePostDTO savedPostDTO);
     }
 }

@@ -5,8 +5,11 @@ const TopicDetail: React.FC = () => {
   const [isLocked, setIsLocked] = useState(false);
   const [unlockDate, setUnlockDate] = useState<Date | null>(null);
   const { id } = useParams<{ id?: string }>(); // Đặt kiểu của id là string hoặc undefined
-  const [topic, setTopic] = useState<{ name: string; description: string } | null>(null);
-  
+  const [topic, setTopic] = useState<{
+    name: string;
+    description: string;
+  } | null>(null);
+
   useEffect(() => {
     if (!id) {
       // Nếu id là undefined, không làm gì cả

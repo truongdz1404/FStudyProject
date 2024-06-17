@@ -4,12 +4,13 @@ import { Alert } from "@material-tailwind/react";
 import TopicService from "@/services/TopicService";
 import { Topic } from "@/types/topic";
 import { MessageSquare, Share, ArrowUp, ArrowDown, Award } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 const TopicDetail: React.FC = () => {
   const { name } = useParams<{ name: string }>();
   const [topic, setTopic] = useState<Topic | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
+  const { user } = useAuth();
   useEffect(() => {
     setLoading(true);
     if (!name) {
@@ -17,10 +18,14 @@ const TopicDetail: React.FC = () => {
       setLoading(false);
       return;
     }
-
     const fetchTopic = async () => {
       try {
         const data = await TopicService.GetTopicByName(name);
+        // const isLockedResponse = await TopicService.isLoked(user?.username ?? "", data.id);
+        // if (isLockedResponse.data) {
+        //   setError("You are not allowed to view this topic");
+        //   return;
+        // }
         setTopic(data);
       } catch (error) {
         setError("Failed to fetch topic");
@@ -52,7 +57,7 @@ const TopicDetail: React.FC = () => {
       </div>
     );
   }
-
+  
   return (
     <div className="max-w-screen-xl mx-auto p-4">
       <div className="mb-8">

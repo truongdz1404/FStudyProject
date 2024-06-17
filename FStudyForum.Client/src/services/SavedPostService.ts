@@ -15,8 +15,15 @@ const deletePost = async (username: string, postId: number) => {
     );
     return response.data;
 };
+const isPostSaved = async (username: string, postId: number) => {
+    const response = await api.get<ResponseWith<boolean>>(
+        `/post/isPostExists/${username}/${postId}`
+    );
+    return response.data;
+}
 const SavedPostService = {
     savedPost,
     deletePost,
+    isPostSaved
 };
 export default SavedPostService;

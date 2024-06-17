@@ -6,7 +6,7 @@ import {
   Typography,
   Button
 } from "@material-tailwind/react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import type { Topic as TopicType } from "@/types/topic";
 import TopicService from "@/services/TopicService";
 import { Pencil, Trash } from "lucide-react";
@@ -26,7 +26,7 @@ const TopicCard: React.FC<TopicProps> = ({
 }) => {
   const [isUpdatePopupOpen, setIsUpdatePopupOpen] = useState(false);
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
-  const [isLocked, setIsLocked] = useState(false);
+  const navigate = useNavigate();
   const { user } = useAuth();
   const handleEditClick = () => {
     setIsUpdatePopupOpen(true);
@@ -53,28 +53,28 @@ const TopicCard: React.FC<TopicProps> = ({
   const handleCloseDeletePopup = () => {
     setIsDeletePopupOpen(false);
   };
-  const handleViewClick = async () => {
-    const isLocked = await TopicService.isLoked(user?.username ?? "", topic.id);
-    if (!isLocked.data) {
-      console.log("Tài khoản của bạn không bị khóa và có thể xem chủ đề này.");
-    } else {
-      const unlockTime = await TopicService.unlockTime(
-        user?.username ?? "",
-        topic.id
-      );
-      const unlockTimeDate = new Date(String(unlockTime.data));
-      const now = new Date();
-      if(now.getTime() >= unlockTimeDate.getTime()){
-        const unlocked = await TopicService.unlocked(user?.username ?? "", topic.id);
-        console.log(unlocked.data)
-      }
-      const timeDiff = unlockTimeDate.getTime() - now.getTime();
-      const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-      alert(
-        `Tài khoản của bạn còn ${daysDiff} ngày để mở khóa.`
-      );
-    }
-  };
+  // const handleViewClick = async () => {
+  //   try {
+  //     const isLockedResponse = await TopicService.isLoked(user?.username ?? "", topic.id);
+  //     if (!isLockedResponse.data) {
+  //       navigate(`/topic/${topic.name}`);
+  //     } else {
+  //       const unlockTimeResponse = await TopicService.unlockTime(user?.username ?? "", topic.id);
+  //       const unlockTimeDate = new Date(String(unlockTimeResponse.data));
+  //       const now = new Date();
+  //       if (now.getTime() >= unlockTimeDate.getTime()) {
+  //         await TopicService.unlocked(user?.username ?? "", topic.id); 
+  //         navigate(`/topic/${topic.name}`);
+  //       } else {
+  //         const timeDiff = unlockTimeDate.getTime() - now.getTime();
+  //         const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+  //         alert(`Tài khoản của bạn còn ${daysDiff} ngày để mở khóa.`);
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error("Error checking lock status or unlock time:", error);
+  //   }
+  // };
   return (
     <>
       <Card className="mt-3 w-50 border border-gray-300">
@@ -85,10 +85,9 @@ const TopicCard: React.FC<TopicProps> = ({
           <Typography>{topic.description}</Typography>
         </CardBody>
         <CardFooter className="pt-0 flex justify-between items-center">
-          <Button onClick={handleViewClick}>View</Button>
-          {/* <Link to={`/topic/${topic.name}`}>
+          <Link to={`/topic/${topic.name}`}>
             <Button>View</Button>
-          </Link> */}
+          </Link>
           <div className="hidden">
             <Pencil
               style={{ color: "orange", cursor: "pointer" }}

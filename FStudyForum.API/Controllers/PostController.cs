@@ -134,5 +134,40 @@ namespace FStudyForum.API.Controllers
                 });
             }
         }
+        [HttpGet("isPostExists/{username}/{postId}")]
+        public async Task<IActionResult> IsPostExists(string username, int postId)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    var errors = ModelState.Values.SelectMany(v => v.Errors)
+                               .Select(e => e.ErrorMessage)
+                               .ToList();
+                    var responseNotFound = new Response
+                    {
+                        Status = (int)HttpStatusCode.BadRequest + "",
+                        Message = string.Join("; ", errors)
+                    };
+                    return BadRequest(responseNotFound);
+                }
+                var isPostExists = await _postService.IsPostExists(new SavePostDTO() 
+                { UserName = username, PostId = postId});
+                return Ok(new Response
+                {
+                    Data = !isPostExists,
+                    Message = "Post is exists",
+                    Status = (int)HttpStatusCode.OK + "",
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = ex.Message
+                });
+            }
+        }
     }
 }

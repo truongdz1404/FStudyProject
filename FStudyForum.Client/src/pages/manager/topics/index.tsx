@@ -63,7 +63,6 @@ const Topics = () => {
     queryKey: ["active-topics"],
     queryFn: TopicService.getActiveTopics
   });
-
   return (
     <>
       <Card className="h-full w-full">
@@ -118,7 +117,6 @@ const Topics = () => {
                 const classes = isLast
                   ? "p-4"
                   : "p-4 border-b border-blue-gray-50";
-
                 return (
                   <tr key={topic.name}>
                     <td className={classes}>
@@ -143,16 +141,6 @@ const Topics = () => {
                         {topic.description}
                       </Typography>
                     </td>
-                    {/* <td className={classes}>
-                      <div className="w-max">
-                        <Chip
-                          variant="ghost"
-                          size="sm"
-                          value={!topic.isDeleted ? "active" : "inactive"}
-                          color={!topic.isDeleted ? "green" : "blue-gray"}
-                        />
-                      </div>
-                    </td> */}
                     <td className={cn(classes)}>
                       <Tooltip content="Edit topic">
                         <IconButton
@@ -178,19 +166,6 @@ const Topics = () => {
             </tbody>
           </table>
         </CardBody>
-        {/* <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
-          <Typography variant="small" color="blue-gray" className="font-normal">
-            Page 1 of 10
-          </Typography>
-          <div className="flex gap-2">
-            <Button variant="outlined" size="sm">
-              Previous
-            </Button>
-            <Button variant="outlined" size="sm">
-              Next
-            </Button>
-          </div>
-        </CardFooter> */}
       </Card>
       {popupOpen === 1 && (
         <AddTopicPopup onClose={closePopup} onTopicCreated={reloadTopics} />

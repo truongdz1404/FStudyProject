@@ -8,7 +8,7 @@ const Post = () => {
   useEffect(() => {
     const getPaymentQR = async () => {
       const payment = await PaymentService.getPayMentQR();
-      setQrcode(payment.qrDataURL);
+      setQrcode(payment.data.qrCode);
     };
     getPaymentQR();
   }, []);
