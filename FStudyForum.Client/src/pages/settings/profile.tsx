@@ -148,7 +148,7 @@ const ProfileSettings = () => {
         <p className="text-md font-semibold flex gap-x-2 items-center">
           <Link
             to={`/profile/${user?.username}`}
-            className="rounded-full bg-blue-gray-50 hover:bg-blue-gray-100 p-2 -ml-10"
+            className="rounded-full bg-blue-gray-50 hover:bg-blue-gray-100 p-2 lg:-ml-10"
           >
             <ArrowLeft className="w-4 h-4" />
           </Link>
@@ -335,15 +335,17 @@ const ProfileSettings = () => {
             <CircleAlert className="w-3 h-3" /> {error}
           </span>
         )}
-        <Button
-          variant="gradient"
-          color="deep-orange"
-          type="submit"
-          className="mt-6 w-full lg:w-fit normal-case text-sm"
-          disabled={loading}
-        >
-          Save
-        </Button>
+        <div className="flex items-center justify-end">
+          <Button
+            variant="gradient"
+            color="deep-orange"
+            type="submit"
+            className="mt-4 w-full lg:w-fit normal-case text-sm"
+            disabled={loading}
+          >
+            Save
+          </Button>
+        </div>
       </form>
     </>
   );

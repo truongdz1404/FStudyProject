@@ -39,8 +39,6 @@ public class ApplicationDBContext(DbContextOptions options)
             .HasMany(u => u.BannedByTopics)
             .WithOne(b => b.User);
 
-
-
         builder.Entity<ApplicationUser>()
             .HasMany(u => u.Comments)
             .WithOne(c => c.Creater)
@@ -56,9 +54,8 @@ public class ApplicationDBContext(DbContextOptions options)
             .WithOne(r => r.Creater);
 
         builder.Entity<ApplicationUser>()
-            .HasMany(u => u.SavedPosts)
-            .WithMany(p => p.SavedByUsers)
-            .UsingEntity("tblSavePosts");
+           .HasMany(u => u.SavedPosts)
+           .WithOne(sp => sp.User);
 
         builder.Entity<ApplicationUser>()
             .HasMany(u => u.ModeratedTopics)
@@ -78,6 +75,11 @@ public class ApplicationDBContext(DbContextOptions options)
         builder.Entity<Topic>()
         .HasMany(t => t.BannedUser)
         .WithOne(b => b.Topic);
+
+        builder.Entity<Post>()
+           .HasMany(p => p.SavedByUsers)
+           .WithOne(sb => sb.Post);
+
 
         builder.Entity<Post>()
             .HasMany(p => p.Votes)
@@ -113,6 +115,7 @@ public class ApplicationDBContext(DbContextOptions options)
                 NormalizedName = role.ToUpper()
             });
         }
+
         builder.Entity<IdentityRole>().HasData(roles);
     }
 

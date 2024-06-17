@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using FStudyForum.Core.Interfaces.IRepositories;
 using FStudyForum.Core.Interfaces.IServices;
-using FStudyForum.Core.Models.DTOs;
 using FStudyForum.Core.Models.DTOs.Post;
 
 
@@ -27,12 +26,33 @@ namespace FStudyForum.Infrastructure.Services
         {
             throw new NotImplementedException();
         }
-
-
-
-        public async Task<PaginatedData<PostDTO>> GetPaginatedData(int pageNumber, int pageSize)
+        public async Task<PostDTO> CreatePost(CreatePostDTO postDTO)
         {
-            return _mapper.Map<PaginatedData<PostDTO>>(await _postRepository.GetPaginatedData(pageNumber, pageSize));
+            var post = await _postRepository.CreatePostAsync(postDTO);
+            return new PostDTO
+            {
+                Id = post.Id,
+                Title = post.Title,
+                Content = post.Content,
+            };
+        }
+
+        public async Task<IEnumerable<PostDTO>> GetPosts()
+        {
+            var posts = await _postRepository.GetPostsAsync();
+            var postDTOs = posts.Select(p => new PostDTO
+            {
+                Id = p.Id,
+                Title = p.Title,
+                Author = p.Creater.UserName!,
+                TopicName = p.Topic.Name,
+                TopicAvatar = p.Topic.Avatar,
+                Content = p.Content,
+                VoteCount = p.Votes.Count,
+                CommentCount = p.Comments.Count,
+                Elapsed = DateTime.Now - p.CreatedAt
+            });
+            return postDTOs;
         }
     }
 }

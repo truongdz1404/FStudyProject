@@ -2,7 +2,7 @@ import PostService from "@/services/PostService";
 import ContentLayout from "@/components/layout/ContentLayout";
 import PostItem from "@/components/post/PostItem";
 import { useQuery } from "@tanstack/react-query";
-import { Spinner } from "@material-tailwind/react";
+import { Alert, Spinner } from "@material-tailwind/react";
 import NullLayout from "@/components/layout/NullLayout";
 import FilterComponent from "@/components/filter";
 import { useEffect } from "react";
@@ -10,7 +10,7 @@ import { usePosts } from "@/hooks/usePosts";
 
 const Home: React.FC = () => {
   const { posts, setPosts } = usePosts();
-  const { data: initPosts } = useQuery({
+  const { data: initPosts, error, isLoading } = useQuery({
     queryKey: ["home"],
     queryFn: () => PostService.getPosts()
   });
@@ -21,7 +21,13 @@ const Home: React.FC = () => {
     }
   }, [initPosts, setPosts])
 
-  if (!posts) return <Spinner className="mx-auto" />;
+  if (error)
+    return (
+      <Alert color="red" className="p-4">
+        Can't fetch posts
+      </Alert>
+    );
+  if (isLoading) return <Spinner className="mx-auto" />;
   return (
     <>
       <FilterComponent />

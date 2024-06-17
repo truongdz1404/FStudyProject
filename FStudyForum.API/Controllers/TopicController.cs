@@ -19,6 +19,7 @@ namespace FStudyForum.API.Controllers
             _topicService = topicService;
         }
 
+
         [HttpGet("active-all"), Authorize]
         public async Task<IActionResult> GetAllActiveTopics()
         {
@@ -30,6 +31,20 @@ namespace FStudyForum.API.Controllers
         public async Task<IActionResult> GetAll()
         {
             var topics = await _topicService.GetTopics();
+            return Ok(new Response
+            {
+                Message = "Get all topic successfully",
+                Status = ResponseStatus.SUCCESS,
+                Data = topics
+            });
+        }
+
+        [HttpGet("search")]
+        public async Task<IActionResult> Search([FromQuery] string? value, [FromQuery] int size = 5)
+        {
+            if (value == null) return BadRequest();
+
+            var topics = await _topicService.Search(value, size);
             return Ok(new Response
             {
                 Message = "Get all topic successfully",

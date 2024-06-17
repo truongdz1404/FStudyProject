@@ -9,7 +9,7 @@ public class ApplicationUser : IdentityUser
     public DateTime RefreshTokenExpiryTime { get; set; }
     public virtual Profile? Profile { get; set; }
     public virtual ICollection<Donation> Donations { get; set; } = new List<Donation>();
-    public virtual ICollection<Post> SavedPosts { get; set; } = new List<Post>();
+    public virtual ICollection<SavedPost> SavedPosts { get; set; } = new List<SavedPost>();
     public virtual ICollection<Post> CreatedPosts { get; set; } = new List<Post>();
     public virtual ICollection<Vote> Votes { get; set; } = new List<Vote>();
     public virtual ICollection<Report> Reports { get; set; } = new List<Report>();

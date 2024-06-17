@@ -102,9 +102,9 @@ const getCreatePath = (pathname: string) => {
   const segments = pathname.split("/").filter(s => s !== "");
   switch (segments[0]) {
     case "topic":
-      return `${segments[0]}/${segments[1]}/create`;
+      return `${segments[0]}/${segments[1]}/submit`;
     default:
-      return "/create";
+      return "/submit";
   }
 };
 
@@ -113,7 +113,7 @@ const navListItems = [
     label: "Create",
     icon: Plus,
     showLabel: true,
-    path: "/create"
+    path: "/submit"
   },
   {
     label: "Notification",
@@ -131,13 +131,14 @@ function NavList() {
       {navListItems.map(({ label, icon, showLabel, path }) => (
         <Link
           key={label}
-          to={path === "/create" ? getCreatePath(pathname) : path}
+          to={path === "/submit" ? getCreatePath(pathname) : path}
+          className="w-full"
         >
           <Button
             color="blue-gray"
             variant="text"
             className={cn(
-              "flex p-2 items-center gap-2 lg:rounded-full",
+              "flex p-2 items-center gap-2 lg:rounded-full w-full",
               "font-medium text-sm normal-case text-blue-gray-700"
             )}
           >
@@ -196,8 +197,8 @@ const Header = React.memo(({ openSidebar }: HeaderProps) => {
             containerProps={{ className: "min-w-full" }}
             crossOrigin={undefined}
             className={cn(
-              "placeholder:text-gray-500 placeholder:opacity-100 focus:!border-gray-900 focus:!border-t-gray-900 ",
-              "rounded-full !border-2 !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent"
+              "placeholder:text-gray-500 placeholder:opacity-100 focus:!border-gray-900 focus:!border-t-gray-900 pl-6",
+              "rounded-full !border-2 !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 "
             )}
           />
         </div>
