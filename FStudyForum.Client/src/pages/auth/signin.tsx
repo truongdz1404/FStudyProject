@@ -15,67 +15,69 @@ import { Icons } from "@/components/Icons";
 import React from "react";
 import { Response } from "@/types/response";
 import { CircleAlert } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
 type LoginFormsInputs = {
-  username: string;
+  email: string;
   password: string;
 };
 
 const validation = Yup.object().shape({
-  username: Yup.string()
-    .required("Username is required")
-    .test("is-mailFPT", "Username must have @fpt.edu.vn", (value) => {
+  email: Yup.string()
+    .required("Email is required")
+    .test("is-mailFPT", "Email must have @fpt.edu.vn", value => {
       return checkEmail(value);
     }),
-  password: Yup.string().required("Password is required"),
+  password: Yup.string().required("Password is required")
 });
 
 const SignIn: FC = () => {
   const { dispatch } = useAuth();
   const navigate = useNavigate();
   const [error, setError] = React.useState("");
-  const [loading, setLoading] = React.useState(false);
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors }
   } = useForm<LoginFormsInputs>({
     mode: "onTouched",
-    resolver: yupResolver(validation),
+    resolver: yupResolver(validation)
   });
 
-  const handleLogin = async (form: LoginFormsInputs) => {
-    try {
-      setError("");
-      setLoading(true);
-      await AuthService.login(form.username, form.password);
+  const { mutate: handleLogin, isPending: pending } = useMutation({
+    mutationFn: async (form: LoginFormsInputs) => {
+      const t = await AuthService.login(form.email, form.password);
+      console.log(t);
+    },
+    onSuccess: async () => {
       const user = await UserService.getProfile();
       dispatch(signIn({ user }));
       navigate("/");
-    } catch (e) {
+    },
+    onError: e => {
       const error = e as AxiosError;
       setError((error?.response?.data as Response)?.message || error.message);
-    } finally {
-      setLoading(false);
     }
-  };
+  });
 
-  const handleGoogleLogin = async (response: CredentialResponse) => {
-    try {
-      setError("");
-      setLoading(true);
+  const { mutate: handleGoogleLogin, isPending: googlePending } = useMutation({
+    mutationFn: async (response: CredentialResponse) => {
       const idToken = response.credential;
       if (!idToken) return;
       await AuthService.loginGoogle(idToken);
+    },
+    onSuccess: async () => {
       const user = await UserService.getProfile();
       dispatch(signIn({ user }));
+
       navigate("/");
-    } catch (e) {
+    },
+    onError: e => {
       const error = e as AxiosError;
       setError((error?.response?.data as Response)?.message || error.message);
-    } finally {
-      setLoading(false);
     }
-  };
+  });
+
+  const isPending = pending || googlePending;
 
   return (
     <>
@@ -84,34 +86,37 @@ const SignIn: FC = () => {
         <span className="font-bold text-lg">Login</span>
       </div>
 
-      <form onSubmit={handleSubmit(handleLogin)} className="space-y-4">
+      <form
+        onSubmit={handleSubmit(form => handleLogin(form))}
+        className="space-y-4"
+      >
         <div>
-          <label htmlFor="username" className="block text-sm m-1 text-gray-700">
-            Username
+          <label htmlFor="email" className="block text-sm m-1 text-gray-700">
+            Email
           </label>
           <Input
             type="email"
-            id="username"
+            id="email"
             placeholder="Email Address"
             className={cn(
               "!border !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent placeholder:opacity-100",
               " focus:!border-gray-900 focus:!border-t-gray-900 focus:ring-gray-900/10  placeholder:text-gray-500",
-              Boolean(errors?.username?.message) &&
+              Boolean(errors?.email?.message) &&
                 "focus:!border-red-600 focus:!border-t-red-600 focus:ring-red-600/10 !border-red-500  placeholder:text-red-500"
             )}
             labelProps={{ className: "hidden" }}
             crossOrigin={undefined}
-            disabled={loading}
-            {...register("username")}
+            disabled={isPending}
+            {...register("email")}
           />
 
-          {errors.username && (
+          {errors.email && (
             <span
               className={cn(
                 "text-red-500 text-xs mt-1 ml-1 flex gap-x-1 items-center"
               )}
             >
-              <CircleAlert className="w-3 h-3" /> {errors.username.message}
+              <CircleAlert className="w-3 h-3" /> {errors.email.message}
             </span>
           )}
         </div>
@@ -131,7 +136,7 @@ const SignIn: FC = () => {
             )}
             labelProps={{ className: "hidden" }}
             crossOrigin={undefined}
-            disabled={loading}
+            disabled={isPending}
             {...register("password")}
           />
           {errors.password && (
@@ -158,7 +163,7 @@ const SignIn: FC = () => {
           type="submit"
           className="mt-6 text-sm normal-case"
           fullWidth
-          disabled={loading}
+          disabled={isPending}
           variant="gradient"
           color="deep-orange"
         >
@@ -188,7 +193,7 @@ const SignIn: FC = () => {
       </div>
       <div className={cn("w-full flex justify-center font-inter")}>
         <GoogleLogin
-          onSuccess={handleGoogleLogin}
+          onSuccess={response => handleGoogleLogin(response)}
           onError={() => {
             console.log("Login Failed");
           }}

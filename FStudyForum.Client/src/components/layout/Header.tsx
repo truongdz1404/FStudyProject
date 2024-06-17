@@ -10,7 +10,7 @@ import {
   Avatar,
   IconButton,
   Input,
-  Typography,
+  Typography
 } from "@material-tailwind/react";
 import {
   PowerIcon,
@@ -19,31 +19,30 @@ import {
   AlignJustify,
   Plus,
   Bell,
-  ChevronUp,
-  ChevronDown,
+  ChevronUp
 } from "lucide-react";
 import { cn } from "@/helpers/utils";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Icons } from "../Icons";
 import { useAuth } from "@/hooks/useAuth";
-
-const profileMenuItems = [
-  {
-    label: "My Profile",
-    icon: UserCircleIcon,
-    path: "/profile",
-  },
-  {
-    label: "Sign Out",
-    icon: PowerIcon,
-    path: "/auth/signout",
-  },
-];
 
 function ProfileMenu() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const navigate = useNavigate();
   const { user } = useAuth();
+
+  const profileMenuItems = [
+    {
+      label: "My Profile",
+      icon: UserCircleIcon,
+      path: `/profile/${user?.username.toLowerCase()}`
+    },
+    {
+      label: "Sign Out",
+      icon: PowerIcon,
+      path: "/auth/signout"
+    }
+  ];
   const handleNavigate = (path: string) => {
     navigate(path);
     setIsMenuOpen(false);
@@ -80,7 +79,7 @@ function ProfileMenu() {
             >
               {React.createElement(icon, {
                 className: `h-4 w-4 ${isLastItem ? "text-red-500" : ""}`,
-                strokeWidth: 2,
+                strokeWidth: 2
               })}
               <Typography
                 as={"span"}
@@ -99,31 +98,47 @@ function ProfileMenu() {
   );
 }
 
+const getCreatePath = (pathname: string) => {
+  const segments = pathname.split("/").filter(s => s !== "");
+  switch (segments[0]) {
+    case "topic":
+      return `${segments[0]}/${segments[1]}/create`;
+    default:
+      return "/create";
+  }
+};
+
 const navListItems = [
   {
     label: "Create",
     icon: Plus,
     showLabel: true,
-    path: "/create",
+    path: "/create"
   },
   {
     label: "Notification",
     icon: Bell,
     showLabel: false,
-    path: "/notification",
-  },
+    path: "/notification"
+  }
 ];
 
 function NavList() {
+  const { pathname } = useLocation();
+
   return (
     <div className="mt-2 mb-4 flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center">
       {navListItems.map(({ label, icon, showLabel, path }) => (
-        <Link key={label} to={path}>
+        <Link
+          key={label}
+          to={path === "/create" ? getCreatePath(pathname) : path}
+        >
           <Button
+            color="blue-gray"
             variant="text"
             className={cn(
               "flex p-2 items-center gap-2 lg:rounded-full",
-              "font-medium   text-sm normal-case"
+              "font-medium text-sm normal-case text-blue-gray-700"
             )}
           >
             {React.createElement(icon, { className: "h-5 w-5" })}
@@ -137,9 +152,10 @@ function NavList() {
 type HeaderProps = {
   openSidebar: () => void;
 };
+
 const Header = React.memo(({ openSidebar }: HeaderProps) => {
   const [isNavOpen, setIsNavOpen] = React.useState(false);
-  const toggleIsNavOpen = () => setIsNavOpen((cur) => !cur);
+  const toggleIsNavOpen = () => setIsNavOpen(cur => !cur);
 
   React.useEffect(() => {
     window.addEventListener(
@@ -149,7 +165,7 @@ const Header = React.memo(({ openSidebar }: HeaderProps) => {
   }, []);
 
   return (
-    <Navbar className="max-w-screen-3xl rounded-none p-1 shadow-sm">
+    <Navbar className="max-w-screen-3xl rounded-none p-1 shadow-sm ">
       <div className="relative mx-auto flex items-center justify-between text-blue-gray-900">
         <div className="flex items-center w-1/4 lg:w-1/3">
           <IconButton
@@ -175,7 +191,7 @@ const Header = React.memo(({ openSidebar }: HeaderProps) => {
           <Input
             icon={<Search className="h-5 w-5" />}
             labelProps={{
-              className: "hidden",
+              className: "hidden"
             }}
             containerProps={{ className: "min-w-full" }}
             crossOrigin={undefined}
@@ -194,13 +210,13 @@ const Header = React.memo(({ openSidebar }: HeaderProps) => {
             color="blue-gray"
             variant="text"
             onClick={toggleIsNavOpen}
-            className="mr-2 lg:hidden"
+            className="mr-2 lg:hidden "
           >
-            {isNavOpen ? (
-              <ChevronUp className="h-5 w-5" />
-            ) : (
-              <ChevronDown className="h-5 w-5" />
-            )}
+            <ChevronUp
+              className={`mx-auto w-5 h-5 transition-transform ${
+                isNavOpen ? "rotate-180" : ""
+              }`}
+            />
           </IconButton>
           <ProfileMenu />
         </div>

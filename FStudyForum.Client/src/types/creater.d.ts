@@ -1,3 +1,3 @@
 export interface Creater {
-    userName: string;
+  userName: string
 }
