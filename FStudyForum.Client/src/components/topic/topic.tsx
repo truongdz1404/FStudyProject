@@ -41,7 +41,7 @@ const TopicCard: React.FC<TopicProps> = ({
 
   const handleDeleteConfirm = async () => {
     try {
-      await TopicService.Delete(topic.name);
+      await TopicService.deleteTopic(topic.name);
       onTopicDeleted(topic.id);
       setIsDeletePopupOpen(false);
     } catch (error) {

@@ -35,7 +35,7 @@ const tabs = [
 
 const tableHead = ["Member", "Role", "Action"]
 
-const Members = () => {
+const MembersPage = () => {
   const [loading, setLoading] = React.useState(false)
   const [users, setUsers] = React.useState<User[]>([])
   React.useEffect(() => {
@@ -176,4 +176,4 @@ const Members = () => {
     </Card>
   )
 }
-export default Members
+export default MembersPage

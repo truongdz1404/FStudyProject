@@ -7,6 +7,16 @@ html{
     overflow-x: hidden;
     overscroll-behavior: none;
 }
+.ce-toolbar__plus{
+    width: 24px!important;
+    height: 24px!important;
+}
+.ce-toolbar__settings-btn{
+    width: 24px!important;
+}
+.ce-toolbar__actions {
+    align-items: center;
+}
 
 @layer utilities {
     .no-scrollbar::-webkit-scrollbar {

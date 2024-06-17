@@ -4,10 +4,10 @@ import { Navigate, Outlet, useRoutes } from "react-router-dom";
 import AuthGuard from "@/helpers/guards/AuthGuard";
 import NotFound from "@/components/NotFound";
 import Layout from "@/components/layout/Layout";
-import WelcomeGuard from "./helpers/guards/WelcomeGuard";
-import AuthLayout from "./components/layout/AuthLayout";
-import RoleBasedGuard from "./helpers/guards/RoleBasedGuard";
-import { Role } from "./helpers/constants";
+import WelcomeGuard from "@/helpers/guards/WelcomeGuard";
+import AuthLayout from "@/components/layout/AuthLayout";
+import RoleBasedGuard from "@/helpers/guards/RoleBasedGuard";
+import { Role } from "@/helpers/constants";
 
 const Popular = lazy(() => import("@/pages/popular"));
 const Memebers = lazy(() => import("@/pages/manager/members"));
@@ -17,14 +17,17 @@ const ConfirmEmail = lazy(() => import("@/pages/auth/confirm-email"));
 const ChangePassword = lazy(
   () => import("@/pages/auth/reset-password/change-password")
 );
+
+const SubmitPage = lazy(() => import("@/pages/submit"));
+
 const TopcicManager = lazy(() => import("@/pages/manager/topics"));
 const ResetPassword = lazy(() => import("@/pages/auth/reset-password"));
 const Profile = lazy(() => import("@/pages/profile"));
 const ProfileSettings = lazy(() => import("@/pages/settings/profile"));
 const SignIn = lazy(() => import("@/pages/auth/signin"));
 const Home = lazy(() => import("@/pages/home"));
-const TopicDetail = lazy(() => import("@/pages/topic/detail"));
-const Topic = lazy(() => import("@/pages/topic"));
+const TopicDetail = lazy(() => import("@/pages/topic"));
+const Topics = lazy(() => import("@/pages/topics"));
 const SignOut = lazy(() => import("@/pages/auth/signout"));
 const Router: FC = () => {
   return useRoutes([
@@ -65,7 +68,7 @@ const Router: FC = () => {
               index: true,
               element: (
                 <Suspense>
-                  <Topic />
+                  <Topics />
                 </Suspense>
               )
             }
@@ -112,11 +115,24 @@ const Router: FC = () => {
         },
         {
           path: "topic/:name",
-          element: (
-            <Suspense>
-              <TopicDetail />
-            </Suspense>
-          )
+          children: [
+            {
+              index: true,
+              element: (
+                <Suspense>
+                  <TopicDetail />
+                </Suspense>
+              )
+            },
+            {
+              path: "submit",
+              element: (
+                <Suspense>
+                  <>Topic submit</>
+                </Suspense>
+              )
+            }
+          ]
         },
         {
           path: "profile/:name",
@@ -138,6 +154,14 @@ const Router: FC = () => {
               )
             }
           ]
+        },
+        {
+          path: "submit",
+          element: (
+            <Suspense>
+              <SubmitPage />
+            </Suspense>
+          )
         }
       ]
     },
