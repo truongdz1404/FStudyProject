@@ -1,10 +1,12 @@
-using FStudyForum.Core.Models.DTOs.Paging;
+using FStudyForum.Core.Models.DTOs;
 
 namespace FStudyForum.Core.Interfaces.IRepositories;
 
 public interface IBaseRepository<T> where T : class
 {
     Task<IEnumerable<T>> GetAll();
+    Task<IEnumerable<T>> GetQuery(QueryParameters query);
+    Task<int> CountAsync();
     Task<PaginatedData<T>> GetPaginatedData(int pageNumber, int pageSize);
     Task<T> GetById<Tid>(Tid id);
     Task<bool> IsExists<Tvalue>(string key, Tvalue value);

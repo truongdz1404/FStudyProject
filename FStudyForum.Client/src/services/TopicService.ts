@@ -3,17 +3,17 @@ import api from "./api";
 import { Topic, CreateTopicDTO, UpdateTopicDTO } from "@/types/topic";
 
 const getActiveTopics = async (): Promise<Topic[]> => {
-  const response = await api.get<Topic[]>("/topic/active");
+  const response = await api.get<Topic[]>("/topic/active-all");
   return response.data;
 };
 
 const getTopics = async () => {
-  const response = await api.get<ResponseWith<Topic[]>>("/topic");
+  const response = await api.get<ResponseWith<Topic[]>>("/topic/all");
   return response.data.data;
 };
 
-const GetTopicById = async (id: number): Promise<Topic> => {
-  const response = await api.get<Topic>(`/topic/${id}`);
+const getTopicByName = async (name: string): Promise<Topic> => {
+  const response = await api.get<Topic>(`/topic/${name}`);
   return response.data;
 };
 
@@ -22,22 +22,30 @@ const create = async (topic: CreateTopicDTO): Promise<Topic> => {
   return response.data;
 };
 
-const update = async (id: number, topic: UpdateTopicDTO): Promise<Topic> => {
-  const response = await api.put<Topic>(`/topic/update/${id}`, topic);
+const update = async (name: string, topic: UpdateTopicDTO): Promise<Topic> => {
+  const response = await api.put<Topic>(`/topic/update/${name}`, topic);
   return response.data;
 };
 
-const Delete = async (id: number): Promise<void> => {
-  await api.put<Topic>(`/topic/delete/${id}`);
+const deleteTopic = async (name: string): Promise<void> => {
+  await api.put<Topic>(`/topic/delete/${name}`);
+};
+
+const search = async (value: string) => {
+  const response = await api.get<ResponseWith<Topic[]>>(
+    "/topic/search?value=" + value + "&size=10"
+  );
+  return response.data.data;
 };
 
 const TopicService = {
   getTopics,
   getActiveTopics,
-  GetTopicById,
+  getTopicByName,
+  search,
   create,
   update,
-  Delete,
+  deleteTopic
 };
 
 export default TopicService;

@@ -1,21 +1,21 @@
-import { FC } from "react";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as Yup from "yup";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Icons } from "@/components/Icons";
-import { cn } from "@/helpers/utils";
-import { Button, Input } from "@material-tailwind/react";
-import React from "react";
-import { AxiosError } from "axios";
-import { Response } from "@/types/response";
-import AuthService from "@/services/AuthService";
-import { CircleAlert } from "lucide-react";
+import { FC } from "react"
+import { useForm } from "react-hook-form"
+import { yupResolver } from "@hookform/resolvers/yup"
+import * as Yup from "yup"
+import { Link, useLocation, useNavigate } from "react-router-dom"
+import { Icons } from "@/components/Icons"
+import { cn } from "@/helpers/utils"
+import { Button, Input } from "@material-tailwind/react"
+import React from "react"
+import { AxiosError } from "axios"
+import { Response } from "@/types/response"
+import AuthService from "@/services/AuthService"
+import { CircleAlert } from "lucide-react"
 
 type ChangePasswordFormInputs = {
-  password: string;
-  confirmPassword: string;
-};
+  password: string
+  confirmPassword: string
+}
 
 const validation = Yup.object().shape({
   password: Yup.string()
@@ -23,46 +23,46 @@ const validation = Yup.object().shape({
     .min(8, "Password must have at least 8 characters"),
   confirmPassword: Yup.string()
     .required("Confirm password is required")
-    .oneOf([Yup.ref("password")], "Confirm password do not match"),
-});
+    .oneOf([Yup.ref("password")], "Confirm password do not match")
+})
 
 const ChangePassword: FC = () => {
-  const navigate = useNavigate();
-  const [loading, setLoading] = React.useState(false);
-  const [error, setError] = React.useState("");
+  const navigate = useNavigate()
+  const [loading, setLoading] = React.useState(false)
+  const [error, setError] = React.useState("")
 
-  const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
-  const token = searchParams.get("token");
-  const email = searchParams.get("email");
+  const location = useLocation()
+  const searchParams = new URLSearchParams(location.search)
+  const token = searchParams.get("token")
+  const email = searchParams.get("email")
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors }
   } = useForm<ChangePasswordFormInputs>({
     mode: "onTouched",
-    resolver: yupResolver(validation),
-  });
+    resolver: yupResolver(validation)
+  })
 
   const handleChange = async (form: ChangePasswordFormInputs) => {
     if (!token || !email) {
-      navigate("/auth/signin");
-      setLoading(false);
-      return;
+      navigate("/auth/signin")
+      setLoading(false)
+      return
     }
 
     try {
-      setLoading(true);
-      await AuthService.changePassword(token, email, form.password);
-      navigate("/auth/signin");
+      setLoading(true)
+      await AuthService.changePassword(token, email, form.password)
+      navigate("/auth/signin")
     } catch (e) {
-      const error = e as AxiosError;
-      setError((error?.response?.data as Response)?.message || error.message);
+      const error = e as AxiosError
+      setError((error?.response?.data as Response)?.message || error.message)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
     <>
@@ -153,7 +153,7 @@ const ChangePassword: FC = () => {
         </p>
       </div>
     </>
-  );
-};
+  )
+}
 
-export default ChangePassword;
+export default ChangePassword

@@ -10,7 +10,7 @@ import {
   Avatar,
   IconButton,
   Input,
-  Typography,
+  Typography
 } from "@material-tailwind/react";
 import {
   PowerIcon,
@@ -19,30 +19,30 @@ import {
   AlignJustify,
   Plus,
   Bell,
-  ChevronUp,
+  ChevronUp
 } from "lucide-react";
 import { cn } from "@/helpers/utils";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Icons } from "../Icons";
 import { useAuth } from "@/hooks/useAuth";
-
-const profileMenuItems = [
-  {
-    label: "My Profile",
-    icon: UserCircleIcon,
-    path: "/profile",
-  },
-  {
-    label: "Sign Out",
-    icon: PowerIcon,
-    path: "/auth/signout",
-  },
-];
 
 function ProfileMenu() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const navigate = useNavigate();
   const { user } = useAuth();
+
+  const profileMenuItems = [
+    {
+      label: "My Profile",
+      icon: UserCircleIcon,
+      path: `/profile/${user?.username.toLowerCase()}`
+    },
+    {
+      label: "Sign Out",
+      icon: PowerIcon,
+      path: "/auth/signout"
+    }
+  ];
   const handleNavigate = (path: string) => {
     navigate(path);
     setIsMenuOpen(false);
@@ -79,7 +79,7 @@ function ProfileMenu() {
             >
               {React.createElement(icon, {
                 className: `h-4 w-4 ${isLastItem ? "text-red-500" : ""}`,
-                strokeWidth: 2,
+                strokeWidth: 2
               })}
               <Typography
                 as={"span"}
@@ -98,31 +98,48 @@ function ProfileMenu() {
   );
 }
 
+const getCreatePath = (pathname: string) => {
+  const segments = pathname.split("/").filter(s => s !== "");
+  switch (segments[0]) {
+    case "topic":
+      return `${segments[0]}/${segments[1]}/submit`;
+    default:
+      return "/submit";
+  }
+};
+
 const navListItems = [
   {
     label: "Create",
     icon: Plus,
     showLabel: true,
-    path: "/create",
+    path: "/submit"
   },
   {
     label: "Notification",
     icon: Bell,
     showLabel: false,
-    path: "/notification",
-  },
+    path: "/notification"
+  }
 ];
 
 function NavList() {
+  const { pathname } = useLocation();
+
   return (
     <div className="mt-2 mb-4 flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center">
       {navListItems.map(({ label, icon, showLabel, path }) => (
-        <Link key={label} to={path}>
+        <Link
+          key={label}
+          to={path === "/submit" ? getCreatePath(pathname) : path}
+          className="w-full"
+        >
           <Button
+            color="blue-gray"
             variant="text"
             className={cn(
-              "flex p-2 items-center gap-2 lg:rounded-full",
-              "font-medium   text-sm normal-case"
+              "flex p-2 items-center gap-2 lg:rounded-full w-full",
+              "font-medium text-sm normal-case text-blue-gray-700"
             )}
           >
             {React.createElement(icon, { className: "h-5 w-5" })}
@@ -136,9 +153,10 @@ function NavList() {
 type HeaderProps = {
   openSidebar: () => void;
 };
+
 const Header = React.memo(({ openSidebar }: HeaderProps) => {
   const [isNavOpen, setIsNavOpen] = React.useState(false);
-  const toggleIsNavOpen = () => setIsNavOpen((cur) => !cur);
+  const toggleIsNavOpen = () => setIsNavOpen(cur => !cur);
 
   React.useEffect(() => {
     window.addEventListener(
@@ -174,13 +192,13 @@ const Header = React.memo(({ openSidebar }: HeaderProps) => {
           <Input
             icon={<Search className="h-5 w-5" />}
             labelProps={{
-              className: "hidden",
+              className: "hidden"
             }}
             containerProps={{ className: "min-w-full" }}
             crossOrigin={undefined}
             className={cn(
-              "placeholder:text-gray-500 placeholder:opacity-100 focus:!border-gray-900 focus:!border-t-gray-900 ",
-              "rounded-full !border-2 !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent"
+              "placeholder:text-gray-500 placeholder:opacity-100 focus:!border-gray-900 focus:!border-t-gray-900 pl-6",
+              "rounded-full !border-2 !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 "
             )}
           />
         </div>

@@ -1,13 +1,12 @@
-﻿using FStudyForum.Core.Models.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FStudyForum.Core.Models.DTOs.Post;
+using FStudyForum.Core.Models.Entities;
 
-namespace FStudyForum.Core.Interfaces.IRepositories
+namespace FStudyForum.Core.Interfaces.IRepositories;
+public interface IPostRepository : IBaseRepository<Post>
 {
-    public interface IPostRepository : IBaseRepository<Post>
-    {
-    }
+    public Task<IEnumerable<Post>> GetPostsByTopicNameAsync(string name);
+    public Task<IEnumerable<Post>> GetPostsAsync();
+    public Task<Post> CreatePostAsync(CreatePostDTO postDTO);
+
 }
+

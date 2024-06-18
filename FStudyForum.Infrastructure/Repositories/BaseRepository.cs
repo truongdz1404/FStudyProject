@@ -1,9 +1,11 @@
 using System.Linq.Expressions;
-using FStudyForum.Core.Models.DTOs.Paging;
+using FStudyForum.Core.Models.DTOs;
 using FStudyForum.Core.Exceptions;
 using FStudyForum.Core.Interfaces.IRepositories;
 using FStudyForum.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Dynamic.Core;
+using FStudyForum.Core.Helpers;
 
 namespace FStudyForum.Infrastructure.Repositories;
 
@@ -99,4 +101,16 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
         await _dbContext.SaveChangesAsync();
     }
 
+    public virtual async Task<IEnumerable<T>> GetQuery(QueryParameters query)
+    {
+        return await _dbContext.Set<T>()
+            .Paginate(query.PageNumber, query.PageSize)
+            .Sort(query.OrderBy)
+            .ToListAsync();
+    }
+
+    public async Task<int> CountAsync()
+    {
+        return await _dbContext.Set<T>().CountAsync();
+    }
 }

@@ -8,3 +8,4 @@ public class SavedPost : BaseEntity
     public required virtual ApplicationUser User { get; set; }
     public required virtual Post Post { get; set; }
 }
+

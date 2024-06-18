@@ -8,7 +8,7 @@ const fireBaseConfig = {
   storageBucket: "fir-6ea1c.appspot.com",
   messagingSenderId: "360451442352",
   appId: "1:360451442352:web:9a9a71e7ab4688f3ea5d75",
-  measurementId: "G-GLQ59EM21R",
+  measurementId: "G-GLQ59EM21R"
 };
 const app = initializeApp(fireBaseConfig);
 export const storage = getStorage(app);

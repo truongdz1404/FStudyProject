@@ -1,3 +1,5 @@
+import UserService from "@/services/UserService"
+import { User } from "@/types/user"
 import {
   Card,
   CardHeader,
@@ -5,78 +7,53 @@ import {
   Typography,
   Button,
   CardBody,
-  Chip,
   CardFooter,
   Tabs,
   TabsHeader,
   Tab,
   Avatar,
   IconButton,
-  Tooltip,
-} from "@material-tailwind/react";
-import { ChevronsUpDown, Pencil, Plus, Search } from "lucide-react";
+  Tooltip
+} from "@material-tailwind/react"
+import { ChevronsUpDown, Pencil, Plus, Search } from "lucide-react"
+import React from "react"
 
 const tabs = [
   {
     label: "All",
-    value: "all",
+    value: "all"
   },
   {
     label: "Monitored",
-    value: "monitored",
+    value: "monitored"
   },
   {
     label: "Unmonitored",
-    value: "unmonitored",
-  },
-];
+    value: "unmonitored"
+  }
+]
 
-const tableHead = ["Member", "Role", "Status", "Employed", ""];
+const tableHead = ["Member", "Role", "Action"]
 
-const tableRows = [
-  {
-    img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-3.jpg",
-    name: "John Michael",
-    email: "john@creative-tim.com",
-    role: "Organization",
-    active: true,
-    date: "23/04/18",
-  },
-  {
-    img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-2.jpg",
-    name: "Alexa Liras",
-    email: "alexa@creative-tim.com",
-    role: "Developer",
-    active: false,
-    date: "23/04/18",
-  },
-  {
-    img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-1.jpg",
-    name: "Laurent Perrier",
-    email: "laurent@creative-tim.com",
-    role: "Projects",
-    active: false,
-    date: "19/09/17",
-  },
-  {
-    img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-4.jpg",
-    name: "Michael Levi",
-    email: "michael@creative-tim.com",
-    role: "Developer",
-    active: true,
-    date: "24/12/08",
-  },
-  {
-    img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-5.jpg",
-    name: "Richard Gran",
-    email: "richard@creative-tim.com",
-    role: "Executive",
-    active: false,
-    date: "04/10/21",
-  },
-];
+const MembersPage = () => {
+  const [loading, setLoading] = React.useState(false)
+  const [users, setUsers] = React.useState<User[]>([])
+  React.useEffect(() => {
+    const fetchTopics = async () => {
+      setLoading(true)
+      try {
+        const paginatedUsers = await UserService.getAll()
+        // console.log(paginatedUsers.data);
 
-const Members = () => {
+        setUsers(paginatedUsers.data)
+      } catch (error) {
+        console.error(error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchTopics()
+  }, [])
   return (
     <Card className="h-full w-full">
       <CardHeader floated={false} shadow={false} className="rounded-none">
@@ -114,7 +91,7 @@ const Members = () => {
           </div>
         </div>
       </CardHeader>
-      <CardBody className="overflow-hidden px-0">
+      <CardBody className="overflow-hidden px-0" hidden={loading}>
         <table className="mt-4 w-full min-w-max table-auto text-left">
           <thead>
             <tr>
@@ -138,75 +115,48 @@ const Members = () => {
             </tr>
           </thead>
           <tbody>
-            {tableRows.map(
-              ({ img, name, email, role, active, date }, index) => {
-                const isLast = index === tableRows.length - 1;
-                const classes = isLast
-                  ? "p-4"
-                  : "p-4 border-b border-blue-gray-50";
+            {users.map(({ avatar, username, roles }, index) => {
+              const isLast = index === users.length - 1
+              const classes = isLast
+                ? "p-4"
+                : "p-4 border-b border-blue-gray-50"
 
-                return (
-                  <tr key={name}>
-                    <td className={classes}>
-                      <div className="flex items-center gap-3">
-                        <Avatar src={img} alt={name} size="sm" />
-                        <div className="flex flex-col">
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal"
-                          >
-                            {name}
-                          </Typography>
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal opacity-70"
-                          >
-                            {email}
-                          </Typography>
-                        </div>
+              return (
+                <tr key={username}>
+                  <td className={classes}>
+                    <div className="flex items-center gap-3">
+                      <Avatar src={avatar} size="sm" />
+                      <div className="flex flex-col">
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal opacity-70"
+                        >
+                          {username}
+                        </Typography>
                       </div>
-                    </td>
-                    <td className={classes}>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal opacity-70"
-                      >
-                        {role}
-                      </Typography>
-                    </td>
-                    <td className={classes}>
-                      <div className="w-max">
-                        <Chip
-                          variant="ghost"
-                          size="sm"
-                          value={active ? "active" : "inactive"}
-                          color={active ? "green" : "blue-gray"}
-                        />
-                      </div>
-                    </td>
-                    <td className={classes}>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal"
-                      >
-                        {date}
-                      </Typography>
-                    </td>
-                    <td className={classes}>
-                      <Tooltip content="Edit User">
-                        <IconButton variant="text">
-                          <Pencil className="h-4 w-4" />
-                        </IconButton>
-                      </Tooltip>
-                    </td>
-                  </tr>
-                );
-              }
-            )}
+                    </div>
+                  </td>
+                  <td className={classes}>
+                    <Typography
+                      variant="small"
+                      color="blue-gray"
+                      className="font-normal opacity-70"
+                    >
+                      {roles}
+                    </Typography>
+                  </td>
+
+                  <td className={classes}>
+                    <Tooltip content="Edit User">
+                      <IconButton variant="text">
+                        <Pencil className="h-4 w-4" />
+                      </IconButton>
+                    </Tooltip>
+                  </td>
+                </tr>
+              )
+            })}
           </tbody>
         </table>
       </CardBody>
@@ -224,6 +174,6 @@ const Members = () => {
         </div>
       </CardFooter>
     </Card>
-  );
-};
-export default Members;
+  )
+}
+export default MembersPage

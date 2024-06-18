@@ -4,36 +4,29 @@ import UpdateTopicPopup from "@/components/topic/popup/UpdateTopicPopup";
 import { cn } from "@/helpers/utils";
 import TopicService from "@/services/TopicService";
 import { Topic } from "@/types/topic";
+import { useQuery } from "@tanstack/react-query";
 import {
   Card,
   CardHeader,
   Typography,
   Button,
   CardBody,
-  Chip,
+  // Chip,
   //   CardFooter,
   IconButton,
-  Tooltip,
+  Tooltip
 } from "@material-tailwind/react";
 import { ChevronsUpDown, Pencil, Plus, Trash } from "lucide-react";
 import React from "react";
 
-const titles = ["Name", "Description", "Status", "Action"];
+const titles = ["Name", "Description", "Action"];
 
-const Topics = () => {
-  const [topics, setTopics] = React.useState<Topic[]>([]);
-  const [selectTopic, setSelectTopic] = React.useState<Topic | undefined>(
-    undefined
-  );
-  const [popupOpen, setPopupOpen] = React.useState(0);
-
+const TopicsPage = () => {
   const openAddPopup = () => {
     setPopupOpen(1);
   };
 
   const openEditPopup = (topic: Topic) => {
-    console.log("Edit clcik");
-
     setSelectTopic(topic);
     setPopupOpen(2);
   };
@@ -47,37 +40,30 @@ const Topics = () => {
   };
 
   const reloadTopics = () => {
-    setReload(true);
+    // setReload(true);
   };
 
   const handleDelete = async () => {
     if (!selectTopic) return;
     try {
-      await TopicService.Delete(selectTopic.id);
+      await TopicService.deleteTopic(selectTopic.name);
       closePopup();
       reloadTopics();
     } catch (error) {
       console.error("Error deleting topic:", error);
     }
   };
-  const [loading, setLoading] = React.useState(false);
-  const [reload, setReload] = React.useState(false);
 
-  React.useEffect(() => {
-    const fetchTopics = async () => {
-      setLoading(true);
-      try {
-        const topics = await TopicService.getTopics();
-        setTopics(topics);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-        setReload(false);
-      }
-    };
-    fetchTopics();
-  }, [reload]);
+  const [selectTopic, setSelectTopic] = React.useState<Topic | undefined>(
+    undefined
+  );
+  const [popupOpen, setPopupOpen] = React.useState(0);
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["active-topics"],
+    queryFn: TopicService.getActiveTopics
+  });
+
   return (
     <>
       <Card className="h-full w-full">
@@ -126,9 +112,9 @@ const Topics = () => {
                 ))}
               </tr>
             </thead>
-            <tbody className={cn(loading && "hidden")}>
-              {topics.map((topic, index) => {
-                const isLast = index === topics.length - 1;
+            <tbody className={cn(isLoading && "hidden")}>
+              {data?.map((topic, index) => {
+                const isLast = index === data.length - 1;
                 const classes = isLast
                   ? "p-4"
                   : "p-4 border-b border-blue-gray-50";
@@ -157,7 +143,7 @@ const Topics = () => {
                         {topic.description}
                       </Typography>
                     </td>
-                    <td className={classes}>
+                    {/* <td className={classes}>
                       <div className="w-max">
                         <Chip
                           variant="ghost"
@@ -166,7 +152,7 @@ const Topics = () => {
                           color={!topic.isDeleted ? "green" : "blue-gray"}
                         />
                       </div>
-                    </td>
+                    </td> */}
                     <td className={cn(classes)}>
                       <Tooltip content="Edit topic">
                         <IconButton
@@ -229,4 +215,4 @@ const Topics = () => {
     </>
   );
 };
-export default Topics;
+export default TopicsPage;

@@ -4,7 +4,7 @@ import {
   CardBody,
   CardFooter,
   Typography,
-  Button,
+  Button
 } from "@material-tailwind/react";
 import { Link } from "react-router-dom";
 import type { Topic as TopicType } from "@/types/topic";
@@ -22,7 +22,7 @@ interface TopicProps {
 const TopicCard: React.FC<TopicProps> = ({
   topic,
   onTopicDeleted,
-  onTopicUpdated,
+  onTopicUpdated
 }) => {
   const [isUpdatePopupOpen, setIsUpdatePopupOpen] = useState(false);
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
@@ -41,7 +41,7 @@ const TopicCard: React.FC<TopicProps> = ({
 
   const handleDeleteConfirm = async () => {
     try {
-      await TopicService.Delete(topic.id);
+      await TopicService.deleteTopic(topic.name);
       onTopicDeleted(topic.id);
       setIsDeletePopupOpen(false);
     } catch (error) {
@@ -63,7 +63,7 @@ const TopicCard: React.FC<TopicProps> = ({
           <Typography>{topic.description}</Typography>
         </CardBody>
         <CardFooter className="pt-0 flex justify-between items-center">
-          <Link to={`/topic/detail/${topic.id}`}>
+          <Link to={`/topic/${topic.name}`}>
             <Button>View</Button>
           </Link>
           <div className="hidden">

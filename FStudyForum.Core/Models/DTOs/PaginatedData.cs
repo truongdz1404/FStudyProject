@@ -1,4 +1,4 @@
-namespace FStudyForum.Core.Models.DTOs.Paging;
+namespace FStudyForum.Core.Models.DTOs;
 
 public class PaginatedData<T>
 {

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import TopicCard from "@/components/topic/topic";
 import TopicService from "@/services/TopicService";
 import { Topic as TopicType } from "@/types/topic";
+import { Spinner } from "@material-tailwind/react";
 
 const TopicList: React.FC = () => {
   const [topics, setTopics] = useState<TopicType[]>([]);
@@ -26,7 +27,7 @@ const TopicList: React.FC = () => {
   }, []);
 
   const handleTopicDeleted = (id: number) => {
-    setTopics((prevTopics) => prevTopics.filter((topic) => topic.id !== id));
+    setTopics(prevTopics => prevTopics.filter(topic => topic.id !== id));
   };
 
   const handleTopicUpdated = async () => {
@@ -38,12 +39,12 @@ const TopicList: React.FC = () => {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <Spinner className="mx-auto" />;
   if (error) return <div>{error}</div>;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      {topics.map((topic) => (
+      {topics.map(topic => (
         <TopicCard
           key={topic.id}
           topic={topic}

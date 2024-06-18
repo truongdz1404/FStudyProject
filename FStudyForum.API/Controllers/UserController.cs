@@ -1,4 +1,3 @@
-using FStudyForum.Core.Constants;
 using FStudyForum.Core.Exceptions;
 using FStudyForum.Core.Interfaces.IServices;
 using FStudyForum.Core.Models.DTOs;
@@ -23,6 +22,10 @@ namespace FStudyForum.API.Controllers
             _identityService = identityService;
         }
 
+        public IActionResult GetTest()
+        {
+            return Ok("Hello World");
+        }
         [HttpGet("profile"), Authorize]
         public async Task<IActionResult> GetProfile()
         {
@@ -42,11 +45,11 @@ namespace FStudyForum.API.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] int pageNumber, [FromQuery] int pageSize)
+        public async Task<IActionResult> GetAll([FromQuery] QueryUserDTO query)
         {
             try
             {
-                var users = await _userService.GetPaginatedData(pageNumber, pageSize);
+                var users = await _userService.GetAll(query);
                 return Ok(new Response
                 {
                     Status = ResponseStatus.SUCCESS,
@@ -54,12 +57,12 @@ namespace FStudyForum.API.Controllers
                     Data = users
                 });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return BadRequest(new Response
                 {
                     Status = ResponseStatus.ERROR,
-                    Message = "Get users failed!",
+                    Message = ex.Message,
                 });
             }
         }
@@ -71,7 +74,7 @@ namespace FStudyForum.API.Controllers
             {
                 var isSucceed = await _identityService.CreateUserAsync(new RegisterDTO
                 {
-                    Username = createUserDTO.Username,
+                    Email = createUserDTO.Username,
                     Password = createUserDTO.Password
                 }, createUserDTO.Roles, true);
                 if (!isSucceed) throw new Exception("Username is existed");

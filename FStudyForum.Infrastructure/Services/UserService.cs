@@ -10,7 +10,7 @@ using FStudyForum.Core.Models.DTOs.Auth;
 using FStudyForum.Core.Exceptions;
 using FStudyForum.Core.Helpers;
 using FStudyForum.Infrastructure.Repositories;
-using FStudyForum.Core.Models.DTOs.Paging;
+using FStudyForum.Core.Models.DTOs;
 
 namespace FStudyForum.Infrastructure.Services;
 
@@ -36,8 +36,13 @@ public class UserService : IUserService
         _profileRepository = profileRepository;
     }
 
-    private async Task<List<Claim>> GetClaimsAsync(ApplicationUser user)
+
+    private async Task<TokenDTO> CreateAuthTokenAsync(ApplicationUser user, int expDays = -1)
     {
+        user.RefreshToken = _tokenService.GenerateRefreshToken();
+        if (expDays > 0)
+            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(expDays);
+        await _userManager.UpdateAsync(user);
         var claims = new List<Claim>
         {
             new(ClaimTypes.Name, user.UserName??string.Empty),
@@ -46,16 +51,6 @@ public class UserService : IUserService
         var roles = await _userManager.GetRolesAsync(user);
         foreach (var role in roles)
             claims.Add(new Claim(ClaimTypes.Role, role));
-        return claims;
-    }
-
-    private async Task<TokenDTO> CreateAuthTokenAsync(ApplicationUser user, int expDays = -1)
-    {
-        user.RefreshToken = _tokenService.GenerateRefreshToken();
-        if (expDays > 0)
-            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(expDays);
-        await _userManager.UpdateAsync(user);
-        var claims = await GetClaimsAsync(user);
         return new TokenDTO()
         {
             AccessToken = _tokenService.GenerateAccessToken(claims),
@@ -90,21 +85,17 @@ public class UserService : IUserService
         if (profile == null) return new UserDTO
         {
             Username = user.UserName!,
+            Email = user.Email!,
             Roles = await _userManager.GetRolesAsync(user),
         };
         return new UserDTO
         {
             Username = user.UserName!,
+            Email = user.Email!,
             Roles = await _userManager.GetRolesAsync(user),
             FirstName = profile.FirstName,
             LastName = profile.LastName,
-            Phone = profile.Phone,
             Avatar = profile.Avatar,
-            Banner = string.Empty,
-            Gender = profile.Gender,
-            Bio = profile.Bio,
-            Major = profile.Major,
-            // IsActive = user.
         };
     }
 
@@ -112,7 +103,7 @@ public class UserService : IUserService
     public async Task<UserDTO?> FindOrCreateUserAsync(ExternalAuthDTO externalAuth, List<string> roles)
     {
         var payload = await _tokenService.VerifyGoogleToken(externalAuth);
-        if (payload == null || !EmailValidator.IsFptMail(payload.Email)) throw new Exception("Email must be FPT email");
+        if (payload == null || !EmailHelper.IsFptMail(payload.Email)) throw new Exception("Email must be FPT email");
         var info = new UserLoginInfo(externalAuth.Provider, payload.Subject, externalAuth.Provider);
         var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
         if (user == null)
@@ -120,7 +111,7 @@ public class UserService : IUserService
             user = await _userManager.FindByEmailAsync(payload.Email);
             if (user == null)
             {
-                user = new ApplicationUser { Email = payload.Email, UserName = payload.Email, EmailConfirmed = true };
+                user = new ApplicationUser { Email = payload.Email, UserName = EmailHelper.GetUsername(payload.Email), EmailConfirmed = true };
                 await _userManager.CreateAsync(user);
                 await _userManager.AddToRolesAsync(user, roles);
                 await _userManager.AddLoginAsync(user, info);
@@ -168,13 +159,15 @@ public class UserService : IUserService
         return user?.RefreshToken;
     }
 
-    public async Task<PaginatedData<UserDTO>> GetPaginatedData(int pageNumber, int pageSize)
+    public async Task<PaginatedData<UserDTO>> GetAll(QueryUserDTO query)
     {
-        var paginated = await _userRepository.GetPaginatedData(pageNumber, pageSize);
-        var users = new List<UserDTO>();
-        foreach (var user in paginated.Data)
-            users.Add(await ConvertToDTO(user));
+        var users = await _userRepository.GetQuery(query);
+        var totalCount = await _userRepository.CountAsync();
 
-        return new(users, paginated.TotalCount);
+        var userDTOs = new List<UserDTO>();
+        foreach (var user in users)
+            userDTOs.Add(await ConvertToDTO(user));
+
+        return new(userDTOs, totalCount);
     }
 }

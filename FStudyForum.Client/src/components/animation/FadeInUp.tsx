@@ -1,9 +1,9 @@
-import { motion } from "framer-motion";
-import { FC, PropsWithChildren } from "react";
-import { useLocation } from "react-router-dom";
+import { motion } from "framer-motion"
+import { FC, PropsWithChildren } from "react"
+import { useLocation } from "react-router-dom"
 
 const FadeInUp: FC<PropsWithChildren> = ({ children }) => {
-  const location = useLocation();
+  const location = useLocation()
   return (
     <motion.div
       key={location.key}
@@ -13,7 +13,7 @@ const FadeInUp: FC<PropsWithChildren> = ({ children }) => {
     >
       {children}
     </motion.div>
-  );
-};
+  )
+}
 
-export default FadeInUp;
+export default FadeInUp

@@ -1,8 +1,10 @@
-// types/topic.d.ts
 export interface Topic {
   id: number;
   name: string;
   description: string;
+  avatar: string;
+  banner: string;
+  postCount: number;
   isDeleted: boolean;
   categories: number[];
 }

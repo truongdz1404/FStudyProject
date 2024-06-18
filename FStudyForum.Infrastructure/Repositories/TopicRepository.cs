@@ -1,17 +1,13 @@
 using FStudyForum.Core.Interfaces.IRepositories;
-using FStudyForum.Core.Models.DTOs.Paging;
 using FStudyForum.Core.Models.Entities;
 using FStudyForum.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 
 namespace FStudyForum.Infrastructure.Repositories
 {
-    public class TopicRepository : BaseRepository<Topic>, ITopicRepository
+    public class TopicRepository(ApplicationDBContext dbContext)
+        : BaseRepository<Topic>(dbContext), ITopicRepository
     {
-        public TopicRepository(ApplicationDBContext dbContext) : base(dbContext)
-        {
-        }
         public new async Task Update(Topic model)
         {
             _dbContext.Topics.Update(model);
@@ -37,7 +33,7 @@ namespace FStudyForum.Infrastructure.Repositories
             }
         }
 
-        public async Task<List<Topic>> GetAllTopics()
+        public async Task<List<Topic>> GetTopics()
         {
             var topics = await _dbContext.Topics
                 .Include(t => t.Categories)
@@ -46,24 +42,27 @@ namespace FStudyForum.Infrastructure.Repositories
             return topics;
         }
 
-        public async Task<bool> TopicExists(string topicName, long? topicId = null)
+        public async Task<bool> TopicExists(string topicName)
         {
-            if (topicId.HasValue)
-            {
-                return await _dbContext.Topics.AnyAsync(t => t.Name == topicName && t.Id != topicId.Value);
-            }
-            else
-            {
-                return await _dbContext.Topics.AnyAsync(t => t.Name == topicName);
-            }
+            return await _dbContext.Topics.AnyAsync(t => t.Name == topicName);
         }
 
-        public async Task<Topic?> GetById(long id)
+        public async Task<Topic?> GetByName(string name)
         {
             var topic = await _dbContext.Topics
-               .Include(t => t.Categories).FirstOrDefaultAsync(t => t.Id == id);
+               .Include(t => t.Categories).FirstOrDefaultAsync(t => t.Name == name);
             return topic;
+        }
 
+        public async Task<List<Topic>> Search(string value, int size)
+        {
+            var topics = await _dbContext.Topics
+                .Where(t => t.IsDeleted == false && t.Name.Contains(value))
+                .Include(t => t.Posts)
+                .Take(size)
+                .ToListAsync();
+
+            return topics;
         }
     }
 

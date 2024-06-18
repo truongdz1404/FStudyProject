@@ -1,14 +1,14 @@
-import React from "react";
-import Filter from "@/components/topic/filter/Filter";
+import React from "react"
+import Filter from "@/components/topic/filter/Filter"
 
 interface MajorFilterProps {
-  onSelect: (selectedValue: string) => void;
+  onSelect: (selectedValue: string) => void
 }
 
 const MajorFilter: React.FC<MajorFilterProps> = ({ onSelect }) => {
-  const majors = ["IT", "Design", "Engineering", "Business"]; // Hard-coded majors
+  const majors = ["IT", "Design", "Engineering", "Business"] // Hard-coded majors
 
-  return <Filter options={majors} onSelect={onSelect} />;
-};
+  return <Filter options={majors} onSelect={onSelect} />
+}
 
-export default MajorFilter;
+export default MajorFilter
