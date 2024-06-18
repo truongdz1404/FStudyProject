@@ -21,7 +21,7 @@ export function formatElapsedTime(elapsed: string): string {
 
   if (totalDays < 1) {
     const totalHours = Math.floor(totalSeconds / 3600);
-    return `${totalHours} hour${totalHours > 1 ? "s" : ""} ago`;
+    return `${totalHours} hr. ago`;
   } else if (totalDays < 30) {
     return `${totalDays} day${totalDays > 1 ? "s" : ""} ago`;
   } else if (totalDays < 365) {

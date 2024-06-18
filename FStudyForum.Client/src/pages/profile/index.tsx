@@ -15,6 +15,8 @@ import { Camera, PencilLine, Plus } from "lucide-react";
 import React from "react";
 import { Link, useParams } from "react-router-dom";
 import { Alert } from "@material-tailwind/react";
+import { cn } from "@/helpers/utils";
+import { useAuth } from "@/hooks/useAuth";
 
 const tabItems = [
   {
@@ -25,6 +27,7 @@ const tabItems = [
   }
 ];
 const Profile = () => {
+  const { user } = useAuth();
   const { name } = useParams<{ name: string }>();
   const { data: profile, error } = useQuery({
     queryKey: [`profile-${name}`],
@@ -62,7 +65,10 @@ const Profile = () => {
             />
             <Link
               to="/settings/profile"
-              className="absolute bottom-0 right-0 bg-blue-gray-50 rounded-full"
+              className={cn(
+                "absolute bottom-0 right-0 bg-blue-gray-50 rounded-full",
+                user?.username !== name && "hidden"
+              )}
             >
               <Camera className="h-4 w-4 m-1" strokeWidth={1.5} />
             </Link>
@@ -70,7 +76,10 @@ const Profile = () => {
 
           <Link
             to="/settings/profile"
-            className="absolute bottom-0 right-0 bg-blue-gray-50 rounded-full m-2 font-normal"
+            className={cn(
+              "absolute bottom-0 right-0 bg-blue-gray-50 rounded-full m-2 font-normal",
+              user?.username !== name && "hidden"
+            )}
           >
             <Camera className="h-4 w-4 m-1 " strokeWidth={1.5} />
           </Link>
@@ -81,7 +90,13 @@ const Profile = () => {
             </p>
             <p className="text-xs font-light">{"u/" + name?.toLowerCase()}</p>
           </div>
-          <Link className="mt-2 absolute right-0" to="/settings/profile">
+          <Link
+            className={cn(
+              "mt-2 absolute right-0",
+              user?.username !== name && "hidden"
+            )}
+            to="/settings/profile"
+          >
             <Button
               size="sm"
               variant="outlined"
@@ -125,7 +140,11 @@ const Profile = () => {
           </Button>
         ))}
       </div>
-      <Button size="sm" variant="outlined" className="rounded-full mt-2">
+      <Button
+        size="sm"
+        variant="outlined"
+        className={cn("rounded-full mt-2", user?.username !== name && "hidden")}
+      >
         <div className="flex items-center">
           <Plus size={"16"} />
           <Typography className="text-xs capitalize ml-1 font-normal">

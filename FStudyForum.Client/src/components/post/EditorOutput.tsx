@@ -1,5 +1,7 @@
-import { OutputBlockData } from "@editorjs/editorjs";
+import { OutputData } from "@editorjs/editorjs";
 import { FC } from "react";
+import CustomImageOutput from "./CustomImageOutput";
+import CustomEmbedOutput from "./CustomEmbedOutput";
 
 const Output = (await import("editorjs-react-renderer")).default;
 interface Props {
@@ -12,30 +14,19 @@ const style = {
   }
 };
 
-const CustomImageRenderer = ({ data }: OutputBlockData<string>) => {
-  const src = data.file.url;
-  return (
-    <div className="relative w-full min-h-[15rem]">
-      <img className="w-full h-full object-cover" src={src} />
-    </div>
-  );
-};
-
-const CustomCodeRenderer = ({ data }: OutputBlockData<string>) => {
-  const src = data.file.url;
-  return (
-    <div className="relative w-full min-h-[15rem]">
-      <img className="w-full h-full object-cover" src={src} />
-    </div>
-  );
-};
-
 const renderers = {
-  image: CustomImageRenderer,
-  code: CustomCodeRenderer
+  image: CustomImageOutput,
+  embed: CustomEmbedOutput
 };
-const EditorOutput: FC<Props> = () => {
-  return <Output style={style} className="text-sm" renderer={renderers} />;
+const EditorOutput: FC<Props> = ({ content }) => {
+  return (
+    <Output
+      data={JSON.parse(content) as OutputData}
+      style={style}
+      className="text-sm"
+      renderers={renderers}
+    />
+  );
 };
 
 export default EditorOutput;
