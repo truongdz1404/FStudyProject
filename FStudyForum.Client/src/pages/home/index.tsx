@@ -12,7 +12,8 @@ const Home: React.FC = () => {
   const { posts, setPosts } = usePosts();
   const { data: initPosts, error, isLoading } = useQuery({
     queryKey: ["home"],
-    queryFn: () => PostService.getPosts()
+    queryFn: () => PostService.getPosts(),
+    refetchOnWindowFocus: false,
   });
 
   useEffect(() => {
