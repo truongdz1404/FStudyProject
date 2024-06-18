@@ -101,10 +101,30 @@ namespace FStudyForum.API.Controllers
             });
         }
 
-        [HttpGet("prefered")]
-        public async Task<IActionResult> GetPreferedPosts()
+        [HttpGet("newest")]
+        public async Task<IActionResult> getNewestPosts()
         {
-            var posts = await _postService.getPreferList();
+            var posts = await _postService.getNewPosts();
+            if (posts.IsNullOrEmpty())
+            {
+                return NotFound(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = "Posts not found",
+                });
+            }
+            return Ok(new Response
+            {
+                Message = "Get Posts successfully",
+                Status = ResponseStatus.SUCCESS,
+                Data = posts
+            });
+        }
+
+        [HttpGet("hot")]
+        public async Task<IActionResult> GetHotPosts()
+        {
+            var posts = await _postService.getHotList();
             if (posts.IsNullOrEmpty())
             {
                 return NotFound(new Response

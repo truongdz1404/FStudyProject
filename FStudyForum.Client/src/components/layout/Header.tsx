@@ -181,6 +181,7 @@ const Header = React.memo(({ openSidebar }: HeaderProps) => {
           <Link
             to="/"
             className="mx-2 xl:mx-4 cursor-pointer py-1.5 font-medium flex items-center select-none"
+            onClick={() => sessionStorage.setItem("selectedComponent", "Newest")}
           >
             <Icons.logo className="h-8 w-8" />
             <span className="hidden text-zinc-700 text-md font-bold md:block">

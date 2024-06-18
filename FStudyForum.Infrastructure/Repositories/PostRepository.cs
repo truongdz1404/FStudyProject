@@ -53,6 +53,7 @@ namespace FStudyForum.Infrastructure.Repositories
                 .Include(p => p.Votes)
                 .Include(p => p.Comments)
                 .Where(p => p.Topic.IsDeleted == false)
+                .AsSplitQuery() // EF Core 5.0
                 .ToListAsync();
         }
 

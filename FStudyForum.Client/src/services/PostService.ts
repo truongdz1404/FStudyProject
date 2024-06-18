@@ -12,7 +12,12 @@ const getPostsByTopicId = async (topicId: number) => {
   return response.data.data;
 };
 
-const NewestPosts = async () => {
+const getHotPosts = async () => {
+  const response = await api.get<ResponseWith<Post[]>>(`/post/hot`);
+  return response.data.data;
+}
+
+const getNewestPosts = async () => {
   const response = await api.get<ResponseWith<Post[]>>(`/post/newest`);
   return response.data.data;
 }
@@ -23,7 +28,8 @@ const createPost = async (post: CreatePost) => {
 const PostService = {
   getPosts,
   getPostsByTopicId,
-  NewestPosts,
+  getNewestPosts,
+  getHotPosts,
   createPost,
 };
 export default PostService;
