@@ -18,6 +18,12 @@ public class MapperProfile : AutoMapper.Profile
             .ForMember(dest => dest.Categories, opt => opt.MapFrom(src => src.Categories.Select(c => c.Id)));
         CreateMap<ProfileDTO, Profile>().ReverseMap();
         CreateMap<PaginatedData<Post>, PaginatedData<PostDTO>>().ReverseMap();
-        CreateMap<Post, PostDTO>().ReverseMap();
+        CreateMap<Post, PostDTO>()
+            .ForMember(dest => dest.VoteCount, opt => opt.MapFrom(src => src.Votes.Count))
+            .ForMember(dest => dest.UpVoteCount, opt => opt.MapFrom(src => src.Votes.Count(v => v.IsUp)))
+            .ForMember(dest => dest.DownVoteCount, opt => opt.MapFrom(src => src.Votes.Count(v => !v.IsUp)))
+            .ForMember(dest => dest.CommentCount, opt => opt.MapFrom(src => src.Comments.Count))
+            .ForMember(dest => dest.Elapsed, opt => opt.MapFrom(src => DateTime.Now - src.CreatedAt));
+        CreateMap<PostDTO, Post>();
     }
 }

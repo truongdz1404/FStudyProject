@@ -42,7 +42,16 @@ namespace FStudyForum.Infrastructure.Repositories
 
         public async Task<IEnumerable<Post>> GetByTopicId(long topicId)
         {
-            return await _dbContext.Posts.Where(p => p.Topic.Id == topicId).ToListAsync();
+            return await _dbContext.Posts
+                .Where(p => p.Topic.Id == topicId)
+                .Where(p => p.IsDeleted == false)
+                .Include(p => p.Creater)
+                .Include(p => p.Topic)
+                .Include(p => p.Votes)
+                .Include(p => p.Comments)
+                .Where(p => p.Topic.IsDeleted == false)
+                .AsSplitQuery() // EF Core 5.0
+                .ToListAsync();
         }
         public async Task<IEnumerable<Post>> GetPostsAsync()
         {

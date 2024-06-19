@@ -101,10 +101,10 @@ namespace FStudyForum.API.Controllers
             });
         }
 
-        [HttpGet("newest")]
-        public async Task<IActionResult> getNewestPosts()
+        [HttpGet("new")]
+        public async Task<IActionResult> getNewPosts()
         {
-            var posts = await _postService.getNewPosts();
+            var posts = await _postService.getNewPostsBySample([]);
             if (posts.IsNullOrEmpty())
             {
                 return NotFound(new Response
@@ -124,7 +124,7 @@ namespace FStudyForum.API.Controllers
         [HttpGet("hot")]
         public async Task<IActionResult> GetHotPosts()
         {
-            var posts = await _postService.getHotList();
+            var posts = await _postService.getHotPostsBySample([]);
             if (posts.IsNullOrEmpty())
             {
                 return NotFound(new Response
@@ -139,6 +139,58 @@ namespace FStudyForum.API.Controllers
                 Status = ResponseStatus.SUCCESS,
                 Data = posts
             });
+        }
+
+        [HttpGet("{postType}/topicId={topicId}")]
+        public async Task<IActionResult> GetFilteredPostsWithTopicIdAsync(string postType, string topicId)
+        {
+            try
+            {
+                var initPosts = new List<PostDTO>();
+                var filteredPosts = new List<PostDTO>();
+                if (!string.IsNullOrEmpty(topicId) && long.TryParse(topicId, out long topicIdLong))
+                {
+                    initPosts = await _postService.getByTopicId(topicIdLong);
+                }
+                if (!string.IsNullOrEmpty(postType))
+                {
+                    switch (postType)
+                    {
+                        case "hot":
+                            filteredPosts = await _postService.getHotPostsBySample(initPosts);
+                            break;
+                        case "new":
+                            filteredPosts = await _postService.getNewPostsBySample(initPosts);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                if (filteredPosts.IsNullOrEmpty())
+                {
+                    return NotFound(new Response
+                    {
+                        Status = ResponseStatus.ERROR,
+                        Message = "Posts not found",
+                    });
+                }
+                return Ok(new Response
+                {
+                    Message = "Get Posts successfully",
+                    Status = ResponseStatus.SUCCESS,
+                    Data = filteredPosts
+                });
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = e.Message
+                });
+            }
+
         }
 
     }

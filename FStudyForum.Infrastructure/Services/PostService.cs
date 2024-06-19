@@ -4,6 +4,7 @@ using FStudyForum.Core.Interfaces.IRepositories;
 using FStudyForum.Core.Interfaces.IServices;
 using FStudyForum.Core.Models.DTOs.Post;
 using FStudyForum.Core.Models.Entities;
+using Microsoft.IdentityModel.Tokens;
 
 
 namespace FStudyForum.Infrastructure.Services
@@ -21,7 +22,7 @@ namespace FStudyForum.Infrastructure.Services
         public async Task<List<PostDTO>> getByTopicId(long id)
         {
             var posts = await _postRepository.GetByTopicId(id);
-            return new List<PostDTO>(_mapper.Map<IEnumerable<PostDTO>>(posts));
+            return _mapper.Map<List<PostDTO>>(posts);
         }
 
         public async Task<PostDTO> CreatePost(CreatePostDTO postDTO)
@@ -53,56 +54,22 @@ namespace FStudyForum.Infrastructure.Services
             return postDTOs;
         }
 
-        public async Task<List<PostDTO>> getHotList()
+        public async Task<List<PostDTO>> getHotPostsBySample(List<PostDTO> initPostDTOs)
         {
-            var posts = await _postRepository.GetPostsAsync();
-            var postDTOs = posts.Select(p => new PostDTO
-            {
-                Id = p.Id,
-                Title = p.Title,
-                Author = p.Creater.UserName!,
-                TopicName = p.Topic.Name,
-                TopicAvatar = p.Topic.Avatar,
-                Content = p.Content,
-                VoteCount = p.Votes.Count,
-                UpVoteCount = calcUpVoteCount(p.Votes),
-                CommentCount = p.Comments.Count,
-                Elapsed = DateTime.Now - p.CreatedAt
-            })
-            .OrderByDescending(p => p.UpVoteCount + p.CommentCount)
-            .ToList();
-            return postDTOs;
+            var posts = initPostDTOs.IsNullOrEmpty() 
+                ? _mapper.Map<List<PostDTO>>(await _postRepository.GetPostsAsync())
+                : initPostDTOs;
+
+            return await Task.FromResult(posts.OrderByDescending(p => p.UpVoteCount + p.CommentCount).ToList());
         }
 
-        private int calcUpVoteCount(ICollection<Vote> votes)
+        public async Task<List<PostDTO>> getNewPostsBySample(List<PostDTO> initPostDTOs)
         {
-            int upVoteCount = 0;
-            foreach (var vote in votes)
-            {
-                if (vote.IsUp)
-                {
-                    upVoteCount++;
-                }
-            }
-            return upVoteCount;
-        }
+            var posts = initPostDTOs.IsNullOrEmpty() 
+                ? _mapper.Map<List<PostDTO>>(await _postRepository.GetPostsAsync())
+                : initPostDTOs;
 
-        public async Task<List<PostDTO>> getNewPosts()
-        {
-            var posts = await _postRepository.GetPostsAsync();
-            var postDTOs = posts.Select(p => new PostDTO
-            {
-                Id = p.Id,
-                Title = p.Title,
-                Author = p.Creater.UserName!,
-                TopicName = p.Topic.Name,
-                TopicAvatar = p.Topic.Avatar,
-                Content = p.Content,
-                VoteCount = p.Votes.Count,
-                CommentCount = p.Comments.Count,
-                Elapsed = DateTime.Now - p.CreatedAt
-            }).OrderBy(p => p.Elapsed).ToList();
-            return postDTOs;
+            return await Task.FromResult(posts.OrderBy(p => p.Elapsed).ToList());
         }
     }
 }

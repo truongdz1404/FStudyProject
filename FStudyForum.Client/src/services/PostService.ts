@@ -8,17 +8,30 @@ const getPosts = async () => {
 };
 
 const getPostsByTopicId = async (topicId: number) => {
+  console.log("Get posts by topic id");
   const response = await api.get<ResponseWith<Post[]>>(`/post/topicId=${topicId}`);
   return response.data.data;
 };
 
-const getHotPosts = async () => {
-  const response = await api.get<ResponseWith<Post[]>>(`/post/hot`);
+const getHotPosts = async (topicId: number | null) => {
+  console.log("Get hot posts");
+  let response
+  if (topicId) {
+    response = await api.get<ResponseWith<Post[]>>(`/post/hot/topicId=${topicId}`);
+  } else {
+    response = await api.get<ResponseWith<Post[]>>(`/post/hot`);
+  }
   return response.data.data;
 }
 
-const getNewestPosts = async () => {
-  const response = await api.get<ResponseWith<Post[]>>(`/post/newest`);
+const getNewPosts = async (topicId: number | null) => {
+  console.log("Get new posts");
+  let response
+  if (topicId) {
+    response = await api.get<ResponseWith<Post[]>>(`/post/new/topicId=${topicId}`);
+  } else {
+    response = await api.get<ResponseWith<Post[]>>(`/post/new`);
+  }
   return response.data.data;
 }
 const createPost = async (post: CreatePost) => {
@@ -28,7 +41,7 @@ const createPost = async (post: CreatePost) => {
 const PostService = {
   getPosts,
   getPostsByTopicId,
-  getNewestPosts,
+  getNewPosts,
   getHotPosts,
   createPost,
 };

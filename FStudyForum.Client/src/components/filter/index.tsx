@@ -1,93 +1,61 @@
 import { usePosts } from "@/hooks/usePosts";
+import { useTopics } from "@/hooks/useTopics";
 import PostService from "@/services/PostService";
-import TopicService from "@/services/TopicService";
-import { Topic } from "@/types/topic";
-import { ChevronDown, ChevronRight, ChevronUp, Filter } from "lucide-react";
+import { ChevronDown, ChevronUp, Filter } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const FilterComponent: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [subMenuOpen, setSubMenuOpen] = useState(false);
   const [isChevronDown, setIsChevronDown] = useState(false);
   const { setPosts } = usePosts();
-  const [topics, setTopics] = useState<Topic[]>([]);
-  const [selectedTopic, setSelectedTopic] = useState<number | null>(null);
+  const { topics } = useTopics();
   const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
   const node = useRef<HTMLDivElement>(null);
+  const NEW = "New";
+  const HOT = "Hot";
 
-  useEffect(() => {
-    const fetchTopics = async () => {
-      const topics = await TopicService.getActiveTopics();
-      setTopics(topics);
-    };
-    fetchTopics();
-  }, []);
-
-  const chooseTopic = (topicId: number | null) => {
-    return async () => {
-      if (topicId !== null) {
-        setSelectedTopic(topicId);
-        const fetchPosts = async () => {
-          try {
-            const posts = await PostService.getPostsByTopicId(topicId);
-            if (Array.isArray(posts)) {
-              setPosts(posts);
-            } else {
-              setPosts([]);
-            }
-          } catch (error) {
-            setPosts([]);
-          }
-        };
-        fetchPosts();
-      }
-    };
-  };
-
-  const handleChooseNewPost = useCallback(
+  const handleChoosePost = useCallback(
     async (param: string) => {
       const fetchPosts = async () => {
-        try {
-          let posts;
-          switch (param) {
-            case "Newest":
-              posts = await PostService.getNewestPosts();
-              break;
-            case "Hottest":
-              posts = await PostService.getHotPosts();
-              break;
-            default:
-              break;
-          }
-          if (Array.isArray(posts)) {
-            setPosts(posts);
-          } else {
-            setPosts([]);
-          }
-        } catch (error) {
+        let posts;
+        switch (param) {
+          case NEW:
+            posts = await PostService.getNewPosts(topics);
+            break;
+          case HOT:
+            posts = await PostService.getHotPosts(topics);
+            break;
+          default:
+            break;
+        }
+        if (Array.isArray(posts)) {
+          setPosts(posts);
+        } else {
           setPosts([]);
         }
       };
       fetchPosts();
     },
-    [setPosts]
+    [setPosts, topics]
   );
 
   useEffect(() => {
     const selectedComponent = sessionStorage.getItem("selectedComponent");
     switch (selectedComponent) {
-      case "Newest":
-        setSelectedFilter("Newest");
-        handleChooseNewPost("Newest");
+      case NEW:
+        setSelectedFilter(NEW);
+        handleChoosePost(NEW);
         break;
-      case "Hottest":
-        setSelectedFilter("Hottest");
-        handleChooseNewPost("Hottest");
+      case HOT:
+        setSelectedFilter(HOT);
+        handleChoosePost(HOT);
         break;
       default:
+        setSelectedFilter(null);
         break;
     }
-  }, [handleChooseNewPost]);
+  }, [handleChoosePost]);
+
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -104,83 +72,50 @@ const FilterComponent: React.FC = () => {
   }, []);
 
   return (
-    <div ref={node} className="flex items-center justify-center bg-gray-100">
-      <div className="relative inline-block text-left">
-        <button
-          onClick={() => {
-            setIsOpen(!isOpen);
-            setSubMenuOpen(false);
-            setIsChevronDown(!isChevronDown);
-          }}
-          className="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-gray-100 focus:ring-blue-500"
-        >
-          <Filter className="w-4 h-4 mr-2 mt-1" />
-          Filter
-          {isChevronDown ? <ChevronUp /> : <ChevronDown />}
-        </button>
-        {isOpen && (
-          <div className="origin-top-left absolute left-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 px-2 py-2">
-            <div
-              onMouseEnter={() => setSubMenuOpen(false)}
-              className={
-                selectedFilter === "Newest"
-                  ? "bg-orange-400 block px-4 py-2 text-sm text-gray-700 rounded-md cursor-pointer"
-                  : "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer"
-              }
-              onClick={() => {
-                sessionStorage.setItem("selectedComponent", "Newest");
-                setSelectedFilter("Newest");
-                handleChooseNewPost("Newest");
-              }}
-            >
-              New
-            </div>
-            <div
-              onMouseEnter={() => setSubMenuOpen(false)}
-              className={
-                selectedFilter === "Hottest"
-                  ? "bg-orange-400 block px-4 py-2 text-sm text-gray-700 rounded-md cursor-pointer"
-                  : "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer"
-              }
-              onClick={() => {
-                sessionStorage.setItem("selectedComponent", "Hottest");
-                setSelectedFilter("Hottest");
-                handleChooseNewPost("Hottest");
-              }}
-            >
-              Hot
-            </div>
-            <div className="relative">
-              <button
-                onMouseEnter={() => setSubMenuOpen(true)}
-                className="flex justify-between items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 relative rounded-md"
-              >
-                {" "}
-                Topic <ChevronRight />
-              </button>
-              {subMenuOpen && (
-                <div className="absolute top-0 left-full ml-4 w-full rounded-md shadow-lg ring-1 ring-black ring-opacity-5 px-2 py-2">
-                  {topics.map((topic, index) => (
-                    <a
-                      key={index}
-                      target="_blank"
-                      rel="noopener"
-                      onClick={chooseTopic(topic.id)}
-                      className={
-                        selectedTopic === topic.id
-                          ? "bg-orange-400 flex px-4 py-2 text-sm text-gray-700 cursor-pointer rounded-md"
-                          : "bg-white flex px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer rounded-md"
-                      }
-                    >
-                      {topic.name}
-                    </a>
-                  ))}
-                </div>
-              )}
-            </div>
+    <div ref={node} className="relative inline-block text-left mb-2 z-50 mr-10">
+      <button
+        onClick={() => {
+          setIsOpen(!isOpen);
+          setIsChevronDown(!isChevronDown);
+        }}
+        className="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-gray-100 focus:ring-blue-500"
+      >
+        <Filter className="w-4 h-4 mr-2 mt-1" />
+        Sort by
+        {isChevronDown ? <ChevronUp /> : <ChevronDown />}
+      </button>
+      {isOpen && (
+        <div className="origin-top-left absolute left-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 px-2 py-2 z-50">
+          <div
+            className={
+              selectedFilter === NEW
+                ? "bg-orange-400 block px-4 py-2 text-sm text-gray-700 rounded-md cursor-pointer"
+                : "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer"
+            }
+            onClick={() => {
+              sessionStorage.setItem("selectedComponent", NEW);
+              setSelectedFilter(NEW);
+              handleChoosePost(NEW);
+            }}
+          >
+            New
           </div>
-        )}
-      </div>
+          <div
+            className={
+              selectedFilter === HOT
+                ? "bg-orange-400 block px-4 py-2 text-sm text-gray-700 rounded-md cursor-pointer"
+                : "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer"
+            }
+            onClick={() => {
+              sessionStorage.setItem("selectedComponent", HOT);
+              setSelectedFilter(HOT);
+              handleChoosePost(HOT);
+            }}
+          >
+            Hot
+          </div>
+        </div>
+      )}
     </div>
   );
 };

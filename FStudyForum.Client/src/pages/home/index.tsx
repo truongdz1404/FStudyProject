@@ -7,6 +7,7 @@ import NullLayout from "@/components/layout/NullLayout";
 import FilterComponent from "@/components/filter";
 import { useEffect } from "react";
 import { usePosts } from "@/hooks/usePosts";
+import TopicFilter from "@/components/filter/TopicFilter";
 
 const Home: React.FC = () => {
   const { posts, setPosts } = usePosts();
@@ -31,7 +32,10 @@ const Home: React.FC = () => {
   if (isLoading) return <Spinner className="mx-auto" />;
   return (
     <>
-      <FilterComponent />
+      <div className="flex">
+        <FilterComponent />
+        <TopicFilter />
+      </div>
       {(posts?.length ?? 0) === 0 && <NullLayout />}
       {(posts?.length ?? 0 > 0) && (
         <ContentLayout>
