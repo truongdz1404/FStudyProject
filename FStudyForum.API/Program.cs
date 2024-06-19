@@ -8,6 +8,7 @@ using FStudyForum.Infrastructure.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 
@@ -88,8 +89,9 @@ builder.Services
         };
     });
 
+var vnpay = builder.Configuration.GetSection("VnPay");
+builder.Services.Configure<VNPayConfig>(vnpay);
 builder.Services.RegisterService();
-
 var app = builder.Build();
 app.UseWebSockets(new WebSocketOptions { KeepAliveInterval = TimeSpan.FromSeconds(2) });
 app.UseCors(Policy.SINGLE_PAGE_APP);

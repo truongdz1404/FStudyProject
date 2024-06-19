@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import BanUserService from "@/services/BanUserService";
 import TopicService from "@/services/TopicService";
+import { Alert } from "@material-tailwind/react";
 
 const BanUser: FC<PropsWithChildren> = ({ children }) => {
   const { user } = useAuth();
@@ -42,7 +43,7 @@ const BanUser: FC<PropsWithChildren> = ({ children }) => {
     fetchData();
   }, [name, user, navigate]);
   if (daysDiff > 0) {
-   return <>Bạn cần {daysDiff} ngày để mở khóa</>
+   return <Alert color="red">Bạn cần {daysDiff} ngày để mở khóa</Alert>
   }
   if(!loading)
   return <>{children}</>;

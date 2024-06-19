@@ -20,6 +20,7 @@ public static class ServiceExtension
         services.AddScoped<ITopicService, TopicService>();
         services.AddScoped<IPostService, PostService>();
         services.AddScoped<IVoteService, VoteService>();
+        services.AddScoped<IPaymentService, PaymentService>();
         #endregion
 
         #region Repositories
