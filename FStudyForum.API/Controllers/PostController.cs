@@ -30,7 +30,6 @@ namespace FStudyForum.API.Controllers
                     {
                         Status = ResponseStatus.ERROR,
                         Message = "Posts not found",
-                        Data = posts
                     });
                 }
                 return Ok(new Response
@@ -38,6 +37,37 @@ namespace FStudyForum.API.Controllers
                     Message = "Get Posts successfully",
                     Status = ResponseStatus.SUCCESS,
                     Data = posts
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = ex.Message
+                });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetPost([FromQuery] long id)
+        {
+            try
+            {
+                var post = await _postService.GetPostById(id);
+                if (post == null)
+                {
+                    return NotFound(new Response
+                    {
+                        Status = ResponseStatus.ERROR,
+                        Message = "Post not found",
+                    });
+                }
+                return Ok(new Response
+                {
+                    Message = "Get Post successfully",
+                    Status = ResponseStatus.SUCCESS,
+                    Data = post
                 });
             }
             catch (Exception ex)

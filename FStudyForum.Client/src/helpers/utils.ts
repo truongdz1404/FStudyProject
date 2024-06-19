@@ -32,3 +32,39 @@ export function formatElapsedTime(elapsed: string): string {
     return `${years} year${years > 1 ? "s" : ""} ago`;
   }
 }
+
+export const colorThief = {
+  getColor
+};
+
+function getColor(file: File): Promise<{
+  bgColor: string;
+  width: number;
+  height: number;
+}> {
+  const reader = new FileReader();
+  return new Promise((resolve, reject) => {
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx?.drawImage(img, 0, 0);
+        const bg = ctx?.getImageData(0, 0, 1, 1).data;
+        if (!bg) {
+          return reject();
+        }
+        const bgColor = `rgba(${bg[0]}, ${bg[1]}, ${bg[2]}, ${bg[3] / 255})`;
+        resolve({
+          bgColor,
+          width: img.width,
+          height: img.height
+        });
+      };
+      img.src = e.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  });
+}

@@ -11,8 +11,12 @@ type CustomEmbedProps = {
 const CustomEmbedOutput = ({ data }: CustomEmbedProps): JSX.Element => {
   const src = data.embed;
   return (
-    <div className="relative w-full min-h-[15rem]">
-      <iframe src={src} className="w-full aspect-video rounded-md"></iframe>
+    <div className="relative w-full ">
+      <iframe
+        src={src}
+        className="w-full aspect-video rounded-md"
+        loading="lazy"
+      />
     </div>
   );
 };
