@@ -421,6 +421,11 @@ namespace FStudyForum.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
+                    b.Property<string>("Avatar")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -439,6 +444,11 @@ namespace FStudyForum.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(25)
                         .HasColumnType("nvarchar(25)");
+
+                    b.Property<string>("Panner")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.HasKey("Id");
 
@@ -548,19 +558,19 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "621a8ab5-7d14-47d5-90d2-399a4651fe94",
+                            Id = "4801bc70-c789-4b25-9811-72c788163b10",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "4d344199-eb2a-4ea4-8e89-8cfbd672947c",
+                            Id = "e355c20c-6eda-481c-b8a6-7ad7cee2e1ed",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "1d5fd324-8336-406c-bb01-b5c545c650cc",
+                            Id = "dcf7bd8c-a442-4eeb-b425-c311ce667c90",
                             Name = "Moderator",
                             NormalizedName = "MODERATOR"
                         });

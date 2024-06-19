@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FStudyForum.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20240616092127_UpdateDB")]
-    partial class UpdateDB
+    [Migration("20240619101744_DBNew")]
+    partial class DBNew
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -263,6 +263,7 @@ namespace FStudyForum.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreaterId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("IsDeleted")
@@ -403,6 +404,7 @@ namespace FStudyForum.Infrastructure.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -422,6 +424,11 @@ namespace FStudyForum.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
+                    b.Property<string>("Avatar")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -440,6 +447,11 @@ namespace FStudyForum.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(25)
                         .HasColumnType("nvarchar(25)");
+
+                    b.Property<string>("Panner")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.HasKey("Id");
 
@@ -549,19 +561,19 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "b73719c6-0cdc-485b-b823-633dfaf64cb0",
+                            Id = "4801bc70-c789-4b25-9811-72c788163b10",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "e3a3bc7e-aa37-47fe-b91d-b98094926a20",
+                            Id = "e355c20c-6eda-481c-b8a6-7ad7cee2e1ed",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "9b4335cd-573c-4bf0-ab34-fc0881d7a781",
+                            Id = "dcf7bd8c-a442-4eeb-b425-c311ce667c90",
                             Name = "Moderator",
                             NormalizedName = "MODERATOR"
                         });
@@ -688,21 +700,6 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.ToTable("tblModerators", "dbo");
                 });
 
-            modelBuilder.Entity("tblSavePosts", b =>
-                {
-                    b.Property<string>("SavedByUsersId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<long>("SavedPostsId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("SavedByUsersId", "SavedPostsId");
-
-                    b.HasIndex("SavedPostsId");
-
-                    b.ToTable("tblSavePosts", "dbo");
-                });
-
             modelBuilder.Entity("tblTopicCategories", b =>
                 {
                     b.Property<long>("CategoriesId")
@@ -776,7 +773,8 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.HasOne("FStudyForum.Core.Models.Entities.ApplicationUser", "Creater")
                         .WithMany("CreatedPosts")
                         .HasForeignKey("CreaterId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.HasOne("FStudyForum.Core.Models.Entities.Topic", "Topic")
                         .WithMany("Posts")
@@ -814,14 +812,16 @@ namespace FStudyForum.Infrastructure.Migrations
             modelBuilder.Entity("FStudyForum.Core.Models.Entities.SavedPost", b =>
                 {
                     b.HasOne("FStudyForum.Core.Models.Entities.Post", "Post")
-                        .WithMany()
+                        .WithMany("SavedByUsers")
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("FStudyForum.Core.Models.Entities.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
+                        .WithMany("SavedPosts")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Post");
 
@@ -936,21 +936,6 @@ namespace FStudyForum.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("tblSavePosts", b =>
-                {
-                    b.HasOne("FStudyForum.Core.Models.Entities.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("SavedByUsersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("FStudyForum.Core.Models.Entities.Post", null)
-                        .WithMany()
-                        .HasForeignKey("SavedPostsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("tblTopicCategories", b =>
                 {
                     b.HasOne("FStudyForum.Core.Models.Entities.Category", null)
@@ -980,6 +965,8 @@ namespace FStudyForum.Infrastructure.Migrations
 
                     b.Navigation("Reports");
 
+                    b.Navigation("SavedPosts");
+
                     b.Navigation("Votes");
                 });
 
@@ -1000,6 +987,8 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.Navigation("Attachments");
 
                     b.Navigation("Comments");
+
+                    b.Navigation("SavedByUsers");
 
                     b.Navigation("Votes");
                 });

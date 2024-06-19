@@ -21,7 +21,7 @@ import React from "react";
 
 const titles = ["Name", "Description", "Action"];
 
-const Topics = () => {
+const TopicsPage = () => {
   const openAddPopup = () => {
     setPopupOpen(1);
   };
@@ -46,7 +46,7 @@ const Topics = () => {
   const handleDelete = async () => {
     if (!selectTopic) return;
     try {
-      await TopicService.Delete(selectTopic.name);
+      await TopicService.deleteTopic(selectTopic.name);
       closePopup();
       reloadTopics();
     } catch (error) {
@@ -190,4 +190,4 @@ const Topics = () => {
     </>
   );
 };
-export default Topics;
+export default TopicsPage;

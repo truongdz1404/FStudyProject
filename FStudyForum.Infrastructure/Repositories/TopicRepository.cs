@@ -2,15 +2,14 @@ using FStudyForum.Core.Interfaces.IRepositories;
 using FStudyForum.Core.Models.DTOs.TopicBan;
 using FStudyForum.Core.Models.Entities;
 using FStudyForum.Infrastructure.Data;
+using Google.Apis.Util;
 using Microsoft.EntityFrameworkCore;
 
 namespace FStudyForum.Infrastructure.Repositories
 {
-    public class TopicRepository : BaseRepository<Topic>, ITopicRepository
+    public class TopicRepository(ApplicationDBContext dbContext)
+        : BaseRepository<Topic>(dbContext), ITopicRepository
     {
-        public TopicRepository(ApplicationDBContext dbContext) : base(dbContext)
-        {
-        }
         public new async Task Update(Topic model)
         {
             _dbContext.Topics.Update(model);
@@ -55,7 +54,17 @@ namespace FStudyForum.Infrastructure.Repositories
             var topic = await _dbContext.Topics
                .Include(t => t.Categories).FirstOrDefaultAsync(t => t.Name == name);
             return topic;
+        }
 
+        public async Task<List<Topic>> Search(string value, int size)
+        {
+            var topics = await _dbContext.Topics
+                .Where(t => t.IsDeleted == false && t.Name.Contains(value))
+                .Include(t => t.Posts)
+                .Take(size)
+                .ToListAsync();
+
+            return topics;
         }
         public async Task<TopicBan> LockUser(TopicBan lockUser)
         {
@@ -66,14 +75,14 @@ namespace FStudyForum.Infrastructure.Repositories
 
         public async Task<TopicBan> UnlockUser(TopicBan lockUser)
         {
-           _dbContext.TopicBans.Remove(lockUser);
+            _dbContext.TopicBans.Remove(lockUser);
             await _dbContext.SaveChangesAsync();
             return lockUser;
         }
 
         public async Task<TopicBan?> GetUserLocked(TopicBanDTO lockUser)
         {
-            var userLocked = await _dbContext.TopicBans.FirstOrDefaultAsync(t => 
+            var userLocked = await _dbContext.TopicBans.FirstOrDefaultAsync(t =>
             t.User.UserName == lockUser.UserName
             && t.Topic.Id == lockUser.TopicId);
             return userLocked;
@@ -90,6 +99,19 @@ namespace FStudyForum.Infrastructure.Repositories
         {
             _dbContext.TopicBans.Update(topicBan);
             await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<Topic?> GetTopicByPost(int postId)
+        {
+            var topic = await _dbContext.Topics.Join(
+                _dbContext.Posts,
+                t => t.Id,
+                p => p.Topic.Id,
+                (t, p) => new { Topic = t, Post = p })
+                .Where(tp => tp.Post.Id.Equals(postId))
+                .Select(tp => tp.Topic)
+                .FirstOrDefaultAsync();
+            return topic;
         }
     }
 

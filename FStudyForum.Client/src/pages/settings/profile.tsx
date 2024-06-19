@@ -1,137 +1,354 @@
-import ContentLayout from "@/components/layout/ContentLayout";
-import ProfileDescription from "@/components/profile/ProfileDescription";
-import ProfileService from "@/services/ProfileService";
+import { cn } from "@/helpers/utils";
+import { yupResolver } from "@hookform/resolvers/yup";
 import {
-  Accordion,
-  AccordionBody,
-  AccordionHeader,
   Avatar,
   Button,
-  Spinner,
-  Typography
+  Input,
+  Radio,
+  Textarea
 } from "@material-tailwind/react";
-import { useQuery } from "@tanstack/react-query";
-import { Camera, PencilLine, Plus } from "lucide-react";
+import { ArrowLeft, Camera, CircleAlert } from "lucide-react";
+import { useForm } from "react-hook-form";
+import * as Yup from "yup";
+import { useAuth } from "@/hooks/useAuth";
+import { PhoneRegExp } from "@/helpers/constants";
+import { AxiosError } from "axios";
+import { Response } from "@/types/response";
 import React from "react";
-import { Link, useParams } from "react-router-dom";
-import { Alert } from "@material-tailwind/react";
-const tabItems = [
-  {
-    label: "Overview"
-  },
-  {
-    label: "Posts"
-  }
-];
-const Profile = () => {
-  const { name } = useParams<{ name: string }>();
-  const { data: profile, error } = useQuery({
-    queryKey: [`profile-${name}`],
-    queryFn: () => ProfileService.getByUsername(name!),
-    enabled: !!name
+import { Link, useNavigate } from "react-router-dom";
+import ProfileService from "@/services/ProfileService";
+import UserService from "@/services/UserService";
+import { signIn } from "@/contexts/auth/reduce";
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import { storage } from "@/helpers/storage";
+import { useQuery } from "@tanstack/react-query";
+const validation = Yup.object({
+  firstName: Yup.string().required("First name is required"),
+  lastName: Yup.string().required("Last name is required"),
+  gender: Yup.number()
+    .oneOf([0, 1, 2], "Invalid gender")
+    .required("Gender is required"),
+  avatar: Yup.string(),
+  phone: Yup.string().matches(PhoneRegExp, "Phone number is not valid")
+});
+
+interface EditProfileInputs {
+  firstName: string;
+  lastName: string;
+  gender: number;
+  avatar?: string;
+  phone?: string;
+  marjor?: string;
+  bio?: string;
+}
+const metadata = {
+  contentType: "image/jpeg"
+};
+const ProfileSettings = () => {
+  const { user, dispatch } = useAuth();
+  const [error, setError] = React.useState("");
+  const [loading, setLoading] = React.useState(false);
+  const [avatar, setAvatar] = React.useState(user!.avatar);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const [file, setFile] = React.useState<File>();
+  const navigate = useNavigate();
+
+  const { data: profile } = useQuery({
+    queryKey: [`profile-${user?.username}`],
+    queryFn: () => ProfileService.getByUsername(user!.username),
+    enabled: !!user
   });
-  const [open, setOpen] = React.useState(0);
-  const handleOpen = (value: number) => setOpen(open === value ? 0 : value);
-  if (error) {
-    return (
-      <div className="p-4">
-        <Alert color="red">Profile no found</Alert>
-      </div>
-    );
-  }
-  if (!profile) return <Spinner className="mx-auto" />;
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm<EditProfileInputs>({
+    mode: "onTouched",
+    defaultValues: React.useMemo(() => {
+      return {
+        firstName: profile?.firstName,
+        lastName: profile?.lastName,
+        gender: profile?.gender,
+        avatar: profile?.avatar,
+        phone: profile?.phone,
+        bio: profile?.bio
+      };
+    }, [profile]),
+    resolver: yupResolver(validation)
+  });
+
+  React.useEffect(() => {
+    return () => {
+      URL.revokeObjectURL(avatar);
+    };
+  }, [avatar]);
+
+  const handlePreviewAvatar = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.files) return;
+    const file = event.target.files[0];
+    if (!file) return;
+    setFile(file);
+    setAvatar(URL.createObjectURL(file));
+  };
+
+  const handleEditProfile = async (form: EditProfileInputs) => {
+    if (user == null) {
+      setError("User is not authenticated");
+      return;
+    }
+    setLoading(true);
+
+    const save = async () => {
+      try {
+        await ProfileService.update(user.username, {
+          firstName: form.firstName,
+          lastName: form.lastName,
+          gender: form.gender,
+          avatar: url,
+          major: form.marjor,
+          phone: form.phone,
+          bio: form.bio
+        });
+        const newUser = await UserService.getProfile();
+        dispatch(signIn({ user: newUser }));
+        navigate("/profile/" + user.username);
+      } catch (e) {
+        const error = e as AxiosError;
+        setError((error?.response?.data as Response)?.message || error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    let url = avatar;
+    if (file) {
+      const storageRef = ref(storage, `images/avatar${user.username}`);
+      const uploadTask = uploadBytesResumable(storageRef, file, metadata);
+      uploadTask.on(
+        "state_changed",
+        () => {},
+        error => {
+          console.error(error);
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then(async downloadURL => {
+            setFile(undefined);
+            url = downloadURL;
+            save();
+          });
+        }
+      );
+    } else {
+      save();
+    }
+  };
   return (
-    <ContentLayout pannel={<ProfileDescription profile={profile} />}>
-      <div className="flex flex-col items-center w-full mb-24">
-        <div className="relative w-full max-w-screen-lg">
-          <img
-            src="https://i.ibb.co/FWggPq1/banner.png"
-            className="w-full object-center h-36 rounded-sm"
-          />
-          <div className="absolute -bottom-1/2 left-4">
-            <Avatar
-              variant="circular"
-              size="xxl"
-              alt="avatar"
-              className="bg-white  p-0.5"
-              src={profile?.avatar}
-            />
-            <Link
-              to="/settings/profile"
-              className="absolute bottom-0 right-0 bg-blue-gray-50 rounded-full"
-            >
-              <Camera className="h-4 w-4 m-1" strokeWidth={1.5} />
-            </Link>
-          </div>
+    <>
+      <div className="mb-6">
+        <p className="text-md font-semibold flex gap-x-2 items-center">
           <Link
-            to="/settings/profile"
-            className="absolute bottom-0 right-0 bg-blue-gray-50 rounded-full m-2 font-normal"
+            to={`/profile/${user?.username}`}
+            className="rounded-full bg-blue-gray-50 hover:bg-blue-gray-100 p-2 lg:-ml-10"
           >
-            <Camera className="h-4 w-4 m-1 " strokeWidth={1.5} />
+            <ArrowLeft className="w-4 h-4" />
           </Link>
-          <div className="absolute left-32 pl-2 ">
-            <p className="font-semibold text-md">
-              {profile.lastName + " " + profile.firstName}
-            </p>
-            <p className="text-xs font-light">{"u/" + name?.toLowerCase()}</p>
-          </div>
-          <Link className="mt-2 absolute right-0" to="/settings/profile">
-            <Button
-              size="sm"
-              variant="outlined"
-              className="rounded-full px-2 py-2"
-            >
-              <div className="flex items-center gap-x-1">
-                <PencilLine className="w-4 h-4" />
-                <Typography className="text-xs capitalize font-normal hidden xl:block">
-                  Edit Profile
-                </Typography>
-              </div>
-            </Button>
-          </Link>
-        </div>
+          Edit Profile
+        </p>
+        <p className="text-xs text-gray-600 text-left">
+          Tell us a bit about yourself to get started on our forum
+        </p>
       </div>
-      <Accordion open={open === 1} className="xl:hidden mb-2">
-        <AccordionHeader
-          onClick={() => handleOpen(1)}
-          className="py-0 pb-2 text-sm text-blue-gray-800 font-semibold !justify-normal"
+      <div className="relative">
+        <Avatar
+          variant="circular"
+          size="xxl"
+          alt="avatar"
+          className="bg-white  p-0.5"
+          src={avatar}
+        />
+        <input
+          onChange={handlePreviewAvatar}
+          multiple={false}
+          ref={fileInputRef}
+          type="file"
+          accept="image/png, image/jpeg"
+          hidden
+        />
+        <div
+          className="absolute bottom-0 left-20 bg-blue-gray-50 rounded-full hover:cursor-pointer "
+          onClick={() => fileInputRef.current?.click()}
         >
-          Introduction
-        </AccordionHeader>
-        <AccordionBody className="py-0 pt-2 ">
-          <ProfileDescription profile={profile} />
-          <hr className="mt-4 border-blue-gray-50" />
-        </AccordionBody>
-      </Accordion>
-      <div className="flex w-max gap-4">
-        {tabItems.map(({ label }) => (
-          <Button
-            key={label}
-            variant="text"
-            size="sm"
-            className="rounded-full bg-blue-gray-50"
-          >
-            <Typography className="text-xs capitalize font-normal text-black">
-              {label}
-            </Typography>
-          </Button>
-        ))}
-      </div>
-      <Button size="sm" variant="outlined" className="rounded-full mt-2">
-        <div className="flex items-center">
-          <Plus size={"16"} />
-          <Typography className="text-xs capitalize ml-1 font-normal">
-            Create a Post
-          </Typography>
+          <Camera className="h-4 w-4 m-1" strokeWidth={1.5} />
         </div>
-      </Button>
-      <hr className="my-2 border-blue-gray-50" />
-      <div className="flex justify-center h-screen">
-        <Typography className="text-sm capitalize font-semibold">
-          Hasn't posts yet
-        </Typography>
       </div>
-    </ContentLayout>
+      <form onSubmit={handleSubmit(handleEditProfile)} className="mt-2">
+        <div className="flex xl:justify-between xl:flex-row flex-col gap-y-4 xl:gap-x-4">
+          <div className="w-full xl:w-1/2">
+            <label
+              htmlFor="firstName"
+              className="block text-gray-700 text-sm m-1"
+            >
+              First name
+            </label>
+            <Input
+              id="firstName"
+              type="text"
+              placeholder="ex: Bac"
+              className={cn(
+                "!border !border-gray-300 bg-white text-gray-900 shadow-xl shadow-gray-900/5 ring-4 ring-transparent placeholder:opacity-100",
+                " focus:!border-gray-900 focus:!border-t-gray-900 focus:ring-gray-900/10  placeholder:text-gray-500 !min-w-[100px]",
+                Boolean(errors.firstName?.message) &&
+                  "focus:!border-red-600 focus:!border-t-red-600 focus:ring-red-600/10 !border-red-500  placeholder:text-red-500"
+              )}
+              containerProps={{ className: "min-w-full" }}
+              labelProps={{ className: "hidden" }}
+              crossOrigin={undefined}
+              disabled={loading}
+              {...register("firstName")}
+            />
+            {errors.firstName && (
+              <span
+                className={cn(
+                  "text-red-500 text-xs mt-1 ml-1 flex gap-x-1 items-center"
+                )}
+              >
+                <CircleAlert className="w-3 h-3" /> {errors.firstName.message}
+              </span>
+            )}
+          </div>
+
+          <div className="w-full xl:w-1/2">
+            <label
+              htmlFor="lastName"
+              className="block text-gray-700 text-sm m-1"
+            >
+              Last name
+            </label>
+            <Input
+              id="lastName"
+              type="text"
+              placeholder="ex: Ngo Xuan"
+              className={cn(
+                "!border !border-gray-300 bg-white text-gray-900 shadow-xl shadow-gray-900/5 ring-4 ring-transparent placeholder:opacity-100",
+                " focus:!border-gray-900 focus:!border-t-gray-900 focus:ring-gray-900/10  placeholder:text-gray-500",
+                Boolean(errors.lastName?.message) &&
+                  "focus:!border-red-600 focus:!border-t-red-600 focus:ring-red-600/10 !border-red-500  placeholder:text-red-500"
+              )}
+              containerProps={{ className: "min-w-full" }}
+              labelProps={{ className: "hidden" }}
+              crossOrigin={undefined}
+              {...register("lastName")}
+              disabled={loading}
+            />
+            {errors.lastName && (
+              <span
+                className={cn(
+                  "text-red-500 text-xs mt-1 ml-1 flex gap-x-1 items-center"
+                )}
+              >
+                <CircleAlert className="w-3 h-3" /> {errors.lastName.message}
+              </span>
+            )}
+          </div>
+        </div>
+        <div className="w-full mt-6">
+          <label htmlFor="phone" className="block text-gray-700 text-sm m-1">
+            Phone (optional)
+          </label>
+          <Input
+            id="phone"
+            type="text"
+            placeholder="ex: 0123456789"
+            className={cn(
+              "!border !border-gray-300 bg-white text-gray-900 shadow-xl shadow-gray-900/5 ring-4 ring-transparent placeholder:opacity-100",
+              " focus:!border-gray-900 focus:!border-t-gray-900 focus:ring-gray-900/10  placeholder:text-gray-500",
+              Boolean(errors.phone?.message) &&
+                "focus:!border-red-600 focus:!border-t-red-600 focus:ring-red-600/10 !border-red-500  placeholder:text-red-500"
+            )}
+            labelProps={{ className: "hidden" }}
+            crossOrigin={undefined}
+            {...register("phone")}
+            disabled={loading}
+          />
+          {errors.phone && (
+            <span
+              className={cn(
+                "text-red-500 text-xs mt-1 ml-1 flex gap-x-1 items-center"
+              )}
+            >
+              <CircleAlert className="w-3 h-3" /> {errors.phone.message}
+            </span>
+          )}
+        </div>
+        <div className="w-full mt-6 gap-x-2">
+          <label className="block text-gray-700 text-sm m-1">Gender</label>
+          <div className="flex gap-x-4">
+            <Radio
+              color="orange"
+              label={<p className="text-sm">Male</p>}
+              defaultChecked={profile?.gender == 0}
+              crossOrigin={undefined}
+              className="w-4 h-4"
+              value={0}
+              {...register("gender")}
+              disabled={loading}
+            />
+            <Radio
+              color="orange"
+              defaultChecked={profile?.gender == 1}
+              label={<p className="text-sm">Female</p>}
+              crossOrigin={undefined}
+              className="w-4 h-4"
+              value={1}
+              {...register("gender")}
+              disabled={loading}
+            />
+            <Radio
+              color="orange"
+              defaultChecked={profile?.gender == 2}
+              label={<p className="text-sm">Other</p>}
+              crossOrigin={undefined}
+              className="w-4 h-4"
+              value={2}
+              {...register("gender")}
+              disabled={loading}
+            />
+          </div>
+          <div className="w-full mt-6 gap-x-2">
+            <label className="block text-gray-700 text-sm m-1">
+              About (optional)
+            </label>
+            <Textarea
+              color="blue-gray"
+              className={cn(
+                "!border !border-gray-300 bg-white text-gray-900 shadow-xl shadow-gray-900/5 ring-4 ring-transparent placeholder:opacity-100",
+                " focus:!border-gray-900 focus:!border-t-gray-900 focus:ring-gray-900/10  placeholder:text-gray-500"
+              )}
+              labelProps={{ className: "hidden" }}
+              disabled={loading}
+              {...register("bio")}
+            />
+          </div>
+        </div>
+        {error && (
+          <span className="flex items-center tracking-wide text-xs text-red-500 mt-1 ml-1 gap-x-1 ">
+            <CircleAlert className="w-3 h-3" /> {error}
+          </span>
+        )}
+        <div className="flex items-center justify-end">
+          <Button
+            variant="gradient"
+            color="deep-orange"
+            type="submit"
+            className="mt-4 w-full lg:w-fit normal-case text-sm"
+            disabled={loading}
+          >
+            Save
+          </Button>
+        </div>
+      </form>
+    </>
   );
 };
-export default Profile;
+
+export default ProfileSettings;

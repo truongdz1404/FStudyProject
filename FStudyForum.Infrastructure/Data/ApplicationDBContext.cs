@@ -38,8 +38,6 @@ public class ApplicationDBContext(DbContextOptions options)
             .HasMany(u => u.BannedByTopics)
             .WithOne(b => b.User);
 
-
-
         builder.Entity<ApplicationUser>()
             .HasMany(u => u.Comments)
             .WithOne(c => c.Creater)
@@ -115,6 +113,7 @@ public class ApplicationDBContext(DbContextOptions options)
                 NormalizedName = role.ToUpper()
             });
         }
+
         builder.Entity<IdentityRole>().HasData(roles);
     }
 

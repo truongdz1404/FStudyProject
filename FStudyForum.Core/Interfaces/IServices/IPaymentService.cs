@@ -1,4 +1,5 @@
-﻿using FStudyForum.Core.Models.Entities;
+﻿using FStudyForum.Core.Models.DTOs.Donation;
+using FStudyForum.Core.Models.Entities;
 using Microsoft.AspNetCore.Http;
 
 
@@ -8,6 +9,7 @@ namespace FStudyForum.Core.Interfaces.IServices
     {
         Task<string?> GeneratePaymentUrlAsync(VNPayPayment paymentData, HttpContext context);
        
-        Task<bool> VerifyCallbackAsync(Dictionary<string, string> callbackData);
+        Task<VnPaymentResponse> PaymentResponse(IQueryCollection collections);
+        Task<DonationDTO> SaveUserDonate(DonationDTO donationDTO);
     }
 }

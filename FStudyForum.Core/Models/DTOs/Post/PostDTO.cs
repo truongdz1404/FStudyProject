@@ -1,4 +1,3 @@
-﻿using FStudyForum.Core.Models.Entities;
 
 
 namespace FStudyForum.Core.Models.DTOs.Post
@@ -6,9 +5,13 @@ namespace FStudyForum.Core.Models.DTOs.Post
     public class PostDTO
     {
         public long Id { get; set; }
+        public string TopicAvatar { get; set; } = string.Empty;
+        public string TopicName { get; set; } = string.Empty;
         public string Title { get; set; } = string.Empty;
         public string Content { get; set; } = string.Empty;
-        public bool IsDeleted { get; set; } = false;
-        public virtual IEnumerable<Comment> Comments { get; set; } = [];
+        public string Author { get; set; } = string.Empty;
+        public int VoteCount { get; set; }
+        public int CommentCount { get; set; }
+        public TimeSpan Elapsed { get; set; }
     }
 }

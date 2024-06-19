@@ -12,7 +12,7 @@ const getTopics = async () => {
   return response.data.data;
 };
 
-const GetTopicByName = async (name: string): Promise<Topic> => {
+const getTopicByName = async (name: string) => {
   const response = await api.get<Topic>(`/topic/${name}`);
   return response.data;
 };
@@ -27,9 +27,10 @@ const update = async (name: string, topic: UpdateTopicDTO): Promise<Topic> => {
   return response.data;
 };
 
-const Delete = async (name: string): Promise<void> => {
+const deleteTopic = async (name: string): Promise<void> => {
   await api.put<Topic>(`/topic/delete/${name}`);
 };
+
 const isLoked = async(username: string, topicId: number) => {
   const response = await api.post<ResponseWith<TopicBanDTO>>("/topic/is-locked",{
     username,
@@ -51,16 +52,30 @@ const unlocked = async(username: string, topicId: number) => {
   });
   return response.data;
 }
+
+
+const search = async (value: string) => {
+  const response = await api.get<ResponseWith<Topic[]>>(
+    "/topic/search?value=" + value + "&size=10"
+  );
+  return response.data.data;
+};
+const topicByPost = async (postId: number) => {
+  const response = await api.get<ResponseWith<Topic>>(`/topic/getTopicByPost/${postId}`);
+  return response.data;
+}
 const TopicService = {
   getTopics,
   getActiveTopics,
-  GetTopicByName,
+  getTopicByName,
+  search,
   create,
   update,
-  Delete,
   isLoked,
   unlockTime,
-  unlocked
+  unlocked,
+  deleteTopic,
+  topicByPost
 };
 
 export default TopicService;

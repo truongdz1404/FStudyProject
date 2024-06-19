@@ -1,4 +1,4 @@
-import { Ban, Bookmark, Ellipsis, Flag, XCircle } from "lucide-react";
+import { Ban, Bookmark, Ellipsis, Flag, LockKeyhole, XCircle } from "lucide-react";
 import { Response } from "@/types/response";
 import React, { useEffect } from "react";
 import {
@@ -14,6 +14,8 @@ import { Post } from "@/types/post";
 import { useAuth } from "@/hooks/useAuth";
 import SavedPostService from "@/services/SavedPostService";
 import { AxiosError } from "axios";
+import { Topic } from "@/types/topic";
+import TopicService from "@/services/TopicService";
 type MenuItemPostProps = {
   post: Post;
 };
@@ -22,6 +24,14 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
   const [error, setError] = React.useState("");
   const [isSaved, setIsSaved] = React.useState(false);
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const [topic, setTopic] = React.useState<Topic>(() => ({} as Topic));
+  const [days, setDays] = React.useState('');
+  const [months, setMonths] = React.useState('');
+  const [years, setYears] = React.useState('');
+
+  const dayOptions = Array.from({ length: 30 }, (_, i) => i + 1);
+  const monthOptions = Array.from({ length: 12 }, (_, i) => i + 1);
+  const yearOptions = Array.from({ length: 10 }, (_, i) => i + 1);
   const { user } = useAuth();
   useEffect(() => {
     const checkPostByUserExist = async () => {
@@ -33,6 +43,11 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
         setIsSaved(true);
       }
     };
+    const fetchTopic = async () => {
+      const response = await TopicService.topicByPost(post.id);
+      setTopic(response.data);
+    }
+    fetchTopic();
     checkPostByUserExist();
   }, []);
   const handleNavigate = async (post: Post) => {
@@ -57,7 +72,9 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
       setError((error?.response?.data as Response)?.message || error.message);
     }
   };
-  
+  const locked = async () => {
+
+  }
   const PostMenuItem = [
     {
       icon: isSaved ? XCircle : Bookmark,
@@ -130,10 +147,46 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center p-4 font-sans text-2xl antialiased font-semibold leading-snug shrink-0 text-blue-gray-900">
-              Its a simple dialog.
+              Ban user
             </div>
             <div className="relative p-4 font-sans text-base antialiased font-light leading-relaxed border-t border-b border-t-blue-gray-100 border-b-blue-gray-100 text-blue-gray-500">
-              The key to more success is to have a lot of pillows. Put it this way, it took me twenty-five years to get these plants, twenty-five years of blood, sweat, and tears, and I'm never giving up, I'm just getting started. I'm up to something. Fan luv.
+             <div className="flex gap-[5%]">           
+             <div>
+             {post.author} 
+              </div> 
+             <div>
+              {topic.name}
+             </div>
+             <div>
+             <div>
+            <label>Days: </label>
+            <select value={days} onChange={(e) => setDays(e.target.value)}>
+              <option value="">Select Days</option>
+              {dayOptions.map(day => (
+                <option key={day} value={day}>{day}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label>Months: </label>
+            <select value={months} onChange={(e) => setMonths(e.target.value)}>
+              <option value="">Select Months</option>
+              {monthOptions.map(month => (
+                <option key={month} value={month}>{month}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label>Years: </label>
+            <select value={years} onChange={(e) => setYears(e.target.value)}>
+              <option value="">Select Years</option>
+              {yearOptions.map(year => (
+                <option key={year} value={year}>{year}</option>
+              ))}
+            </select>
+          </div>
+             </div>
+             </div>
             </div>
             <div className="flex flex-wrap items-center justify-end p-4 shrink-0 text-blue-gray-500">
               <button
@@ -150,7 +203,7 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
                 className="middle none center rounded-lg bg-gradient-to-tr from-green-600 to-green-400 py-3 px-6 font-sans text-xs font-bold uppercase text-white shadow-md shadow-green-500/20 transition-all hover:shadow-lg hover:shadow-green-500/40 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                 onClick={() => setIsModalOpen(false)}
               >
-                Confirm
+                <LockKeyhole />
               </button>
             </div>
           </div>

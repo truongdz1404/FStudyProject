@@ -1,7 +1,11 @@
-﻿using FStudyForum.Core.Helpers;
+﻿using AutoMapper;
+using FStudyForum.Core.Helpers;
+using FStudyForum.Core.Interfaces.IRepositories;
 using FStudyForum.Core.Interfaces.IServices;
+using FStudyForum.Core.Models.DTOs.Donation;
 using FStudyForum.Core.Models.Entities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 
 namespace FStudyForum.Infrastructure.Services
@@ -9,9 +13,16 @@ namespace FStudyForum.Infrastructure.Services
     public class PaymentService : IPaymentService
     {
         private readonly IConfiguration _configuration;
-        public PaymentService(IConfiguration configuration)
+        private readonly IDonationRepository _donationRepository;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IMapper _mapper;
+        public PaymentService(IConfiguration configuration, IDonationRepository donationRepository
+            , IMapper mapper, UserManager<ApplicationUser> userManager)
         {
             _configuration = configuration;
+            _donationRepository = donationRepository;
+            _mapper = mapper;
+            _userManager = userManager;
         }
         public Task<string?> GeneratePaymentUrlAsync(VNPayPayment paymentData, HttpContext context)
         {
@@ -30,7 +41,8 @@ namespace FStudyForum.Infrastructure.Services
             vnpay.AddRequestData("vnp_IpAddr", Utils.GetIpAddress(context));
             vnpay.AddRequestData("vnp_Locale", _configuration["VnPay:Locale"] ??
                 throw new Exception("Locale not valid."));
-            vnpay.AddRequestData("vnp_OrderInfo", "Thanh toán cho đơn hàng:" + paymentData.OrderId);
+
+            vnpay.AddRequestData("vnp_OrderInfo", paymentData.Username);
             vnpay.AddRequestData("vnp_OrderType", "other"); //default value: other
             vnpay.AddRequestData("vnp_ReturnUrl", _configuration["VnPay:PaymentBackReturnUrl"] ??
                 throw new Exception("PaymentBackReturnUrl not valid."));
@@ -42,9 +54,55 @@ namespace FStudyForum.Infrastructure.Services
                ) ;
             return Task.FromResult(paymentUrl);
         }
-        public Task<bool> VerifyCallbackAsync(Dictionary<string, string> callbackData)
+
+        public Task<VnPaymentResponse> PaymentResponse(IQueryCollection collections)
         {
-            throw new NotImplementedException();
+            var vnpay = new PaymentHepler();
+            foreach (var (key, value) in collections)
+            {
+                if (!string.IsNullOrEmpty(key) && key.StartsWith("vnp_"))
+                {
+                    vnpay.AddResponseData(key, value.ToString());
+                }
+            }
+
+            var vnp_orderId = Convert.ToInt64(vnpay.GetResponseData("vnp_TxnRef"));
+            var vnp_TransactionId = Convert.ToInt64(vnpay.GetResponseData("vnp_TransactionNo"));
+            var vnp_SecureHash = collections.FirstOrDefault(p => p.Key == "vnp_SecureHash").Value;
+            var vnp_ResponseCode = vnpay.GetResponseData("vnp_ResponseCode");
+            var vnp_OrderInfo = vnpay.GetResponseData("vnp_OrderInfo");
+            var vnp_Amount = Convert.ToDecimal(vnpay.GetResponseData("vnp_Amount")) / 100;
+            bool checkSignature = vnpay.ValidateSignature(vnp_SecureHash, _configuration["VnPay:HashSecret"]
+               );
+            if (!checkSignature)
+            {
+                return Task.FromResult(new VnPaymentResponse
+                {
+                    Success = false
+                });
+            }
+
+            return Task.FromResult(new VnPaymentResponse
+            {
+                Success = true,
+                PaymentMethod = "VnPay",
+                OrderDescription = vnp_OrderInfo,
+                OrderId = vnp_orderId.ToString(),
+                TransactionId = vnp_TransactionId.ToString(),
+                Token = vnp_SecureHash,
+                VnPayResponseCode = vnp_ResponseCode,
+                 Amount = vnp_Amount
+            });
+        }
+        public async Task<DonationDTO> SaveUserDonate(DonationDTO donationDTO)
+        {
+            var user = await _userManager.FindByNameAsync(donationDTO.Username)
+                ?? throw new Exception("User not found");   
+            var donation = _mapper.Map<Donation>(donationDTO);
+            donation.User = user;
+            await _donationRepository.SaveUserDonate(donation);
+            return _mapper.Map<DonationDTO>(donation);
         }
     }
 }
+

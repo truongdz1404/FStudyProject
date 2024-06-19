@@ -15,7 +15,7 @@ const BanUser: FC<PropsWithChildren> = ({ children }) => {
     const fetchData = async () => {
       try {
         if (user) {
-          const data = await TopicService.GetTopicByName(name ?? "");
+          const data = await TopicService.getTopicByName(name ?? "");
           const isLocked = await BanUserService.isLoked(user.username, data.id);
           if (isLocked.data) {
             const unlockTimeResponse = await TopicService.unlockTime(

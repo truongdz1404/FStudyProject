@@ -16,4 +16,5 @@ public class Post : BaseEntity
     public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
     public virtual ICollection<Attachment> Attachments { get; set; } = new List<Attachment>();
     public virtual IEnumerable<SavedPost> SavedByUsers { get; set; } = new List<SavedPost>();
+
 }

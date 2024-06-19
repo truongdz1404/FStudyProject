@@ -7,7 +7,6 @@ using FStudyForum.Core.Models.DTOs.SavePost;
 using FStudyForum.Core.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 
-
 namespace FStudyForum.Infrastructure.Services
 {
     public class PostService : IPostService
@@ -22,6 +21,7 @@ namespace FStudyForum.Infrastructure.Services
             _mapper = mapper;
             _userManager = userManager;
         }
+
         public async Task<SavePostDTO?> DeletePostByUser(SavePostDTO savedPost)
         {
             if(savedPost.UserName == null)
@@ -33,11 +33,33 @@ namespace FStudyForum.Infrastructure.Services
             await _postRepository.DeleteByUser(postByUser);
             return savedPost;
         }
-
-
-        public async Task<PaginatedData<PostDTO>> GetPaginatedData(int pageNumber, int pageSize)
+        public async Task<PostDTO> CreatePost(CreatePostDTO postDTO)
         {
-            return _mapper.Map<PaginatedData<PostDTO>>(await _postRepository.GetPaginatedData(pageNumber, pageSize));
+            var post = await _postRepository.CreatePostAsync(postDTO);
+            return new PostDTO
+            {
+                Id = post.Id,
+                Title = post.Title,
+                Content = post.Content,
+            };
+        }
+
+        public async Task<IEnumerable<PostDTO>> GetPosts()
+        {
+            var posts = await _postRepository.GetPostsAsync();
+            var postDTOs = posts.Select(p => new PostDTO
+            {
+                Id = p.Id,
+                Title = p.Title,
+                Author = p.Creater.UserName!,
+                TopicName = p.Topic.Name,
+                TopicAvatar = p.Topic.Avatar,
+                Content = p.Content,
+                VoteCount = p.Votes.Count,
+                CommentCount = p.Comments.Count,
+                Elapsed = DateTime.Now - p.CreatedAt
+            });
+            return postDTOs;
         }
 
         public async Task<SavePostDTO?> SavePostByUser(SavePostDTO savedPostDTO)
@@ -63,6 +85,11 @@ namespace FStudyForum.Infrastructure.Services
         public async Task<bool> IsPostExists(SavePostDTO savedPostDTO) 
         {
             return await _postRepository.IsPostExists(savedPostDTO);
+        }
+
+        public Task<PaginatedData<PostDTO>> GetPaginatedData(int pageNumber, int pageSize)
+        {
+            throw new NotImplementedException();
         }
     }
 }

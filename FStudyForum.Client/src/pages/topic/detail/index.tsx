@@ -20,7 +20,7 @@ const TopicDetail: React.FC = () => {
     }
     const fetchTopic = async () => {
       try {
-        const data = await TopicService.GetTopicByName(name);
+        const data = await TopicService.getTopicByName(name);
         // const isLockedResponse = await TopicService.isLoked(user?.username ?? "", data.id);
         // if (isLockedResponse.data) {
         //   setError("You are not allowed to view this topic");

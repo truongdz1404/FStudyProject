@@ -137,6 +137,7 @@ public class TopicService : ITopicService
         return topicDTOs;
     }
 
+
     public async Task<TopicBanDTO> LockUser(TopicBanDTO lockUserDTO)
     {
         var userExist = await _topicRepository.GetUserLocked(lockUserDTO);
@@ -174,6 +175,27 @@ public class TopicService : ITopicService
     public async Task<bool> IsUserLocked(TopicBanDTO lockUserDTO)
     {
         return await _topicRepository.GetUserLocked(lockUserDTO) != null;
+    }
+    public async Task<IEnumerable<TopicDTO>> Search(string value, int size)
+    {
+        var topics = await _topicRepository.Search(value, size);
+
+        return topics.Select(t =>
+        {
+            return new TopicDTO
+            {
+                Name = t.Name,
+                Avatar = t.Avatar,
+                PostCount = t.Posts.Count
+            };
+        });
+    }
+
+    public async Task<TopicDTO> GetTopicByPost(int postId)
+    {
+        var topic = await _topicRepository.GetTopicByPost(postId)
+            ?? throw new Exception("Topic not found.");
+        return _mapper.Map<TopicDTO>(topic);
     }
 }
 
