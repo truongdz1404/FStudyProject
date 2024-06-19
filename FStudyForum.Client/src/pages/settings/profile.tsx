@@ -88,6 +88,7 @@ const ProfileSettings = () => {
     if (!event.target.files) return;
     const file = event.target.files[0];
     if (!file) return;
+
     setFile(file);
     setAvatar(URL.createObjectURL(file));
   };

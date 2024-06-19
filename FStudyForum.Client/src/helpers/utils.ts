@@ -21,7 +21,7 @@ export function formatElapsedTime(elapsed: string): string {
 
   if (totalDays < 1) {
     const totalHours = Math.floor(totalSeconds / 3600);
-    return `${totalHours} hour${totalHours > 1 ? "s" : ""} ago`;
+    return `${totalHours} hr. ago`;
   } else if (totalDays < 30) {
     return `${totalDays} day${totalDays > 1 ? "s" : ""} ago`;
   } else if (totalDays < 365) {
@@ -31,4 +31,40 @@ export function formatElapsedTime(elapsed: string): string {
     const years = Math.floor(totalDays / 365);
     return `${years} year${years > 1 ? "s" : ""} ago`;
   }
+}
+
+export const colorThief = {
+  getColor
+};
+
+function getColor(file: File): Promise<{
+  bgColor: string;
+  width: number;
+  height: number;
+}> {
+  const reader = new FileReader();
+  return new Promise((resolve, reject) => {
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx?.drawImage(img, 0, 0);
+        const bg = ctx?.getImageData(0, 0, 1, 1).data;
+        if (!bg) {
+          return reject();
+        }
+        const bgColor = `rgba(${bg[0]}, ${bg[1]}, ${bg[2]}, ${bg[3] / 255})`;
+        resolve({
+          bgColor,
+          width: img.width,
+          height: img.height
+        });
+      };
+      img.src = e.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  });
 }

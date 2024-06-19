@@ -1,4 +1,4 @@
-import { cn } from "@/helpers/utils";
+import { cn, colorThief } from "@/helpers/utils";
 import { FC } from "react";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -81,6 +81,12 @@ const Editor: FC<EditorProps> = ({ topicName, onLoading }) => {
           image: {
             class: ImageTool,
             config: {
+              defaultElements: [
+                "caption",
+                "withBorder",
+                "stretched",
+                "withBackground"
+              ],
               uploader: {
                 async uploadByFile(file: File) {
                   const storageRef = ref(
@@ -107,10 +113,12 @@ const Editor: FC<EditorProps> = ({ topicName, onLoading }) => {
                         const downloadURL = await getDownloadURL(
                           uploadTask.snapshot.ref
                         );
+                        const color = await colorThief.getColor(file);
                         const res = {
                           success: 1,
                           file: {
-                            url: downloadURL
+                            url: downloadURL,
+                            ...color
                           }
                         };
                         resolve(res);
@@ -190,8 +198,10 @@ const Editor: FC<EditorProps> = ({ topicName, onLoading }) => {
       attachments
     };
     try {
-      await PostService.createPost(payload);
-      navigate("/");
+      const createPost = await PostService.createPost(payload);
+      navigate(`/topic/${topicName}/comments/${createPost.id}`, {
+        state: { data: createPost }
+      });
     } catch (e) {
       const error = e as AxiosError;
       setError((error?.response?.data as Response)?.message || error.message);

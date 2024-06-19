@@ -6,13 +6,16 @@ import { Avatar } from "@material-tailwind/react";
 
 import Demo from "@/assets/images/user.png";
 import { cn, formatElapsedTime } from "@/helpers/utils";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import React from "react";
+import EditorOutput from "./EditorOutput";
 type PostProps = {
   data: Post;
+  hideLess?: boolean;
 };
-const PostItem: FC<PostProps> = ({ data }) => {
+const PostItem: FC<PostProps> = ({ data, hideLess = true }) => {
   const containerRef = React.useRef<HTMLDivElement>(null);
+  const { pathname } = useLocation();
   const actionRefs = React.useRef<HTMLElement[]>([]);
   const navigate = useNavigate();
   const handleOutsideClick = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -27,14 +30,17 @@ const PostItem: FC<PostProps> = ({ data }) => {
       containerRef.current.contains(event.target as Node) &&
       !actionRefs.current.some(action => action.contains(event.target as Node))
     ) {
-      navigate(`/post/${data.id}`);
+      navigate(`/topic/${data.topicName}/comments/${data.id}`, {
+        state: { data, from: pathname }
+      });
     }
   };
+  const pRef = React.useRef<HTMLDivElement>(null);
   return (
     <div
       ref={containerRef}
       onClick={handleOutsideClick}
-      className={cn("rounded-lg px-4 py-1 w-full hover:bg-gray-50 z-10")}
+      className="px-4 py-1 w-full "
     >
       <div className="flex justify-between">
         <div className="flex items-center gap-x-2">
@@ -45,10 +51,10 @@ const PostItem: FC<PostProps> = ({ data }) => {
             <Avatar src={Demo} className="w-6 h-6" />
             <span className="text-xs">{`t/${data.topicName}`}</span>
           </Link>
-          <span className="text-xs font-light">•</span>
+          <span className="text-xs font-light hidden lg:block">•</span>
           <Link
             to={`/profile/${data.author}`}
-            className="action text-xs font-light"
+            className="action text-xs font-light hidden lg:block"
           >{`Posted by u/${data.author}`}</Link>
           <span className="text-xs font-light">•</span>
           <span className="text-xs font-light">
@@ -57,9 +63,21 @@ const PostItem: FC<PostProps> = ({ data }) => {
         </div>
         <MenuItemPost />
       </div>
-      <div className="my-2 flex flex-col gap-y-2">
+      <div
+        className={cn(
+          "my-2 flex flex-col gap-y-2 w-full",
+          hideLess && "max-h-[36rem] overflow-clip relative"
+        )}
+        ref={pRef}
+      >
         <p className="font-semibold text-blue-gray-900">{data.title}</p>
-        <p className="text-gray-700 text-sm font-normal">{data.content}</p>
+        <EditorOutput content={data.content} />
+        {/* <div
+          className={cn(
+            "absolute bottom-0 left-0 h-24 w-full bg-gradient-to-t from-white to-transparent pointer-events-none",
+            !hideLess && "hidden"
+          )}
+        /> */}
       </div>
       <div className="flex space-x-4 text-gray-700">
         <div className="action flex items-center rounded-full bg-blue-gray-50">

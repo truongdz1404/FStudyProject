@@ -40,6 +40,17 @@ namespace FStudyForum.Infrastructure.Repositories
             return post;
         }
 
+        public async Task<Post?> GetPostByIdAsync(long id)
+        {
+            return await _dbContext.Posts
+                .Where(p => p.IsDeleted == false)
+                .Include(p => p.Creater)
+                .Include(p => p.Topic)
+                .Include(p => p.Votes)
+                .Include(p => p.Comments)
+                .FirstOrDefaultAsync(p => p.Id == id);
+        }
+
         public async Task<IEnumerable<Post>> GetPostsAsync()
         {
             return await _dbContext.Posts

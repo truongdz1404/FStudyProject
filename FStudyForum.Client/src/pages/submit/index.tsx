@@ -143,8 +143,7 @@ const SubmitPage = () => {
           type="submit"
           className="mt-6 w-full lg:w-fit normal-case text-sm"
           form="create-post-form"
-          disabled={topic?.name == undefined}
-          loading={loading}
+          disabled={topic?.name == undefined || loading}
         >
           Post
         </Button>

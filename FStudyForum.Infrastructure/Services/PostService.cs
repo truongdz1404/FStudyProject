@@ -27,6 +27,24 @@ namespace FStudyForum.Infrastructure.Services
             };
         }
 
+        public async Task<PostDTO> GetPostById(long id)
+        {
+            var post = await _postRepository.GetPostByIdAsync(id)
+                ?? throw new Exception("Post not found");
+            return new PostDTO
+            {
+                Id = post.Id,
+                Title = post.Title,
+                Author = post.Creater.UserName!,
+                TopicName = post.Topic.Name,
+                TopicAvatar = post.Topic.Avatar,
+                Content = post.Content,
+                VoteCount = post.Votes.Count,
+                CommentCount = post.Comments.Count,
+                Elapsed = DateTime.Now - post.CreatedAt
+            };
+        }
+
         public async Task<IEnumerable<PostDTO>> GetPosts()
         {
             var posts = await _postRepository.GetPostsAsync();
