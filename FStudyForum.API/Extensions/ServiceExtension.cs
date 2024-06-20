@@ -3,6 +3,7 @@ using FStudyForum.Core.Interfaces.IServices;
 using FStudyForum.Core.Models.Entities;
 using FStudyForum.Infrastructure.Repositories;
 using FStudyForum.Infrastructure.Services;
+
 namespace FStudyForum.API.Extensions;
 
 public static class ServiceExtension
@@ -16,6 +17,7 @@ public static class ServiceExtension
         services.AddScoped<IIdentityService, IdentityService>();
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<ITopicService, TopicService>();
+        services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<IPostService, PostService>();
         services.AddScoped<IVoteService, VoteService>();
         #endregion
@@ -28,7 +30,7 @@ public static class ServiceExtension
         services.AddTransient<IPostRepository, PostRepository>();
         services.AddTransient<IVoteRepository, VoteRepository>();
         services.AddTransient<ICategoryRepository, CategoryRepository>();
-        
+
         #endregion
 
 
