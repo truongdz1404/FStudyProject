@@ -1,4 +1,11 @@
-import { Ban, Bookmark, Ellipsis, Flag, LockKeyhole, XCircle } from "lucide-react";
+import {
+  Ban,
+  Bookmark,
+  Ellipsis,
+  Flag,
+  LockKeyhole,
+  XCircle
+} from "lucide-react";
 import { Response } from "@/types/response";
 import React, { useEffect } from "react";
 import {
@@ -7,7 +14,8 @@ import {
   MenuHandler,
   MenuList,
   MenuItem,
-  Typography
+  Typography,
+  Radio
 } from "@material-tailwind/react";
 import { cn } from "@/helpers/utils";
 import { Post } from "@/types/post";
@@ -16,6 +24,7 @@ import SavedPostService from "@/services/SavedPostService";
 import { AxiosError } from "axios";
 import { Topic } from "@/types/topic";
 import TopicService from "@/services/TopicService";
+import BanUserService from "@/services/BanUserService";
 type MenuItemPostProps = {
   post: Post;
 };
@@ -25,13 +34,9 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
   const [isSaved, setIsSaved] = React.useState(false);
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [topic, setTopic] = React.useState<Topic>(() => ({} as Topic));
-  const [days, setDays] = React.useState('');
-  const [months, setMonths] = React.useState('');
-  const [years, setYears] = React.useState('');
+  const [selectedTime, setSelectedTime] = React.useState("1 day");
 
-  const dayOptions = Array.from({ length: 30 }, (_, i) => i + 1);
-  const monthOptions = Array.from({ length: 12 }, (_, i) => i + 1);
-  const yearOptions = Array.from({ length: 10 }, (_, i) => i + 1);
+
   const { user } = useAuth();
   useEffect(() => {
     const checkPostByUserExist = async () => {
@@ -46,10 +51,28 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
     const fetchTopic = async () => {
       const response = await TopicService.topicByPost(post.id);
       setTopic(response.data);
-    }
+    };
     fetchTopic();
     checkPostByUserExist();
   }, []);
+  const handleTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedTime(event.target.value); 
+  };
+  const locked = () => {
+    const topicBan = async () => {
+      try {
+        await BanUserService.lockedUserByTopic({
+          username: post.author,
+          topicId: topic.id,
+          action: selectedTime
+        });
+      } catch (e) {
+        const error = e as AxiosError<Response>;
+        setError((error?.response?.data as Response)?.message || error.message);
+      }
+    }
+    topicBan();
+  }
   const handleNavigate = async (post: Post) => {
     try {
       let response;
@@ -72,9 +95,7 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
       setError((error?.response?.data as Response)?.message || error.message);
     }
   };
-  const locked = async () => {
 
-  }
   const PostMenuItem = [
     {
       icon: isSaved ? XCircle : Bookmark,
@@ -95,46 +116,52 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
   return (
     <>
       <Menu open={isMenuOpen} handler={setIsMenuOpen} placement="bottom-end">
-      <MenuHandler>
-        <Button
-          variant="text"
-          color="blue-gray"
-          className="flex items-center rounded-full p-0 px-1 text-black"
-        >
-          <Ellipsis className="w-4 h-4 " />
-        </Button>
-      </MenuHandler>
-      <MenuList className="p-1">
-        {PostMenuItem.map(({ label, icon, path }, key) => {
-          const isLastItem = key === PostMenuItem.length - 1;
-          return (
-            <MenuItem
-              key={label}
-              onClick={path === "save" ? () => handleNavigate(post) : (path === "ban" ? () => setIsModalOpen(true) : () => {})}
-              className={`flex items-center gap-2 rounded ${
-                isLastItem &&
-                "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
-              }`}
-            >
-              {React.createElement(icon, {
-                className: `h-4 w-4 ${isLastItem ? "text-red-500" : ""}`,
-                strokeWidth: 2
-              })}
-              <Typography
-                as={"span"}
-                className={cn(
-                  "font-normal text-sm",
-                  isLastItem ? "text-red-500" : "inherit"
-                )}
+        <MenuHandler>
+          <Button
+            variant="text"
+            color="blue-gray"
+            className="flex items-center rounded-full p-0 px-1 text-black"
+          >
+            <Ellipsis className="w-4 h-4 " />
+          </Button>
+        </MenuHandler>
+        <MenuList className="p-1">
+          {PostMenuItem.map(({ label, icon, path }, key) => {
+            const isLastItem = key === PostMenuItem.length - 1;
+            return (
+              <MenuItem
+                key={label}
+                onClick={
+                  path === "save"
+                    ? () => handleNavigate(post)
+                    : path === "ban"
+                    ? () => setIsModalOpen(true)
+                    : () => {}
+                }
+                className={`flex items-center gap-2 rounded ${
+                  isLastItem &&
+                  "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
+                }`}
               >
-                {label}
-              </Typography>
-            </MenuItem>
-          );
-        })}
-      </MenuList>
-    </Menu>
-    {isModalOpen && (
+                {React.createElement(icon, {
+                  className: `h-4 w-4 ${isLastItem ? "text-red-500" : ""}`,
+                  strokeWidth: 2
+                })}
+                <Typography
+                  as={"span"}
+                  className={cn(
+                    "font-normal text-sm",
+                    isLastItem ? "text-red-500" : "inherit"
+                  )}
+                >
+                  {label}
+                </Typography>
+              </MenuItem>
+            );
+          })}
+        </MenuList>
+      </Menu>
+      {isModalOpen && (
         <div
           data-dialog-backdrop="dialog"
           data-dialog-backdrop-close="true"
@@ -144,49 +171,59 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
           <div
             data-dialog="dialog"
             className="relative m-4 w-2/5 min-w-[40%] max-w-[40%] rounded-lg bg-white font-sans text-base font-light leading-relaxed text-blue-gray-500 antialiased shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
+            onClick={e => e.stopPropagation()}
           >
             <div className="flex items-center p-4 font-sans text-2xl antialiased font-semibold leading-snug shrink-0 text-blue-gray-900">
               Ban user
             </div>
             <div className="relative p-4 font-sans text-base antialiased font-light leading-relaxed border-t border-b border-t-blue-gray-100 border-b-blue-gray-100 text-blue-gray-500">
-             <div className="flex gap-[5%]">           
-             <div>
-             {post.author} 
-              </div> 
-             <div>
-              {topic.name}
-             </div>
-             <div>
-             <div>
-            <label>Days: </label>
-            <select value={days} onChange={(e) => setDays(e.target.value)}>
-              <option value="">Select Days</option>
-              {dayOptions.map(day => (
-                <option key={day} value={day}>{day}</option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label>Months: </label>
-            <select value={months} onChange={(e) => setMonths(e.target.value)}>
-              <option value="">Select Months</option>
-              {monthOptions.map(month => (
-                <option key={month} value={month}>{month}</option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label>Years: </label>
-            <select value={years} onChange={(e) => setYears(e.target.value)}>
-              <option value="">Select Years</option>
-              {yearOptions.map(year => (
-                <option key={year} value={year}>{year}</option>
-              ))}
-            </select>
-          </div>
-             </div>
-             </div>
+              <div className="flex gap-[5%]">
+                <div>{post.author}</div>
+                <div>{topic.name}</div>
+                <div>
+                  <div>
+                    <label>Days: </label>
+                    <div className="flex gap-7 ml-[-60%]">
+                      <Radio
+                        name="type"
+                        value="1 hour"
+                        label="1 hour"
+                        crossOrigin={undefined}
+                        className="time"
+                        onChange={handleTimeChange}
+                        checked={selectedTime === "1 hour"}
+                      />
+                      <Radio
+                        name="type"
+                        value="1 day"
+                        label="1 day"
+                        crossOrigin={undefined}
+                        className="time"
+                        onChange={handleTimeChange}
+                        checked={selectedTime === "1 day"}
+                      />
+                      <Radio
+                        name="type"
+                        value="1 year"
+                        label="1 year"
+                        crossOrigin={undefined}
+                        className="time"
+                        onChange={handleTimeChange}
+                        checked={selectedTime === "1 year"}
+                      />
+                      <Radio
+                        name="type"
+                        value="forever"
+                        label="Forever"
+                        crossOrigin={undefined}
+                        className="time"
+                        onChange={handleTimeChange}
+                        checked={selectedTime === "forever"}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
             <div className="flex flex-wrap items-center justify-end p-4 shrink-0 text-blue-gray-500">
               <button
@@ -201,9 +238,14 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
                 data-ripple-light="true"
                 data-dialog-close="true"
                 className="middle none center rounded-lg bg-gradient-to-tr from-green-600 to-green-400 py-3 px-6 font-sans text-xs font-bold uppercase text-white shadow-md shadow-green-500/20 transition-all hover:shadow-lg hover:shadow-green-500/40 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                onClick={() => setIsModalOpen(false)}
+                onClick={() => {
+                  setIsModalOpen(false),
+                  locked();
+                }}
+                
               >
                 <LockKeyhole />
+                
               </button>
             </div>
           </div>

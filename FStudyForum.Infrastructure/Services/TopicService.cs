@@ -1,4 +1,4 @@
-using AutoMapper;
+﻿using AutoMapper;
 using FStudyForum.Core.Interfaces.IRepositories;
 using FStudyForum.Core.Interfaces.IServices;
 using FStudyForum.Core.Models.DTOs.Topic;
@@ -140,22 +140,44 @@ public class TopicService : ITopicService
 
     public async Task<TopicBanDTO> LockUser(TopicBanDTO lockUserDTO)
     {
+        DateTime bannedTime;
+        switch (lockUserDTO.Action)
+        {
+            case "1 hour":
+                bannedTime = DateTime.Now.AddHours(1);
+                break;
+            case "1 day":
+                bannedTime = DateTime.Now.AddDays(1);
+                break;
+            case "1 month":
+                bannedTime = DateTime.Now.AddMonths(1);
+                break;
+            case "1 year":
+                bannedTime = DateTime.Now.AddYears(1);
+                break;
+            case "forever":
+                bannedTime = DateTime.MaxValue; // Khóa vĩnh viễn
+                break;
+            default:
+                throw new ArgumentException("Invalid banned time");
+        }
         var userExist = await _topicRepository.GetUserLocked(lockUserDTO);
         if(userExist != null)
         {
-            userExist.BannedTime = lockUserDTO.BannedTime;
+            userExist.BannedTime =bannedTime;
             await _topicRepository.UpdateTopicBan(userExist);
             return lockUserDTO;
         }
         var user = await _userManager.FindByNameAsync(lockUserDTO.UserName)
                  ?? throw new Exception("User not found");
         var topic = await _topicRepository.GetById(lockUserDTO.TopicId)
-            ?? throw new Exception("Topic not found");      
+            ?? throw new Exception("Topic not found");
+       
         await _topicRepository.LockUser(new TopicBan
         {
             Topic = topic,
             User = user,
-            BannedTime = DateTimeOffset.Now.AddDays(2).UtcDateTime,
+            BannedTime = bannedTime,
         });
         return lockUserDTO;
     }

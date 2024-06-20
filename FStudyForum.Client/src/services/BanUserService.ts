@@ -1,6 +1,6 @@
 import { ResponseWith } from "@/types/response";
 import api from "./api";
-import { TopicBanDTO } from "@/types/topic";
+import { TopicBan, TopicBanDTO } from "@/types/topic";
 
 const isLoked = async(username: string, topicId: number) => {
     const response = await api.post<ResponseWith<TopicBanDTO>>("/topic/is-locked",{
@@ -9,7 +9,12 @@ const isLoked = async(username: string, topicId: number) => {
     });
     return response.data;
   }
+const lockedUserByTopic = async(topicban: TopicBan) => {
+    const response = await api.post<ResponseWith<TopicBan>>("/topic/locked", topicban);
+    return response.data;
+}
 const BanUserService = {
-    isLoked
+    isLoked,
+    lockedUserByTopic
 }
 export default BanUserService

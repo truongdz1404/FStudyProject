@@ -2,8 +2,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 const TopicDetail: React.FC = () => {
-  const [isLocked, setIsLocked] = useState(false);
-  const [unlockDate, setUnlockDate] = useState<Date | null>(null);
   const { id } = useParams<{ id?: string }>(); // Đặt kiểu của id là string hoặc undefined
   const [topic, setTopic] = useState<{
     name: string;

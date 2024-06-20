@@ -4,13 +4,13 @@ import { Alert } from "@material-tailwind/react";
 import TopicService from "@/services/TopicService";
 import { Topic } from "@/types/topic";
 import { MessageSquare, Share, ArrowUp, ArrowDown, Award } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
+
 const TopicDetail: React.FC = () => {
   const { name } = useParams<{ name: string }>();
   const [topic, setTopic] = useState<Topic | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { user } = useAuth();
+
   useEffect(() => {
     setLoading(true);
     if (!name) {

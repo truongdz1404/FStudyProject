@@ -6,13 +6,13 @@ import {
   Typography,
   Button
 } from "@material-tailwind/react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import type { Topic as TopicType } from "@/types/topic";
 import TopicService from "@/services/TopicService";
 import { Pencil, Trash } from "lucide-react";
 import UpdateTopicPopup from "@/components/topic/Popup/UpdateTopicPopup";
 import DeleteTopicPopup from "@/components/topic/Popup/DeleteTopicPopup";
-import { useAuth } from "@/hooks/useAuth";
+
 interface TopicProps {
   topic: TopicType;
   onTopicDeleted: (id: number) => void;
@@ -26,8 +26,6 @@ const TopicCard: React.FC<TopicProps> = ({
 }) => {
   const [isUpdatePopupOpen, setIsUpdatePopupOpen] = useState(false);
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
-  const navigate = useNavigate();
-  const { user } = useAuth();
   const handleEditClick = () => {
     setIsUpdatePopupOpen(true);
   };

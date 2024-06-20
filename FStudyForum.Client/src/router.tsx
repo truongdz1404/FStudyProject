@@ -10,6 +10,8 @@ import AuthLayout from "@/components/layout/AuthLayout";
 import RoleBasedGuard from "@/helpers/guards/RoleBasedGuard";
 import { Role } from "@/helpers/constants";
 import Donate from "./pages/donate";
+import Payment from "./pages/donate/payment";
+import Notification from "./pages/donate/notification";
 
 const Popular = lazy(() => import("@/pages/popular"));
 const Memebers = lazy(() => import("@/pages/manager/members"));
@@ -83,6 +85,20 @@ const Router: FC = () => {
               element: (
                 <Suspense>
                   <Donate />
+                </Suspense>
+              )
+            }, {
+              path: "payment",
+              element: (
+                <Suspense>
+                  <Payment />
+                </Suspense>
+              )
+            }, {
+              path:"success",
+              element: (
+                <Suspense>
+                  <Notification />
                 </Suspense>
               )
             }

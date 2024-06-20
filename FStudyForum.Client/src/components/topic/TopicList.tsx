@@ -1,4 +1,3 @@
-// src/components/TopicList.tsx
 import React, { useEffect, useState } from "react";
 import TopicCard from "@/components/topic/topic";
 import TopicService from "@/services/TopicService";
