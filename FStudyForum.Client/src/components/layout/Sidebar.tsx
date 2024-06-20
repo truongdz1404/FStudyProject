@@ -71,6 +71,11 @@ const sidebarListItems = [
             label: "Topics",
             icon: Album,
             path: "/manager/topics"
+          },
+          {
+            label: "Categories",
+            icon: Album,
+            path: "/manager/categories"
           }
         ]
       }

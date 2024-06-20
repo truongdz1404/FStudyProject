@@ -4,6 +4,7 @@ using FStudyForum.Core.Models.Entities;
 using FStudyForum.Core.Models.DTOs.Topic;
 using FStudyForum.Core.Models.DTOs;
 using FStudyForum.Core.Models.DTOs.Post;
+using FStudyForum.Core.Models.DTOs.Category;
 namespace FStudyForum.API.Mapper;
 
 public class MapperProfile : AutoMapper.Profile
@@ -19,5 +20,6 @@ public class MapperProfile : AutoMapper.Profile
         CreateMap<ProfileDTO, Profile>().ReverseMap();
         CreateMap<PaginatedData<Post>, PaginatedData<PostDTO>>().ReverseMap();
         CreateMap<Post, PostDTO>().ReverseMap();
+        CreateMap<Category, CategoryDTO>().ReverseMap();
     }
 }
