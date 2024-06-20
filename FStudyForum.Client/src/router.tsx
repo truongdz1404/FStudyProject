@@ -19,7 +19,7 @@ const ChangePassword = lazy(
 );
 
 const SubmitPage = lazy(() => import("@/pages/submit"));
-
+const Comments = lazy(() => import("@/pages/topic/comments"));
 const TopcicManager = lazy(() => import("@/pages/manager/topics"));
 const CategoryManager = lazy(() => import("@/pages/manager/categories"));
 const ResetPassword = lazy(() => import("@/pages/auth/reset-password"));
@@ -143,6 +143,14 @@ const Router: FC = () => {
               element: (
                 <Suspense>
                   <>Topic submit</>
+                </Suspense>
+              )
+            },
+            {
+              path: "comments/:id",
+              element: (
+                <Suspense>
+                  <Comments />
                 </Suspense>
               )
             }
