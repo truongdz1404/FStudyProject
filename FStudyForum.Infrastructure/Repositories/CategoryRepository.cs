@@ -8,15 +8,23 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FStudyForum.Infrastructure.Repositories
 {
-    public class CategoryRepository : BaseRepository<Category>, ICategoryRepository
+    public class CategoryRepository(ApplicationDBContext dbContext)
+        : BaseRepository<Category>(dbContext), ICategoryRepository
     {
-        public CategoryRepository(ApplicationDBContext dbContext) : base(dbContext)
+        public async Task<bool> CateExists(string categoryName)
         {
+              return await _dbContext.Categories.AnyAsync(t => t.Name == categoryName);
         }
 
-        public async Task<List<Category>> GetCategoriesByIds(List<long> categoryIds)
+        public async Task<Category?> GetCateByName(string name)
         {
-            return await _dbContext.Categories.Where(c => categoryIds.Contains(c.Id)).ToListAsync();
+            var category = await _dbContext.Categories.FirstOrDefaultAsync(t => t.Name == name);
+            return category;
+        }
+
+        public Task<List<Category>> GetCategoriesByIds(List<long> categoryIds)
+        {
+            throw new NotImplementedException();
         }
     }
 }

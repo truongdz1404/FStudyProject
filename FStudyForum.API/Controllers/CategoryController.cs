@@ -27,6 +27,27 @@ namespace FStudyForum.API.Controllers
                 Status = ResponseStatus.SUCCESS,
                 Data = categories
             });
-        }  
-}
+        }
+        [HttpPost("create")]
+        public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryDTO categoryDto)
+        {
+            var createdCategory = await _categoryService.CreateCategory(categoryDto);
+            return CreatedAtAction(nameof(GetCateByName), new { name = createdCategory.Name }, createdCategory);
+        }
+
+        [HttpGet("{name}")]
+        public async Task<IActionResult> GetCateByName(string name)
+        {
+            try
+            {
+                var category = await _categoryService.GetCateByName(name);
+                return Ok(category);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+    }
 }

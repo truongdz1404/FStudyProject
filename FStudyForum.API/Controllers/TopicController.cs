@@ -26,7 +26,7 @@ namespace FStudyForum.API.Controllers
             return Ok(activeTopics);
         }
 
-        [HttpGet("all"), Authorize(Roles = UserRole.Admin)]
+        [HttpGet("all")]
         public async Task<IActionResult> GetAll()
         {
             var topics = await _topicService.GetTopics();
@@ -52,7 +52,7 @@ namespace FStudyForum.API.Controllers
             });
         }
 
-        [HttpPost("create"), Authorize(Roles = UserRole.Admin)]
+        [HttpPost("create")]
         public async Task<IActionResult> CreateTopic([FromBody] CreateTopicDTO topicDto)
         {
             var createdTopic = await _topicService.CreateTopic(topicDto);
