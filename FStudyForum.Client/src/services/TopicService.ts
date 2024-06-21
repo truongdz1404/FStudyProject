@@ -62,7 +62,7 @@ const search = async (value: string) => {
 };
 const topicByPost = async (postId: number) => {
   const response = await api.get<ResponseWith<Topic>>(`/topic/getTopicByPost/${postId}`);
-  return response.data;
+  return response.data.data;
 }
 const TopicService = {
   getTopics,

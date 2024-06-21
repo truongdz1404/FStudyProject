@@ -23,7 +23,8 @@ export interface UpdateTopicDTO {
 export interface TopicBan {
   username: string,
   topicId: number,
-  action: string
+  action: string,
+  bannerTime: number
 }
 export interface TopicBanDTO {
   username: string,

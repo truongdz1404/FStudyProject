@@ -143,20 +143,20 @@ public class TopicService : ITopicService
         DateTime bannedTime;
         switch (lockUserDTO.Action)
         {
-            case "1 hour":
-                bannedTime = DateTime.Now.AddHours(1);
+            case "hour":
+                bannedTime = DateTime.Now.AddHours(lockUserDTO.BannerTime);
                 break;
-            case "1 day":
-                bannedTime = DateTime.Now.AddDays(1);
+            case "day":
+                bannedTime = DateTime.Now.AddDays(lockUserDTO.BannerTime);
                 break;
-            case "1 month":
-                bannedTime = DateTime.Now.AddMonths(1);
+            case "month":
+                bannedTime = DateTime.Now.AddMonths(lockUserDTO.BannerTime);
                 break;
-            case "1 year":
-                bannedTime = DateTime.Now.AddYears(1);
+            case "year":
+                bannedTime = DateTime.Now.AddYears(lockUserDTO.BannerTime);
                 break;
             case "forever":
-                bannedTime = DateTime.MaxValue; // Khóa vĩnh viễn
+                bannedTime = DateTime.Now.AddYears(lockUserDTO.BannerTime); 
                 break;
             default:
                 throw new ArgumentException("Invalid banned time");

@@ -50,7 +50,7 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
     };
     const fetchTopic = async () => {
       const response = await TopicService.topicByPost(post.id);
-      setTopic(response.data);
+      setTopic(response);
     };
     fetchTopic();
     checkPostByUserExist();
@@ -60,11 +60,13 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
   };
   const locked = () => {
     const topicBan = async () => {
+      const[time, action] = selectedTime.split(" ");
       try {
         await BanUserService.lockedUserByTopic({
           username: post.author,
           topicId: topic.id,
-          action: selectedTime
+          action: action,
+          bannerTime: Number(time)
         });
       } catch (e) {
         const error = e as AxiosError<Response>;
@@ -95,7 +97,26 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
       setError((error?.response?.data as Response)?.message || error.message);
     }
   };
-
+  const LockedMenuItem = [
+    {
+      value: "1 hour",
+      label: "1 hour"
+    }, {
+      value: "1 day",
+      label: "1 day"
+    }, 
+    {
+      value: "1 month",
+      label: "1 month"
+    },
+    {
+      value: "1 year",
+      label: "1 year"
+    }, {
+      value: "1000 forever",
+      label: "Forever"
+    }
+  ];
   const PostMenuItem = [
     {
       icon: isSaved ? XCircle : Bookmark,
@@ -182,44 +203,19 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
                 <div>{topic.name}</div>
                 <div>
                   <div>
-                    <label>Days: </label>
-                    <div className="flex gap-7 ml-[-60%]">
-                      <Radio
-                        name="type"
-                        value="1 hour"
-                        label="1 hour"
-                        crossOrigin={undefined}
-                        className="time"
-                        onChange={handleTimeChange}
-                        checked={selectedTime === "1 hour"}
-                      />
-                      <Radio
-                        name="type"
-                        value="1 day"
-                        label="1 day"
-                        crossOrigin={undefined}
-                        className="time"
-                        onChange={handleTimeChange}
-                        checked={selectedTime === "1 day"}
-                      />
-                      <Radio
-                        name="type"
-                        value="1 year"
-                        label="1 year"
-                        crossOrigin={undefined}
-                        className="time"
-                        onChange={handleTimeChange}
-                        checked={selectedTime === "1 year"}
-                      />
-                      <Radio
-                        name="type"
-                        value="forever"
-                        label="Forever"
-                        crossOrigin={undefined}
-                        className="time"
-                        onChange={handleTimeChange}
-                        checked={selectedTime === "forever"}
-                      />
+                    <div className="flex gap-0 ml-[-60%] mt-[5%]">
+                      {LockedMenuItem.map(({ value, label }, key) => (
+                        <Radio
+                          key={key}
+                          name="type"
+                          value={value}
+                          label={label}
+                          crossOrigin={undefined}
+                          className="time"
+                          onChange={handleTimeChange}
+                          checked={selectedTime === value}
+                        />
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -242,10 +238,8 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
                   setIsModalOpen(false),
                   locked();
                 }}
-                
               >
                 <LockKeyhole />
-                
               </button>
             </div>
           </div>

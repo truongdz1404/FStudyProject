@@ -12,6 +12,7 @@ import { Role } from "@/helpers/constants";
 import Donate from "./pages/donate";
 import Payment from "./pages/donate/payment";
 import Notification from "./pages/donate/notification";
+import PostDetail from "./pages/post/detail";
 
 const Popular = lazy(() => import("@/pages/popular"));
 const Memebers = lazy(() => import("@/pages/manager/members"));
@@ -23,7 +24,6 @@ const ChangePassword = lazy(
 );
 
 const SubmitPage = lazy(() => import("@/pages/submit"));
-
 const TopcicManager = lazy(() => import("@/pages/manager/topics"));
 const ResetPassword = lazy(() => import("@/pages/auth/reset-password"));
 const Profile = lazy(() => import("@/pages/profile"));
@@ -145,7 +145,6 @@ const Router: FC = () => {
         },
         {
           path: "topic/:name",
-
           children: [
             {
               index: true,
@@ -216,7 +215,6 @@ const Router: FC = () => {
         }
       ]
     },
-
     {
       path: "auth",
       element: <AuthLayout />,
@@ -275,8 +273,16 @@ const Router: FC = () => {
           )
         }
       ]
+    }, {
+    path: "post/:id",
+    element:(
+      <Suspense>
+        <BanUser>
+        <PostDetail />
+        </BanUser>       
+      </Suspense>
+    )
     },
-
     {
       path: "*",
       element: <NotFound />
