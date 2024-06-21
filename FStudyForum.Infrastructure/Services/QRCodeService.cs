@@ -1,6 +1,5 @@
 ﻿using FStudyForum.Core.Interfaces.IServices;
 using FStudyForum.Core.Models.DTOs.QRCode;
-using FStudyForum.Core.Models.Entities;
 using System.Text;
 using System.Text.Json;
 
