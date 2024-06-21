@@ -1,6 +1,8 @@
-﻿using AutoMapper;
+﻿using System.Net.Mail;
+using AutoMapper;
 using FStudyForum.Core.Interfaces.IRepositories;
 using FStudyForum.Core.Interfaces.IServices;
+using FStudyForum.Core.Models.DTOs.Attachment;
 using FStudyForum.Core.Models.DTOs.Post;
 
 
@@ -41,7 +43,8 @@ namespace FStudyForum.Infrastructure.Services
                 Content = post.Content,
                 VoteCount = post.Votes.Count,
                 CommentCount = post.Comments.Count,
-                Elapsed = DateTime.Now - post.CreatedAt
+                Attachments = post.Attachments.Select(a => new AttachmentDTO { Type = a.Type, Url = a.FileUrl }),
+                Elapsed = DateTime.Now - post.CreatedAt,
             };
         }
 
@@ -58,6 +61,7 @@ namespace FStudyForum.Infrastructure.Services
                 Content = p.Content,
                 VoteCount = p.Votes.Count,
                 CommentCount = p.Comments.Count,
+                Attachments = p.Attachments.Select(a => new AttachmentDTO { Type = a.Type, Url = a.FileUrl }),
                 Elapsed = DateTime.Now - p.CreatedAt
             });
             return postDTOs;

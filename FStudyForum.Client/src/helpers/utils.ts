@@ -1,5 +1,6 @@
 import { twMerge } from "tailwind-merge";
 import { type ClassValue, clsx } from "clsx";
+import { ALLOWED_FILE_TYPES } from "./constants";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -31,6 +32,10 @@ export function formatElapsedTime(elapsed: string): string {
     const years = Math.floor(totalDays / 365);
     return `${years} year${years > 1 ? "s" : ""} ago`;
   }
+}
+
+export function validateFileType(file: File) {
+  return ALLOWED_FILE_TYPES.includes(file.type);
 }
 
 export const colorThief = {
