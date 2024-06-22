@@ -48,6 +48,35 @@ namespace FStudyForum.API.Controllers
                 return NotFound(ex.Message);
             }
         }
-
+        [HttpPut("update/{name}")]
+        public async Task<IActionResult> UpdateCategory(string name, [FromBody] UpdateCategoryDTO categoryDto)
+        {
+            try
+            {
+                var updatedCategory = await _categoryService.UpdateCategory(name, categoryDto);
+                return Ok(updatedCategory);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+        [HttpDelete("delete/{name}")]
+    public async Task<IActionResult> DeleteCategory(string name)
+    {
+        try
+        {
+            var success = await _categoryService.DeleteCategory(name);
+            if (!success)
+            {
+                return NotFound(new { message = $"Category with name '{name}' not found." });
+            }
+            return Ok(new { message = $"{name} has been deleted successfully." });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = $"Internal server error: {ex.Message}" });
+        }
+    }
     }
 }

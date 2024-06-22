@@ -71,5 +71,30 @@ public class CategoryService : ICategoryService
 
         return categoryDto;
     }
+
+    public async Task<CategoryDTO> UpdateCategory(string name, UpdateCategoryDTO categoryDto)
+{
+    var existedCategory = await _categoryRepository.GetCateByName(name)
+        ?? throw new Exception("Category not found");
+    var categoryWithSameName = await _categoryRepository.GetCateByName(categoryDto.Name);
+    if (categoryWithSameName != null && categoryWithSameName.Id != existedCategory.Id)
+    {
+        throw new Exception($"Category with name '{categoryDto.Name}' already exists.");
+    }
+    existedCategory.Name = categoryDto.Name;
+    existedCategory.Description = categoryDto.Description;
+    existedCategory.Type = categoryDto.Type;
+
+    await _categoryRepository.Update(existedCategory);
+    return _mapper.Map<CategoryDTO>(existedCategory);
+}
+
+    public async Task<bool> DeleteCategory(string name)
+    {
+         var existedCategory = await _categoryRepository.GetCateByName(name)
+        ?? throw new Exception("Category not found");
+        await _categoryRepository.Delete(existedCategory);
+        return true;
+    }
 }
 
