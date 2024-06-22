@@ -22,9 +22,9 @@ namespace FStudyForum.Infrastructure.Repositories
             return category;
         }
 
-        public Task<List<Category>> GetCategoriesByIds(List<long> categoryIds)
+         public async Task<List<Category>> GetCategoriesByIds(List<long> categoryIds)
         {
-            throw new NotImplementedException();
+            return await _dbContext.Categories.Where(c => categoryIds.Contains(c.Id)).ToListAsync();
         }
     }
 }

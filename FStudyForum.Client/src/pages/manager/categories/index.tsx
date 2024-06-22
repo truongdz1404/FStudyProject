@@ -25,7 +25,7 @@ import CategoryService from "@/services/CategoryService";
 
 const titles = ["Name", "Description","Types", "Action"];
 
-const TopicsPage = () => {
+const CategoriesPage = () => {
   const openAddPopup = () => {
     setPopupOpen(1);
   };
@@ -223,4 +223,4 @@ const TopicsPage = () => {
     </>
   );
 };
-export default TopicsPage;
+export default CategoriesPage;

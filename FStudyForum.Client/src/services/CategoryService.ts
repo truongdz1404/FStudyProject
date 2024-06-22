@@ -10,7 +10,7 @@ const getAllCategory = async () => {
     return response.data;
   };
   const update = async (name: string, category: UpdateCategoryDTO): Promise<Category> => {
-    const response = await api.put<Category>(`/topic/update/${name}`, category);
+    const response = await api.put<Category>(`/category/update/${name}`, category);
     return response.data;
   };
   const deleteCategory = async (name: string): Promise<void> => {

@@ -56,9 +56,8 @@ namespace FStudyForum.API.Controllers
         public async Task<IActionResult> CreateTopic([FromBody] CreateTopicDTO topicDto)
         {
             var createdTopic = await _topicService.CreateTopic(topicDto);
-            return CreatedAtAction(nameof(GetTopicByName), new { id = createdTopic.Id }, createdTopic);
+            return CreatedAtAction(nameof(GetTopicByName), new { name = createdTopic.Name }, createdTopic);
         }
-
         [HttpGet("{name}")]
         public async Task<IActionResult> GetTopicByName(string name)
         {
@@ -72,7 +71,7 @@ namespace FStudyForum.API.Controllers
                 return NotFound(ex.Message);
             }
         }
-        [HttpPut("update/{name}"), Authorize(Roles = UserRole.Admin)]
+        [HttpPut("update/{name}")]
         public async Task<IActionResult> UpdateTopic(string name, [FromBody] UpdateTopicDTO topicDto)
         {
             try

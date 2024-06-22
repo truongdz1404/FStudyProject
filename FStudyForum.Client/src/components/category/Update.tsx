@@ -29,8 +29,8 @@ const UpdateCategoryPopup: React.FC<UpdateCategoryPopupProps> = ({
         type,
       };
       await CategoryService.update(category.name, updatedCategory);
-      onUpdate(); // Trigger reload or update action
-      onClose(); // Close the popup
+      onUpdate(); 
+      onClose(); 
     } catch (error) {
       console.error("Error updating category:", error);
       setError("Error updating category. Please try again later.");
