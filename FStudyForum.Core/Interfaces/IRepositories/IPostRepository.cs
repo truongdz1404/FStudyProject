@@ -11,9 +11,10 @@ namespace FStudyForum.Core.Interfaces.IRepositories;
         Task<bool> IsPostExists(SavePostDTO savePostDTO);
         Task<SavedPost?> FindPostByUser(SavePostDTO savePostDTO);
         Task DeleteByUser(SavedPost postByUser);
-        public Task<IEnumerable<Post>> GetPostsByTopicNameAsync(string name);
-        public Task<IEnumerable<Post>> GetPostsAsync();
-        public Task<Post> CreatePostAsync(CreatePostDTO postDTO);
+        Task<IEnumerable<Post>> GetPostsByTopicNameAsync(string name);
+        Task<IEnumerable<Post>> GetPostsAsync();
+        Task<Post> CreatePostAsync(CreatePostDTO postDTO);
+        Task<IEnumerable<Post>> GetListPostSaveByUser(string username);
     }
 
 

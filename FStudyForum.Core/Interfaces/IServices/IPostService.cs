@@ -1,6 +1,7 @@
 using FStudyForum.Core.Models.DTOs;
 using FStudyForum.Core.Models.DTOs.Post;
 using FStudyForum.Core.Models.DTOs.SavePost;
+using FStudyForum.Core.Models.Entities;
 
 namespace FStudyForum.Core.Interfaces.IServices
 {
@@ -13,6 +14,6 @@ namespace FStudyForum.Core.Interfaces.IServices
         Task<bool> IsPostExists(SavePostDTO savedPostDTO);
         Task<IEnumerable<PostDTO>> GetPosts();
         Task<PostDTO> CreatePost(CreatePostDTO postDTO);
-
+        Task<IEnumerable<PostDTO>> GetListPostSaveByUser(string username);
     }
 }

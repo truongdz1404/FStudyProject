@@ -1,5 +1,4 @@
 export interface Post {
-
   id: number;
   topicName: string;
   topicAvatar: string;

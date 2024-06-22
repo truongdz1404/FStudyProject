@@ -1,6 +1,7 @@
 import { SavedPost } from "@/types/savedpost";
 import api from "./api";
 import { ResponseWith } from "@/types/response";
+import { Post } from "@/types/post";
 
 const savedPost = async (savedPost: SavedPost) => {
     const response = await api.post<ResponseWith<SavedPost>>(
@@ -21,9 +22,16 @@ const isPostSaved = async (username: string, postId: number) => {
     );
     return response.data;
 }
+const listSavedPosts = async (username: string) => {
+    const response = await api.get<ResponseWith<Post[]>>(
+        `/post/getSavePost/${username}`
+    );
+    return response.data.data;
+}
 const SavedPostService = {
     savedPost,
     deletePost,
-    isPostSaved
+    isPostSaved,
+    listSavedPosts
 };
 export default SavedPostService;

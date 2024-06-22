@@ -13,6 +13,7 @@ import Donate from "./pages/donate";
 import Payment from "./pages/donate/payment";
 import Notification from "./pages/donate/notification";
 import PostDetail from "./pages/post/detail";
+import SavePost from "./pages/post/save";
 
 const Popular = lazy(() => import("@/pages/popular"));
 const Memebers = lazy(() => import("@/pages/manager/members"));
@@ -77,7 +78,8 @@ const Router: FC = () => {
               )
             }
           ]
-        }, {
+        },
+        {
           path: "donate",
           children: [
             {
@@ -87,15 +89,17 @@ const Router: FC = () => {
                   <Donate />
                 </Suspense>
               )
-            }, {
+            },
+            {
               path: "payment",
               element: (
                 <Suspense>
                   <Payment />
                 </Suspense>
               )
-            }, {
-              path:"success",
+            },
+            {
+              path: "success",
               element: (
                 <Suspense>
                   <Notification />
@@ -150,8 +154,8 @@ const Router: FC = () => {
               index: true,
               element: (
                 <Suspense>
-                   <BanUser>
-                  <TopicDetail />
+                  <BanUser>
+                    <TopicDetail />
                   </BanUser>
                 </Suspense>
               )
@@ -172,7 +176,17 @@ const Router: FC = () => {
             <Suspense>
               <Profile />
             </Suspense>
-          )
+          ),
+          children: [
+            {
+              path: "save",
+              element: (
+                <Suspense>
+                  <SavePost />
+                </Suspense>
+              )
+            }
+          ]
         },
         {
           path: "settings",
@@ -273,15 +287,16 @@ const Router: FC = () => {
           )
         }
       ]
-    }, {
-    path: "post/:id",
-    element:(
-      <Suspense>
-        <BanUser>
-        <PostDetail />
-        </BanUser>       
-      </Suspense>
-    )
+    },
+    {
+      path: "post/:id",
+      element: (
+        <Suspense>
+          <BanUser>
+            <PostDetail />
+          </BanUser>
+        </Suspense>
+      )
     },
     {
       path: "*",

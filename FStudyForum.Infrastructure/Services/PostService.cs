@@ -91,5 +91,24 @@ namespace FStudyForum.Infrastructure.Services
         {
             throw new NotImplementedException();
         }
+
+        public async Task<IEnumerable<PostDTO>> GetListPostSaveByUser(string username)
+        {
+
+            var posts = await _postRepository.GetListPostSaveByUser(username
+                ?? throw new Exception("Not found."));
+            return posts.Select(p => new PostDTO
+            {
+                Id = p.Id,
+                Title = p.Title,
+                Author = p.Creater.UserName!,
+                TopicName = p.Topic.Name,
+                TopicAvatar = p.Topic.Avatar,
+                Content = p.Content,
+                VoteCount = p.Votes.Count,
+                CommentCount = p.Comments.Count,
+                Elapsed = DateTime.Now - p.CreatedAt
+            });            
+        }
     }
 }

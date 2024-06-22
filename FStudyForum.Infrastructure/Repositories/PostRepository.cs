@@ -89,6 +89,22 @@ namespace FStudyForum.Infrastructure.Repositories
                 .ToListAsync();
         }
 
-       
+        public async Task<IEnumerable<Post>> GetListPostSaveByUser(string username)
+        {
+            var listPost = await _dbContext.SavedPosts
+            .Where(sp => sp.User.UserName == username && !sp.Post.IsDeleted)
+            .Include(sp => sp.Post) 
+            .ThenInclude(p => p.Creater) 
+            .Include(sp => sp.Post) 
+            .ThenInclude(p => p.Topic) 
+            .Include(sp => sp.Post) 
+            .ThenInclude(p => p.Votes) 
+            .Include(sp => sp.Post) 
+            .ThenInclude(p => p.Comments) 
+            .Where(sp => !sp.Post.Topic.IsDeleted)
+            .Select(sp => sp.Post)
+            .ToListAsync();
+            return listPost;
+        }
     }
 }

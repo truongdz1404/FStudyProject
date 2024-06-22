@@ -79,6 +79,9 @@ const BanUser: FC<PropsWithChildren> = ({ children }) => {
     fetchData();
   }, [name, user, navigate]);
 
+  if (error) {
+    return <Alert color="red">{error}</Alert>;
+  }
   if (timeDiff) {
     return <Alert color="red">Bạn cần {timeDiff} để mở khóa</Alert>;
   }

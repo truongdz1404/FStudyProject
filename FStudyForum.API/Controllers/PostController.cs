@@ -205,5 +205,36 @@ namespace FStudyForum.API.Controllers
                 });
             }
         }
+        [HttpGet("getSavePost/{username}")]
+        public async Task<IActionResult> GetListPostSaveByUser(string username)
+        {
+            try
+            {
+                var posts = await _postService.GetListPostSaveByUser(username);
+                if (posts.IsNullOrEmpty())
+                {
+                    return NotFound(new Response
+                    {
+                        Status = ResponseStatus.ERROR,
+                        Message = "Posts not found",
+                        Data = posts
+                    });
+                }
+                return Ok(new Response
+                {
+                    Message = "Get Posts successfully",
+                    Status = ResponseStatus.SUCCESS,
+                    Data = posts
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = ex.Message
+                });
+            }
+        }
     }
 }
