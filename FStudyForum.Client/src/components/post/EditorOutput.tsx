@@ -1,31 +1,37 @@
-import { OutputData } from "@editorjs/editorjs";
 import { FC } from "react";
-import CustomImageOutput from "./CustomImageOutput";
-import CustomEmbedOutput from "./CustomEmbedOutput";
+import { generateHTML } from "@tiptap/html";
+import { JSONContent } from "@tiptap/react";
+import Document from "@tiptap/extension-document";
+import Dropcursor from "@tiptap/extension-dropcursor";
+import Image from "@tiptap/extension-image";
+import Paragraph from "@tiptap/extension-paragraph";
+import Text from "@tiptap/extension-text";
+import Bold from "@tiptap/extension-bold";
+import Placeholder from "@tiptap/extension-placeholder";
 
-const Output = (await import("editorjs-react-renderer")).default;
+import parse from "html-react-parser";
+import Code from "@tiptap/extension-code";
+
 interface Props {
-  content: string;
+  json: string;
 }
-const style = {
-  paragraph: {
-    fontSize: "0.875rem",
-    lineHeight: "1.25rem"
-  }
-};
 
-const renderers = {
-  image: CustomImageOutput,
-  embed: CustomEmbedOutput
-};
-const EditorOutput: FC<Props> = ({ content }) => {
+const EditorOutput: FC<Props> = ({ json: content }) => {
   return (
-    <Output
-      data={JSON.parse(content) as OutputData}
-      style={style}
-      className="text-sm"
-      renderers={renderers}
-    />
+    <div className="text-sm">
+      {parse(
+        generateHTML(JSON.parse(content) as JSONContent, [
+          Document,
+          Dropcursor,
+          Image,
+          Paragraph,
+          Text,
+          Bold,
+          Placeholder,
+          Code
+        ])
+      )}
+    </div>
   );
 };
 

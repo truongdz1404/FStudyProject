@@ -8,6 +8,7 @@ public interface IPostRepository : IBaseRepository<Post>
     public Task<IEnumerable<Post>> GetPostsAsync();
     public Task<Post> CreatePostAsync(CreatePostDTO postDTO);
     public Task<Post?> GetPostByIdAsync(long id);
+    public Task<IEnumerable<Post>> SearchPostAsync(string keyword);
 
 
 }

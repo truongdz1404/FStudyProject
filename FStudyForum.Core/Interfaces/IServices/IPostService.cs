@@ -8,5 +8,7 @@ namespace FStudyForum.Core.Interfaces.IServices
         Task<IEnumerable<PostDTO>> GetPosts();
         Task<PostDTO> GetPostById(long id);
         Task<PostDTO> CreatePost(CreatePostDTO postDTO);
+        Task<IEnumerable<PostDTO>> SearchPostAsync(string keyword);
+
     }
 }

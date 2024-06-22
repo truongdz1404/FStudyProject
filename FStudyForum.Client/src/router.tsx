@@ -7,7 +7,7 @@ import Layout from "@/components/layout/Layout";
 import WelcomeGuard from "@/helpers/guards/WelcomeGuard";
 import AuthLayout from "@/components/layout/AuthLayout";
 import RoleBasedGuard from "@/helpers/guards/RoleBasedGuard";
-import { Role } from "@/helpers/constants";
+import { ROLE } from "@/helpers/constants";
 
 const Popular = lazy(() => import("@/pages/popular"));
 const Memebers = lazy(() => import("@/pages/manager/members"));
@@ -77,7 +77,7 @@ const Router: FC = () => {
         {
           path: "manager",
           element: (
-            <RoleBasedGuard accessibleRoles={[Role.Admin]}>
+            <RoleBasedGuard accessibleRoles={[ROLE.Admin]}>
               <Outlet />
             </RoleBasedGuard>
           ),
@@ -251,7 +251,6 @@ const Router: FC = () => {
         }
       ]
     },
-
     {
       path: "*",
       element: <NotFound />

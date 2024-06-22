@@ -31,7 +31,8 @@ namespace FStudyForum.Infrastructure.Repositories
                 {
                     Type = attachmentDTO.Type,
                     FileUrl = attachmentDTO.Url,
-                    Post = post
+                    Post = post,
+                    CreatedAt = DateTime.Now
                 });
             }
             post.Attachments = attachments;
@@ -47,6 +48,7 @@ namespace FStudyForum.Infrastructure.Repositories
                 .Include(p => p.Creater)
                 .Include(p => p.Topic)
                 .Include(p => p.Votes)
+                .Include(p => p.Attachments)
                 .Include(p => p.Comments)
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
@@ -58,6 +60,7 @@ namespace FStudyForum.Infrastructure.Repositories
                 .Include(p => p.Creater)
                 .Include(p => p.Topic)
                 .Include(p => p.Votes)
+                .Include(p => p.Attachments)
                 .Include(p => p.Comments)
                 .Where(p => p.Topic.IsDeleted == false)
                 .ToListAsync();
@@ -72,6 +75,19 @@ namespace FStudyForum.Infrastructure.Repositories
                 .Include(p => p.Comments)
                 .Where(p => p.Topic.IsDeleted == false && p.Topic.Name == name)
                 .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Post>> SearchPostAsync(string keyword)
+        {
+            return await _dbContext.Posts
+               .Where(p => p.IsDeleted == false && p.Title.Contains(keyword.Trim()) || p.Content.Contains(keyword.Trim()))
+               .Include(p => p.Creater)
+               .Include(p => p.Topic)
+               .Include(p => p.Votes)
+               .Include(p => p.Attachments)
+               .Include(p => p.Comments)
+               .Where(p => p.Topic.IsDeleted == false)
+               .ToListAsync();
         }
     }
 }

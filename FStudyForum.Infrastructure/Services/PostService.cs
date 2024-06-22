@@ -1,6 +1,8 @@
-﻿using AutoMapper;
+﻿using System.Net.Mail;
+using AutoMapper;
 using FStudyForum.Core.Interfaces.IRepositories;
 using FStudyForum.Core.Interfaces.IServices;
+using FStudyForum.Core.Models.DTOs.Attachment;
 using FStudyForum.Core.Models.DTOs.Post;
 
 
@@ -41,7 +43,8 @@ namespace FStudyForum.Infrastructure.Services
                 Content = post.Content,
                 VoteCount = post.Votes.Count,
                 CommentCount = post.Comments.Count,
-                Elapsed = DateTime.Now - post.CreatedAt
+                Attachments = post.Attachments.Select(a => new AttachmentDTO { Type = a.Type, Url = a.FileUrl }),
+                Elapsed = DateTime.Now - post.CreatedAt,
             };
         }
 
@@ -58,6 +61,26 @@ namespace FStudyForum.Infrastructure.Services
                 Content = p.Content,
                 VoteCount = p.Votes.Count,
                 CommentCount = p.Comments.Count,
+                Attachments = p.Attachments.Select(a => new AttachmentDTO { Type = a.Type, Url = a.FileUrl }),
+                Elapsed = DateTime.Now - p.CreatedAt
+            });
+            return postDTOs;
+        }
+
+        public async Task<IEnumerable<PostDTO>> SearchPostAsync(string keyword)
+        {
+            var posts = await _postRepository.SearchPostAsync(keyword);
+            var postDTOs = posts.Select(p => new PostDTO
+            {
+                Id = p.Id,
+                Title = p.Title,
+                Author = p.Creater.UserName!,
+                TopicName = p.Topic.Name,
+                TopicAvatar = p.Topic.Avatar,
+                Content = p.Content,
+                VoteCount = p.Votes.Count,
+                CommentCount = p.Comments.Count,
+                Attachments = p.Attachments.Select(a => new AttachmentDTO { Type = a.Type, Url = a.FileUrl }),
                 Elapsed = DateTime.Now - p.CreatedAt
             });
             return postDTOs;

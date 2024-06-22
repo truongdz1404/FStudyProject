@@ -16,7 +16,7 @@ namespace FStudyForum.API.Controllers
             _commentService = commentService;
         }
 
-        [HttpGet]
+        [HttpGet("comment")]
         public async Task<IActionResult> GetComment([FromQuery] long id)
         {
         try{
@@ -44,8 +44,8 @@ namespace FStudyForum.API.Controllers
         }
         }
 
-        [HttpGet("post/{postId}")]
-        public async Task<ActionResult<IEnumerable<CommentDTO>>> GetCommentsByPost(long postId)
+        [HttpGet("post")]
+        public async Task<ActionResult<IEnumerable<CommentDTO>>> GetCommentsByPost([FromQuery] long postId)
         {
             var comments = await _commentService.GetCommentsByPostIdAsync(postId);
             return Ok(comments);
@@ -81,16 +81,16 @@ namespace FStudyForum.API.Controllers
             }
         }
 
-        // [HttpPut("{id}")]
-        // public async Task<IActionResult> UpdateComment(int id, CommentDTO commentUpdateDto)
-        // {
-        //     var result = await _commentService.UpdateCommentAsync(id, commentUpdateDto);
-        //     if (!result)
-        //     {
-        //         return NotFound();
-        //     }
-        //     return NoContent();
-        // }
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateComment([FromBody] CommentUpdateDTO commentUpdateDto)
+        {
+            var result = await _commentService.UpdateCommentAsync(commentUpdateDto);
+            if (!result)
+            {
+                return NotFound();
+            }
+            return NoContent();
+        }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteComment(int id)

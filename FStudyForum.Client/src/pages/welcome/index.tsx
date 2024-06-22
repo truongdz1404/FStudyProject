@@ -1,27 +1,27 @@
-import { Icons } from "@/components/Icons"
-import { signIn } from "@/contexts/auth/reduce"
-import { cn } from "@/helpers/utils"
-import { useAuth } from "@/hooks/useAuth"
-import MajorService from "@/services/MajorService"
-import ProfileService from "@/services/ProfileService"
-import UserService from "@/services/UserService"
-import { yupResolver } from "@hookform/resolvers/yup"
-import Success from "@/assets/images/motivation.gif"
-import { Chip, Input, Radio, Step, Stepper } from "@material-tailwind/react"
-import { motion } from "framer-motion"
-import { ChevronLeft, ChevronRight, CircleAlert } from "lucide-react"
-import React from "react"
-import { useForm } from "react-hook-form"
-import { useNavigate } from "react-router-dom"
-import * as Yup from "yup"
-import { PhoneRegExp } from "@/helpers/constants"
+import { Icons } from "@/components/Icons";
+import { signIn } from "@/contexts/auth/reduce";
+import { cn } from "@/helpers/utils";
+import { useAuth } from "@/hooks/useAuth";
+import MajorService from "@/services/MajorService";
+import ProfileService from "@/services/ProfileService";
+import UserService from "@/services/UserService";
+import { yupResolver } from "@hookform/resolvers/yup";
+import Success from "@/assets/images/motivation.gif";
+import { Chip, Input, Radio, Step, Stepper } from "@material-tailwind/react";
+import { motion } from "framer-motion";
+import { ChevronLeft, ChevronRight, CircleAlert } from "lucide-react";
+import React from "react";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import * as Yup from "yup";
+import { PHONE_EXP } from "@/helpers/constants";
 
 interface WelcomeFormInputs {
-  firstName: string
-  lastName: string
-  phone?: string
-  gender: number
-  marjor?: string
+  firstName: string;
+  lastName: string;
+  phone?: string;
+  gender: number;
+  marjor?: string;
 }
 
 const validation = Yup.object().shape({
@@ -34,15 +34,13 @@ const validation = Yup.object().shape({
     .required("Last name is required")
     .max(20, "Last name must no more than 20 characters"),
   gender: Yup.number().required("Gender is required"),
-  phone: Yup.string()
-    .optional()
-    .matches(PhoneRegExp, "Phone number is not valid")
-})
+  phone: Yup.string().optional().matches(PHONE_EXP, "Phone number is not valid")
+});
 
 const Welcome = () => {
-  const { user, dispatch } = useAuth()
-  const navigate = useNavigate()
-  const [loading, setLoading] = React.useState(false)
+  const { user, dispatch } = useAuth();
+  const navigate = useNavigate();
+  const [loading, setLoading] = React.useState(false);
 
   const {
     register,
@@ -52,64 +50,64 @@ const Welcome = () => {
   } = useForm<WelcomeFormInputs>({
     mode: "onTouched",
     resolver: yupResolver(validation)
-  })
-  const [activeStep, setActiveStep] = React.useState(0)
-  const [preStep, setPreStep] = React.useState(-1)
-  const [isLastStep, setIsLastStep] = React.useState(false)
-  const [isFirstStep, setIsFirstStep] = React.useState(false)
+  });
+  const [activeStep, setActiveStep] = React.useState(0);
+  const [preStep, setPreStep] = React.useState(-1);
+  const [isLastStep, setIsLastStep] = React.useState(false);
+  const [isFirstStep, setIsFirstStep] = React.useState(false);
 
   const nextStep = () => {
     if (!isLastStep) {
-      setPreStep(activeStep)
-      setActiveStep(cur => cur + 1)
+      setPreStep(activeStep);
+      setActiveStep(cur => cur + 1);
     }
-  }
+  };
   const prevStep = () => {
     if (!isFirstStep) {
-      setPreStep(activeStep)
-      setActiveStep(cur => cur - 1)
+      setPreStep(activeStep);
+      setActiveStep(cur => cur - 1);
     }
-  }
+  };
 
   const [selectedMajor, setSelectedMajor] = React.useState(
     "Software Engineering"
-  )
-  const [majors, setMajors] = React.useState<string[]>([])
+  );
+  const [majors, setMajors] = React.useState<string[]>([]);
   React.useEffect(() => {
-    if (user == null) return
-    ;(async () => {
+    if (user == null) return;
+    (async () => {
       try {
-        setLoading(true)
-        const majors = await MajorService.getAll()
-        setMajors(majors)
-        await ProfileService.getByUsername(user.username)
-        navigate("/")
+        setLoading(true);
+        const majors = await MajorService.getAll();
+        setMajors(majors);
+        await ProfileService.getByUsername(user.username);
+        navigate("/");
       } catch (error) {
-        console.error(error)
+        console.error(error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    })()
-  }, [user, navigate])
+    })();
+  }, [user, navigate]);
 
   const handleNext = async () => {
-    let isValid = false
+    let isValid = false;
     switch (activeStep) {
       case 0:
-        isValid = await trigger(["firstName", "lastName", "gender", "phone"])
-        break
+        isValid = await trigger(["firstName", "lastName", "gender", "phone"]);
+        break;
       default:
-        isValid = true
-        break
+        isValid = true;
+        break;
     }
     if (isValid) {
-      nextStep()
+      nextStep();
     }
-  }
+  };
 
   const handleCreateProfile = async (form: WelcomeFormInputs) => {
     try {
-      setLoading(true)
+      setLoading(true);
       const payload = {
         firstName: form.firstName,
         lastName: form.lastName,
@@ -117,17 +115,17 @@ const Welcome = () => {
         gender: form.gender,
         avatar: "/src/assets/images/user.png",
         phone: form.phone
-      }
-      await ProfileService.create(payload)
-      const user = await UserService.getProfile()
-      dispatch(signIn({ user }))
-      navigate("/")
+      };
+      await ProfileService.create(payload);
+      const user = await UserService.getProfile();
+      dispatch(signIn({ user }));
+      navigate("/");
     } catch (error) {
-      console.error(error)
+      console.error(error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const renderStep = (step: number) => {
     return (
@@ -302,8 +300,8 @@ const Welcome = () => {
           </div>
         </div>
       </>
-    )
-  }
+    );
+  };
   return (
     <form
       className="flex flex-col justify-center items-center h-screen overflow-hidden"
@@ -363,7 +361,7 @@ const Welcome = () => {
           <button
             type="button"
             onClick={() => {
-              !loading && prevStep()
+              !loading && prevStep();
             }}
             className={cn(
               "flex gap-x-2 text-deep-orange-400 hover:cursor-pointer select-none font-bold",
@@ -375,7 +373,7 @@ const Welcome = () => {
           <button
             type={isLastStep ? "submit" : "button"}
             onClick={() => {
-              !loading && !isLastStep && handleNext()
+              !loading && !isLastStep && handleNext();
             }}
             className={cn(
               "flex gap-x-2 text-deep-orange-400 hover:cursor-pointer select-none font-bold"
@@ -387,7 +385,7 @@ const Welcome = () => {
         </div>
       </motion.div>
     </form>
-  )
-}
+  );
+};
 
-export default Welcome
+export default Welcome;

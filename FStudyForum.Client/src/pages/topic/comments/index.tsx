@@ -52,12 +52,12 @@ const Comments: FC<Props> = () => {
         {error}
       </Alert>
     );
-  if (loading || !post) return <></>;
+  if (loading || !post) return null;
   return (
     <div className="relative">
       <div
         onClick={() => handleBack()}
-        className="rounded-full bg-blue-gray-50 hover:bg-blue-gray-100 p-2 absolute top-0 -left-6 hidden lg:block"
+        className="rounded-full bg-blue-gray-50 hover:bg-blue-gray-100 p-2 absolute top-0 -left-6 hidden md:block"
       >
         <ArrowLeft className="w-4 h-4" />
       </div>

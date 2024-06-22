@@ -18,7 +18,11 @@ namespace FStudyForum.Infrastructure.Repositories
         public async Task<Comment?> GetCommentByIdAsync(long id)
         {
             return await _context.Comments
+               .Where(c => !c.IsDeleted)
+                .Include(c => c.Creater)
                 .Include(c => c.Post)
+                .Include(c => c.Replies)
+                .Include(c => c.Votes)
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
 
@@ -51,7 +55,7 @@ namespace FStudyForum.Infrastructure.Repositories
                 replyTo = await _dbContext.Comments.FirstOrDefaultAsync(c => c.Id == createCommentDTO.ReplyId);
             }
             Attachment? attachment = null;
-            if (createCommentDTO.AttachmentId!= null)
+            if (createCommentDTO.AttachmentId != null)
             {
                 attachment = await _dbContext.Attachments.FirstOrDefaultAsync(a => a.Id == createCommentDTO.AttachmentId);
             }
@@ -75,15 +79,15 @@ namespace FStudyForum.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteCommentAsync(long id)
+        public async Task<IEnumerable<Comment?>> SearchCommentAsync(string keyword)
         {
-            var comment = await _context.Comments.FindAsync(id);
-            if (comment != null)
-            {
-                comment.IsDeleted = true;
-                _context.Comments.Update(comment);
-                await _context.SaveChangesAsync();
-            }
+            return await _context.Comments
+               .Where(c => c.Content.Contains(keyword.Trim()) && !c.IsDeleted)
+               .Include(c => c.Creater)
+               .Include(c => c.Post)
+               .Include(c => c.Replies)
+               .Include(c => c.Votes)
+               .ToListAsync();
         }
     }
 }

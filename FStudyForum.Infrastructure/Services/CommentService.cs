@@ -2,6 +2,7 @@ using FStudyForum.Core.Interfaces.IRepositories;
 using FStudyForum.Core.Interfaces.IServices;
 using FStudyForum.Core.Models.DTOs.Comment;
 using FStudyForum.Core.Models.Entities;
+using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -10,10 +11,12 @@ namespace FStudyForum.Infrastructure.Services
     public class CommentService : ICommentService
     {
         private readonly ICommentRepository _commentRepository;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public CommentService(ICommentRepository commentRepository)
+        public CommentService(ICommentRepository commentRepository, UserManager<ApplicationUser> userManager)
         {
             _commentRepository = commentRepository;
+            _userManager = userManager;
         }
 
         public async Task<CommentDTO> GetCommentByIdAsync(long id)
@@ -52,16 +55,12 @@ namespace FStudyForum.Infrastructure.Services
             return MapToCommentDTO(comment);
         }
 
-      
+
 
         public async Task<bool> SoftDeleteCommentAsync(long id)
         {
-            var comment = await _commentRepository.GetCommentByIdAsync(id);
-            if (comment == null)
-            {
-                return false;
-            }
-
+            var comment = await _commentRepository.GetCommentByIdAsync(id)
+            ?? throw new KeyNotFoundException("Comment not found");
             comment.IsDeleted = true;
             await _commentRepository.UpdateCommentAsync(comment);
             return true;
@@ -77,47 +76,51 @@ namespace FStudyForum.Infrastructure.Services
                 Author = comment.Creater.UserName,
                 PostId = comment.Post.Id,
                 AttachmentId = comment.Attachment?.Id,
-                ReplyId = comment.ReplyTo?.Id
+                ReplyId = comment.ReplyTo?.Id,
+                VoteCount = comment.Votes.Count
             };
         }
 
-        //   public async Task<bool> UpdateCommentAsync(int id, CommentDTO commentUpdateDto)
-        // {
-        //     var comment = await _commentRepository.GetCommentByIdAsync(id);
-        //     if (comment == null)
-        //     {
-        //         return false;
-        //     }
+        public async Task<IEnumerable<CommentDTO>> SearchCommentAsync(string keyword)
+        {
+            var comments = await _commentRepository.SearchCommentAsync(keyword);
+            var commentDTOs = new List<CommentDTO>();
+            if (comments != null)
+                foreach (var comment in comments)
+                {
+                    if (comment != null)
+                        commentDTOs.Add(MapToCommentDTO(comment));
+                }
+            return commentDTOs;
+        }
 
-        //     UpdateComment(comment, commentUpdateDto);
-        //     await _commentRepository.UpdateCommentAsync(comment);
-        //     return true;
-        // }
+        public async Task<bool> UpdateCommentAsync(CommentUpdateDTO commentUpdateDto)
+        {
+            var comment = await _commentRepository.GetCommentByIdAsync(commentUpdateDto.CommentId)
+            ?? throw new KeyNotFoundException("Comment not found");
+            comment.Content = commentUpdateDto.Content;
+            await _commentRepository.UpdateCommentAsync(comment);
+            return true;
+        }
 
-    
+        public async Task VoteAsync(long commentId, string user)
+        {
+            var comment = await _commentRepository.GetCommentByIdAsync(commentId)
+             ?? throw new KeyNotFoundException("Comment not found");
+            var User = await _userManager.FindByNameAsync(user)
+             ?? throw new KeyNotFoundException("User not found");
+            var existingVote = comment.Votes.FirstOrDefault(v => v.Voter == User);
+            if (existingVote != null)
+            {
+                comment.Votes.Remove(existingVote);
+            }
+            else
+            {
+                var vote = new Vote { Voter = User, Comment = comment };
+                comment.Votes.Add(vote);
+            }
+            await _commentRepository.UpdateCommentAsync(comment);
+        }
 
-        // private void UpdateComment(Comment comment, CommentDTO commentDTO)
-        // {
-        //     comment.Content = commentDTO.Content;
-        //     comment.IsDeleted = commentDTO.IsDeleted;
-        //     // Creater and Post shouldn't change
-        //     if (commentDTO.AttachmentId.HasValue)
-        //     {
-        //         comment.Attachment = new Attachment { Id = commentDTO.AttachmentId.Value };
-        //     }
-        //     else
-        //     {
-        //         comment.Attachment = null;
-        //     }
-
-        //     if (commentDTO.ReplyId.HasValue)
-        //     {
-        //         comment.ReplyTo = new Comment { Id = commentDTO.ReplyId.Value };
-        //     }
-        //     else
-        //     {
-        //         comment.ReplyTo = null;
-        //     }
-        // }
     }
 }

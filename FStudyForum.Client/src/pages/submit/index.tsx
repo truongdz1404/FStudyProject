@@ -9,14 +9,13 @@ import TopicService from "@/services/TopicService";
 import { AxiosError } from "axios";
 import { toast } from "react-toastify";
 import { Response } from "@/types/response";
-import Editor from "@/components/post/Editor";
 import ContentLayout from "@/components/layout/ContentLayout";
+import Editor from "@/components/post/Editor";
 
 const SubmitPage = () => {
   const [topic, setTopic] = React.useState<Topic | undefined>();
   const [selectedIndex, setSelectedIndex] = React.useState(-1);
   const [foundTopics, setFoundTopics] = React.useState<Topic[]>([]);
-  const [loading, setLoading] = React.useState(false);
   const searchRef = useOutsideClick(() => closeOpenSearch());
 
   const [openSearch, setOpenSearch] = React.useState(false);
@@ -132,22 +131,7 @@ const SubmitPage = () => {
         )}
       </div>
       <div className="my-4" />
-      <Editor
-        topicName={topic?.name}
-        onLoading={loading => setLoading(loading)}
-      />
-      <div className="flex items-center justify-end">
-        <Button
-          variant="gradient"
-          color="deep-orange"
-          type="submit"
-          className="mt-6 w-full lg:w-fit normal-case text-sm"
-          form="create-post-form"
-          disabled={topic?.name == undefined || loading}
-        >
-          Post
-        </Button>
-      </div>
+      <Editor topicName={topic?.name} />
     </ContentLayout>
   );
 };

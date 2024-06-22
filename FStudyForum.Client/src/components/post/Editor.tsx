@@ -1,21 +1,29 @@
-import { cn, colorThief } from "@/helpers/utils";
-import { FC } from "react";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-
-import TextareaAutosize from "react-textarea-autosize";
+import { cn } from "@/helpers/utils";
+import { FC } from "react";
 import { useForm } from "react-hook-form";
-import React from "react";
-import type EditorJS from "@editorjs/editorjs";
-import { storage } from "@/helpers/storage";
-import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import TextareaAutosize from "react-textarea-autosize";
 import { CircleAlert } from "lucide-react";
-import { Attachment } from "@/types/attachment";
+
+import { EditorContent, useEditor } from "@tiptap/react";
+import Bold from "@tiptap/extension-bold";
+import Document from "@tiptap/extension-document";
+import Dropcursor from "@tiptap/extension-dropcursor";
+import Image from "@tiptap/extension-image";
+import Paragraph from "@tiptap/extension-paragraph";
+import Placeholder from "@tiptap/extension-placeholder";
+import Text from "@tiptap/extension-text";
+import Code from "@tiptap/extension-code";
+import FileInput, { FileWithURL } from "./FileInput";
+import React from "react";
+import { Button } from "@material-tailwind/react";
 import { CreatePost } from "@/types/post";
 import PostService from "@/services/PostService";
+import { useNavigate } from "react-router-dom";
+import { Attachment } from "@/types/attachment";
 import { AxiosError } from "axios";
 import { Response } from "@/types/response";
-import { useNavigate } from "react-router-dom";
 
 const validation = Yup.object({
   title: Yup.string()
@@ -23,17 +31,25 @@ const validation = Yup.object({
     .min(3, "Title must be longer than 3 characters")
     .max(128, "Title must be shorter than 128 characters")
 });
-
 interface PostCreationRequest {
   title: string;
   content?: string;
 }
-
 interface EditorProps {
   topicName: string | undefined;
-  onLoading: (loading: boolean) => void;
 }
-const Editor: FC<EditorProps> = ({ topicName, onLoading }) => {
+
+export interface FileInputContextType {
+  files: FileWithURL[];
+  setFiles: React.Dispatch<React.SetStateAction<FileWithURL[]>>;
+}
+
+export const FileInputContext = React.createContext<FileInputContextType>({
+  files: [],
+  setFiles: () => null
+});
+
+const Editor: FC<EditorProps> = ({ topicName }) => {
   const {
     register,
     handleSubmit,
@@ -44,195 +60,90 @@ const Editor: FC<EditorProps> = ({ topicName, onLoading }) => {
       title: ""
     }
   });
-  const editorRef = React.useRef<EditorJS>();
-  const [isMounted, setIsMounted] = React.useState(false);
-
-  const initializeEditor = React.useCallback(async () => {
-    const EditorJS = (await import("@editorjs/editorjs")).default;
-    const Header = (await import("@editorjs/header")).default;
-    const Embed = (await import("@editorjs/embed")).default;
-    const Table = (await import("@editorjs/table")).default;
-    const List = (await import("@editorjs/list")).default;
-    const Code = (await import("@editorjs/code")).default;
-    const LinkTool = (await import("@editorjs/link")).default;
-    const InlineCode = (await import("@editorjs/inline-code")).default;
-    const ImageTool = (await import("@editorjs/image")).default;
-
-    if (!editorRef.current) {
-      const editor = new EditorJS({
-        holder: "editor",
-
-        onReady: () => {
-          editorRef.current = editor;
-        },
-        placeholder: "Type here write your post...",
-        inlineToolbar: true,
-        data: {
-          blocks: []
-        },
-        tools: {
-          header: Header,
-          linkTool: {
-            class: LinkTool,
-            config: {
-              endpoint: `${import.meta.env.VITE_API_BASE_URL}/link`
-            }
-          },
-          image: {
-            class: ImageTool,
-            config: {
-              defaultElements: [
-                "caption",
-                "withBorder",
-                "stretched",
-                "withBackground"
-              ],
-              uploader: {
-                async uploadByFile(file: File) {
-                  const storageRef = ref(
-                    storage,
-                    `images/post${crypto.randomUUID()}`
-                  );
-                  const metadata = {
-                    contentType: "image/jpeg"
-                  };
-
-                  const uploadTask = uploadBytesResumable(
-                    storageRef,
-                    file,
-                    metadata
-                  );
-                  return new Promise((resolve, reject) => {
-                    uploadTask.on(
-                      "state_changed",
-                      () => {},
-                      error => {
-                        reject(error);
-                      },
-                      async () => {
-                        const downloadURL = await getDownloadURL(
-                          uploadTask.snapshot.ref
-                        );
-                        const color = await colorThief.getColor(file);
-                        const res = {
-                          success: 1,
-                          file: {
-                            url: downloadURL,
-                            ...color
-                          }
-                        };
-                        resolve(res);
-                      }
-                    );
-                  });
-                }
-              }
-            }
-          },
-          inlineCode: InlineCode,
-          embed: Embed,
-          table: Table,
-          list: List,
-          code: Code
-        }
-      });
+  const editor = useEditor({
+    extensions: [
+      Document,
+      Paragraph,
+      Text,
+      Image,
+      Dropcursor,
+      Bold,
+      Code,
+      Placeholder.configure({
+        placeholder: "Write something …",
+        emptyEditorClass:
+          "cursor-text before:content-[attr(data-placeholder)] before:absolute before:opacity-50 "
+      })
+    ],
+    content: "",
+    editorProps: {
+      attributes: {
+        class: "focus:outline-none  min-h-12"
+      }
     }
-  }, []);
-
-  React.useEffect(() => {
-    onLoading(false);
-  }, [onLoading]);
-
-  React.useEffect(() => {
-    if (typeof window !== "undefined") {
-      setIsMounted(true);
-    }
-  }, [isMounted]);
-
-  React.useEffect(() => {
-    const init = async () => {
-      await initializeEditor();
-      setTimeout(() => {
-        _titleRef.current?.focus();
-      }, 0);
-    };
-    if (isMounted) {
-      init();
-      return () => {
-        editorRef.current?.destroy();
-        editorRef.current = undefined;
-      };
-    }
-  }, [isMounted, initializeEditor]);
-
-  const _titleRef = React.useRef<HTMLTextAreaElement>(null);
-  const { ref: titleRef, ...rest } = register("title");
-  const [loading, setLoading] = React.useState(false);
+  });
+  const [files, setFiles] = React.useState<FileWithURL[]>([]);
   const [error, setError] = React.useState("");
+  const [loading, setLoading] = React.useState(false);
   const navigate = useNavigate();
 
   const handleCreate = async (data: PostCreationRequest) => {
-    setLoading(true);
-    onLoading(true);
     if (!topicName) {
-      console.error("Topic name is required");
+      setError("Topic name is required");
       return;
     }
-    const content = await editorRef.current?.save();
-    const attachments: Attachment[] = [];
-    if (content) {
-      content.blocks.forEach(block => {
-        if (block.type === "image") {
-          attachments.push({
-            type: block.type,
-            url: block.data.file.url
-          });
-        }
-      });
+    if (!isFileLoaded) {
+      setError("Wait until the files are uploaded");
+      return;
     }
+    if (!editor) return;
+    const json = editor.getJSON();
+    setLoading(true);
 
     const payload: CreatePost = {
       title: data.title,
-      content: JSON.stringify(content),
+      content: JSON.stringify(json),
       topicName: topicName,
-      attachments
+      attachments: files.map<Attachment>(file => {
+        return {
+          type: file.data.type,
+          url: file.get!
+        };
+      })
     };
+
     try {
       const createPost = await PostService.createPost(payload);
-      navigate(`/topic/${topicName}/comments/${createPost.id}`, {
-        state: { data: createPost }
-      });
+      files.map(file => URL.revokeObjectURL(file.preview));
+      navigate(`/topic/${topicName}/comments/${createPost.id}`);
     } catch (e) {
       const error = e as AxiosError;
       setError((error?.response?.data as Response)?.message || error.message);
     } finally {
       setLoading(false);
-      onLoading(false);
     }
+
+    setLoading(false);
   };
 
-  if (!isMounted) return null;
+  const isFileLoaded = files.every(file => file.get);
+  if (!editor) return null;
+
   return (
     <>
-      <div className="w-full p-4 pt-2 bg-zinc-50 rounded-lg shadow-sm border border-zinc-200 text-blue-gray-700">
+      <FileInputContext.Provider value={{ files, setFiles }}>
         <form
           id="create-post-form"
-          className="w-full"
+          className="w-full p-4 pt-2 bg-zinc-50 rounded-lg shadow-sm border border-zinc-200 text-blue-gray-700"
           onSubmit={handleSubmit(handleCreate)}
         >
           <TextareaAutosize
-            ref={e => {
-              titleRef(e);
-              //@ts-expect-error i dont know
-              _titleRef.current = e;
-            }}
             placeholder="Title"
             className={cn(
               "w-full  resize-none appearance-none overflow-hidden bg-transparent",
               "text-md focus:outline-none font-semibold"
             )}
-            disabled={loading}
-            {...rest}
+            {...register("title")}
           />
           {errors.title && (
             <span
@@ -244,14 +155,26 @@ const Editor: FC<EditorProps> = ({ topicName, onLoading }) => {
             </span>
           )}
           <hr className="border-b" />
-
-          <div id="editor" className="min-h-80 text-sm md:px-12" />
+          <EditorContent editor={editor} className="text-sm my-2" />
+          <FileInput />
+          {error && (
+            <span className="flex items-center tracking-wide text-xs text-red-500 mt-1 ml-1 gap-x-1 ">
+              <CircleAlert className="w-3 h-3" /> {error}
+            </span>
+          )}
         </form>
-        {error && (
-          <span className="flex items-center tracking-wide text-xs text-red-500 mt-1 ml-1 gap-x-1">
-            <CircleAlert className="w-3 h-3" /> {error}
-          </span>
-        )}
+      </FileInputContext.Provider>
+      <div className="flex items-center justify-end">
+        <Button
+          variant="gradient"
+          color="deep-orange"
+          type="submit"
+          className="mt-6 w-full lg:w-fit normal-case text-sm"
+          form="create-post-form"
+          disabled={topicName == undefined || loading || !isFileLoaded}
+        >
+          Post
+        </Button>
       </div>
     </>
   );
