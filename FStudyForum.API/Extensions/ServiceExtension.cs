@@ -19,6 +19,7 @@ public static class ServiceExtension
         services.AddScoped<ITopicService, TopicService>();
         services.AddScoped<IPostService, PostService>();
         services.AddScoped<IVoteService, VoteService>();
+        services.AddScoped<ICommentService, CommentService>();
         #endregion
 
         #region Repositories
@@ -29,6 +30,7 @@ public static class ServiceExtension
         services.AddTransient<IPostRepository, PostRepository>();
         services.AddTransient<IVoteRepository, VoteRepository>();
         services.AddTransient<ICategoryRepository, CategoryRepository>();
+        services.AddTransient<ICommentRepository, CommentRepository>();
 
         #endregion
 
