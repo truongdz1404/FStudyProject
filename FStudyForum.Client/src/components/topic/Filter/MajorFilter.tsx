@@ -1,5 +1,5 @@
 import React from "react"
-import Filter from "@/components/topic/filter/Filter"
+import Filter from "@/components/topic/Filter/Filter"
 
 interface MajorFilterProps {
   onSelect: (selectedValue: string) => void

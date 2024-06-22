@@ -1,9 +1,8 @@
-import AddTopicPopup from "@/components/topic/popup/AddTopicPopup";
-//import DeleteTopicPopup from "@/components/topic/popup/DeleteTopicPopup";
-//import UpdateTopicPopup from "@/components/topic/popup/UpdateTopicPopup";
+import AddCategoryPopup from "@/components/category/Add";
+import DeleteCategoryPopup from "@/components/category/Delete";
+import UpdateCategoryPopup from "@/components/category/Update";
 import { cn } from "@/helpers/utils";
-//import TopicService from "@/services/TopicService";
-//import { Topic } from "@/types/topic";
+import { Category} from "@/types/category";
 import { useQuery } from "@tanstack/react-query";
 import {
   Card,
@@ -11,15 +10,15 @@ import {
   Typography,
   Button,
   CardBody,
-  // Chip,
-  //   CardFooter,
-  //IconButton,
-  //Tooltip
+  //Chip,
+  CardFooter,
+  IconButton,
+  Tooltip
 } from "@material-tailwind/react";
 import { ChevronsUpDown, 
-  //Pencil, 
+  Pencil, 
   Plus, 
-  //Trash 
+  Trash 
   } from "lucide-react";
 import React from "react";
 import CategoryService from "@/services/CategoryService";
@@ -31,44 +30,43 @@ const TopicsPage = () => {
     setPopupOpen(1);
   };
 
-  // const openEditPopup = (topic: Topic) => {
-  //   setSelectTopic(topic);
-  //   setPopupOpen(2);
-  // };
+  const openEditPopup = (category: Category) => {
+    setSelectCategory(category);
+    setPopupOpen(2);
+  };
 
-  // const openDeletePopup = (topic: Topic) => {
-  //   setSelectTopic(topic);
-  //   setPopupOpen(3);
-  // };
+  const openDeletePopup = (category: Category) => {
+    setSelectCategory(category);
+    setPopupOpen(3);
+  };
   const closePopup = () => {
     setPopupOpen(0);
   };
 
-  const reloadTopics = () => {
+  const reloadCategory = () => {
     // setReload(true);
   };
 
-  // const handleDelete = async () => {
-  //   if (!selectTopic) return;
-  //   try {
-  //     await TopicService.deleteTopic(selectTopic.name);
-  //     closePopup();
-  //     reloadTopics();
-  //   } catch (error) {
-  //     console.error("Error deleting topic:", error);
-  //   }
-  // };
+  const handleDelete = async () => {
+    if (!selectCategory) return;
+    try {
+      await CategoryService.deleteCategory(selectCategory.name);
+      closePopup();
+      reloadCategory();
+    } catch (error) {
+      console.error("Error deleting category:", error);
+    }
+  };
 
-  // const [selectTopic, setSelectTopic] = React.useState<Topic | undefined>(
-  //   undefined
-  // );
+  const [selectCategory, setSelectCategory] = React.useState<Category | undefined>(
+    undefined
+  );
   const [popupOpen, setPopupOpen] = React.useState(0);
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["categories"],
-    queryFn: CategoryService.getAllCategory
+   const { data, isLoading } = useQuery({
+     queryKey: ["categories"],
+     queryFn: CategoryService.getAllCategory
   });
-
   return (
     <>
       <Card className="h-full w-full">
@@ -161,42 +159,34 @@ const TopicsPage = () => {
                         </div>
                       </div>
                     </td>
-                    {/* <td className={classes}>
-                      <div className="w-max">
-                        <Chip
-                          variant="ghost"
-                          size="sm"
-                          value={!topic.isDeleted ? "active" : "inactive"}
-                          color={!topic.isDeleted ? "green" : "blue-gray"}
-                        />
-                      </div>
-                    </td> */}
-                    {/* <td className={cn(classes)}>
-                      <Tooltip content="Edit topic">
+                    <td className={classes}>   
+                    </td>
+                    <td className={cn(classes)}>
+                      <Tooltip content="Edit category">
                         <IconButton
                           variant="text"
-                          onClick={() => openEditPopup(topic)}
+                          onClick={() => openEditPopup(categories)}
                         >
                           <Pencil className="h-4 w-4" />
                         </IconButton>
                       </Tooltip>
 
-                      <Tooltip content="Delete topic">
+                      <Tooltip content="Delete categories">
                         <IconButton
                           variant="text"
-                          onClick={() => openDeletePopup(topic)}
+                          onClick={() => openDeletePopup(categories)}
                         >
                           <Trash className="h-4 w-4 text-red-400" />
                         </IconButton>
                       </Tooltip>
-                    </td> */}
+                    </td>
                   </tr>
                 );
               })}
             </tbody>
           </table>
         </CardBody>
-        {/* <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
+        <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
           <Typography variant="small" color="blue-gray" className="font-normal">
             Page 1 of 10
           </Typography>
@@ -208,28 +198,28 @@ const TopicsPage = () => {
               Next
             </Button>
           </div>
-        </CardFooter> */}
+        </CardFooter>
       </Card>
       {popupOpen === 1 && (
-        <AddTopicPopup onClose={closePopup} onTopicCreated={reloadTopics} />
+        <AddCategoryPopup onClose={closePopup} onCategoryCreated={reloadCategory} />
       )}
 
-      {/* {popupOpen === 2 && selectTopic && (
-        <UpdateTopicPopup
+      {popupOpen === 2 && selectCategory && (
+        <UpdateCategoryPopup
           open={true}
-          topic={selectTopic}
+          category={selectCategory}
           onClose={closePopup}
-          onUpdate={reloadTopics}
+          onUpdate={reloadCategory}
         />
       )}
 
-      {popupOpen === 3 && selectTopic && (
-        <DeleteTopicPopup
-          open={true}
+      {popupOpen === 3 && selectCategory && (
+        <DeleteCategoryPopup
+          open ={true}
           onClose={closePopup}
           onDelete={handleDelete}
         />
-      )} */}
+      )}
     </>
   );
 };
