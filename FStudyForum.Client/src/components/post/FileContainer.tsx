@@ -2,19 +2,61 @@ import { Attachment } from "@/types/attachment";
 import { FC } from "react";
 import ImageWithLoading from "../ui/ImageWithLoading";
 import { Carousel } from "@material-tailwind/react";
+import React from "react";
+import { cn } from "@/helpers/utils";
+import useSize from "@react-hook/size";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import LightBox from "./LightBox";
 
 type Props = {
   files: Attachment[];
 };
 
-const FileContainer: FC<Props> = ({ files }) => {
-  if (files.length == 0) return null;
+const getSizeFromPath = (path: string): { width: number; height: number } => {
+  const regex = /attachment[^_]+_width(\d+)_height(\d+)/;
+  const match = path.match(regex);
 
+  if (match && match[1] && match[2]) {
+    return {
+      width: parseInt(match[1], 10),
+      height: parseInt(match[2], 10)
+    };
+  }
+  return {
+    width: 1,
+    height: 1
+  };
+};
+
+const getContainerHeight = (
+  attachments: Attachment[],
+  containerWidth: number
+): number => {
+  return Math.max(
+    ...attachments.map(a => {
+      const size = getSizeFromPath(a.url);
+
+      return (size.height / size.width) * containerWidth;
+    })
+  );
+};
+
+const FileContainer: FC<Props> = ({ files }) => {
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const [width] = useSize(containerRef);
+  const [open, setOpen] = React.useState(-1);
+
+  if (files.length == 0) return null;
+  const height = getContainerHeight(files, width);
   return (
-    <div className="action">
+    <div className="action" ref={containerRef}>
       {files.length == 1 ? (
         <div
-          className={`h-[28rem] w-full object-contain relative overflow-hidden rounded-md bg-black/10`}
+          style={{ height: height }}
+          className={cn(
+            "max-h-[16rem] md:max-h-[20rem] lg:max-h-[28rem] w-full object-contain relative overflow-hidden rounded-md "
+          )}
+          onClick={() => setOpen(0)}
         >
           <img
             src={files[0].url}
@@ -29,7 +71,7 @@ const FileContainer: FC<Props> = ({ files }) => {
       ) : (
         <Carousel
           navigation={({ setActiveIndex, activeIndex, length }) => (
-            <div className="absolute bottom-4 left-2/4 z-50 flex -translate-x-2/4 gap-2">
+            <div className="absolute bottom-4 left-2/4 z-50 flex -translate-x-2/4 gap-2 bg-blue-gray-900/50 p-1.5 rounded-lg">
               {new Array(length).fill("").map((_, i) => (
                 <span
                   key={i}
@@ -41,12 +83,48 @@ const FileContainer: FC<Props> = ({ files }) => {
               ))}
             </div>
           )}
-          className="overflow-hidden rounded-md"
+          prevArrow={({ handlePrev, firstIndex }) => (
+            <div
+              onClick={handlePrev}
+              className={cn(
+                "!absolute p-1.5 top-2/4 !left-4 -translate-y-2/4 rounded-full bg-gray-900/50 text-white/50 hover:text-white hover:bg-gray-900/80",
+                firstIndex && "!bg-transparent"
+              )}
+            >
+              <ChevronLeft
+                strokeWidth={3}
+                className={cn(
+                  "w-5 h-5 text-white",
+                  firstIndex && "text-transparent"
+                )}
+              />
+            </div>
+          )}
+          nextArrow={({ handleNext, lastIndex }) => (
+            <div
+              onClick={handleNext}
+              className={cn(
+                "!absolute p-1.5 top-2/4 !right-4 -translate-y-2/4 rounded-full bg-gray-900/50 text-white/50 hover:text-white hover:bg-gray-900/80",
+                lastIndex && "!bg-transparent"
+              )}
+            >
+              <ChevronRight
+                strokeWidth={3}
+                className={cn(
+                  "w-5 h-5 text-white",
+                  lastIndex && "text-transparent"
+                )}
+              />
+            </div>
+          )}
+          className="overflow-hidden rounded-md text-sm"
         >
           {files.map((file, index) => (
             <div
               key={index}
-              className="h-[28rem] object-contain relative overflow-hidden bg-black/10"
+              style={{ height: height }}
+              className="max-h-[16rem] md:max-h-[20rem] lg:max-h-[28rem] object-contain relative overflow-hidden "
+              onClick={() => setOpen(index)}
             >
               <img
                 src={file.url}
@@ -61,6 +139,12 @@ const FileContainer: FC<Props> = ({ files }) => {
           ))}
         </Carousel>
       )}
+      <LightBox
+        index={open}
+        hideArrow={files.length <= 1}
+        sliders={files.map(file => ({ src: file.url }))}
+        close={() => setOpen(-1)}
+      />
     </div>
   );
 };

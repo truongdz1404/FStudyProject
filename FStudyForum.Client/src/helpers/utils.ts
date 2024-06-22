@@ -38,12 +38,12 @@ export function validateFileType(file: File) {
   return ALLOWED_FILE_TYPES.includes(file.type);
 }
 
-export const colorThief = {
-  getColor
+export const ImageUtil = {
+  getInfo
 };
 
-function getColor(file: File): Promise<{
-  bgColor: string;
+function getInfo(file: File): Promise<{
+  colorThief: string;
   width: number;
   height: number;
 }> {
@@ -63,7 +63,7 @@ function getColor(file: File): Promise<{
         }
         const bgColor = `rgba(${bg[0]}, ${bg[1]}, ${bg[2]}, ${bg[3] / 255})`;
         resolve({
-          bgColor,
+          colorThief: bgColor,
           width: img.width,
           height: img.height
         });
