@@ -9,6 +9,7 @@ import { cn, formatElapsedTime } from "@/helpers/utils";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import React from "react";
 import EditorOutput from "./EditorOutput";
+import FileContainer from "./FileContainer";
 type PostProps = {
   data: Post;
   hideLess?: boolean;
@@ -35,6 +36,7 @@ const PostItem: FC<PostProps> = ({ data, hideLess = true }) => {
       });
     }
   };
+
   const pRef = React.useRef<HTMLDivElement>(null);
   return (
     <div
@@ -71,13 +73,8 @@ const PostItem: FC<PostProps> = ({ data, hideLess = true }) => {
         ref={pRef}
       >
         <p className="font-semibold text-blue-gray-900">{data.title}</p>
-        <EditorOutput content={data.content} />
-        {/* <div
-          className={cn(
-            "absolute bottom-0 left-0 h-24 w-full bg-gradient-to-t from-white to-transparent pointer-events-none",
-            !hideLess && "hidden"
-          )}
-        /> */}
+        <EditorOutput json={data.content} />
+        <FileContainer files={data.attachments} />
       </div>
       <div className="flex space-x-4 text-gray-700">
         <div className="action flex items-center rounded-full bg-blue-gray-50">
