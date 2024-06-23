@@ -65,15 +65,10 @@ const PostItem: FC<PostProps> = ({ data, hideLess = true }) => {
         </div>
         <MenuItemPost />
       </div>
-      <div
-        className={cn(
-          "my-2 flex flex-col gap-y-2 w-full",
-          hideLess && "max-h-[36rem] overflow-clip relative"
-        )}
-        ref={pRef}
-      >
+      <div className={cn("my-2 flex flex-col gap-y-2 w-full")} ref={pRef}>
         <p className="font-semibold text-blue-gray-900">{data.title}</p>
-        <EditorOutput json={data.content} />
+        <EditorOutput content={data.content} hide={hideLess} />
+
         <FileContainer files={data.attachments} />
       </div>
       <div className="flex space-x-4 text-gray-700">
