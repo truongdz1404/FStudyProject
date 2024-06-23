@@ -30,6 +30,9 @@ const Payment = () => {
         };
         fetchPaymentResponse();
       }, [location.search]);
+      if(error) {
+        return <div className="text-red-500">{error}</div>;
+      }
       if (paymentResponse != null) {
         return <Navigate to="/donate/success" state={{ paymentResponse }} />;
     }

@@ -11,7 +11,7 @@ import { ArrowLeft, Camera, CircleAlert } from "lucide-react";
 import { useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { useAuth } from "@/hooks/useAuth";
-import { PhoneRegExp } from "@/helpers/constants";
+import { PHONE_EXP } from "@/helpers/constants";
 import { AxiosError } from "axios";
 import { Response } from "@/types/response";
 import React from "react";
@@ -29,7 +29,7 @@ const validation = Yup.object({
     .oneOf([0, 1, 2], "Invalid gender")
     .required("Gender is required"),
   avatar: Yup.string(),
-  phone: Yup.string().matches(PhoneRegExp, "Phone number is not valid")
+  phone: Yup.string().matches(PHONE_EXP, "Phone number is not valid")
 });
 
 interface EditProfileInputs {
@@ -88,6 +88,7 @@ const ProfileSettings = () => {
     if (!event.target.files) return;
     const file = event.target.files[0];
     if (!file) return;
+
     setFile(file);
     setAvatar(URL.createObjectURL(file));
   };
@@ -148,7 +149,7 @@ const ProfileSettings = () => {
         <p className="text-md font-semibold flex gap-x-2 items-center">
           <Link
             to={`/profile/${user?.username}`}
-            className="rounded-full bg-blue-gray-50 hover:bg-blue-gray-100 p-2 lg:-ml-10"
+            className="rounded-full bg-blue-gray-50 hover:bg-blue-gray-100 p-2 -ml-10 hidden md:block"
           >
             <ArrowLeft className="w-4 h-4" />
           </Link>

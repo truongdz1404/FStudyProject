@@ -122,7 +122,7 @@ public class ApplicationDBContext(DbContextOptions options)
     public DbSet<Topic> Topics { get; set; }
     public DbSet<Post> Posts { get; set; }
     public DbSet<Report> Reports { get; set; }
-    public DbSet<Report> Comments { get; set; }
+    public DbSet<Comment> Comments { get; set; }
     public DbSet<Vote> Votes { get; set; }
     public DbSet<Attachment> Attachments { get; set; }
     public DbSet<Donation> Donations { get; set; }

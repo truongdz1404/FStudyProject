@@ -31,7 +31,8 @@ namespace FStudyForum.Infrastructure.Repositories
                 {
                     Type = attachmentDTO.Type,
                     FileUrl = attachmentDTO.Url,
-                    Post = post
+                    Post = post,
+                    CreatedAt = DateTime.Now
                 });
             }
             post.Attachments = attachments;
@@ -65,6 +66,20 @@ namespace FStudyForum.Infrastructure.Repositories
             await _dbContext.SavedPosts.AddAsync(savedPost);
             await _dbContext.SaveChangesAsync();
         }
+
+        public async Task<Post?> GetPostByIdAsync(long id)
+        {
+            return await _dbContext.Posts
+                .Where(p => p.IsDeleted == false)
+                .Include(p => p.Creater)
+                .Include(p => p.Topic)
+                .Include(p => p.Votes)
+                .Include(p => p.Attachments)
+                .Include(p => p.Comments)
+                .FirstOrDefaultAsync(p => p.Id == id);
+        }
+
+
         public async Task<IEnumerable<Post>> GetPostsAsync()
         {
             return await _dbContext.Posts
@@ -72,6 +87,7 @@ namespace FStudyForum.Infrastructure.Repositories
                 .Include(p => p.Creater)
                 .Include(p => p.Topic)
                 .Include(p => p.Votes)
+                .Include(p => p.Attachments)
                 .Include(p => p.Comments)
                 .Where(p => p.Topic.IsDeleted == false)
                 .ToListAsync();

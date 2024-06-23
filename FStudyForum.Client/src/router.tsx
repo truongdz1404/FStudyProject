@@ -1,6 +1,5 @@
 import { FC, Suspense, lazy } from "react";
 import { Navigate, Outlet, useRoutes } from "react-router-dom";
-
 import AuthGuard from "@/helpers/guards/AuthGuard";
 import NotFound from "@/components/NotFound";
 import Layout from "@/components/layout/Layout";
@@ -8,12 +7,11 @@ import BanUser from "./helpers/guards/BanUser";
 import WelcomeGuard from "@/helpers/guards/WelcomeGuard";
 import AuthLayout from "@/components/layout/AuthLayout";
 import RoleBasedGuard from "@/helpers/guards/RoleBasedGuard";
-import { Role } from "@/helpers/constants";
 import Donate from "./pages/donate";
 import Payment from "./pages/donate/payment";
 import Notification from "./pages/donate/notification";
-import PostDetail from "./pages/post/detail";
 import SavePost from "./pages/post/save";
+import { ROLE } from "@/helpers/constants";
 
 const Popular = lazy(() => import("@/pages/popular"));
 const Memebers = lazy(() => import("@/pages/manager/members"));
@@ -23,8 +21,8 @@ const ConfirmEmail = lazy(() => import("@/pages/auth/confirm-email"));
 const ChangePassword = lazy(
   () => import("@/pages/auth/reset-password/change-password")
 );
-
 const SubmitPage = lazy(() => import("@/pages/submit"));
+const Comments = lazy(() => import("@/pages/topic/comments"));
 const TopcicManager = lazy(() => import("@/pages/manager/topics"));
 const ResetPassword = lazy(() => import("@/pages/auth/reset-password"));
 const Profile = lazy(() => import("@/pages/profile"));
@@ -111,7 +109,7 @@ const Router: FC = () => {
         {
           path: "manager",
           element: (
-            <RoleBasedGuard accessibleRoles={[Role.Admin]}>
+            <RoleBasedGuard accessibleRoles={[ROLE.Admin]}>
               <Outlet />
             </RoleBasedGuard>
           ),
@@ -165,6 +163,16 @@ const Router: FC = () => {
               element: (
                 <Suspense>
                   <>Topic submit</>
+                </Suspense>
+              )
+            },
+            {
+              path: "comments/:id",
+              element: (
+                <Suspense>
+                  <BanUser>
+                    <Comments />
+                  </BanUser>
                 </Suspense>
               )
             }
@@ -287,16 +295,6 @@ const Router: FC = () => {
           )
         }
       ]
-    },
-    {
-      path: "post/:id",
-      element: (
-        <Suspense>
-          <BanUser>
-            <PostDetail />
-          </BanUser>
-        </Suspense>
-      )
     },
     {
       path: "*",

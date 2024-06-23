@@ -53,17 +53,17 @@ const BanUser: FC<PropsWithChildren> = ({ children }) => {
                 const yearsDiff = Math.floor(monthsDiff / 12);
                 const minutesDiff = Math.floor(timeDiff / (1000 * 60));
                 if (secondsDiff < 60) {
-                  setTimeDiff(`${secondsDiff} giây`);
+                  setTimeDiff(`${secondsDiff} second`);
                 } else if (minutesDiff < 60) {
-                  setTimeDiff(`${minutesDiff} phút`);
+                  setTimeDiff(`${minutesDiff} minute`);
                 } else if (hoursDiff < 24) {
-                  setTimeDiff(`${hoursDiff} giờ`);
+                  setTimeDiff(`${hoursDiff} hour`);
                 } else if (daysDiff < 30) {
-                  setTimeDiff(`${daysDiff} ngày`);
+                  setTimeDiff(`${daysDiff} day`);
                 } else if (monthsDiff < 12) {
-                  setTimeDiff(`${monthsDiff} tháng`);
+                  setTimeDiff(`${monthsDiff} month`);
                 } else {
-                  setTimeDiff(`${yearsDiff} năm`);
+                  setTimeDiff(`${yearsDiff} year`);
                 }
               }
             } else {
@@ -83,7 +83,7 @@ const BanUser: FC<PropsWithChildren> = ({ children }) => {
     return <Alert color="red">{error}</Alert>;
   }
   if (timeDiff) {
-    return <Alert color="red">Bạn cần {timeDiff} để mở khóa</Alert>;
+    return <Alert color="red">You need {timeDiff} to unlock</Alert>;
   }
 
   if (!loading) return <>{children}</>;

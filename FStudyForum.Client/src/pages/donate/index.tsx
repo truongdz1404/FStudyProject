@@ -9,10 +9,8 @@ import { AxiosError } from "axios";
 import { Response } from "@/types/response";
 import React from "react";
 import PaymentService from "@/services/PaymentService";
-import { PaymentResponse } from "@/types/donate";
 import { useLocation } from 'react-router-dom';
 const validation = Yup.object({
-  fullName: Yup.string().required("Full Name is required"),
   description: Yup.string().required("Description is required"),
   amount: Yup.number()
     .required("Amount is required")
@@ -20,7 +18,6 @@ const validation = Yup.object({
 });
 
 interface DonateInputs {
-  fullName: string;
   description: string;
   amount: number;
 }
@@ -29,7 +26,6 @@ const Donate = () => {
   const { user } = useAuth();
   const [error, setError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
-  const [paymentResponse, setPaymentResponse] = React.useState<PaymentResponse | null>(null);
   const location = useLocation();
   const {
     register,
@@ -51,7 +47,7 @@ const Donate = () => {
       try {
         const response = await PaymentService.generatePaymentUrl({
           username: user.username,
-          fullname: form.fullName,
+          fullname: `${user.firstName} ${user.lastName}`,
           description: form.description,
           amount: form.amount
         });
@@ -75,8 +71,7 @@ const Donate = () => {
             username: user?.username || '',
             amount: response.amount || 0,
             message: response.orderDescription || ''
-          })
-          setPaymentResponse(response);         
+          })       
         } catch (e) {
           const error = e as AxiosError;
           setError((error?.response?.data as { message: string })?.message || error.message);
@@ -88,40 +83,7 @@ const Donate = () => {
   return (
     <>
       <form onSubmit={handleSubmit(handleDonate)} className="mt-2">
-        <div className="flex xl:justify-between xl:flex-row flex-col gap-y-4 xl:gap-x-4">
-          <div className="w-full xl:w-1/2">
-            <label
-              htmlFor="firstName"
-              className="block text-gray-700 text-sm m-1"
-            >
-              Full Name
-            </label>
-            <Input
-              id="firstName"
-              type="text"
-              placeholder="ex: Bùi Đức Trọng"
-              className={cn(
-                "!border !border-gray-300 bg-white text-gray-900 shadow-xl shadow-gray-900/5 ring-4 ring-transparent placeholder:opacity-100",
-                " focus:!border-gray-900 focus:!border-t-gray-900 focus:ring-gray-900/10  placeholder:text-gray-500 !min-w-[100px]",
-                Boolean(errors.fullName?.message) &&
-                  "focus:!border-red-600 focus:!border-t-red-600 focus:ring-red-600/10 !border-red-500  placeholder:text-red-500"
-              )}
-              containerProps={{ className: "min-w-full" }}
-              labelProps={{ className: "hidden" }}
-              crossOrigin={undefined}
-              disabled={loading}
-              {...register("fullName")}
-            />
-            {errors.fullName && (
-              <span
-                className={cn(
-                  "text-red-500 text-xs mt-1 ml-1 flex gap-x-1 items-center"
-                )}
-              >
-                <CircleAlert className="w-3 h-3" /> {errors.fullName.message}
-              </span>
-            )}
-          </div>
+        <div className="flex xl:justify-between xl:flex-row flex-col gap-y-4 xl:gap-x-4">        
         </div>
         <div className="w-full mt-6">
           <label htmlFor="phone" className="block text-gray-700 text-sm m-1">

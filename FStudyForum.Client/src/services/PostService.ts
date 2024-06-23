@@ -8,13 +8,19 @@ const getPosts = async () => {
   return response.data.data;
 };
 const createPost = async (post: CreatePost) => {
-  const response = await api.post<ResponseWith<Post[]>>("/post/create", post);
+  const response = await api.post<ResponseWith<Post>>("/post/create", post);
+  return response.data.data;
+};
+
+const getPostById = async (id: string) => {
+  const response = await api.get<ResponseWith<Post>>(`/post?id=${id}`);
   return response.data.data;
 };
 const PostService = {
 
   getPosts,
-  createPost
+  createPost,
+  getPostById
 };
 
 export default PostService;

@@ -2,7 +2,8 @@ import PostService from "@/services/PostService";
 import ContentLayout from "@/components/layout/ContentLayout";
 import PostItem from "@/components/post/PostItem";
 import { useQuery } from "@tanstack/react-query";
-import { Alert, Spinner } from "@material-tailwind/react";
+import { Alert } from "@material-tailwind/react";
+
 const HomePage: React.FC = () => {
   const {
     data: posts,
@@ -18,12 +19,14 @@ const HomePage: React.FC = () => {
         Can't fetch posts
       </Alert>
     );
-  if (isLoading) return <Spinner className="mx-auto" />;
+  if (isLoading) return <></>;
   return (
     <ContentLayout>
       {posts?.map((post, index) => (
         <div key={index}>
-          <PostItem key={index} data={post} />
+          <div className="hover:bg-gray-50 rounded-lg z-10">
+            <PostItem key={index} data={post} />
+          </div>
           <hr className="my-1 border-blue-gray-50" />
         </div>
       ))}

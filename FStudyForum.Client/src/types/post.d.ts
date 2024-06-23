@@ -8,6 +8,7 @@ export interface Post {
   commentCount: number;
   elapsed: string;
   author: string;
+  attachments: Attachment[];
 }
 export interface CreatePost {
   title: string;
