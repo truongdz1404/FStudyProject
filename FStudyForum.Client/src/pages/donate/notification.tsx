@@ -4,7 +4,6 @@ import {
   Card
 } from "@material-tailwind/react";
 import { Link, useLocation } from "react-router-dom";
-
 const Notification = () => {
   const location = useLocation();
   const { paymentResponse } = location.state || {};
@@ -13,7 +12,10 @@ const Notification = () => {
       <div>
         {paymentResponse ? (
           <div>
-            <Alert color="green">Payment Success.</Alert>
+            <img
+              src="../../../../assets/images/donate.jpg"
+              alt="payment"
+              className="w-20 h-20 mx-auto" />
           </div>
         ) : (
           <Alert color="red">No payment data available.</Alert>

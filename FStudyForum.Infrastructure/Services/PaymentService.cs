@@ -24,7 +24,7 @@ namespace FStudyForum.Infrastructure.Services
             _mapper = mapper;
             _userManager = userManager;
         }
-        public Task<string?> GeneratePaymentUrlAsync(VNPayPayment paymentData, HttpContext context)
+        public Task<string> GeneratePaymentUrlAsync(VNPayPayment paymentData, HttpContext context)
         {
             var tick = DateTime.Now.Ticks.ToString();
             var vnpay = new PaymentHepler();
@@ -68,12 +68,16 @@ namespace FStudyForum.Infrastructure.Services
 
             var vnp_orderId = Convert.ToInt64(vnpay.GetResponseData("vnp_TxnRef"));
             var vnp_TransactionId = Convert.ToInt64(vnpay.GetResponseData("vnp_TransactionNo"));
-            var vnp_SecureHash = collections.FirstOrDefault(p => p.Key == "vnp_SecureHash").Value;
+            var  vnp_SecureHash = collections?.FirstOrDefault(p => p.Key == "vnp_SecureHash").Value;
+          
             var vnp_ResponseCode = vnpay.GetResponseData("vnp_ResponseCode");
             var vnp_OrderInfo = vnpay.GetResponseData("vnp_OrderInfo");
             var vnp_Amount = Convert.ToDecimal(vnpay.GetResponseData("vnp_Amount")) / 100;
-            bool checkSignature = vnpay.ValidateSignature(vnp_SecureHash, _configuration["VnPay:HashSecret"]
+            #pragma warning disable CS8604 
+            bool checkSignature = vnpay.ValidateSignature(vnp_SecureHash , _configuration["VnPay:HashSecret"]
+                ?? throw new Exception("HashSecret not valid.")
                );
+           
             if (!checkSignature)
             {
                 return Task.FromResult(new VnPaymentResponse
@@ -81,7 +85,7 @@ namespace FStudyForum.Infrastructure.Services
                     Success = false
                 });
             }
-
+            #pragma warning disable CS8601 
             return Task.FromResult(new VnPaymentResponse
             {
                 Success = true,
@@ -93,6 +97,7 @@ namespace FStudyForum.Infrastructure.Services
                 VnPayResponseCode = vnp_ResponseCode,
                  Amount = vnp_Amount
             });
+            #pragma warning restore CS8601 
         }
         public async Task<DonationDTO> SaveUserDonate(DonationDTO donationDTO)
         {

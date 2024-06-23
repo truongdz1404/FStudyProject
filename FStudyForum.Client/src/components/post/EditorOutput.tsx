@@ -18,9 +18,11 @@ const renderers = {
   embed: CustomEmbedOutput
 };
 const EditorOutput: FC<Props> = ({ content }) => {
+  console.log(content);
+  
   return (
     <Output
-      // data={JSON.parse(content) as OutputData}
+      //data={JSON.parse(content) as OutputData}
       style={style}
       className="text-sm"
       renderers={renderers}

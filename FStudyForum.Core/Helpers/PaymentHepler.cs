@@ -146,7 +146,9 @@ namespace FStudyForum.Core.Helpers
 
     public class VnPayCompare : IComparer<string>
     {
+        #pragma warning disable CS8767 
         public int Compare(string x, string y)
+        #pragma warning restore CS8767 
         {
             if (x == y) return 0;
             if (x == null) return -1;

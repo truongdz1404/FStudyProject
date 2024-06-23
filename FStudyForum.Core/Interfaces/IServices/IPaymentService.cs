@@ -7,7 +7,7 @@ namespace FStudyForum.Core.Interfaces.IServices
 {
     public interface IPaymentService
     {
-        Task<string?> GeneratePaymentUrlAsync(VNPayPayment paymentData, HttpContext context);
+        Task<string> GeneratePaymentUrlAsync(VNPayPayment paymentData, HttpContext context);
        
         Task<VnPaymentResponse> PaymentResponse(IQueryCollection collections);
         Task<DonationDTO> SaveUserDonate(DonationDTO donationDTO);

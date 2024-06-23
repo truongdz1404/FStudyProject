@@ -37,7 +37,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddControllersWithViews()
             .AddNewtonsoftJson(options =>
             {
-                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore; // Đảm bảo không bị vòng tròn
+                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore; 
             });
 builder.Services.AddHttpClient();
 builder.Services.AddAutoMapper(typeof(MapperProfile));
