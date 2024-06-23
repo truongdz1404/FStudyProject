@@ -8,8 +8,8 @@ import {
 } from "@material-tailwind/react";
 import { Link } from "react-router-dom";
 import type { Topic as TopicType } from "@/types/topic";
-import UpdateTopicPopup from "@/components/topic/popup/UpdateTopicPopup";
-import DeleteTopicPopup from "@/components/topic/popup/DeleteTopicPopup";
+import UpdateTopicPopup from "@/components/topic/Popup/UpdateTopicPopup";
+import DeleteTopicPopup from "@/components/topic/Popup/DeleteTopicPopup";
 import TopicService from "@/services/TopicService";
 import { Pencil, Trash } from "lucide-react";
 
