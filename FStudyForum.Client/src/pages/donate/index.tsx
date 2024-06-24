@@ -51,7 +51,7 @@ const Donate = () => {
           description: form.description,
           amount: form.amount
         });
-        window.location.href = response.data + "";
+        window.location.href = `${response.data}`;
       } catch (e) {
         const error = e as AxiosError;
         setError((error?.response?.data as Response)?.message || error.message);

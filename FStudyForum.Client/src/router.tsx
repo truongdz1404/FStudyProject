@@ -147,14 +147,17 @@ const Router: FC = () => {
         },
         {
           path: "topic/:name",
+          element: (
+            <BanUser>
+              <Outlet />
+            </BanUser>
+          ),
           children: [
             {
               index: true,
               element: (
                 <Suspense>
-                  <BanUser>
-                    <TopicDetail />
-                  </BanUser>
+                  <TopicDetail />
                 </Suspense>
               )
             },
@@ -170,9 +173,7 @@ const Router: FC = () => {
               path: "comments/:id",
               element: (
                 <Suspense>
-                  <BanUser>
-                    <Comments />
-                  </BanUser>
+                  <Comments />
                 </Suspense>
               )
             }
