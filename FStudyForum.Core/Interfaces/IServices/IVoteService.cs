@@ -1,14 +1,12 @@
-﻿using FStudyForum.Core.Models.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FStudyForum.Core.Models.DTOs.Vote;
+using FStudyForum.Core.Models.Entities;
+
 
 namespace FStudyForum.Core.Interfaces.IServices
 {
     public interface IVoteService
     {
         public Task<IEnumerable<Vote>> GetVotes();
+        public Task<int> VotePost(string userName, VoteDTO voteDTO);
     }
 }

@@ -7,9 +7,11 @@ import { cn } from "@/helpers/utils";
 import useSize from "@react-hook/size";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import LightBox from "./LightBox";
+// import BoxComment from "../comment/BoxComment";
 
 type Props = {
   files: Attachment[];
+  onClick: (id?: number) => void;
 };
 
 const getSizeFromPath = (path: string): { width: number; height: number } => {
@@ -35,19 +37,21 @@ const getContainerHeight = (
   return Math.max(
     ...attachments.map(a => {
       const size = getSizeFromPath(a.url);
-
       return (size.height / size.width) * containerWidth;
     })
   );
 };
 
-const FileContainer: FC<Props> = ({ files }) => {
+const FileContainer: FC<Props> = ({ files, onClick }) => {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [width] = useSize(containerRef);
   const [open, setOpen] = React.useState(-1);
-
   if (files.length == 0) return null;
   const height = getContainerHeight(files, width);
+  const handleViewDetail = (index?: number, id?: number) => {
+    onClick(id);
+    setOpen(index ?? 0);
+  };
   return (
     <div className="action" ref={containerRef}>
       {files.length == 1 ? (
@@ -56,7 +60,7 @@ const FileContainer: FC<Props> = ({ files }) => {
           className={cn(
             "max-h-[16rem] md:max-h-[20rem] lg:max-h-[28rem] w-full object-contain relative overflow-hidden rounded-md "
           )}
-          onClick={() => setOpen(0)}
+          onClick={() => handleViewDetail()}
         >
           <img
             src={files[0].url}
@@ -124,7 +128,7 @@ const FileContainer: FC<Props> = ({ files }) => {
               key={index}
               style={{ height: height }}
               className="max-h-[16rem] md:max-h-[20rem] lg:max-h-[28rem] object-contain relative overflow-hidden "
-              onClick={() => setOpen(index)}
+              onClick={() => handleViewDetail(index, file.id)}
             >
               <img
                 src={file.url}
@@ -145,6 +149,7 @@ const FileContainer: FC<Props> = ({ files }) => {
         sliders={files.map(file => ({ src: file.url }))}
         close={() => setOpen(-1)}
       />
+      {/* <BoxComment id={open} /> */}
     </div>
   );
 };

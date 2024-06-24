@@ -22,13 +22,15 @@ interface Props {
 const EditorOutput: FC<Props> = ({ content, className, hide }) => {
   return (
     <div className={cn(className, hide && "max-h-16 overflow-hidden relative")}>
-      <div className={cn("text-sm")}>
+      <div className={cn("text-sm w-full")}>
         {parse(
           generateHTML(JSON.parse(content) as JSONContent, [
             Document,
             Dropcursor,
             Image,
-            Paragraph,
+            Paragraph.configure({
+              HTMLAttributes: { className: "break-words" }
+            }),
             Text,
             Bold,
             Placeholder,

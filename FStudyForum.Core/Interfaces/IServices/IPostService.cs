@@ -5,8 +5,8 @@ namespace FStudyForum.Core.Interfaces.IServices
 {
     public interface IPostService
     {
-        Task<IEnumerable<PostDTO>> GetPosts();
-        Task<PostDTO> GetPostById(long id);
+        Task<IEnumerable<PostDTO>> GetAll(string username, QueryPostDTO query);
+        Task<PostDTO> GetPostById(long id, string username);
         Task<PostDTO> CreatePost(CreatePostDTO postDTO);
     }
 }

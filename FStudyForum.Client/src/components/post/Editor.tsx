@@ -113,7 +113,7 @@ const Editor: FC<EditorProps> = ({ topicName }) => {
     };
 
     try {
-      const createPost = await PostService.createPost(payload);
+      const createPost = await PostService.create(payload);
       files.map(file => URL.revokeObjectURL(file.preview));
       navigate(`/topic/${topicName}/comments/${createPost.id}`);
     } catch (e) {

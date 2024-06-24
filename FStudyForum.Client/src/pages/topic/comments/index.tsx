@@ -35,7 +35,7 @@ const Comments: FC<Props> = () => {
     const fetchPost = async () => {
       setLoading(true);
       try {
-        const data = await PostService.getPostById(postId);
+        const data = await PostService.getById(postId);
         setPost(data);
       } catch (e) {
         const error = e as AxiosError;

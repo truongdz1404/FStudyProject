@@ -134,11 +134,16 @@ const Router: FC = () => {
             },
             {
               path: "comments/:id",
-              element: (
-                <Suspense>
-                  <Comments />
-                </Suspense>
-              )
+              children: [
+                {
+                  index: true,
+                  element: (
+                    <Suspense>
+                      <Comments />
+                    </Suspense>
+                  )
+                }
+              ]
             }
           ]
         },
