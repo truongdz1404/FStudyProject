@@ -1,6 +1,6 @@
-// src/components/TopicList.tsx
+
 import React, { useEffect, useState } from "react";
-import TopicCard from "@/components/topic/topic";
+import TopicCard from "@/components/topic/Topic";
 import TopicService from "@/services/TopicService";
 import { Topic as TopicType } from "@/types/topic";
 import { Spinner } from "@material-tailwind/react";
