@@ -21,7 +21,7 @@ namespace FStudyForum.API.Controllers
         }
 
 
-        [HttpGet("active-all"), Authorize]
+        [HttpGet("active-all")]
         public async Task<IActionResult> GetAllActiveTopics()
         {
             var activeTopics = await _topicService.GetActiveTopics();
@@ -54,13 +54,12 @@ namespace FStudyForum.API.Controllers
             });
         }
 
-        [HttpPost("create"), Authorize(Roles = UserRole.Admin)]
+        [HttpPost("create")]
         public async Task<IActionResult> CreateTopic([FromBody] CreateTopicDTO topicDto)
         {
             var createdTopic = await _topicService.CreateTopic(topicDto);
-            return CreatedAtAction(nameof(GetTopicByName), new { id = createdTopic.Id }, createdTopic);
+            return CreatedAtAction(nameof(GetTopicByName), new { name = createdTopic.Name }, createdTopic);
         }
-
         [HttpGet("{name}")]
         public async Task<IActionResult> GetTopicByName(string name)
         {
@@ -74,7 +73,7 @@ namespace FStudyForum.API.Controllers
                 return NotFound(ex.Message);
             }
         }
-        [HttpPut("update/{name}"), Authorize(Roles = UserRole.Admin)]
+        [HttpPut("update/{name}")]
         public async Task<IActionResult> UpdateTopic(string name, [FromBody] UpdateTopicDTO topicDto)
         {
             try

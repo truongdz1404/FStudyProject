@@ -18,6 +18,7 @@ public static class ServiceExtension
         services.AddScoped<IIdentityService, IdentityService>();
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<ITopicService, TopicService>();
+        services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<IPostService, PostService>();
         services.AddScoped<IVoteService, VoteService>();
         services.AddScoped<ICommentService, CommentService>();

@@ -6,6 +6,7 @@ using FStudyForum.Core.Models.DTOs;
 using FStudyForum.Core.Models.DTOs.Post;
 using FStudyForum.Core.Models.DTOs.SavePost;
 using FStudyForum.Core.Models.DTOs.Donation;
+using FStudyForum.Core.Models.DTOs.Category;
 namespace FStudyForum.API.Mapper;
 
 public class MapperProfile : AutoMapper.Profile
@@ -21,5 +22,6 @@ public class MapperProfile : AutoMapper.Profile
         CreateMap<Post, PostDTO>().ReverseMap();
         CreateMap<SavedPost, SavePostDTO>().ReverseMap();
         CreateMap<Donation, DonationDTO>().ReverseMap();
+        CreateMap<Category, CategoryDTO>().ReverseMap();
     }
 }

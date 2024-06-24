@@ -12,6 +12,7 @@ import {
 } from "@material-tailwind/react";
 import {
   Album,
+  Layers3,
   AreaChart,
   BookUser,
   ChevronDown,
@@ -77,6 +78,11 @@ const sidebarListItems = [
             label: "Topics",
             icon: Album,
             path: "/manager/topics"
+          },
+          {
+            label: "Categories",
+            icon: Layers3,
+            path: "/manager/categories"
           }
         ]
       }

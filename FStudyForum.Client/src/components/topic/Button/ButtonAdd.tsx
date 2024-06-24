@@ -2,7 +2,7 @@ import React from "react"
 import { Button } from "@material-tailwind/react"
 
 interface AddButtonProps {
-  onClick: () => void // Định rõ kiểu dữ liệu cho onClick
+  onClick: () => void 
 }
 
 const AddButton: React.FC<AddButtonProps> = ({ onClick }) => {
