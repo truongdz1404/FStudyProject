@@ -16,12 +16,15 @@ const Payment = () => {
           if (query) {
             try {
               const response = await PaymentService.paymentResponse(query);
-              await PaymentService.saveUserDonate({
-                username: user?.username || '',
-                amount: response.amount || 0,
-                message: response.orderDescription || ''
-              })
-                setPaymentResponse(response);              
+              if(Number(response.vnPayResponseCode) !== 24) {
+                await PaymentService.saveUserDonate({
+                  username: user?.username || '',
+                  amount: response.amount || 0,
+                  message: response.orderDescription || ''
+                })
+                 
+              }  
+              setPaymentResponse(response);                         
             } catch (e) {
               const error = e as AxiosError;
               setError((error?.response?.data as { message: string })?.message || error.message);
@@ -33,8 +36,8 @@ const Payment = () => {
       if(error) {
         return <div className="text-red-500">{error}</div>;
       }
-      if (paymentResponse != null) {
-        return <Navigate to="/donate/success" state={{ paymentResponse }} />;
+      if (paymentResponse) {     
+       return <Navigate to="/donate/success" state={{ paymentResponse }} />;
     }
     return (
       <>
