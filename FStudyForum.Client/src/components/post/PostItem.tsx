@@ -10,11 +10,15 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import React from "react";
 import EditorOutput from "./EditorOutput";
 import FileContainer from "./FileContainer";
+import { VOTE_TYPE } from "@/helpers/constants";
+import VoteService from "@/services/VoteService";
 type PostProps = {
   data: Post;
   hideLess?: boolean;
 };
 const PostItem: FC<PostProps> = ({ data, hideLess = true }) => {
+  const [voteType, setVoteType] = React.useState(data.voteType);
+  const [voteCount, setVoteCount] = React.useState(data.voteCount);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const { pathname } = useLocation();
   const actionRefs = React.useRef<HTMLElement[]>([]);
@@ -35,6 +39,27 @@ const PostItem: FC<PostProps> = ({ data, hideLess = true }) => {
         state: { data, from: pathname }
       });
     }
+  };
+  const handleVote = async (type: number) => {
+    const realType = voteType === type ? VOTE_TYPE.UNVOTE : type;
+    setVoteType(realType);
+    setVoteCount(
+      data.voteCount +
+        (realType === VOTE_TYPE.UP ? 1 : realType === VOTE_TYPE.DOWN ? -1 : 0)
+    );
+    try {
+      const count = await VoteService.votePost(data.id, realType);
+      data.voteCount = count;
+      setVoteCount(count);
+    } catch (error) {
+      //Back to pre vote type and vote count
+      setVoteType(voteType);
+      setVoteCount(voteCount);
+    }
+  };
+
+  const handleAttachmentClick = (attachmentId?: number) => {
+    console.log(attachmentId);
   };
 
   const pRef = React.useRef<HTMLDivElement>(null);
@@ -63,32 +88,65 @@ const PostItem: FC<PostProps> = ({ data, hideLess = true }) => {
             {formatElapsedTime(data.elapsed)}
           </span>
         </div>
-        <MenuItemPost />
+        <MenuItemPost post={data} />
       </div>
-      <div
-        className={cn(
-          "my-2 flex flex-col gap-y-2 w-full",
-          hideLess && "max-h-[36rem] overflow-clip relative"
-        )}
-        ref={pRef}
-      >
+      <div className={cn("my-2 flex flex-col gap-y-2 w-full")} ref={pRef}>
         <p className="font-semibold text-blue-gray-900">{data.title}</p>
-        <EditorOutput json={data.content} />
-        <FileContainer files={data.attachments} />
+        <EditorOutput content={data.content} hide={hideLess} />
+
+        <FileContainer
+          onClick={handleAttachmentClick}
+          files={data.attachments}
+        />
       </div>
       <div className="flex space-x-4 text-gray-700">
-        <div className="action flex items-center rounded-full bg-blue-gray-50">
-          <div className="hover:bg-blue-gray-100/75 rounded-full p-[0.25rem] cursor-pointer">
+        <div
+          className={cn(
+            "action flex items-center rounded-full bg-blue-gray-50",
+            voteType !== VOTE_TYPE.UNVOTE &&
+              (voteType === VOTE_TYPE.UP ? "bg-red-400" : "bg-blue-400")
+          )}
+        >
+          <div
+            className="hover:bg-blue-gray-900/15 rounded-full p-[0.25rem] cursor-pointer"
+            onClick={() => handleVote(VOTE_TYPE.UP)}
+          >
             <ArrowBigUp
               strokeWidth={1.2}
-              className="w-6 h-6  hover:text-red-400"
+              fill={
+                voteType !== VOTE_TYPE.UNVOTE && voteType === VOTE_TYPE.UP
+                  ? "white"
+                  : "transparent"
+              }
+              className={cn(
+                "w-6 h-6  hover:text-red-400",
+                voteType !== VOTE_TYPE.UNVOTE && "text-white hover:text-white"
+              )}
             />
           </div>
-          <span className="text-xs font-medium">{data.voteCount}</span>
-          <div className="hover:bg-blue-gray-100/75 rounded-full p-[0.25rem] cursor-pointer">
+          <span
+            className={cn(
+              "text-xs font-medium",
+              voteType !== VOTE_TYPE.UNVOTE && "text-white"
+            )}
+          >
+            {voteCount}
+          </span>
+          <div
+            className="hover:bg-blue-gray-900/15  rounded-full p-[0.25rem] cursor-pointer"
+            onClick={() => handleVote(VOTE_TYPE.DOWN)}
+          >
             <ArrowBigDown
               strokeWidth={1.2}
-              className="w-6 h-6 hover:text-blue-400"
+              fill={
+                voteType !== VOTE_TYPE.UNVOTE && voteType === VOTE_TYPE.DOWN
+                  ? "white"
+                  : "transparent"
+              }
+              className={cn(
+                "w-6 h-6  hover:text-blue-400",
+                voteType !== VOTE_TYPE.UNVOTE && "text-white hover:text-white"
+              )}
             />
           </div>
         </div>

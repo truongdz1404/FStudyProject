@@ -19,7 +19,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
         _dbContext = dbContext;
     }
 
-    public async Task<IEnumerable<T>> GetAll()
+    public virtual async Task<IEnumerable<T>> GetAll()
     {
         var data = await _dbContext.Set<T>()
             .AsNoTracking()
@@ -39,14 +39,14 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
         return new PaginatedData<T>(data, totalCount);
     }
 
-    public async Task<T> GetById<Tid>(Tid id)
+    public virtual async Task<T> GetById<Tid>(Tid id)
     {
         var data = await _dbContext.Set<T>().FindAsync(id)
             ?? throw new NotFoundException("No data found");
         return data;
     }
 
-    public async Task<bool> IsExists<Tvalue>(string key, Tvalue value)
+    public virtual async Task<bool> IsExists<Tvalue>(string key, Tvalue value)
     {
         var parameter = Expression.Parameter(typeof(T), "x");
         var property = Expression.Property(parameter, key);
@@ -56,6 +56,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
 
         return await _dbContext.Set<T>().AnyAsync(lambda);
     }
+
 
     public async Task<bool> IsExistsForUpdate<Tid>(Tid id, string key, string value)
     {
@@ -71,26 +72,26 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
     }
 
 
-    public async Task<T> Create(T model)
+    public virtual async Task<T> Create(T model)
     {
         await _dbContext.Set<T>().AddAsync(model);
         await _dbContext.SaveChangesAsync();
         return model;
     }
 
-    public async Task CreateRange(List<T> model)
+    public virtual async Task CreateRange(List<T> model)
     {
         await _dbContext.Set<T>().AddRangeAsync(model);
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task Update(T model)
+    public virtual async Task Update(T model)
     {
         _dbContext.Set<T>().Update(model);
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task Delete(T model)
+    public virtual async Task Delete(T model)
     {
         _dbContext.Set<T>().Remove(model);
         await _dbContext.SaveChangesAsync();

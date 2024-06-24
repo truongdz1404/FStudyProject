@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import TopicCard from "@/components/topic/Topic";
 import TopicService from "@/services/TopicService";

@@ -11,13 +11,14 @@ import { toast } from "react-toastify";
 import { Response } from "@/types/response";
 import ContentLayout from "@/components/layout/ContentLayout";
 import Editor from "@/components/post/Editor";
-
+import { useAuth } from "@/hooks/useAuth";
+import { checkIfTopicIsLocked } from "@/helpers/checkTopicLockedStatus"; 
 const SubmitPage = () => {
   const [topic, setTopic] = React.useState<Topic | undefined>();
   const [selectedIndex, setSelectedIndex] = React.useState(-1);
   const [foundTopics, setFoundTopics] = React.useState<Topic[]>([]);
   const searchRef = useOutsideClick(() => closeOpenSearch());
-
+  const { user } = useAuth();
   const [openSearch, setOpenSearch] = React.useState(false);
   const closeOpenSearch = () => {
     setOpenSearch(false);
@@ -55,9 +56,18 @@ const SubmitPage = () => {
     }
   };
 
-  const handleSelect = (select: Topic) => {
-    setTopic(select);
-    closeOpenSearch();
+  const handleSelect = async (select: Topic) => {
+    try {
+      const { locked, timeDiffString } = await checkIfTopicIsLocked(`${user?.username}`, select.name);
+      if (locked) {
+        select.banner = `Topic is locked. You need ${timeDiffString} to unlock.`;      
+      }   
+      setTopic(select);
+      closeOpenSearch();
+    } catch (error) {
+      
+    }
+   
   };
 
   return (
@@ -131,7 +141,7 @@ const SubmitPage = () => {
         )}
       </div>
       <div className="my-4" />
-      <Editor topicName={topic?.name} />
+      <Editor topicName={topic?.name} banner={topic?.banner} />
     </ContentLayout>
   );
 };

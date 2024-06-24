@@ -7,12 +7,11 @@ import { Drawer } from "@material-tailwind/react";
 
 const Layout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
-
   const openSidebar = React.useCallback(() => setIsSidebarOpen(true), []);
   const closeSidebar = React.useCallback(() => setIsSidebarOpen(false), []);
   return (
     <div className="font-inter ">
-      <div className="sticky top-0 z-50 w-full">
+      <div className="sticky top-0 z-30 w-full">
         <Header openSidebar={openSidebar} />
       </div>
       <div className={cn("fixed left-0 hidden xl:block max-w-[18rem]")}>

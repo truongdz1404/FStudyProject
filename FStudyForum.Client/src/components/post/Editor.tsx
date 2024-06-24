@@ -1,11 +1,10 @@
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { cn } from "@/helpers/utils";
-import { FC } from "react";
+import { FC} from "react";
 import { useForm } from "react-hook-form";
 import TextareaAutosize from "react-textarea-autosize";
 import { CircleAlert } from "lucide-react";
-
 import { EditorContent, useEditor } from "@tiptap/react";
 import Bold from "@tiptap/extension-bold";
 import Document from "@tiptap/extension-document";
@@ -25,6 +24,7 @@ import { Attachment } from "@/types/attachment";
 import { AxiosError } from "axios";
 import { Response } from "@/types/response";
 
+
 const validation = Yup.object({
   title: Yup.string()
     .required("Title is required")
@@ -37,6 +37,7 @@ interface PostCreationRequest {
 }
 interface EditorProps {
   topicName: string | undefined;
+  banner: string | undefined;
 }
 
 export interface FileInputContextType {
@@ -49,7 +50,8 @@ export const FileInputContext = React.createContext<FileInputContextType>({
   setFiles: () => null
 });
 
-const Editor: FC<EditorProps> = ({ topicName }) => {
+const Editor: FC<EditorProps> = ({ topicName, banner }) => {
+  console.log(banner);
   const {
     register,
     handleSubmit,
@@ -86,7 +88,6 @@ const Editor: FC<EditorProps> = ({ topicName }) => {
   const [error, setError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
   const navigate = useNavigate();
-
   const handleCreate = async (data: PostCreationRequest) => {
     if (!topicName) {
       setError("Topic name is required");
@@ -111,9 +112,8 @@ const Editor: FC<EditorProps> = ({ topicName }) => {
         };
       })
     };
-
     try {
-      const createPost = await PostService.createPost(payload);
+      const createPost = await PostService.create(payload);
       files.map(file => URL.revokeObjectURL(file.preview));
       navigate(`/topic/${topicName}/comments/${createPost.id}`);
     } catch (e) {
@@ -122,12 +122,12 @@ const Editor: FC<EditorProps> = ({ topicName }) => {
     } finally {
       setLoading(false);
     }
-
     setLoading(false);
   };
 
   const isFileLoaded = files.every(file => file.get);
   if (!editor) return null;
+  
 
   return (
     <>
@@ -171,7 +171,7 @@ const Editor: FC<EditorProps> = ({ topicName }) => {
           type="submit"
           className="mt-6 w-full lg:w-fit normal-case text-sm"
           form="create-post-form"
-          disabled={topicName == undefined || loading || !isFileLoaded}
+          disabled={topicName == undefined || loading || !isFileLoaded || banner !== ""}
         >
           Post
         </Button>

@@ -10,8 +10,8 @@ using FStudyForum.Core.Models.DTOs.Auth;
 using FStudyForum.Core.Exceptions;
 using FStudyForum.Core.Helpers;
 using FStudyForum.Infrastructure.Repositories;
+using FStudyForum.Core.Models.DTOs.LockUser;
 using FStudyForum.Core.Models.DTOs;
-
 namespace FStudyForum.Infrastructure.Services;
 
 public class UserService : IUserService
@@ -76,6 +76,7 @@ public class UserService : IUserService
     {
         var user = await _userManager.FindByNameAsync(username)
             ?? throw new Exception("UserName is invalid");
+
         return await ConvertToDTO(user);
     }
 
@@ -159,6 +160,55 @@ public class UserService : IUserService
         return user?.RefreshToken;
     }
 
+    public async Task<UserDTO> LockUser(LockUserDTO lockUserDTO)
+    {
+        if (string.IsNullOrEmpty(lockUserDTO.UserName) || lockUserDTO.LockoutDays <= 0)
+        {
+           throw new Exception("Invalid input");
+        }
+        var user = await _userManager.FindByNameAsync(lockUserDTO.UserName)
+            ?? throw new Exception("User not found");
+        var result = await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.Now.AddDays(lockUserDTO.LockoutDays));
+        if (result.Succeeded)
+        {           
+            return _mapper.Map<UserDTO>(user);
+        }
+        else
+        {
+            throw new Exception("Lockout failed");
+        }
+    }
+
+    public async Task<UserDTO> UnlockUser(LockUserDTO lockUserDTO)
+    {
+        if (string.IsNullOrEmpty(lockUserDTO.UserName))
+        {
+            throw new Exception("Invalid input");
+        }
+        var user = await _userManager.FindByNameAsync(lockUserDTO.UserName)
+            ?? throw new Exception("User not found");
+        var result = await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.UtcNow);
+        if (result.Succeeded)
+        {
+            return _mapper.Map<UserDTO>(user);
+        }
+        else
+        {
+            throw new Exception("Lockout failed");
+        }
+    }
+    public async Task<bool> IsUserLocked(string userName)
+    {
+        var user = await _userManager.FindByNameAsync(userName)
+            ?? throw new ApplicationException($"User '{userName}' not found.");       
+        return await _userManager.IsLockedOutAsync(user);
+    }
+    public async Task<DateTimeOffset?> GetUnlockTime(string userName)
+    {
+        var user = await _userManager.FindByNameAsync(userName)
+            ?? throw new ApplicationException($"User '{userName}' not found.");
+        return await _userManager.GetLockoutEndDateAsync(user);
+    }
     public async Task<PaginatedData<UserDTO>> GetAll(QueryUserDTO query)
     {
         var users = await _userRepository.GetQuery(query);
@@ -169,5 +219,17 @@ public class UserService : IUserService
             userDTOs.Add(await ConvertToDTO(user));
 
         return new(userDTOs, totalCount);
+    }
+
+    public async Task<IEnumerable<UserDTO>> SearchUserByName(string keyword)
+    {
+        var users = await _userRepository.SearchUserByName(keyword);
+        var userDTOs = new List<UserDTO>();
+        if (users != null)
+        {
+            foreach (var user in users)
+                userDTOs.Add(await ConvertToDTO(user));
+        }
+        return userDTOs;
     }
 }

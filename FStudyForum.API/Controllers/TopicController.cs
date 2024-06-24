@@ -4,6 +4,8 @@ using FStudyForum.Core.Models.DTOs.Topic;
 using FStudyForum.Core.Models.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using FStudyForum.Core.Constants;
+using FStudyForum.Core.Models.DTOs.TopicBan;
+
 
 namespace FStudyForum.API.Controllers
 {
@@ -96,6 +98,122 @@ namespace FStudyForum.API.Controllers
             }
             return Ok("Topic deleted successfully");
         }
-
+        [HttpPost("is-locked")]
+        public async Task<IActionResult> IsTopicLocked(TopicBanDTO topicBanDTO)
+        {
+            try
+            {
+                var isLocked = await _topicService.IsUserLocked(topicBanDTO);
+                return Ok(new Response
+                {
+                    Status = ResponseStatus.SUCCESS,
+                    Message = isLocked ? "Check user locked successfully" : "Check user not locked successfully",
+                    Data = isLocked
+                });
+            } catch(Exception ex)
+            {
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = ex.Message
+                });
+            }
+        }
+        [HttpGet("getTopicByPost/{postId}")]
+        public async Task<IActionResult> GetTopicByPost(int postId)
+        {
+            try
+            {
+                var topic = await _topicService.GetTopicByPost(postId);
+                if(topic == null)
+                {
+                    return NotFound(new Response
+                    {
+                        Status = ResponseStatus.ERROR,
+                        Message = "Topic not found"
+                    });
+                }
+                return Ok(new Response
+                {
+                    Status = ResponseStatus.SUCCESS,
+                    Message = "Get topic by post successfully",
+                    Data = topic
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = ex.Message
+                });
+            }
+        }
+        [HttpPost("locked")]
+        public async Task<IActionResult> LockUser([FromBody] TopicBanDTO topicBanDTO)
+        {
+            try
+            {
+                var lockedUser = await _topicService.LockUser(topicBanDTO);
+                return Ok(new Response
+                {
+                    Status = ResponseStatus.SUCCESS,
+                    Message = "User locked successfully",
+                    Data = lockedUser
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = ex.Message
+                });
+            }
+        }
+        [HttpPost("unlocked")]
+        public async Task<IActionResult> UnlockUser([FromBody] TopicBanDTO topicBanDTO)
+        {
+            try
+            {
+                var unlockedUser = await _topicService.UnlockUser(topicBanDTO);
+                return Ok(new Response
+                {
+                    Status = ResponseStatus.SUCCESS,
+                    Message = "User unlocked successfully",
+                    Data = unlockedUser
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = ex.Message
+                });
+            }
+        }
+        [HttpPost("unlock-time")]
+        public async Task<IActionResult> GetUnlockTime([FromBody] TopicBanDTO topicBanDTO)
+        {
+            try
+            {
+                var unlockTime = await _topicService.GetUnlockTime(topicBanDTO);
+                return Ok(new Response
+                {
+                    Status = ResponseStatus.SUCCESS,
+                    Message = "Get unlock time successfully",
+                    Data = unlockTime
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = ex.Message
+                });
+            }
+        }
     }
 }

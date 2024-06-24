@@ -15,5 +15,6 @@ public class Post : BaseEntity
     public virtual ICollection<Vote> Votes { get; set; } = new List<Vote>();
     public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
     public virtual ICollection<Attachment> Attachments { get; set; } = new List<Attachment>();
-    public virtual ICollection<SavedPost> SavedByUsers { get; set; } = new List<SavedPost>();
+    public virtual IEnumerable<SavedPost> SavedByUsers { get; set; } = new List<SavedPost>();
+
 }

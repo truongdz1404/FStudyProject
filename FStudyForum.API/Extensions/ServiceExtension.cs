@@ -8,6 +8,7 @@ namespace FStudyForum.API.Extensions;
 
 public static class ServiceExtension
 {
+
     public static IServiceCollection RegisterService(this IServiceCollection services)
     {
         #region Services
@@ -20,6 +21,8 @@ public static class ServiceExtension
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<IPostService, PostService>();
         services.AddScoped<IVoteService, VoteService>();
+        services.AddScoped<ICommentService, CommentService>();
+        services.AddScoped<IPaymentService, PaymentService>();
         #endregion
 
         #region Repositories
@@ -30,11 +33,11 @@ public static class ServiceExtension
         services.AddTransient<IPostRepository, PostRepository>();
         services.AddTransient<IVoteRepository, VoteRepository>();
         services.AddTransient<ICategoryRepository, CategoryRepository>();
-
+        services.AddTransient<ICommentRepository, CommentRepository>();
+        services.AddTransient<IDonationRepository, DonationRepository>();
         #endregion
 
 
         return services;
     }
-
 }

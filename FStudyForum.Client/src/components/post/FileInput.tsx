@@ -28,7 +28,6 @@ const FileInput = forwardRef<HTMLInputElement, InputProps>(
           preview: URL.createObjectURL(file)
         };
       });
-      if (files.length + newFiles.length > 5) return;
       setFiles(cur => [...cur, ...newFiles]);
     };
     const removeFile = (index: number) => {
@@ -65,6 +64,7 @@ const FileInput = forwardRef<HTMLInputElement, InputProps>(
     const handleDrop = async (e: DragEvent<HTMLDivElement>) => {
       e.preventDefault();
       e.stopPropagation();
+      console.log("alo");
 
       if (e.dataTransfer.files && e.dataTransfer.files[0]) {
         const files = Array.from(e.dataTransfer.files);

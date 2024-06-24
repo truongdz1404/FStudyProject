@@ -16,6 +16,7 @@ import {
   AreaChart,
   BookUser,
   ChevronDown,
+  CircleDollarSign,
   Home,
   Rocket,
   SquareGanttChart,
@@ -45,6 +46,11 @@ const sidebarListItems = [
         label: "Topics",
         icon: Tags,
         path: "/topics",
+        items: []
+      }, {
+        label: "Donate",
+        icon:  CircleDollarSign ,
+        path: "/donate",
         items: []
       }
     ]

@@ -1,6 +1,6 @@
 import { ResponseWith } from "@/types/response";
 import api from "./api";
-import { Topic, CreateTopicDTO, UpdateTopicDTO } from "@/types/topic";
+import { Topic, CreateTopicDTO, UpdateTopicDTO, TopicBanDTO, Unlocktime } from "@/types/topic";
 
 const getActiveTopics = async (): Promise<Topic[]> => {
   const response = await api.get<Topic[]>("/topic/active-all");
@@ -12,7 +12,7 @@ const getTopics = async () => {
   return response.data.data;
 };
 
-const getTopicByName = async (name: string): Promise<Topic> => {
+const getTopicByName = async (name: string) => {
   const response = await api.get<Topic>(`/topic/${name}`);
   return response.data;
 };
@@ -31,13 +31,39 @@ const deleteTopic = async (name: string): Promise<void> => {
   await api.put<Topic>(`/topic/delete/${name}`);
 };
 
+const isLoked = async(username: string, topicId: number) => {
+  const response = await api.post<ResponseWith<TopicBanDTO>>("/topic/is-locked",{
+    username,
+    topicId
+  });
+  return response.data;
+}
+const unlockTime = async(username: string, topicId: number) => {
+  const response = await api.post<ResponseWith<Unlocktime>>("/topic/unlock-time",{
+    username,
+    topicId
+  });
+  return response.data;
+}
+const unlocked = async(username: string, topicId: number) => {
+  const response = await api.post<ResponseWith<Unlocktime>>("/topic/unlocked",{
+    username,
+    topicId
+  });
+  return response.data;
+}
+
+
 const search = async (value: string) => {
   const response = await api.get<ResponseWith<Topic[]>>(
     "/topic/search?value=" + value + "&size=10"
   );
   return response.data.data;
 };
-
+const topicByPost = async (postId: number) => {
+  const response = await api.get<ResponseWith<Topic>>(`/topic/getTopicByPost/${postId}`);
+  return response.data.data;
+}
 const TopicService = {
   getTopics,
   getActiveTopics,
@@ -45,7 +71,11 @@ const TopicService = {
   search,
   create,
   update,
-  deleteTopic
+  isLoked,
+  unlockTime,
+  unlocked,
+  deleteTopic,
+  topicByPost
 };
 
 export default TopicService;

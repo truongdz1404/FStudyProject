@@ -11,7 +11,6 @@ public class ApplicationDBContext(DbContextOptions options)
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-
         builder.HasDefaultSchema("dbo");
         builder.Entity<ApplicationUser>().ToTable("tblUsers");
         builder.Entity<IdentityRole>().ToTable("tblRoles");
@@ -80,7 +79,6 @@ public class ApplicationDBContext(DbContextOptions options)
            .HasMany(p => p.SavedByUsers)
            .WithOne(sb => sb.Post);
 
-
         builder.Entity<Post>()
             .HasMany(p => p.Votes)
             .WithOne(v => v.Post);
@@ -128,5 +126,7 @@ public class ApplicationDBContext(DbContextOptions options)
     public DbSet<Vote> Votes { get; set; }
     public DbSet<Attachment> Attachments { get; set; }
     public DbSet<Donation> Donations { get; set; }
+    public DbSet<SavedPost> SavedPosts { get; set; }
+    public DbSet<TopicBan> TopicBans { get; set; }
 }
 
