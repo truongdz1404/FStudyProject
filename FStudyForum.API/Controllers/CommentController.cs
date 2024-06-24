@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using FStudyForum.Core.Interfaces.IServices;
 using FStudyForum.Core.Models.DTOs;
 using FStudyForum.Core.Models.DTOs.Comment;
@@ -48,21 +49,39 @@ namespace FStudyForum.API.Controllers
         public async Task<ActionResult<IEnumerable<CommentDTO>>> GetCommentsByPost([FromQuery] long postId)
         {
             var comments = await _commentService.GetCommentsByPostIdAsync(postId);
-            return Ok(comments);
+            return Ok(new Response
+                {
+                    Message = "Create comment successfully",
+                    Status = ResponseStatus.SUCCESS,
+                    Data = comments
+                });
         }
 
         [HttpGet("attachment/{attachmentId}")]
         public async Task<ActionResult<IEnumerable<CommentDTO>>> GetCommentsByAttachment(long attachmentId)
         {
             var comments = await _commentService.GetCommentsByAttachmentIdAsync(attachmentId);
-            return Ok(comments);
+            return Ok(new Response
+                {
+                    Message = "Create comment successfully",
+                    Status = ResponseStatus.SUCCESS,
+                    Data = comments
+                });
         }
 
         [HttpPost("create")]
         public async Task<IActionResult> CreateComment([FromBody] CreateCommentDTO commentCreateDto)
         {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            var userName = User.FindFirstValue(ClaimTypes.Name);
+            if (userName == null) return Unauthorized(new Response
+            {
+                Status = ResponseStatus.ERROR,
+                Message = "User is not authenticated!"
+            });
             try
             {
+                commentCreateDto.Author = userName;
                 var comment = await _commentService.CreateCommentAsync(commentCreateDto);
                 return Ok(new Response
                 {

@@ -1,7 +1,7 @@
 import { FC, useState, useEffect } from "react";
 import { AxiosError } from "axios";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
-import { ArrowLeft, ArrowBigUp, ArrowBigDown, MessageSquare, Share, Plus, Minus } from "lucide-react";
+import { ArrowLeft, ArrowBigUp, ArrowBigDown, MessageSquare, Share } from "lucide-react";
 import { Alert } from "@material-tailwind/react";
 import PostService from "@/services/PostService";
 import CommentService from "@/services/CommentService";
@@ -24,21 +24,6 @@ const Comments: FC<Props> = () => {
   const [replyToCommentId, setReplyToCommentId] = useState<number | null>(null);
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-  const [expandedComments, setExpandedComments] = useState<{ [key: number]: boolean }>({});
-
-  const initializeExpandedComments = (comments: Comment[]) => {
-    const expanded: { [key: number]: boolean } = {};
-    const traverseComments = (commentList: Comment[]) => {
-      commentList.forEach((comment) => {
-        expanded[comment.id] = !comment.replies || comment.replies.length < 2;
-        if (comment.replies) {
-          traverseComments(comment.replies);
-        }
-      });
-    };
-    traverseComments(comments);
-    return expanded;
-  };
 
   useEffect(() => {
     if (!postId || !topicName) {
@@ -70,7 +55,6 @@ const Comments: FC<Props> = () => {
         const data = await CommentService.getCommentsByPostId(postId);
         const structuredComments = structureComments(data || []);
         setComments(structuredComments);
-        setExpandedComments(initializeExpandedComments(structuredComments));
       } catch (e) {
         const error = e as AxiosError;
         setError((error?.response?.data as Response)?.message || error.message);
@@ -155,15 +139,7 @@ const Comments: FC<Props> = () => {
     setReplyToCommentId(commentId);
   };
 
-  const toggleExpand = (commentId: number) => {
-    setExpandedComments(prev => ({
-      ...prev,
-      [commentId]: !prev[commentId],
-    }));
-  };
-
   const renderComment = (comment: Comment, level = 0) => (
-    
     <div key={comment.id} className="border-b py-2" style={{ marginLeft: level * 20 }}>
       <div className="flex mb-2">
         <img
@@ -213,21 +189,10 @@ const Comments: FC<Props> = () => {
               onCancel={() => setReplyToCommentId(null)}
             />
           )}
-          {comment.replies && comment.replies.length > 0 && ( 
-            <>
-              <button
-                className="text-xs text-blue-500 flex items-center space-x-1"
-                onClick={() => toggleExpand(comment.id)}
-              >
-                {expandedComments[comment.id] ? <Minus size={12} /> : <Plus size={12} />}
-              <span>{expandedComments[comment.id] ? '' : `${ comment.replies.length} replies`}</span>
-              </button>
-              {expandedComments[comment.id] && (
-                <div className="ml-4 border-l-2 pl-2">
-                  {comment.replies.map(reply => renderComment(reply, level + 1))}
-                </div>
-              )}
-            </>
+          {comment.replies && comment.replies.length > 0 && (
+            <div className="ml-0 mt-2">
+              {comment.replies.map(reply => renderComment(reply, level + 1))}
+            </div>
           )}
         </div>
       </div>
