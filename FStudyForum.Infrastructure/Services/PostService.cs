@@ -76,5 +76,24 @@ namespace FStudyForum.Infrastructure.Services
 
             return postDTOs;
         }
+
+        public async Task<IEnumerable<PostDTO>> SearchPostAsync(string keyword)
+        {
+            var posts = await _postRepository.SearchPostAsync(keyword);
+            var postDTOs = posts.Select(p => new PostDTO
+            {
+                Id = p.Id,
+                Title = p.Title,
+                Author = p.Creater.UserName!,
+                TopicName = p.Topic.Name,
+                TopicAvatar = p.Topic.Avatar,
+                Content = p.Content,
+                VoteCount = p.Votes.Count,
+                CommentCount = p.Comments.Count,
+                Attachments = p.Attachments.Select(a => new AttachmentDTO { Type = a.Type, Url = a.FileUrl }),
+                Elapsed = DateTime.Now - p.CreatedAt
+            });
+            return postDTOs;
+        }
     }
 }

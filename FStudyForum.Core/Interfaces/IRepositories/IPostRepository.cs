@@ -9,5 +9,8 @@ public interface IPostRepository : IBaseRepository<Post>
     public Task<Post?> GetPostByIdAsync(long id);
     public Task<IList<Post>?> GetVotedPosts(string username);
     public Task<int> GetVoteCount(long Id);
+    public Task<IEnumerable<Post>> SearchPostAsync(string keyword);
+
+
 }
 

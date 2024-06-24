@@ -64,6 +64,15 @@ namespace FStudyForum.Infrastructure.Repositories
 
             return topics;
         }
+
+        public async Task<IEnumerable<Topic>> SearchTopicContainKeywordAsync(string keyword)
+        {
+            return await _dbContext.Topics
+               .Where(t => !t.IsDeleted && (t.Name.Contains(keyword.Trim()) || t.Description.Contains(keyword.Trim())))
+               .Include(t => t.Posts)
+               .Include(t => t.Categories)
+               .ToListAsync();
+        }
     }
 
 }

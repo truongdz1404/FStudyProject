@@ -147,5 +147,23 @@ public class TopicService : ITopicService
             };
         });
     }
+
+    public async Task<IEnumerable<TopicDTO>> SearchTopicContainKeywordAsync(string keyword)
+    {
+        var topics = await _topicRepository.SearchTopicContainKeywordAsync(keyword);
+        var topicDTOs = new List<TopicDTO>();
+        foreach (var topic in topics)
+        {
+            topicDTOs.Add(new TopicDTO
+            {
+                Id = topic.Id,
+                Name = topic.Name,
+                Description = topic.Description,
+                IsDeleted = topic.IsDeleted,
+                Categories = topic.Categories.Select(c => c.Id).ToList()
+            });
+        }
+        return topicDTOs;
+    }
 }
 

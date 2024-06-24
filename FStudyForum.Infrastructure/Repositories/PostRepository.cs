@@ -101,5 +101,17 @@ namespace FStudyForum.Infrastructure.Repositories
         }
 
 
+        public async Task<IEnumerable<Post>> SearchPostAsync(string keyword)
+        {
+            return await _dbContext.Posts
+               .Where(p => p.IsDeleted == false && p.Title.Contains(keyword.Trim()) || p.Content.Contains(keyword.Trim()))
+               .Include(p => p.Creater)
+               .Include(p => p.Topic)
+               .Include(p => p.Votes)
+               .Include(p => p.Attachments)
+               .Include(p => p.Comments)
+               .Where(p => p.Topic.IsDeleted == false)
+               .ToListAsync();
+        }
     }
 }
