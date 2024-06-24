@@ -2,6 +2,7 @@
 using AutoMapper;
 using FStudyForum.Core.Interfaces.IRepositories;
 using FStudyForum.Core.Interfaces.IServices;
+using FStudyForum.Core.Models.DTOs.Attachment;
 using FStudyForum.Core.Models.DTOs.Post;
 using FStudyForum.Core.Models.Entities;
 using Microsoft.IdentityModel.Tokens;
@@ -19,7 +20,7 @@ namespace FStudyForum.Infrastructure.Services
             _mapper = mapper;
         }
 
-        public async Task<List<PostDTO>> getByTopicId(long id)
+        public async Task<List<PostDTO>> GetByTopicId(long id)
         {
             var posts = await _postRepository.GetByTopicId(id);
             return _mapper.Map<List<PostDTO>>(posts);
@@ -72,10 +73,22 @@ namespace FStudyForum.Infrastructure.Services
             return await Task.FromResult(posts.OrderBy(p => p.Elapsed).ToList());
         }
 
-        public async Task<PostDTO> GetPostByIdService(long id)
+        public async Task<PostDTO> GetPostById(long id)
         {
             var post = await _postRepository.GetPostByIdAsync(id);
-            return _mapper.Map<PostDTO>(post);
+            return new PostDTO
+            {
+                Id = post.Id,
+                Title = post.Title,
+                Author = post.Creater.UserName!,
+                TopicName = post.Topic.Name,
+                TopicAvatar = post.Topic.Avatar,
+                Content = post.Content,
+                VoteCount = post.Votes.Count,
+                CommentCount = post.Comments.Count,
+                Attachments = post.Attachments.Select(a => new AttachmentDTO { Type = a.Type, Url = a.FileUrl }),
+                Elapsed = DateTime.Now - post.CreatedAt
+            };
         }
     }
 }

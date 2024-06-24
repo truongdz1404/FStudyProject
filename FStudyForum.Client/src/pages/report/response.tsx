@@ -40,7 +40,9 @@ const ResponseForm = () => {
     queryKey: ["reportDetail", reportId],
     queryFn: () => ReportService.getReportById(reportId ?? "")
   });
-
+  const [responseContent, setResponseContent] = React.useState(
+    report?.responseContent 
+  );
   const { mutate: handleSubmitResponse, isPending: pending } = useMutation({
     mutationFn: async (form: ResponseInput) => {
       await ReportService.responseReport(reportId ?? "", form.responseContent);
@@ -48,9 +50,12 @@ const ResponseForm = () => {
     onSuccess: () => {
       setRespSuccess(true);
     },
-    onError: (e) => {
+    onError: e => {
       const error = e as AxiosError;
-      setError("responseContent", { type: "manual", message: (error?.response?.data as Response)?.message || error.message });
+      setError("responseContent", {
+        type: "manual",
+        message: (error?.response?.data as Response)?.message || error.message
+      });
       setRespSuccess(false);
     }
   });
@@ -109,9 +114,11 @@ const ResponseForm = () => {
           <textarea
             id="responseContent"
             rows={4}
-            value={report?.responseContent ?? ""}
+            value={responseContent ?? report?.responseContent ?? ""}
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            {...register("responseContent")}
+            {...register("responseContent", {
+              onChange: e => setResponseContent(e.target.value)
+            })}
           ></textarea>
           {respSuccess && (
             <span

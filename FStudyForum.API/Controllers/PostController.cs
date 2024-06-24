@@ -84,7 +84,7 @@ namespace FStudyForum.API.Controllers
         [HttpGet("topicId={id}")]
         public async Task<IActionResult> GetPostsByTopicId(long id)
         {
-            var posts = await _postService.getByTopicId(id);
+            var posts = await _postService.GetByTopicId(id);
             if (posts.IsNullOrEmpty())
             {
                 return NotFound(new Response
@@ -150,7 +150,7 @@ namespace FStudyForum.API.Controllers
                 var filteredPosts = new List<PostDTO>();
                 if (!string.IsNullOrEmpty(topicId) && long.TryParse(topicId, out long topicIdLong))
                 {
-                    initPosts = await _postService.getByTopicId(topicIdLong);
+                    initPosts = await _postService.GetByTopicId(topicIdLong);
                 }
                 if (!string.IsNullOrEmpty(postType))
                 {
@@ -193,12 +193,12 @@ namespace FStudyForum.API.Controllers
 
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetPostById(long id)
+        [HttpGet]
+        public async Task<IActionResult> GetPost([FromQuery] long id)
         {
             try
             {
-                var post = await _postService.GetPostByIdService(id);
+                var post = await _postService.GetPostById(id);
                 if (post == null)
                 {
                     return NotFound(new Response

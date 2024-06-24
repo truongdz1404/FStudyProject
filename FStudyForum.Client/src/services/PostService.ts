@@ -23,8 +23,8 @@ const getPostsByFeature = async (topicId: number | null, postType: string) => {
   return response.data.data;
 }
 
-const getPostById = async (postId: number) => {
-  const response = await api.get<ResponseWith<Post>>(`/post/${postId}`);
+const getPostById = async (id: number) => {
+  const response = await api.get<ResponseWith<Post>>(`/post?id=${id}`);
   return response.data.data;
 };
 
