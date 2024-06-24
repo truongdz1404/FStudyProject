@@ -13,7 +13,7 @@ import MenuItemPost from "@/components/post/MenuItem";
 import CommentInput from "@/components/comment/CommentInput";
 import ReplyInput from "@/components/comment/ReplyInput";
 
-interface Props {}
+interface Props { }
 
 const Comments: FC<Props> = () => {
   const navigate = useNavigate();
@@ -163,7 +163,7 @@ const Comments: FC<Props> = () => {
   };
 
   const renderComment = (comment: Comment, level = 0) => (
-    
+
     <div key={comment.id} className="border-b py-2" style={{ marginLeft: level * 20 }}>
       <div className="flex mb-2">
         <img
@@ -213,14 +213,14 @@ const Comments: FC<Props> = () => {
               onCancel={() => setReplyToCommentId(null)}
             />
           )}
-          {comment.replies && comment.replies.length > 0 && ( 
+          {comment.replies && comment.replies.length > 0 && (
             <>
               <button
                 className="text-xs text-blue-500 flex items-center space-x-1"
                 onClick={() => toggleExpand(comment.id)}
               >
                 {expandedComments[comment.id] ? <Minus size={12} /> : <Plus size={12} />}
-              <span>{expandedComments[comment.id] ? '' : `${ comment.replies.length} replies`}</span>
+                <span>{expandedComments[comment.id] ? '' : `${comment.replies.length} replies`}</span>
               </button>
               {expandedComments[comment.id] && (
                 <div className="ml-4 border-l-2 pl-2">
