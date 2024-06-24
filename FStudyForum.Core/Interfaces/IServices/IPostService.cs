@@ -8,7 +8,8 @@ namespace FStudyForum.Core.Interfaces.IServices
         Task<List<PostDTO>> getByTopicId(long id);
         Task<IEnumerable<PostDTO>> GetPosts();
         Task<PostDTO> CreatePost(CreatePostDTO postDTO);
-        Task<List<PostDTO>> getHotPostsBySample(List<PostDTO> postDTOs);
-        Task<List<PostDTO>> getNewPostsBySample(List<PostDTO> postDTOs);
+        Task<List<PostDTO>> GetHotPostsBySample(List<PostDTO> postDTOs);
+        Task<List<PostDTO>> GetNewPostsBySample(List<PostDTO> postDTOs);
+        Task<PostDTO> GetPostByIdService(long id);
     }
 }

@@ -102,9 +102,9 @@ namespace FStudyForum.API.Controllers
         }
 
         [HttpGet("new")]
-        public async Task<IActionResult> getNewPosts()
+        public async Task<IActionResult> GetNewPosts()
         {
-            var posts = await _postService.getNewPostsBySample([]);
+            var posts = await _postService.GetNewPostsBySample([]);
             if (posts.IsNullOrEmpty())
             {
                 return NotFound(new Response
@@ -124,7 +124,7 @@ namespace FStudyForum.API.Controllers
         [HttpGet("hot")]
         public async Task<IActionResult> GetHotPosts()
         {
-            var posts = await _postService.getHotPostsBySample([]);
+            var posts = await _postService.GetHotPostsBySample([]);
             if (posts.IsNullOrEmpty())
             {
                 return NotFound(new Response
@@ -157,10 +157,10 @@ namespace FStudyForum.API.Controllers
                     switch (postType)
                     {
                         case "hot":
-                            filteredPosts = await _postService.getHotPostsBySample(initPosts);
+                            filteredPosts = await _postService.GetHotPostsBySample(initPosts);
                             break;
                         case "new":
-                            filteredPosts = await _postService.getNewPostsBySample(initPosts);
+                            filteredPosts = await _postService.GetNewPostsBySample(initPosts);
                             break;
                         default:
                             break;
@@ -191,6 +191,37 @@ namespace FStudyForum.API.Controllers
                 });
             }
 
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetPostById(long id)
+        {
+            try
+            {
+                var post = await _postService.GetPostByIdService(id);
+                if (post == null)
+                {
+                    return NotFound(new Response
+                    {
+                        Status = ResponseStatus.ERROR,
+                        Message = "Post not found",
+                    });
+                }
+                return Ok(new Response
+                {
+                    Message = "Get Post successfully",
+                    Status = ResponseStatus.SUCCESS,
+                    Data = post
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = "Error while fetching post by id"
+                });
+            }
         }
 
     }

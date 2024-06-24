@@ -19,7 +19,8 @@ const ConfirmEmail = lazy(() => import("@/pages/auth/confirm-email"));
 const ChangePassword = lazy(
   () => import("@/pages/auth/reset-password/change-password")
 );
-
+const ListReport = lazy(() => import("@/pages/report/list"));
+const Response = lazy(() => import("@/pages/report/response"));
 const SubmitPage = lazy(() => import("@/pages/submit"));
 
 const TopcicManager = lazy(() => import("@/pages/manager/topics"));
@@ -79,6 +80,22 @@ const Router: FC = () => {
               )
             }
           ]
+        },
+        {
+          path: "report",
+          element: (
+            <Suspense>
+              <ListReport />
+            </Suspense>
+          )
+        },
+        {
+          path: "report/:reportId",
+          element: (
+            <Suspense>
+              <Response />
+            </Suspense>
+          )
         },
         {
           path: "manager",

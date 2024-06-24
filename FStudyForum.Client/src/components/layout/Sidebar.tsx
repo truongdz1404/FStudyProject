@@ -45,6 +45,12 @@ const sidebarListItems = [
         icon: Tags,
         path: "/topics",
         items: []
+      },
+      {
+        label: "Report",
+        icon: AreaChart,
+        path: "/report",
+        items: []
       }
     ]
   },

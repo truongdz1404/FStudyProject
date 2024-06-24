@@ -1,3 +1,4 @@
+import { SessionStorageKey } from "@/helpers/constants";
 import { usePosts } from "@/hooks/usePosts";
 import { useTopics } from "@/hooks/useTopics";
 import PostService from "@/services/PostService";
@@ -11,23 +12,13 @@ const FilterComponent: React.FC = () => {
   const { topics } = useTopics();
   const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
   const node = useRef<HTMLDivElement>(null);
-  const NEW = "New";
-  const HOT = "Hot";
+  const NEW = "new";
+  const HOT = "hot";
 
   const handleChoosePost = useCallback(
     async (param: string) => {
       const fetchPosts = async () => {
-        let posts;
-        switch (param) {
-          case NEW:
-            posts = await PostService.getNewPosts(topics);
-            break;
-          case HOT:
-            posts = await PostService.getHotPosts(topics);
-            break;
-          default:
-            break;
-        }
+        const posts = await PostService.getPostsByFeature(topics, param);
         if (Array.isArray(posts)) {
           setPosts(posts);
         } else {
@@ -40,19 +31,12 @@ const FilterComponent: React.FC = () => {
   );
 
   useEffect(() => {
-    const selectedComponent = sessionStorage.getItem("selectedComponent");
-    switch (selectedComponent) {
-      case NEW:
-        setSelectedFilter(NEW);
-        handleChoosePost(NEW);
-        break;
-      case HOT:
-        setSelectedFilter(HOT);
-        handleChoosePost(HOT);
-        break;
-      default:
-        setSelectedFilter(null);
-        break;
+    const selectedComponent = sessionStorage.getItem(SessionStorageKey.SelectedComponent);
+    if (selectedComponent) {
+      handleChoosePost(selectedComponent);
+      setSelectedFilter(selectedComponent);
+    }else{
+      setSelectedFilter(null);
     }
   }, [handleChoosePost]);
 
@@ -72,7 +56,7 @@ const FilterComponent: React.FC = () => {
   }, []);
 
   return (
-    <div ref={node} className="relative inline-block text-left mb-2 z-50 mr-10">
+    <div ref={node}>
       <button
         onClick={() => {
           setIsOpen(!isOpen);
@@ -93,7 +77,7 @@ const FilterComponent: React.FC = () => {
                 : "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer"
             }
             onClick={() => {
-              sessionStorage.setItem("selectedComponent", NEW);
+              sessionStorage.setItem(SessionStorageKey.SelectedComponent, NEW);
               setSelectedFilter(NEW);
               handleChoosePost(NEW);
             }}
@@ -107,7 +91,7 @@ const FilterComponent: React.FC = () => {
                 : "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer"
             }
             onClick={() => {
-              sessionStorage.setItem("selectedComponent", HOT);
+              sessionStorage.setItem(SessionStorageKey.SelectedComponent, HOT);
               setSelectedFilter(HOT);
               handleChoosePost(HOT);
             }}

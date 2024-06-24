@@ -1,11 +1,12 @@
 import TopicService from "@/services/TopicService";
 import { ChevronDown, ChevronUp, Filter } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import PostService from "@/services/PostService";
 import { usePosts } from "@/hooks/usePosts";
 import { useTopics } from "@/hooks/useTopics";
 import { Topic } from "@/types/topic";
-const TopicFilter = () => {
+import { SessionStorageKey } from "@/helpers/constants";
+const TopicFilter: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { setPosts } = usePosts();
   const [topicArray, setTopicArray] = useState<Topic[]>([]);
@@ -17,15 +18,17 @@ const TopicFilter = () => {
       setTopicArray(topic);
     };
     fetchTopics();
-  }, [setTopics]);
-  const chooseTopic = (topicId: number | null) => {
-    return async () => {
-      if (topicId !== null) {
+  }, []);
+
+  const chooseTopic = useCallback(
+    async (topicId: number | null, isChooseByClick: boolean) => {
+      if (topicId !== null && topicId !== topics) {
         setTopics(topicId);
-        const filtered = sessionStorage.getItem("selectedComponent");
-        if (filtered !== "" || filtered !== null) {
-          sessionStorage.setItem("selectedComponent", "");
+        const filtered = sessionStorage.getItem(SessionStorageKey.SelectedComponent);
+        if ((filtered !== "" || filtered !== null) && isChooseByClick) {
+          sessionStorage.setItem(SessionStorageKey.SelectedComponent, "");
         }
+        sessionStorage.setItem(SessionStorageKey.SelectedTopic, topicId.toString()); // Save selected topic to session storage
         const fetchPosts = async () => {
           const posts = await PostService.getPostsByTopicId(topicId);
           if (Array.isArray(posts)) {
@@ -36,10 +39,21 @@ const TopicFilter = () => {
         };
         fetchPosts();
       }
-    };
-  };
+    },
+    [setPosts, setTopics, topics]
+  );
+
+  useEffect(() => {
+    const selectedTopic = sessionStorage.getItem(SessionStorageKey.SelectedTopic) as string;
+    const selectTopicNumber = parseInt(selectedTopic);
+    if (!isNaN(selectTopicNumber) && selectTopicNumber !== topics) {
+      setTopics(selectTopicNumber);
+      chooseTopic(selectTopicNumber, false);
+    }
+  }, [chooseTopic, setTopics, topics]);
+
   return (
-    <div className="relative inline-block text-left mb-2 z-50">
+    <div>
       <button
         className="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-gray-100 focus:ring-blue-500"
         onClick={() => {
@@ -58,7 +72,7 @@ const TopicFilter = () => {
               key={index}
               formTarget="_blank"
               rel="noopener"
-              onClick={chooseTopic(topic.id)}
+              onClick={() => chooseTopic(topic.id, true)}
               className={
                 topics === topic.id
                   ? "bg-orange-400 flex px-4 py-2 text-sm text-gray-700 cursor-pointer rounded-md"

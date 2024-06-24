@@ -55,7 +55,7 @@ const PostItem: FC<PostProps> = ({ data }) => {
             {formatElapsedTime(data.elapsed)}
           </span>
         </div>
-        <MenuItemPost />
+        <MenuItemPost postData={data}/>
       </div>
       <div className="my-2 flex flex-col gap-y-2">
         <p className="font-semibold text-blue-gray-900">{data.title}</p>

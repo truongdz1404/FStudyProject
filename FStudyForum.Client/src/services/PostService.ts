@@ -13,27 +13,21 @@ const getPostsByTopicId = async (topicId: number) => {
   return response.data.data;
 };
 
-const getHotPosts = async (topicId: number | null) => {
-  console.log("Get hot posts");
+const getPostsByFeature = async (topicId: number | null, postType: string) => {
   let response
   if (topicId) {
-    response = await api.get<ResponseWith<Post[]>>(`/post/hot/topicId=${topicId}`);
+    response = await api.get<ResponseWith<Post[]>>(`/post/${postType}/topicId=${topicId}`);
   } else {
-    response = await api.get<ResponseWith<Post[]>>(`/post/hot`);
+    response = await api.get<ResponseWith<Post[]>>(`/post/${postType}`);
   }
   return response.data.data;
 }
 
-const getNewPosts = async (topicId: number | null) => {
-  console.log("Get new posts");
-  let response
-  if (topicId) {
-    response = await api.get<ResponseWith<Post[]>>(`/post/new/topicId=${topicId}`);
-  } else {
-    response = await api.get<ResponseWith<Post[]>>(`/post/new`);
-  }
+const getPostById = async (postId: number) => {
+  const response = await api.get<ResponseWith<Post>>(`/post/${postId}`);
   return response.data.data;
-}
+};
+
 const createPost = async (post: CreatePost) => {
   const response = await api.post<ResponseWith<Post[]>>("/post/create", post);
   return response.data.data;
@@ -41,8 +35,8 @@ const createPost = async (post: CreatePost) => {
 const PostService = {
   getPosts,
   getPostsByTopicId,
-  getNewPosts,
-  getHotPosts,
+  getPostsByFeature,
+  getPostById,
   createPost,
 };
 export default PostService;

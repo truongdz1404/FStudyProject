@@ -4,10 +4,9 @@ import PostItem from "@/components/post/PostItem";
 import { useQuery } from "@tanstack/react-query";
 import { Alert, Spinner } from "@material-tailwind/react";
 import NullLayout from "@/components/layout/NullLayout";
-import FilterComponent from "@/components/filter";
 import { useEffect } from "react";
 import { usePosts } from "@/hooks/usePosts";
-import TopicFilter from "@/components/filter/TopicFilter";
+import { filterComponents } from "@/components/filter/FilterComponentArray";
 
 const Home: React.FC = () => {
   const { posts, setPosts } = usePosts();
@@ -31,10 +30,16 @@ const Home: React.FC = () => {
     );
   if (isLoading) return <Spinner className="mx-auto" />;
   return (
-    <>
-      <div className="flex">
-        <FilterComponent />
-        <TopicFilter />
+    <>    
+      <div className="relative flex text-left mb-2 z-30 space-x-5">
+        {
+          filterComponents
+            .sort((a, b) => a.id - b.id)
+            .map((filter) => {
+              const Component = filter.component;
+              return <Component key={filter.id} />
+            })
+        }
       </div>
       {(posts?.length ?? 0) === 0 && <NullLayout />}
       {(posts?.length ?? 0 > 0) && (

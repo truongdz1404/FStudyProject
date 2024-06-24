@@ -1,17 +1,26 @@
-import { Bookmark, Ellipsis, Flag } from "lucide-react"
-import React from "react"
+import { Bookmark, Ellipsis, Flag } from "lucide-react";
+import React from "react";
+import ReportForm from "@/pages/report/form";
 import {
   Button,
   Menu,
   MenuHandler,
   MenuList,
   MenuItem,
-  Typography
-} from "@material-tailwind/react"
-import { cn } from "@/helpers/utils"
-const MenuItemPost = () => {
-  const [isMenuOpen, setIsMenuOpen] = React.useState(false)
-
+  Typography,
+  Dialog
+} from "@material-tailwind/react";
+import { cn } from "@/helpers/utils";
+import { Post } from "@/types/post";
+import { usePosts } from "@/hooks/usePosts";
+interface MenuItemProps {
+  postData: Post;
+}
+const MenuItemPost: React.FC<MenuItemProps> = ({ postData }) => {
+  const { setPostData } = usePosts();
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const [showModal, setShowModal] = React.useState(false);
+  const handleOpen = () => setShowModal(!showModal);
   const PostMenuItem = [
     {
       icon: Bookmark,
@@ -21,10 +30,15 @@ const MenuItemPost = () => {
     {
       icon: Flag,
       label: "Report",
-      path: "/report"
+      path: "/report",
+      action: () => {
+        setPostData(postData);
+        handleOpen();
+      }
     }
-  ]
+  ];
   return (
+  <>
     <Menu open={isMenuOpen} handler={setIsMenuOpen} placement="bottom-end">
       <MenuHandler>
         <Button
@@ -36,11 +50,14 @@ const MenuItemPost = () => {
         </Button>
       </MenuHandler>
       <MenuList className="p-1">
-        {PostMenuItem.map(({ label, icon }, key) => {
-          const isLastItem = key === PostMenuItem.length - 1
+        {PostMenuItem.map(({ label, icon, action }, key) => {
+          const isLastItem = key === PostMenuItem.length - 1;
           return (
             <MenuItem
               key={label}
+              onClick={() => {
+                if (action) action();
+              }}
               className={`flex items-center gap-2 rounded ${
                 isLastItem &&
                 "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
@@ -60,10 +77,18 @@ const MenuItemPost = () => {
                 {label}
               </Typography>
             </MenuItem>
-          )
+          );
         })}
       </MenuList>
     </Menu>
-  )
-}
-export default MenuItemPost
+    <Dialog
+    className="max-w-[34rem] mb-6 p-5 max-h-full"
+    open={showModal}
+    handler={handleOpen}
+    >
+      <ReportForm />
+    </Dialog>
+  </>
+  );
+};
+export default MenuItemPost;

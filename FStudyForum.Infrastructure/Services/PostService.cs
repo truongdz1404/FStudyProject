@@ -54,22 +54,28 @@ namespace FStudyForum.Infrastructure.Services
             return postDTOs;
         }
 
-        public async Task<List<PostDTO>> getHotPostsBySample(List<PostDTO> initPostDTOs)
+        public async Task<List<PostDTO>> GetHotPostsBySample(List<PostDTO> initPostDTOs)
         {
-            var posts = initPostDTOs.IsNullOrEmpty() 
+            var posts = initPostDTOs.IsNullOrEmpty()
                 ? _mapper.Map<List<PostDTO>>(await _postRepository.GetPostsAsync())
                 : initPostDTOs;
 
             return await Task.FromResult(posts.OrderByDescending(p => p.UpVoteCount + p.CommentCount).ToList());
         }
 
-        public async Task<List<PostDTO>> getNewPostsBySample(List<PostDTO> initPostDTOs)
+        public async Task<List<PostDTO>> GetNewPostsBySample(List<PostDTO> initPostDTOs)
         {
-            var posts = initPostDTOs.IsNullOrEmpty() 
+            var posts = initPostDTOs.IsNullOrEmpty()
                 ? _mapper.Map<List<PostDTO>>(await _postRepository.GetPostsAsync())
                 : initPostDTOs;
 
             return await Task.FromResult(posts.OrderBy(p => p.Elapsed).ToList());
+        }
+
+        public async Task<PostDTO> GetPostByIdService(long id)
+        {
+            var post = await _postRepository.GetPostByIdAsync(id);
+            return _mapper.Map<PostDTO>(post);
         }
     }
 }
