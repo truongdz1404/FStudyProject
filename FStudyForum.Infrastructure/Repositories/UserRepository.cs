@@ -9,6 +9,7 @@ namespace FStudyForum.Infrastructure.Repositories;
 public class UserRepository(ApplicationDBContext dbContext)
     : BaseRepository<ApplicationUser>(dbContext), IUserRepository
 {
+
     public async Task<ApplicationUser?> FindUserByRefreshTokenAsync(string refreshToken)
     {
         return await _dbContext.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
@@ -16,7 +17,6 @@ public class UserRepository(ApplicationDBContext dbContext)
 
     public async Task<IEnumerable<ApplicationUser>> SearchUserByName(string keyword)
     {
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
-        return await _dbContext.Users.Where(u => u.UserName.Contains(keyword.Trim())).ToListAsync();
+        return await _dbContext.Users.Where(u => u.UserName!.Contains(keyword.Trim())).ToListAsync();
     }
 }

@@ -8,7 +8,6 @@ import Paragraph from "@tiptap/extension-paragraph";
 import Text from "@tiptap/extension-text";
 import Bold from "@tiptap/extension-bold";
 import Placeholder from "@tiptap/extension-placeholder";
-
 import parse from "html-react-parser";
 import Code from "@tiptap/extension-code";
 import { cn } from "@/helpers/utils";

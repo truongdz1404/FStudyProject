@@ -1,4 +1,4 @@
-﻿using FStudyForum.Core.Models.DTOs.Vote;
+using FStudyForum.Core.Models.DTOs.Vote;
 using FStudyForum.Core.Models.Entities;
 
 

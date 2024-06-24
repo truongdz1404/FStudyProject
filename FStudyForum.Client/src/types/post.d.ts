@@ -11,7 +11,6 @@ export interface Post {
   author: string;
   attachments: Attachment[];
 }
-
 export interface CreatePost {
   title: string;
   topicName: string;

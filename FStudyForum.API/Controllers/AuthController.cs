@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using FStudyForum.Core.Helpers;
 using Microsoft.AspNetCore.Authentication;
+using FStudyForum.Core.Models.DTOs.LockUser;
 
 namespace FStudyForum.API.Controllers;
 
@@ -356,6 +357,90 @@ public class AuthController : ControllerBase
             });
         }
     }
-
-
+    [HttpPost("locked")]
+    public async Task<IActionResult> LockUser([FromBody] LockUserDTO lockUserDTO)
+    {
+        try
+        {
+            var result = await _userService.LockUser(lockUserDTO);
+            return Ok(new Response
+            {
+                Status = ResponseStatus.SUCCESS,
+                Message = "Lock user successfully",
+                Data = result
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new Response
+            {
+                Status = ResponseStatus.ERROR,
+                Message = ex.Message
+            });
+        }
+    }
+    [HttpPost("unlocked")]
+    public async Task<IActionResult> UnlockUser([FromBody] LockUserDTO lockUserDTO)
+    {
+        try
+        {
+            var result = await _userService.UnlockUser(lockUserDTO);
+            return Ok(new Response
+            {
+                Status = ResponseStatus.SUCCESS,
+                Message = "Unlock user successfully",
+                Data = result
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new Response
+            {
+                Status = ResponseStatus.ERROR,
+                Message = ex.Message
+            });
+        }
+    }
+    [HttpGet("{userName}/is-locked")]
+    public async Task<IActionResult> IsUserLocked(string userName)
+    {
+        try
+        {
+            var result = await _userService.IsUserLocked(userName);
+            return Ok(new Response
+            {
+                Status = ResponseStatus.SUCCESS,
+                Message = result ? "Check user locked successfully" : "Check user not locked successfully",
+                Data = result
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new Response
+            {
+                Status = ResponseStatus.ERROR,
+                Message = ex.Message
+            });
+        }
+    }
+    [HttpGet("{userName}/unlock-time")]
+    public async Task<IActionResult> GetUnlockTime(string userName)
+    {
+        try
+        {
+            var unlockTime = await _userService.GetUnlockTime(userName);
+            if (unlockTime.HasValue)
+            {
+                return Ok(unlockTime.Value);
+            }
+            else
+            {
+                return Ok("User is not locked.");
+            }
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
 }

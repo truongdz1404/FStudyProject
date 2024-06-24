@@ -7,7 +7,6 @@ import { Drawer } from "@material-tailwind/react";
 
 const Layout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
-
   const openSidebar = React.useCallback(() => setIsSidebarOpen(true), []);
   const closeSidebar = React.useCallback(() => setIsSidebarOpen(false), []);
   return (

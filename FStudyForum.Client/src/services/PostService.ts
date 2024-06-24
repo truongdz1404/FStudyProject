@@ -1,3 +1,4 @@
+
 import { ResponseWith } from "@/types/response";
 import api from "./api";
 import { CreatePost, Post } from "@/types/post";
@@ -25,4 +26,5 @@ const PostService = {
   create,
   getById
 };
+
 export default PostService;

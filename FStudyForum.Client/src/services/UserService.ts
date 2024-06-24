@@ -16,5 +16,5 @@ const UserService = {
   getProfile,
   getAll
 };
-
 export default UserService;
+

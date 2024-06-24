@@ -1,12 +1,16 @@
 import { FC, Suspense, lazy } from "react";
 import { Navigate, Outlet, useRoutes } from "react-router-dom";
-
 import AuthGuard from "@/helpers/guards/AuthGuard";
 import NotFound from "@/components/NotFound";
 import Layout from "@/components/layout/Layout";
+import BanUser from "./helpers/guards/BanUser";
 import WelcomeGuard from "@/helpers/guards/WelcomeGuard";
 import AuthLayout from "@/components/layout/AuthLayout";
 import RoleBasedGuard from "@/helpers/guards/RoleBasedGuard";
+import Donate from "./pages/donate";
+import Payment from "./pages/donate/payment";
+import Notification from "./pages/donate/notification";
+import SavePost from "./pages/post/save";
 import { ROLE } from "@/helpers/constants";
 
 const Popular = lazy(() => import("@/pages/popular"));
@@ -17,7 +21,6 @@ const ConfirmEmail = lazy(() => import("@/pages/auth/confirm-email"));
 const ChangePassword = lazy(
   () => import("@/pages/auth/reset-password/change-password")
 );
-
 const SubmitPage = lazy(() => import("@/pages/submit"));
 const Comments = lazy(() => import("@/pages/topic/comments"));
 const TopcicManager = lazy(() => import("@/pages/manager/topics"));
@@ -75,6 +78,35 @@ const Router: FC = () => {
           ]
         },
         {
+          path: "donate",
+          children: [
+            {
+              index: true,
+              element: (
+                <Suspense>
+                  <Donate />
+                </Suspense>
+              )
+            },
+            {
+              path: "payment",
+              element: (
+                <Suspense>
+                  <Payment />
+                </Suspense>
+              )
+            },
+            {
+              path: "success",
+              element: (
+                <Suspense>
+                  <Notification />
+                </Suspense>
+              )
+            }
+          ]
+        },
+        {
           path: "manager",
           element: (
             <RoleBasedGuard accessibleRoles={[ROLE.Admin]}>
@@ -115,6 +147,11 @@ const Router: FC = () => {
         },
         {
           path: "topic/:name",
+          element: (
+            <BanUser>
+              <Outlet />
+            </BanUser>
+          ),
           children: [
             {
               index: true,
@@ -153,7 +190,17 @@ const Router: FC = () => {
             <Suspense>
               <Profile />
             </Suspense>
-          )
+          ),
+          children: [
+            {
+              path: "save",
+              element: (
+                <Suspense>
+                  <SavePost />
+                </Suspense>
+              )
+            }
+          ]
         },
         {
           path: "settings",
@@ -196,7 +243,6 @@ const Router: FC = () => {
         }
       ]
     },
-
     {
       path: "auth",
       element: <AuthLayout />,

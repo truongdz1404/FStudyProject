@@ -20,3 +20,16 @@ export interface UpdateTopicDTO {
   description: string;
   categories: number[];
 }
+export interface TopicBan {
+  username: string,
+  topicId: number,
+  action: string,
+  bannerTime: number
+}
+export interface TopicBanDTO {
+  username: string,
+  topicId: number,
+}
+export interface Unlocktime {
+  unlockTime: DateTime
+}

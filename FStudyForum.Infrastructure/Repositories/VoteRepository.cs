@@ -4,6 +4,7 @@ using FStudyForum.Core.Models.Entities;
 using FStudyForum.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace FStudyForum.Infrastructure.Repositories
 {
     public class VoteRepository : BaseRepository<Vote>, IVoteRepository
@@ -52,5 +53,7 @@ namespace FStudyForum.Infrastructure.Repositories
             removeVote.IsUp = isUp;
             await Update(removeVote);
         }
+
+
     }
 }

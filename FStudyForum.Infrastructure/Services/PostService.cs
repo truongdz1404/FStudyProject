@@ -1,10 +1,11 @@
 ﻿using AutoMapper;
-using FStudyForum.Core.Constants;
 using FStudyForum.Core.Interfaces.IRepositories;
 using FStudyForum.Core.Interfaces.IServices;
 using FStudyForum.Core.Models.DTOs.Attachment;
 using FStudyForum.Core.Models.DTOs.Post;
 using FStudyForum.Core.Models.Entities;
+using FStudyForum.Core.Models.DTOs;
+using FStudyForum.Core.Models.DTOs.SavePost;
 using Microsoft.AspNetCore.Identity;
 
 
@@ -13,15 +14,30 @@ namespace FStudyForum.Infrastructure.Services
     public class PostService : IPostService
     {
         private readonly IPostRepository _postRepository;
+
         private readonly IVoteRepository _voteRepository;
         private readonly IMapper _mapper;
-        public PostService(IPostRepository postRepository, IMapper mapper, IVoteRepository voteRepository)
+        private readonly UserManager<ApplicationUser> _userManager;
+
+        public PostService(IPostRepository postRepository, IVoteRepository voteRepository, IMapper mapper, UserManager<ApplicationUser> userManager)
         {
             _postRepository = postRepository;
-            _mapper = mapper;
             _voteRepository = voteRepository;
+            _mapper = mapper;
+            _userManager = userManager;
         }
 
+        public async Task<SavePostDTO?> DeletePostByUser(SavePostDTO savedPost)
+        {
+            if (savedPost.UserName == null)
+            {
+                return null;
+            }
+            var postByUser = await _postRepository.FindPostByUser(savedPost)
+                ?? throw new Exception("Not found");
+            await _postRepository.DeleteByUser(postByUser);
+            return savedPost;
+        }
         public async Task<PostDTO> CreatePost(CreatePostDTO postDTO)
         {
             var post = await _postRepository.CreatePostAsync(postDTO);
@@ -94,6 +110,55 @@ namespace FStudyForum.Infrastructure.Services
                 Elapsed = DateTime.Now - p.CreatedAt
             });
             return postDTOs;
+        }
+
+        public async Task<SavePostDTO?> SavePostByUser(SavePostDTO savedPostDTO)
+        {
+            if (savedPostDTO.UserName == null)
+            {
+                return null;
+            }
+            if (!await _postRepository.IsPostExists(savedPostDTO))
+            {
+                throw new Exception("Post is Exists.");
+            }
+            var user = await _userManager.FindByNameAsync(savedPostDTO.UserName)
+                 ?? throw new Exception("User not found");
+            var post = await _postRepository.GetById(savedPostDTO.PostId)
+            ?? throw new Exception(nameof(savedPostDTO.PostId) + "is not valid");
+            var savedPost = _mapper.Map<SavedPost>(savedPostDTO);
+            savedPost.User = user;
+            savedPost.Post = post;
+            await _postRepository.SavePostByUser(savedPost);
+            return savedPostDTO;
+        }
+        public async Task<bool> IsPostExists(SavePostDTO savedPostDTO)
+        {
+            return await _postRepository.IsPostExists(savedPostDTO);
+        }
+
+        public Task<PaginatedData<PostDTO>> GetPaginatedData(int pageNumber, int pageSize)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<IEnumerable<PostDTO>> GetListPostSaveByUser(string username)
+        {
+
+            var posts = await _postRepository.GetListPostSaveByUser(username
+                ?? throw new Exception("Not found."));
+            return posts.Select(p => new PostDTO
+            {
+                Id = p.Id,
+                Title = p.Title,
+                Author = p.Creater.UserName!,
+                TopicName = p.Topic.Name,
+                TopicAvatar = p.Topic.Avatar,
+                Content = p.Content,
+                VoteCount = p.Votes.Count,
+                CommentCount = p.Comments.Count,
+                Elapsed = DateTime.Now - p.CreatedAt
+            });
         }
     }
 }

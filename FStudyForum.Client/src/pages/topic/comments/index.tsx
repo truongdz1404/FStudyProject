@@ -185,6 +185,7 @@ const Comments: FC<Props> = () => {
       [commentId]: !prev[commentId]
     }));
   };
+  if (loading || !post) return null;
 
   const renderComment = (comment: Comment, level = 0) => (
     <div
@@ -239,7 +240,7 @@ const Comments: FC<Props> = () => {
               <span className="text-xs">Share</span>
             </div>
             <div className="action flex items-center">
-              <MenuItemPost />
+              <MenuItemPost post={post} />
             </div>
           </div>
           {replyToCommentId === comment.id && (
@@ -280,7 +281,6 @@ const Comments: FC<Props> = () => {
     </div>
   );
 
-  if (loading || !post) return null;
   return (
     <div className="relative">
       {error && (
