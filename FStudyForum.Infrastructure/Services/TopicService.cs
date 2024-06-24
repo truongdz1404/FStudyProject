@@ -34,6 +34,8 @@ public class TopicService : ITopicService
                 Id = topic.Id,
                 Name = topic.Name,
                 Description = topic.Description,
+                Avatar = topic.Avatar,
+                Banner = topic.Panner,
                 Categories = topic.Categories.Select(c => c.Id).ToList()
             });
         }
@@ -52,6 +54,8 @@ public class TopicService : ITopicService
         {
             Name = topicDto.Name,
             Description = topicDto.Description,
+            //Avatar = topicDto.Avatar,
+            //Panner = topicDto.Banner,
             Categories = categories
         };
         var createdTopic = await _topicRepository.Create(topic);
@@ -72,6 +76,8 @@ public class TopicService : ITopicService
             Id = topic.Id,
             Name = topic.Name,
             Description = topic.Description,
+            Avatar = topic.Avatar,
+            Banner = topic.Panner,
             IsDeleted = topic.IsDeleted,
             Categories = categoryIds
         };
@@ -86,6 +92,8 @@ public class TopicService : ITopicService
 
         existedTopic.Name = topicDto.Name;
         existedTopic.Description = topicDto.Description;
+        existedTopic.Avatar = topicDto.Avatar;
+        existedTopic.Panner = topicDto.Banner;
         existedTopic.Categories.Clear();
         await _topicRepository.Update(existedTopic);
 

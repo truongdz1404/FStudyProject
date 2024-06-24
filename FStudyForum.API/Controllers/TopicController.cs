@@ -19,7 +19,7 @@ namespace FStudyForum.API.Controllers
         }
 
 
-        [HttpGet("active-all"), Authorize]
+        [HttpGet("active-all")]
         public async Task<IActionResult> GetAllActiveTopics()
         {
             var activeTopics = await _topicService.GetActiveTopics();

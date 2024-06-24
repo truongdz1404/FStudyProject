@@ -3,13 +3,11 @@ import { Alert, Chip, Input, Step, Stepper } from "@material-tailwind/react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import * as Yup from "yup";
-import { ChevronLeft, ChevronRight, CircleAlert } from "lucide-react";
+import { ChevronLeft, ChevronRight, CircleAlert, X } from "lucide-react";
 import { motion } from "framer-motion";
 import { Category } from "@/types/category"; 
 import TopicService from "@/services/TopicService";
 import CategoryService from "@/services/CategoryService";
-import Success from "@/assets/images/motivation.gif";
-import { X } from "lucide-react"; 
 
 interface AddTopicPopupProps {
   onClose: () => void;
@@ -19,6 +17,8 @@ interface AddTopicPopupProps {
 interface AddTopicFormInputs {
   topicName: string;
   description: string;
+  avatar: string; 
+  banner: string; 
 }
 
 const validation = Yup.object().shape({
@@ -26,7 +26,9 @@ const validation = Yup.object().shape({
     .trim()
     .required("Topic name is required")
     .max(50, "Topic name must be no more than 50 characters"),
-  description: Yup.string().trim().required("Description is required")
+  description: Yup.string().trim().required("Description is required"),
+  avatar: Yup.string().required("Avatar is required"), 
+  banner: Yup.string().required("Banner is required"), 
 });
 
 const AddTopicPopup: React.FC<AddTopicPopupProps> = ({
@@ -41,11 +43,14 @@ const AddTopicPopup: React.FC<AddTopicPopupProps> = ({
   const [isFirstStep, setIsFirstStep] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [bannerPreview, setBannerPreview] = useState<string | null>(null);
 
   const {
     register,
     handleSubmit,
     trigger,
+    setValue,
     formState: { errors }
   } = useForm<AddTopicFormInputs>({
     mode: "onTouched",
@@ -53,7 +58,7 @@ const AddTopicPopup: React.FC<AddTopicPopupProps> = ({
   });
 
   useEffect(() => {
-    (async () => {
+    const fetchCategories = async () => {
       try {
         setLoading(true);
         const fetchedCategories = await CategoryService.getAllCategory();
@@ -63,7 +68,9 @@ const AddTopicPopup: React.FC<AddTopicPopupProps> = ({
       } finally {
         setLoading(false);
       }
-    })();
+    };
+
+    fetchCategories();
   }, []);
 
   const handleNext = async () => {
@@ -71,6 +78,9 @@ const AddTopicPopup: React.FC<AddTopicPopupProps> = ({
     switch (activeStep) {
       case 0:
         isValid = await trigger(["topicName", "description"]);
+        break;
+      case 1:
+        isValid = await trigger(["avatar", "banner"]);
         break;
       default:
         isValid = true;
@@ -87,6 +97,8 @@ const AddTopicPopup: React.FC<AddTopicPopupProps> = ({
       const newTopic = {
         name: data.topicName,
         description: data.description,
+        avatar: data.avatar,
+        banner: data.banner,
         categories: selectedCategories
       };
       await TopicService.create(newTopic);
@@ -98,6 +110,35 @@ const AddTopicPopup: React.FC<AddTopicPopupProps> = ({
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleCategoryChange = (categoryId: number) => {
+    setSelectedCategories((prevCategories) =>
+      prevCategories.includes(categoryId)
+        ? prevCategories.filter((id) => id !== categoryId)
+        : [...prevCategories, categoryId]
+    );
+  };
+
+  const handleFileChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    field: "avatar" | "banner"
+  ) => {
+    const file = event.target.files?.[0] || null;
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const previewUrl = reader.result as string;
+      if (field === "avatar") {
+        setAvatarPreview(previewUrl);
+        setValue("avatar", previewUrl); 
+      } else if (field === "banner") {
+        setBannerPreview(previewUrl);
+        setValue("banner", previewUrl); 
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   const nextStep = () => {
@@ -114,24 +155,14 @@ const AddTopicPopup: React.FC<AddTopicPopupProps> = ({
     }
   };
 
-  const handleCategoryChange = (categoryId: number) => {
-    setSelectedCategories((prevCategories) =>
-      prevCategories.includes(categoryId)
-        ? prevCategories.filter((id) => id !== categoryId)
-        : [...prevCategories, categoryId]
-    );
-  };
-
   const renderStep = (step: number) => {
     return (
       <>
-        <div className={step !== 0 ? "hidden" : ""}>
-          <div className="mb-6">
-            <p className="text-xl font-semibold">Topic Information</p>
-            <p className="text-xs text-gray-600 text-left">
-              Provide details about the topic you want to create
-            </p>
-          </div>
+        <div className={`mb-6 ${step !== 0 ? "hidden" : ""}`}>
+          <p className="text-xl font-semibold">Topic Information</p>
+          <p className="text-xs text-gray-600 text-left">
+            Provide details about the topic you want to create
+          </p>
           <div className="mb-4">
             <label htmlFor="topicName" className="block font-bold mb-1">
               Topic Name
@@ -142,10 +173,11 @@ const AddTopicPopup: React.FC<AddTopicPopupProps> = ({
               placeholder="Enter topic name"
               className="border border-gray-300 rounded px-2 py-1 w-full"
               {...register("topicName")}
-              error={Boolean(errors.topicName?.message)}            />
+              error={Boolean(errors.topicName)}
+            />
             {errors.topicName && (
               <span className="text-red-500 text-xs mt-1">
-                <CircleAlert className="w-3 h-3" /> {errors.topicName.message}
+                {errors.topicName.message}
               </span>
             )}
           </div>
@@ -161,47 +193,101 @@ const AddTopicPopup: React.FC<AddTopicPopupProps> = ({
             ></textarea>
             {errors.description && (
               <span className="text-red-500 text-xs mt-1">
-                <CircleAlert className="w-3 h-3" /> {errors.description.message}
+                {errors.description.message}
               </span>
             )}
           </div>
         </div>
-        <div className={step !== 1 ? "hidden" : ""}>
-          <div className="mb-6">
-            <p className="text-xl font-semibold">Select Categories</p>
-            <p className="text-xs text-gray-600 text-left">
-              Choose categories that fit your topic
-            </p>
-            <div className="overflow-x-auto max-h-[20rem]">
-              <div className="mt-6 w-full flex flex-wrap gap-2">
-                {categories.map((category) => (
-                  <div
-                    key={category.id}
-                    onClick={() => handleCategoryChange(category.id)}
-                    className="hover:cursor-pointer"
-                  >
-                    <Chip
-                      color="blue-gray"
-                      variant={
-                        selectedCategories.includes(category.id)
-                          ? "filled"
-                          : "ghost"
-                      }
-                      value={category.name}
-                      className="rounded-full capitalize"
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
+        <div className={`mb-6 ${step !== 1 ? "hidden" : ""}`}>
+          <p className="text-xl font-semibold">Add Images</p>
+          <p className="text-xs text-gray-600 text-left">
+            Upload avatar and banner images for your topic
+          </p>
+          <div className="mb-4">
+            <label htmlFor="avatar" className="block font-bold mb-1">
+              Avatar
+            </label>
+            <input
+              id="avatar"
+              type="file"
+              accept="image/*"
+              onChange={(e) => handleFileChange(e, "avatar")}
+              className="block w-full text-sm text-gray-500
+                file:mr-4 file:py-2 file:px-4
+                file:rounded-full file:border-0
+                file:text-sm file:font-semibold
+                file:bg-blue-50 file:text-blue-700
+                hover:file:bg-blue-100"
+            />
+            {avatarPreview && (
+              <img
+                src={avatarPreview}
+                alt="Avatar Preview"
+                className="mt-2 h-24 w-24 object-cover rounded-full"
+              />
+            )}
+            {errors.avatar && (
+              <span className="text-red-500 text-xs mt-1">
+                <CircleAlert className="w-3 h-3 inline" /> {errors.avatar.message}
+              </span>
+            )}
+          </div>
+          <div className="mb-4">
+            <label htmlFor="banner" className="block font-bold mb-1">
+              Banner
+            </label>
+            <input
+              id="banner"
+              type="file"
+              accept="image/*"
+              onChange={(e) => handleFileChange(e, "banner")}
+              className="block w-full text-sm text-gray-500
+              file:mr-4 file:py-2 file:px-4
+              file:rounded-full file:border-0
+              file:text-sm file:font-semibold
+              file:bg-blue-50 file:text-blue-700
+              hover:file:bg-blue-100"
+            />
+            {bannerPreview && (
+              <img
+                src={bannerPreview}
+                alt="Banner Preview"
+                className="mt-2 h-24 w-full object-cover rounded"
+              />
+            )}
+            {errors.banner && (
+              <span className="text-red-500 text-xs mt-1">
+                <CircleAlert className="w-3 h-3 inline" /> {errors.banner.message}
+              </span>
+            )}
           </div>
         </div>
-        <div className={step !== 2 ? "hidden" : ""}>
-          <div className="mt-6 flex flex-col items-center justify-center">
-            <img className="w-20 h-20" src={Success} alt="Success" />
-            <p className="text-lg font-semibold text-blue-gray-800">
-              Your topic has been successfully created!
-            </p>
+        <div className={`mb-6 ${step !== 2 ? "hidden" : ""}`}>
+          <p className="text-xl font-semibold">Select Categories</p>
+          <p className="text-xs text-gray-600 text-left">
+            Choose categories that fit your topic
+          </p>
+          <div className="overflow-x-auto max-h-[20rem]">
+            <div className="mt-6 w-full flex flex-wrap gap-2">
+              {categories.map((category) => (
+                <div
+                  key={category.id}
+                  onClick={() => handleCategoryChange(category.id)}
+                  className="hover:cursor-pointer"
+                >
+                  <Chip
+                    color="blue-gray"
+                    variant={
+                      selectedCategories.includes(category.id)
+                        ? "filled"
+                        : "ghost"
+                    }
+                    value={category.name}
+                    className="rounded-full capitalize"
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </>
@@ -211,15 +297,15 @@ const AddTopicPopup: React.FC<AddTopicPopupProps> = ({
   return (
     <div className="fixed top-0 left-0 w-full h-full bg-gray-700 bg-opacity-50 flex justify-center items-center">
       <form
-        className="bg-white p-8 rounded-md w-96 relative" 
+        className="bg-white p-8 rounded-md w-96 relative"
         onSubmit={handleSubmit(handleAddTopic)}
       >
         <button
           type="button"
-          onClick={onClose} 
+          onClick={onClose}
           className="absolute top-2 right-2 p-2 rounded-full bg-gray-200 hover:bg-gray-300"
         >
-          <X className="w-6 h-6 text-gray-600" /> 
+          <X className="w-6 h-6 text-gray-600" />
         </button>
         <h2 className="text-xl font-bold mb-4">Add Topic</h2>
         {error && (
@@ -231,33 +317,11 @@ const AddTopicPopup: React.FC<AddTopicPopupProps> = ({
           activeStep={activeStep}
           isLastStep={(value) => setIsLastStep(value)}
           isFirstStep={(value) => setIsFirstStep(value)}
-          lineClassName="bg-orange-200"
-          activeLineClassName="bg-deep-orange-400"
           className="mb-4"
         >
-          <Step
-            className="!bg-orange-300 !text-white w-8 h-8"
-            activeClassName="!bg-deep-orange-400"
-            completedClassName="!bg-deep-orange-400"
-          >
-            1
-          </Step> 
-          <Step
-            className="!bg-orange-300 !text-white w-8 h-8"
-           
-
-            activeClassName="!bg-deep-orange-400"
-            completedClassName="!bg-deep-orange-400"
-          >
-            2
-          </Step>
-          <Step
-            className="!bg-orange-300 !text-white w-8 h-8"
-            activeClassName="!bg-deep-orange-400"
-            completedClassName="!bg-deep-orange-400"
-          >
-            3
-          </Step>
+          <Step>1</Step>
+          <Step>2</Step>
+          <Step>3</Step>
         </Stepper>
         <motion.div
           key={activeStep}
