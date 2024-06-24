@@ -12,7 +12,7 @@ const HomePage: React.FC = () => {
     root: lastPostRef.current,
     threshold: 1
   });
-  const { data, fetchNextPage } = useInfiniteQuery({ 
+  const { data, fetchNextPage } = useInfiniteQuery({
     queryKey: ["home-infinite-query"],
     queryFn: async ({ pageParam = 1 }) => {
       const posts = await PostService.get(
@@ -31,6 +31,10 @@ const HomePage: React.FC = () => {
   }, [entry, fetchNextPage]);
 
   const posts = data?.pages.flatMap(p => p) ?? [];
+
+  // const updatePost = (index: number, editedPost: Post) => {
+  //   posts = posts.map((item, i) => (index === i ? editedPost : item));
+  // };
 
   if (!posts) return <></>;
   return (
