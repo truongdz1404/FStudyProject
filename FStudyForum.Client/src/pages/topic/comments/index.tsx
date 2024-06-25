@@ -6,7 +6,6 @@ import {
   ArrowBigUp,
   ArrowBigDown,
   MessageSquare,
-  Share,
   Plus,
   Minus
 } from "lucide-react";
@@ -20,6 +19,9 @@ import { Comment, CreateComment } from "@/types/comment";
 import MenuItemPost from "@/components/post/MenuItem";
 import CommentInput from "@/components/comment/CommentInput";
 import ReplyInput from "@/components/comment/ReplyInput";
+import ContentLayout from "@/components/layout/ContentLayout";
+
+import Default from "@/assets/images/user.png";
 
 interface Props {}
 
@@ -115,7 +117,7 @@ const Comments: FC<Props> = () => {
 
   const handleBack = () => {
     if (state?.from) {
-      navigate(state?.from);
+      navigate(-1);
     } else {
       navigate(`/topic/${topicName}`);
     }
@@ -188,14 +190,10 @@ const Comments: FC<Props> = () => {
   if (loading || !post) return null;
 
   const renderComment = (comment: Comment, level = 0) => (
-    <div
-      key={comment.id}
-      className="border-b py-2"
-      style={{ marginLeft: level * 20 }}
-    >
+    <div key={comment.id} className="py-2 " style={{ marginLeft: level * 20 }}>
       <div className="flex mb-2">
         <img
-          src="https://preview.redd.it/snoovatar/avatars/nftv2_bmZ0X2VpcDE1NToxMzdfNzg2MWVmZmVhZDUzMWI2MGQ3YTE5NDhlMGQ5OTRiMzU1MTU2ZmU2NV8xOTU_rare_dc319928-6fcd-434b-bc82-7e58c385461f-headshot.png?width=64&height=64&crop=smart&auto=webp&s=515bf177007c6cc7c32f0837cd9dfb7f127bcbe0"
+          src={Default}
           alt="avatar"
           className="w-8 h-8 rounded-full mr-2"
           style={{ flexShrink: 0 }}
@@ -205,14 +203,11 @@ const Comments: FC<Props> = () => {
             className="flex items-center"
             style={{ marginTop: "0.5rem", marginBottom: "0.5rem" }}
           >
-            <span className="font-bold text-sm">{comment.author}</span>
+            <span className="font-bold text-xs">{comment.author}</span>
           </div>
           <span className="text-xs text-gray-500">{comment.createdAt}</span>
           <span className="font text-sm">{comment.content}</span>
-          <div
-            className="flex space-x-7 text-bold-black-700"
-            style={{ marginTop: "0.5rem", marginBottom: "0.5rem" }}
-          >
+          <div className="flex space-x-7 text-gray-700 my-[0.5rem]">
             <div className="action flex items-center rounded-full bg-blue-gray-30">
               <div className="hover:bg-blue-gray-100/75 rounded-full p-[0.25rem] cursor-pointer">
                 <ArrowBigUp
@@ -235,10 +230,7 @@ const Comments: FC<Props> = () => {
               <MessageSquare strokeWidth={1.8} className="w-4 h-4" />
               <span className="text-xs">Reply</span>
             </div>
-            <div className="action flex items-center space-x-2 px-3 rounded-full bg-blue-gray-30 hover:bg-blue-gray-100/75 transition cursor-pointer">
-              <Share className="w-4 h-4" strokeWidth={1.8} />
-              <span className="text-xs">Share</span>
-            </div>
+
             <div className="action flex items-center">
               <MenuItemPost post={post} />
             </div>
@@ -253,14 +245,16 @@ const Comments: FC<Props> = () => {
           {comment.replies && comment.replies.length > 0 && (
             <>
               <button
-                className="text-xs text-blue-500 flex items-center space-x-1"
+                className="text-xs text-gray-500 flex items-center space-x-1"
                 onClick={() => toggleExpand(comment.id)}
               >
-                {expandedComments[comment.id] ? (
-                  <Minus size={12} />
-                ) : (
-                  <Plus size={12} />
-                )}
+                <div className="p-0.5 border rounded-full">
+                  {expandedComments[comment.id] ? (
+                    <Minus size={12} />
+                  ) : (
+                    <Plus size={12} />
+                  )}
+                </div>
                 <span>
                   {expandedComments[comment.id]
                     ? ""
@@ -268,7 +262,7 @@ const Comments: FC<Props> = () => {
                 </span>
               </button>
               {expandedComments[comment.id] && (
-                <div className="ml-4 border-l-2 pl-2">
+                <div className="ml-2 border-l-2">
                   {comment.replies.map(reply =>
                     renderComment(reply, level + 1)
                   )}
@@ -282,29 +276,31 @@ const Comments: FC<Props> = () => {
   );
 
   return (
-    <div className="relative">
-      {error && (
-        <Alert color="red" className="mb-4">
-          {error}
-        </Alert>
-      )}
-      {loading && <p>Loading...</p>}
-      <div
-        onClick={handleBack}
-        className="rounded-full bg-blue-gray-50 hover:bg-blue-gray-100 p-2 absolute top-0 -left-6 hidden md:block"
-      >
-        <ArrowLeft className="w-4 h-4" />
-      </div>
-      <PostItem data={post} hideLess={false} />
-      <CommentInput onSubmit={handleCreateComment} />
-      <div className="mt-4">
-        {comments && comments.length > 0 ? (
-          comments.map(comment => renderComment(comment))
-        ) : (
-          <p>No comments yet.</p>
+    <ContentLayout>
+      <div className="relative">
+        {error && (
+          <Alert color="red" className="mb-4">
+            {error}
+          </Alert>
         )}
+        {loading && <p>Loading...</p>}
+        <div
+          onClick={handleBack}
+          className="rounded-full bg-blue-gray-50 hover:bg-blue-gray-100 p-2 absolute top-0 -left-10 hidden md:block"
+        >
+          <ArrowLeft className="w-4 h-4" />
+        </div>
+        <PostItem data={post} hideLess={false} />
+        <CommentInput onSubmit={handleCreateComment} />
+        <div className="mt-4">
+          {comments && comments.length > 0 ? (
+            comments.map(comment => renderComment(comment))
+          ) : (
+            <p className="text-sm text-center">No comments yet</p>
+          )}
+        </div>
       </div>
-    </div>
+    </ContentLayout>
   );
 };
 

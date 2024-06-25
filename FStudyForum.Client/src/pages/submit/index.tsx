@@ -7,18 +7,14 @@ import Demo from "@/assets/images/user.png";
 import useOutsideClick from "@/hooks/useOutsideClick";
 import TopicService from "@/services/TopicService";
 import { AxiosError } from "axios";
-import { toast } from "react-toastify";
 import { Response } from "@/types/response";
 import ContentLayout from "@/components/layout/ContentLayout";
 import Editor from "@/components/post/Editor";
-import { useAuth } from "@/hooks/useAuth";
-import { checkIfTopicIsLocked } from "@/helpers/checkTopicLockedStatus"; 
 const SubmitPage = () => {
   const [topic, setTopic] = React.useState<Topic | undefined>();
   const [selectedIndex, setSelectedIndex] = React.useState(-1);
   const [foundTopics, setFoundTopics] = React.useState<Topic[]>([]);
   const searchRef = useOutsideClick(() => closeOpenSearch());
-  const { user } = useAuth();
   const [openSearch, setOpenSearch] = React.useState(false);
   const closeOpenSearch = () => {
     setOpenSearch(false);
@@ -36,7 +32,9 @@ const SubmitPage = () => {
       setFoundTopics(founds);
     } catch (e) {
       const error = e as AxiosError;
-      toast((error?.response?.data as Response)?.message || error.message);
+      console.error(
+        (error?.response?.data as Response)?.message || error.message
+      );
     }
   };
 
@@ -57,17 +55,8 @@ const SubmitPage = () => {
   };
 
   const handleSelect = async (select: Topic) => {
-    try {
-      const { locked, timeDiffString } = await checkIfTopicIsLocked(`${user?.username}`, select.name);
-      if (locked) {
-        select.banner = `Topic is locked. You need ${timeDiffString} to unlock.`;      
-      }   
-      setTopic(select);
-      closeOpenSearch();
-    } catch (error) {
-      
-    }
-   
+    setTopic(select);
+    closeOpenSearch();
   };
 
   return (

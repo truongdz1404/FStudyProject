@@ -4,7 +4,7 @@ import { ArrowBigDown, ArrowBigUp, MessageSquare, Share } from "lucide-react";
 import { Post } from "@/types/post";
 import { Avatar } from "@material-tailwind/react";
 
-import Demo from "@/assets/images/user.png";
+import Default from "@/assets/images/defaultTopic.png";
 import { cn, formatElapsedTime } from "@/helpers/utils";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import React from "react";
@@ -23,8 +23,14 @@ const PostItem: FC<PostProps> = ({ data, hideLess = true }) => {
   const { pathname } = useLocation();
   const actionRefs = React.useRef<HTMLElement[]>([]);
   const navigate = useNavigate();
+
+  React.useEffect(() => {
+    setVoteType(data.voteType);
+    setVoteCount(data.voteCount);
+  }, [data]);
+
   const handleOutsideClick = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (!containerRef.current) return;
+    if (!hideLess || !containerRef.current) return;
     const actions = Array.from(
       containerRef.current.querySelectorAll(".action")
     ) as HTMLElement[];
@@ -35,6 +41,7 @@ const PostItem: FC<PostProps> = ({ data, hideLess = true }) => {
       containerRef.current.contains(event.target as Node) &&
       !actionRefs.current.some(action => action.contains(event.target as Node))
     ) {
+      console.log(data);
       navigate(`/topic/${data.topicName}/comments/${data.id}`, {
         state: { data, from: pathname }
       });
@@ -49,10 +56,13 @@ const PostItem: FC<PostProps> = ({ data, hideLess = true }) => {
     );
     try {
       const count = await VoteService.votePost(data.id, realType);
+      data.voteType = realType;
       data.voteCount = count;
       setVoteCount(count);
     } catch (error) {
       //Back to pre vote type and vote count
+      data.voteType = voteType;
+      data.voteCount = voteCount;
       setVoteType(voteType);
       setVoteCount(voteCount);
     }
@@ -67,7 +77,7 @@ const PostItem: FC<PostProps> = ({ data, hideLess = true }) => {
     <div
       ref={containerRef}
       onClick={handleOutsideClick}
-      className="px-4 py-1 w-full "
+      className="py-1 w-full "
     >
       <div className="flex justify-between">
         <div className="flex items-center gap-x-2">
@@ -75,7 +85,7 @@ const PostItem: FC<PostProps> = ({ data, hideLess = true }) => {
             to={`/topic/${data.topicName}`}
             className="action flex items-center gap-x-2 z-20"
           >
-            <Avatar src={Demo} className="w-6 h-6" />
+            <Avatar src={Default} className="w-6 h-6" />
             <span className="text-xs">{`t/${data.topicName}`}</span>
           </Link>
           <span className="text-xs font-light hidden lg:block">•</span>

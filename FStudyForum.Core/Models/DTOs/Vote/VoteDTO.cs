@@ -6,4 +6,5 @@ public class VoteDTO
 {
     public long PostId { get; set; }
     public VoteType Type { get; set; }
+
 }

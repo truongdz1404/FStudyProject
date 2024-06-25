@@ -4,12 +4,12 @@ import { useAuth } from "@/hooks/useAuth";
 import { Alert } from "@material-tailwind/react";
 import { AxiosError } from "axios";
 import { Response } from "@/types/response";
-import { checkIfTopicIsLocked } from "@/helpers/checkTopicLockedStatus"; 
+import { checkIfTopicIsLocked } from "@/helpers/checkTopicLockedStatus";
 import React from "react";
 
-const BanUser: FC<PropsWithChildren> = ({ children }) => {
+const TopicGuard: FC<PropsWithChildren> = ({ children }) => {
   const { user } = useAuth();
-  const { name} = useParams<{ name: string}>();
+  const { name } = useParams<{ name: string }>();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [timeDiff, setTimeDiff] = useState("");
@@ -17,10 +17,13 @@ const BanUser: FC<PropsWithChildren> = ({ children }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      console.log(name)
+      console.log(name);
       try {
         if (user) {
-          const { locked, timeDiffString } = await checkIfTopicIsLocked(user.username, `${name}`,);
+          const { locked, timeDiffString } = await checkIfTopicIsLocked(
+            user.username,
+            `${name}`
+          );
           if (locked) {
             setTimeDiff(timeDiffString);
           }
@@ -46,4 +49,4 @@ const BanUser: FC<PropsWithChildren> = ({ children }) => {
   return null;
 };
 
-export default BanUser;
+export default TopicGuard;

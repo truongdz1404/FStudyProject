@@ -60,7 +60,7 @@ namespace FStudyForum.Infrastructure.Services
                 TopicAvatar = post.Topic.Avatar,
                 Content = post.Content,
                 VoteType = await _voteRepository.GetVotedType(username, id),
-                VoteCount = post.Votes.Count,
+                VoteCount = await _postRepository.GetVoteCount(post.Id),
                 CommentCount = post.Comments.Count,
                 Attachments = post.Attachments.Select(a => new AttachmentDTO { Id = a.Id, Type = a.Type, Url = a.FileUrl }),
                 Elapsed = DateTime.Now - post.CreatedAt,
