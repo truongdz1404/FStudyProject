@@ -129,10 +129,10 @@ const Profile = () => {
       </Accordion>
 
       <div className="flex w-max gap-4">
-        {tabItems.map(({ label, path }) => (
-          <Link to={path}>
+        {tabItems.map(({ label, path }, index) => (
+          <Link to={path} key={index}>
           <Button
-            key={label}
+            key={index}
             variant="text"
             size="sm"
             className="rounded-full bg-blue-gray-50"

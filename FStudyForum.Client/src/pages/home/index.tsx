@@ -20,7 +20,6 @@ const HomePage: React.FC = () => {
       </Alert>
     );
   if (isLoading) return <></>;
-  console.log(posts);
   return (
     <ContentLayout>
       {posts?.map((post, index) => (

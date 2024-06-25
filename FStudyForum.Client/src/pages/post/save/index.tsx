@@ -12,10 +12,9 @@ const SavePost: React.FC = () => {
     error,
     isLoading
   } = useQuery({
-    queryKey: ["savePost"],
+    queryKey: ["save-post"],
     queryFn: () => SavedPostService.listSavedPosts(`${user?.username}`)
   });
-  console.log(posts);
   if (error)
     return (
       <Alert color="red" className="p-4">

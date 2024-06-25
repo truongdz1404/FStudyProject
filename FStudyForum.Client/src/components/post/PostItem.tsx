@@ -3,7 +3,6 @@ import MenuItemPost from "./MenuItem";
 import { ArrowBigDown, ArrowBigUp, MessageSquare, Share } from "lucide-react";
 import { Post } from "@/types/post";
 import { Avatar } from "@material-tailwind/react";
-
 import Demo from "@/assets/images/user.png";
 import { cn, formatElapsedTime } from "@/helpers/utils";
 import { Link, useLocation, useNavigate } from "react-router-dom";
