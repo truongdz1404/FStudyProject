@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { Response } from "@/types/response";
 import React, { useEffect } from "react";
+import ReportForm from "@/pages/manager/report/form";
 import {
   Button,
   Menu,
@@ -15,8 +16,10 @@ import {
   MenuList,
   MenuItem,
   Typography,
+  Dialog,
   Radio
 } from "@material-tailwind/react";
+import { usePosts } from "@/hooks/usePosts";
 import { cn } from "@/helpers/utils";
 import { Post } from "@/types/post";
 import { useAuth } from "@/hooks/useAuth";
@@ -31,13 +34,18 @@ type MenuItemPostProps = {
   post: Post;
 };
 const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
+  const [showReportModal, setShowReportModal] = React.useState(false);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [isSaved, setIsSaved] = React.useState(false);
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [topic, setTopic] = React.useState<Topic>(() => ({} as Topic));
   const [selectedTime, setSelectedTime] = React.useState("1 day");
+  const { setPostData } = usePosts();
 
   const { user } = useAuth();
+
+  const handleOpenReport = () => setShowReportModal(!showReportModal);
+
   useEffect(() => {
     const checkPostByUserExist = async () => {
       const isPostExists = await SavedPostService.isPostSaved(
@@ -62,7 +70,7 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
     const topicBan = async () => {
       const [time, action] = selectedTime.split(" ");
       try {
-       const response = await BanUserService.lockedUserByTopic({
+        const response = await BanUserService.lockedUserByTopic({
           username: post.author,
           topicId: topic.id,
           action: action,
@@ -71,7 +79,9 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
         showSuccessToast(response.message);
       } catch (e) {
         const error = e as AxiosError<Response>;
-        showErrorToast((error?.response?.data as Response)?.message || error.message);
+        showErrorToast(
+          (error?.response?.data as Response)?.message || error.message
+        );
       }
     };
     topicBan();
@@ -95,7 +105,9 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
       setIsSaved(prev => !prev);
     } catch (e) {
       const error = e as AxiosError<Response>;
-      showErrorToast((error?.response?.data as Response)?.message || error.message);
+      showErrorToast(
+        (error?.response?.data as Response)?.message || error.message
+      );
     }
   };
   const LockedMenuItem = [
@@ -129,7 +141,11 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
     {
       icon: Flag,
       label: "Report",
-      path: "/report"
+      path: "/report",
+      action: () => {
+        setPostData(post);
+        handleOpenReport();
+      }
     },
     {
       icon: Ban,
@@ -150,18 +166,16 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
           </Button>
         </MenuHandler>
         <MenuList className="p-1">
-          {PostMenuItem.map(({ label, icon, path }, key) => {
+          {PostMenuItem.map(({ label, icon, path, action }, key) => {
             const isLastItem = key === PostMenuItem.length - 1;
             return (
               <MenuItem
                 key={label}
-                onClick={
-                  path === "save"
-                    ? () => handleSavedPost(post)
-                    : path === "ban"
-                    ? () => setIsModalOpen(true)
-                    : () => {}
-                }
+                onClick={() => {
+                  if (path === "save") handleSavedPost(post);
+                  else if (path === "ban") setIsModalOpen(true);
+                  else if (action) action();
+                }}
                 className={`flex items-center gap-2 rounded ${
                   isLastItem &&
                   "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
@@ -185,6 +199,13 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
           })}
         </MenuList>
       </Menu>
+      <Dialog
+        className="max-w-[34rem] mb-6 p-5 max-h-full"
+        open={showReportModal}
+        handler={handleOpenReport}
+      >
+        <ReportForm />
+      </Dialog>
       {isModalOpen && (
         <div
           data-dialog-backdrop="dialog"

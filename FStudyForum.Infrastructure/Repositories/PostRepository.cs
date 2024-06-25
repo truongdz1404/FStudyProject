@@ -91,8 +91,43 @@ namespace FStudyForum.Infrastructure.Repositories
                 .Include(p => p.Votes)
                 .Include(p => p.Attachments)
                 .Include(p => p.Comments)
+                .OrderBy(p => p.Id) // Use Skip/Take for pagination
                 .Paginate(query.PageNumber, query.PageSize) //1 2 3 5 
                 .Sort(query.OrderBy)
+                .Where(p => p.Topic.IsDeleted == false)
+                .AsSplitQuery() // EF Core 5.0
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Post>> GetFilterPostsAsync(QueryPostDTO query)
+        {
+            IQueryable<Post> queryable = _dbContext.Posts
+                .Include(p => p.Topic)
+                .Where(p => p.IsDeleted == false)
+                .Include(p => p.Creater)
+                .Include(p => p.Votes)
+                .Include(p => p.Attachments)
+                .Include(p => p.Comments)
+                .Where(p => p.Topic.IsDeleted == false)
+                .AsSplitQuery();
+
+            if (query.TopicId != -1)
+                queryable = queryable.Where(p => p.Topic.Id == query.TopicId);
+
+            switch (query.Feature)
+            {
+                case "hot":
+                    queryable = queryable.OrderByDescending(p => p.Votes.Sum(v => v.IsUp ? 1 : 0) + p.Comments.Count);
+                    break;
+                case "new":
+                    queryable = queryable.OrderByDescending(p => p.CreatedAt);
+                    break;
+                default:
+                    queryable = queryable.OrderBy(p => p.Id);
+                    break;
+            }
+            return await queryable
+                .Paginate(query.PageNumber, query.PageSize)
                 .ToListAsync();
         }
 
@@ -156,5 +191,6 @@ namespace FStudyForum.Infrastructure.Repositories
             .ToListAsync();
             return listPost;
         }
+
     }
 }

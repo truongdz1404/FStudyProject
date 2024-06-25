@@ -7,6 +7,7 @@ const getActiveTopics = async (): Promise<Topic[]> => {
   return response.data;
 };
 
+
 const getTopics = async () => {
   const response = await api.get<ResponseWith<Topic[]>>("/topic/all");
   return response.data.data;

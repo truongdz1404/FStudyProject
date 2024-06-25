@@ -11,6 +11,7 @@ import Donate from "./pages/donate";
 import Payment from "./pages/donate/payment";
 import Notification from "./pages/donate/notification";
 import SavePost from "./pages/post/save";
+import { PostProvider } from "./contexts/posts/PostContext";
 import { ROLE } from "@/helpers/constants";
 
 const Popular = lazy(() => import("@/pages/popular"));
@@ -21,6 +22,8 @@ const ConfirmEmail = lazy(() => import("@/pages/auth/confirm-email"));
 const ChangePassword = lazy(
   () => import("@/pages/auth/reset-password/change-password")
 );
+const ListReport = lazy(() => import("@/pages/manager/report/list"));
+const Response = lazy(() => import("@/pages/manager/report/response"));
 const SubmitPage = lazy(() => import("@/pages/submit"));
 const Comments = lazy(() => import("@/pages/topic/comments"));
 const TopcicManager = lazy(() => import("@/pages/manager/topics"));
@@ -40,7 +43,9 @@ const Router: FC = () => {
       element: (
         <AuthGuard>
           <WelcomeGuard>
-            <Layout />
+            <PostProvider>
+              <Layout />
+            </PostProvider>
           </WelcomeGuard>
         </AuthGuard>
       ),
@@ -156,6 +161,22 @@ const Router: FC = () => {
                   )
                 }
               ]
+            },
+            {
+              path: "report",
+              element: (
+                <Suspense>
+                  <ListReport />
+                </Suspense>
+              ),
+            },
+            {
+              path: "report/:reportId",
+              element: (
+                <Suspense>
+                  <Response />
+                </Suspense>
+              )
             }
           ]
         },

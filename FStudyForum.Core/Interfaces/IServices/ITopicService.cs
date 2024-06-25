@@ -1,3 +1,4 @@
+using FStudyForum.Core.Models.DTOs.Post;
 using FStudyForum.Core.Models.DTOs.Topic;
 using FStudyForum.Core.Models.DTOs.TopicBan;
 
