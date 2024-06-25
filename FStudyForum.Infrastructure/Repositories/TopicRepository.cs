@@ -1,6 +1,8 @@
 using FStudyForum.Core.Interfaces.IRepositories;
+using FStudyForum.Core.Models.DTOs.TopicBan;
 using FStudyForum.Core.Models.Entities;
 using FStudyForum.Infrastructure.Data;
+using Google.Apis.Util;
 using Microsoft.EntityFrameworkCore;
 
 namespace FStudyForum.Infrastructure.Repositories
@@ -72,6 +74,53 @@ namespace FStudyForum.Infrastructure.Repositories
                .Include(t => t.Posts)
                .Include(t => t.Categories)
                .ToListAsync();
+        }
+        public async Task<TopicBan> LockUser(TopicBan lockUser)
+        {
+            await _dbContext.TopicBans.AddAsync(lockUser);
+            await _dbContext.SaveChangesAsync();
+            return lockUser;
+        }
+
+        public async Task<TopicBan> UnlockUser(TopicBan lockUser)
+        {
+            _dbContext.TopicBans.Remove(lockUser);
+            await _dbContext.SaveChangesAsync();
+            return lockUser;
+        }
+
+        public async Task<TopicBan?> GetUserLocked(TopicBanDTO lockUser)
+        {
+            var userLocked = await _dbContext.TopicBans.FirstOrDefaultAsync(t =>
+            t.User.UserName == lockUser.UserName
+            && t.Topic.Id == lockUser.TopicId);
+            return userLocked;
+        }
+        public async Task<DateTimeOffset?> GetUnlockTime(TopicBanDTO lockUser)
+        {
+            var unlockTime = await _dbContext.TopicBans
+            .Where(t => t.User.UserName == lockUser.UserName && t.Topic.Id == lockUser.TopicId)
+            .Select(t => t.BannedTime)
+            .FirstOrDefaultAsync();
+            return unlockTime;
+        }
+        public async Task UpdateTopicBan(TopicBan topicBan)
+        {
+            _dbContext.TopicBans.Update(topicBan);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<Topic?> GetTopicByPost(int postId)
+        {
+            var topic = await _dbContext.Topics.Join(
+                _dbContext.Posts,
+                t => t.Id,
+                p => p.Topic.Id,
+                (t, p) => new { Topic = t, Post = p })
+                .Where(tp => tp.Post.Id.Equals(postId))
+                .Select(tp => tp.Topic)
+                .FirstOrDefaultAsync();
+            return topic;
         }
     }
 

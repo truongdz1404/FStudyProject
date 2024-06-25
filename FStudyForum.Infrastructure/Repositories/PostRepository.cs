@@ -1,8 +1,11 @@
 ﻿using FStudyForum.Core.Interfaces.IRepositories;
+using FStudyForum.Core.Models.DTOs;
 using FStudyForum.Core.Models.DTOs.Post;
+using FStudyForum.Core.Models.DTOs.SavePost;
 using FStudyForum.Core.Models.Entities;
 using FStudyForum.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using FStudyForum.Core.Helpers;
 
 
 namespace FStudyForum.Infrastructure.Repositories
@@ -41,6 +44,32 @@ namespace FStudyForum.Infrastructure.Repositories
             return post;
         }
 
+
+        public async Task DeleteByUser(SavedPost postByUser)
+        {
+            _dbContext.SavedPosts.Remove(postByUser);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<SavedPost?> FindPostByUser(SavePostDTO savePostDTO)
+        {
+            return await _dbContext.SavedPosts.FirstOrDefaultAsync(p => p.Post.Id == savePostDTO.PostId
+            && p.User.UserName == savePostDTO.UserName);
+        }
+
+        public async Task<bool> IsPostExists(SavePostDTO savePostDTO)
+        {
+            var post = await _dbContext.SavedPosts.FirstOrDefaultAsync(p => p.Post.Id == savePostDTO.PostId
+           && p.User.UserName == savePostDTO.UserName);
+            return post == null;
+        }
+
+        public async Task SavePostByUser(SavedPost savedPost)
+        {
+            await _dbContext.SavedPosts.AddAsync(savedPost);
+            await _dbContext.SaveChangesAsync();
+        }
+
         public async Task<Post?> GetPostByIdAsync(long id)
         {
             return await _dbContext.Posts
@@ -53,16 +82,17 @@ namespace FStudyForum.Infrastructure.Repositories
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 
-        public async Task<IEnumerable<Post>> GetPostsAsync()
+        public override async Task<IEnumerable<Post>> GetQuery(QueryParameters query)
         {
             return await _dbContext.Posts
-                .Where(p => p.IsDeleted == false)
-                .Include(p => p.Creater)
                 .Include(p => p.Topic)
+                .Where(p => !p.IsDeleted && !p.Topic.IsDeleted)
+                .Include(p => p.Creater)
                 .Include(p => p.Votes)
                 .Include(p => p.Attachments)
                 .Include(p => p.Comments)
-                .Where(p => p.Topic.IsDeleted == false)
+                .Paginate(query.PageNumber, query.PageSize) //1 2 3 5 
+                .Sort(query.OrderBy)
                 .ToListAsync();
         }
 
@@ -77,6 +107,26 @@ namespace FStudyForum.Infrastructure.Repositories
                 .ToListAsync();
         }
 
+        public async Task<int> GetVoteCount(long id)
+        {
+            return await _dbContext.Votes
+                    .Where(v => v.Post != null && v.Post.Id == id)
+                    .SumAsync(v => v.IsUp ? 1 : -1);
+        }
+
+        public async Task<IList<Post>?> GetVotedPosts(string username)
+        {
+            var posts = await _dbContext.Votes
+                .Include(v => v.Voter)
+                .Include(v => v.Post)
+                .Where(v => v.Voter.UserName == username && v.Post != null)
+                .Select(v => v.Post!)
+                .Distinct()
+                .ToListAsync();
+            return posts;
+        }
+
+
         public async Task<IEnumerable<Post>> SearchPostAsync(string keyword)
         {
             return await _dbContext.Posts
@@ -88,6 +138,23 @@ namespace FStudyForum.Infrastructure.Repositories
                .Include(p => p.Comments)
                .Where(p => p.Topic.IsDeleted == false)
                .ToListAsync();
+        }
+        public async Task<IEnumerable<Post>> GetListPostSaveByUser(string username)
+        {
+            var listPost = await _dbContext.SavedPosts
+            .Where(sp => sp.User.UserName == username && !sp.Post.IsDeleted)
+            .Include(sp => sp.Post)
+            .ThenInclude(p => p.Creater)
+            .Include(sp => sp.Post)
+            .ThenInclude(p => p.Topic)
+            .Include(sp => sp.Post)
+            .ThenInclude(p => p.Votes)
+            .Include(sp => sp.Post)
+            .ThenInclude(p => p.Comments)
+            .Where(sp => !sp.Post.Topic.IsDeleted)
+            .Select(sp => sp.Post)
+            .ToListAsync();
+            return listPost;
         }
     }
 }

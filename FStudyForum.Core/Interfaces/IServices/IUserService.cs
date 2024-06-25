@@ -1,4 +1,5 @@
 using FStudyForum.Core.Models.DTOs.Auth;
+using FStudyForum.Core.Models.DTOs.LockUser;
 using FStudyForum.Core.Models.DTOs;
 using FStudyForum.Core.Models.DTOs.Token;
 using FStudyForum.Core.Models.DTOs.User;
@@ -21,4 +22,8 @@ public interface IUserService
 
     Task<IEnumerable<UserDTO>> SearchUserByName(string keyword);
 
+    Task<UserDTO> LockUser(LockUserDTO lockUserDTO);
+    Task<UserDTO> UnlockUser(LockUserDTO lockUserDTO);
+    Task<bool> IsUserLocked(string userName);
+    Task<DateTimeOffset?> GetUnlockTime(string userName);
 }

@@ -13,17 +13,19 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { Camera, PencilLine, Plus } from "lucide-react";
 import React from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, Outlet, useParams } from "react-router-dom";
 import { Alert } from "@material-tailwind/react";
 import { cn } from "@/helpers/utils";
 import { useAuth } from "@/hooks/useAuth";
 
 const tabItems = [
   {
-    label: "Overview"
+    label: "Overview",
+    path: ""
   },
   {
-    label: "Posts"
+    label: "Posts",
+    path: "save"
   }
 ];
 const Profile = () => {
@@ -127,7 +129,8 @@ const Profile = () => {
       </Accordion>
 
       <div className="flex w-max gap-4">
-        {tabItems.map(({ label }) => (
+        {tabItems.map(({ label, path }) => (
+          <Link to={path}>
           <Button
             key={label}
             variant="text"
@@ -138,6 +141,7 @@ const Profile = () => {
               {label}
             </Typography>
           </Button>
+          </Link>
         ))}
       </div>
       <Button
@@ -157,6 +161,9 @@ const Profile = () => {
         <Typography className="text-sm capitalize font-semibold">
           Hasn't posts yet
         </Typography>
+      </div>
+      <div className="mt-[-80%]">
+        <Outlet />
       </div>
     </ContentLayout>
   );

@@ -12,9 +12,11 @@ import {
 } from "@material-tailwind/react";
 import {
   Album,
+  Layers3,
   AreaChart,
   BookUser,
   ChevronDown,
+  CircleDollarSign,
   Home,
   Rocket,
   SquareGanttChart,
@@ -45,6 +47,11 @@ const sidebarListItems = [
         icon: Tags,
         path: "/topics",
         items: []
+      }, {
+        label: "Donate",
+        icon:  CircleDollarSign ,
+        path: "/donate",
+        items: []
       }
     ]
   },
@@ -71,6 +78,11 @@ const sidebarListItems = [
             label: "Topics",
             icon: Album,
             path: "/manager/topics"
+          },
+          {
+            label: "Categories",
+            icon: Layers3,
+            path: "/manager/categories"
           }
         ]
       }

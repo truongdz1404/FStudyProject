@@ -1,7 +1,15 @@
 import { FC, useState, useEffect } from "react";
 import { AxiosError } from "axios";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
-import { ArrowLeft, ArrowBigUp, ArrowBigDown, MessageSquare, Share, Plus, Minus } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowBigUp,
+  ArrowBigDown,
+  MessageSquare,
+  Share,
+  Plus,
+  Minus
+} from "lucide-react";
 import { Alert } from "@material-tailwind/react";
 import PostService from "@/services/PostService";
 import CommentService from "@/services/CommentService";
@@ -13,22 +21,28 @@ import MenuItemPost from "@/components/post/MenuItem";
 import CommentInput from "@/components/comment/CommentInput";
 import ReplyInput from "@/components/comment/ReplyInput";
 
-interface Props { }
+interface Props {}
+
 const Comments: FC<Props> = () => {
   const navigate = useNavigate();
-  const { name: topicName, id: postId } = useParams<{ name: string; id: string }>();
+  const { name: topicName, id: postId } = useParams<{
+    name: string;
+    id: string;
+  }>();
   const { state } = useLocation();
   const [post, setPost] = useState<Post | undefined>(state?.data);
   const [comments, setComments] = useState<Comment[]>([]);
   const [replyToCommentId, setReplyToCommentId] = useState<number | null>(null);
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-  const [expandedComments, setExpandedComments] = useState<{ [key: number]: boolean }>({});
+  const [expandedComments, setExpandedComments] = useState<{
+    [key: number]: boolean;
+  }>({});
 
   const initializeExpandedComments = (comments: Comment[]) => {
     const expanded: { [key: number]: boolean } = {};
     const traverseComments = (commentList: Comment[]) => {
-      commentList.forEach((comment) => {
+      commentList.forEach(comment => {
         expanded[comment.id] = !comment.replies || comment.replies.length < 3;
         if (comment.replies) {
           traverseComments(comment.replies);
@@ -48,7 +62,7 @@ const Comments: FC<Props> = () => {
     const fetchPost = async () => {
       setLoading(true);
       try {
-        const data = await PostService.getPostById(postId);
+        const data = await PostService.getById(postId);
         setPost(data);
       } catch (e) {
         const error = e as AxiosError;
@@ -83,7 +97,7 @@ const Comments: FC<Props> = () => {
   const structureComments = (comments: Comment[]) => {
     const map: { [key: number]: Comment } = {};
     const roots: Comment[] = [];
-    comments.forEach((comment) => {
+    comments.forEach(comment => {
       comment.replies = [];
       map[comment.id] = comment;
       if (comment.replyId == null) {
@@ -112,7 +126,7 @@ const Comments: FC<Props> = () => {
       if (!postId) return;
       const newCommentData = await CommentService.createComment({
         postId: Number(postId),
-        content,
+        content
       } as CreateComment);
       setComments([...comments, newCommentData]);
     } catch (e) {
@@ -121,13 +135,20 @@ const Comments: FC<Props> = () => {
     }
   };
 
-  const addReplyToComments = (comments: Comment[], reply: Comment, commentId: number): Comment[] => {
+  const addReplyToComments = (
+    comments: Comment[],
+    reply: Comment,
+    commentId: number
+  ): Comment[] => {
     return comments.map(comment => {
       if (comment.id === commentId) {
         return { ...comment, replies: [...(comment.replies || []), reply] };
       }
       if (comment.replies && comment.replies.length > 0) {
-        return { ...comment, replies: addReplyToComments(comment.replies, reply, commentId) };
+        return {
+          ...comment,
+          replies: addReplyToComments(comment.replies, reply, commentId)
+        };
       }
       return comment;
     });
@@ -139,9 +160,13 @@ const Comments: FC<Props> = () => {
       const newReplyData = await CommentService.createComment({
         postId: Number(postId),
         replyId: commentId,
-        content,
+        content
       } as CreateComment);
-      const updatedComments = addReplyToComments(comments, newReplyData, commentId);
+      const updatedComments = addReplyToComments(
+        comments,
+        newReplyData,
+        commentId
+      );
       setComments(updatedComments);
       setReplyToCommentId(null);
     } catch (e) {
@@ -157,13 +182,17 @@ const Comments: FC<Props> = () => {
   const toggleExpand = (commentId: number) => {
     setExpandedComments(prev => ({
       ...prev,
-      [commentId]: !prev[commentId],
+      [commentId]: !prev[commentId]
     }));
   };
+  if (loading || !post) return null;
 
   const renderComment = (comment: Comment, level = 0) => (
-
-    <div key={comment.id} className="border-b py-2" style={{ marginLeft: level * 20 }}>
+    <div
+      key={comment.id}
+      className="border-b py-2"
+      style={{ marginLeft: level * 20 }}
+    >
       <div className="flex mb-2">
         <img
           src="https://preview.redd.it/snoovatar/avatars/nftv2_bmZ0X2VpcDE1NToxMzdfNzg2MWVmZmVhZDUzMWI2MGQ3YTE5NDhlMGQ5OTRiMzU1MTU2ZmU2NV8xOTU_rare_dc319928-6fcd-434b-bc82-7e58c385461f-headshot.png?width=64&height=64&crop=smart&auto=webp&s=515bf177007c6cc7c32f0837cd9dfb7f127bcbe0"
@@ -172,7 +201,10 @@ const Comments: FC<Props> = () => {
           style={{ flexShrink: 0 }}
         />
         <div className="flex flex-col w-full">
-          <div className="flex items-center" style={{ marginTop: "0.5rem", marginBottom: "0.5rem" }}>
+          <div
+            className="flex items-center"
+            style={{ marginTop: "0.5rem", marginBottom: "0.5rem" }}
+          >
             <span className="font-bold text-sm">{comment.author}</span>
           </div>
           <span className="text-xs text-gray-500">{comment.createdAt}</span>
@@ -183,11 +215,17 @@ const Comments: FC<Props> = () => {
           >
             <div className="action flex items-center rounded-full bg-blue-gray-30">
               <div className="hover:bg-blue-gray-100/75 rounded-full p-[0.25rem] cursor-pointer">
-                <ArrowBigUp strokeWidth={1.2} className="w-6 h-6 hover:text-red-400" />
+                <ArrowBigUp
+                  strokeWidth={1.2}
+                  className="w-6 h-6 hover:text-red-400"
+                />
               </div>
               <span className="text-xs font-medium">{comment.voteCount}</span>
               <div className="hover:bg-blue-gray-100/75 rounded-full p-[0.25rem] cursor-pointer">
-                <ArrowBigDown strokeWidth={1.2} className="w-6 h-6 hover:text-blue-400" />
+                <ArrowBigDown
+                  strokeWidth={1.2}
+                  className="w-6 h-6 hover:text-blue-400"
+                />
               </div>
             </div>
             <div
@@ -202,7 +240,7 @@ const Comments: FC<Props> = () => {
               <span className="text-xs">Share</span>
             </div>
             <div className="action flex items-center">
-              <MenuItemPost />
+              <MenuItemPost post={post} />
             </div>
           </div>
           {replyToCommentId === comment.id && (
@@ -218,12 +256,22 @@ const Comments: FC<Props> = () => {
                 className="text-xs text-blue-500 flex items-center space-x-1"
                 onClick={() => toggleExpand(comment.id)}
               >
-                {expandedComments[comment.id] ? <Minus size={12} /> : <Plus size={12} />}
-                <span>{expandedComments[comment.id] ? '' : `${comment.replies.length} replies`}</span>
+                {expandedComments[comment.id] ? (
+                  <Minus size={12} />
+                ) : (
+                  <Plus size={12} />
+                )}
+                <span>
+                  {expandedComments[comment.id]
+                    ? ""
+                    : `${comment.replies.length} replies`}
+                </span>
               </button>
               {expandedComments[comment.id] && (
                 <div className="ml-4 border-l-2 pl-2">
-                  {comment.replies.map(reply => renderComment(reply, level + 1))}
+                  {comment.replies.map(reply =>
+                    renderComment(reply, level + 1)
+                  )}
                 </div>
               )}
             </>
@@ -233,7 +281,6 @@ const Comments: FC<Props> = () => {
     </div>
   );
 
-  if (loading || !post) return null;
   return (
     <div className="relative">
       {error && (
@@ -242,7 +289,10 @@ const Comments: FC<Props> = () => {
         </Alert>
       )}
       {loading && <p>Loading...</p>}
-      <div onClick={handleBack} className="rounded-full bg-blue-gray-50 hover:bg-blue-gray-100 p-2 absolute top-0 -left-6 hidden md:block">
+      <div
+        onClick={handleBack}
+        className="rounded-full bg-blue-gray-50 hover:bg-blue-gray-100 p-2 absolute top-0 -left-6 hidden md:block"
+      >
         <ArrowLeft className="w-4 h-4" />
       </div>
       <PostItem data={post} hideLess={false} />

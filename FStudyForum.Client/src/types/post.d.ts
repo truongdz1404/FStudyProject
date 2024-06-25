@@ -4,13 +4,13 @@ export interface Post {
   topicAvatar: string;
   title: string;
   content: string;
+  voteType: number;
   voteCount: number;
   commentCount: number;
   elapsed: string;
   author: string;
   attachments: Attachment[];
 }
-
 export interface CreatePost {
   title: string;
   topicName: string;

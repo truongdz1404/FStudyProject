@@ -1,0 +1,16 @@
+.custom-toast {
+    @apply bg-black text-white rounded-lg shadow-lg p-4;
+  }
+  
+  .success-toast {
+    @apply border border-green-500;
+  }
+  
+  .error-toast {
+    @apply border border-red-500;
+  }
+  
+  .custom-toast-body {
+    @apply flex items-center justify-center font-bold text-base;
+  }
+  

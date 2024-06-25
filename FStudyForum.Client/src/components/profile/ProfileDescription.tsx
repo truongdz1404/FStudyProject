@@ -42,16 +42,6 @@ const ProfileDescription: FC<ProfileDescriptionProps> = ({ profile }) => {
           {convertGenderToString(profile.gender)}
         </span>
       </Typography>
-
-      {/* <Typography className="text-sm font-semibold">Links</Typography>
-      <Button size="sm" variant="outlined" className="rounded-full mt-2">
-        <div className="flex items-center">
-          <Plus size={"16"} />
-          <Typography className="text-xs capitalize ml-1">
-            Add social link
-          </Typography>
-        </div>
-      </Button> */}
     </div>
   );
 };
