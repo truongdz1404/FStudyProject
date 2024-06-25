@@ -131,16 +131,16 @@ const Profile = () => {
       <div className="flex w-max gap-4">
         {tabItems.map(({ label, path }) => (
           <Link to={path}>
-          <Button
-            key={label}
-            variant="text"
-            size="sm"
-            className="rounded-full bg-blue-gray-50"
-          >
-            <Typography className="text-xs capitalize font-normal text-black">
-              {label}
-            </Typography>
-          </Button>
+            <Button
+              key={label}
+              variant="text"
+              size="sm"
+              className="rounded-full bg-blue-gray-50"
+            >
+              <Typography className="text-xs capitalize font-normal text-black">
+                {label}
+              </Typography>
+            </Button>
           </Link>
         ))}
       </div>
@@ -157,14 +157,7 @@ const Profile = () => {
         </div>
       </Button>
       <hr className="my-2 border-blue-gray-50" />
-      <div className="flex justify-center h-screen">
-        <Typography className="text-sm capitalize font-semibold">
-          Hasn't posts yet
-        </Typography>
-      </div>
-      <div className="mt-[-80%]">
-        <Outlet />
-      </div>
+      <Outlet />
     </ContentLayout>
   );
 };

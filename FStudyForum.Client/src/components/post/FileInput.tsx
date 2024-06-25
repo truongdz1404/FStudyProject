@@ -52,12 +52,15 @@ const FileInput = forwardRef<HTMLInputElement, InputProps>(
     const handleChange = async (e: ChangeEvent<HTMLInputElement>) => {
       e.preventDefault();
       if (e.target.files && e.target.files[0]) {
-        const valid = validateFileType(e.target.files[0]);
-        if (!valid) {
+        const validFiles = Array.from(e.target.files).filter(file =>
+          validateFileType(file)
+        );
+
+        if (validFiles.length !== e.target.files.length) {
           console.error("Invalid file type");
           return;
         }
-        addFiles([e.target.files[0]]);
+        addFiles(validFiles);
       }
     };
 

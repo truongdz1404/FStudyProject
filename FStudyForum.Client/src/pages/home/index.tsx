@@ -32,10 +32,6 @@ const HomePage: React.FC = () => {
 
   const posts = data?.pages.flatMap(p => p) ?? [];
 
-  // const updatePost = (index: number, editedPost: Post) => {
-  //   posts = posts.map((item, i) => (index === i ? editedPost : item));
-  // };
-
   if (!posts) return <></>;
   return (
     <ContentLayout>
