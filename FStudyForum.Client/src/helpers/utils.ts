@@ -15,24 +15,56 @@ export function getName(email: string) {
   return match ? match[1] : null;
 }
 
-export function formatElapsedTime(elapsed: string): string {
-  const [hours, minutes, seconds] = elapsed.split(":").map(Number);
-  const totalSeconds = hours * 3600 + minutes * 60 + seconds;
-  const totalDays = Math.floor(totalSeconds / (3600 * 24));
+// export function formatElapsedTime(elapsed: string): string {
+//   console.log(elapsed);
+//   const [days, time] = elapsed.split(".");
+//   const[hours, minutes, seconds] = elapsed.split(":").map(Number);
+//   const totalSeconds = Math.floor(hours * 3600 + minutes * 60 + seconds);
+//   const totalMinutes = Math.floor(totalSeconds / 60);
+//   const totalHours = Math.floor(totalMinutes / 60);
+//   const totalDays = Math.floor(totalHours / 24);
+//   const totalMonths = Math.floor(totalDays / 30);
+//   const totalYears = Math.floor(totalDays / 365);
 
-  if (totalDays < 1) {
-    const totalHours = Math.floor(totalSeconds / 3600);
-    return `${totalHours} hr. ago`;
-  } else if (totalDays < 30) {
+  // if (totalYears > 0) {
+  //   return `${totalYears} year${totalYears > 1 ? "s" : ""} ago`;
+  // } else if (totalMonths > 0) {
+  //   return `${totalMonths} month${totalMonths > 1 ? "s" : ""} ago`;
+  // } else if (totalDays > 0) {
+  //   return `${totalDays} day${totalDays > 1 ? "s" : ""} ago`;
+  // } else if (totalHours > 0) {
+  //   return `${totalHours} hr${totalHours > 1 ? "s" : ""} ago`;
+  // } else {
+  //   return `${totalMinutes} min${totalMinutes > 1 ? "s" : ""} ago`;
+  // } 
+// }
+
+
+export function formatElapsedTime(elapsed: string): string {
+  console.log(elapsed);
+  const [days] = elapsed.split(".");
+  const [hours, minutes, seconds] = elapsed.split(":").map(Number);
+  
+  const totalSeconds = Math.floor(hours * 3600 + minutes * 60 + seconds);
+  const totalMinutes = Math.ceil(totalSeconds / 60);
+  const totalHours = Math.floor(totalMinutes / 60);
+  const totalDays = Math.floor(Number(days));
+  const totalMonths = Math.floor(totalDays / 30);
+  const totalYears = Math.floor(totalDays / 365);
+
+  if (totalYears > 0) {
+    return `${totalYears} year${totalYears > 1 ? "s" : ""} ago`;
+  } else if (totalMonths > 0) {
+    return `${totalMonths} month${totalMonths > 1 ? "s" : ""} ago`;
+  } else if (totalDays > 0) {
     return `${totalDays} day${totalDays > 1 ? "s" : ""} ago`;
-  } else if (totalDays < 365) {
-    const months = Math.floor(totalDays / 30);
-    return `${months} month${months > 1 ? "s" : ""} ago`;
+  } else if (totalHours > 0) {
+    return `${totalHours} hr${totalHours > 1 ? "s" : ""} ago`;
   } else {
-    const years = Math.floor(totalDays / 365);
-    return `${years} year${years > 1 ? "s" : ""} ago`;
-  }
+    return `${totalMinutes} min${totalMinutes > 1 ? "s" : ""} ago`;
+  } 
 }
+
 
 export function validateFileType(file: File) {
   return ALLOWED_FILE_TYPES.includes(file.type);
