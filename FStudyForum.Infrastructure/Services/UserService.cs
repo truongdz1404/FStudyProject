@@ -220,4 +220,16 @@ public class UserService : IUserService
 
         return new(userDTOs, totalCount);
     }
+
+    public async Task<IEnumerable<UserDTO>> SearchUserByName(string keyword)
+    {
+        var users = await _userRepository.SearchUserByName(keyword);
+        var userDTOs = new List<UserDTO>();
+        if (users != null)
+        {
+            foreach (var user in users)
+                userDTOs.Add(await ConvertToDTO(user));
+        }
+        return userDTOs;
+    }
 }

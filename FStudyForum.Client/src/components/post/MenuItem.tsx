@@ -52,7 +52,7 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
     };
     fetchTopic();
     checkPostByUserExist();
-  }, []);
+  }, [post.id, user?.username]);
   const handleTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedTime(event.target.value);
   };

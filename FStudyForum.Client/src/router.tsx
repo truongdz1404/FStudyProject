@@ -3,14 +3,14 @@ import { Navigate, Outlet, useRoutes } from "react-router-dom";
 import AuthGuard from "@/helpers/guards/AuthGuard";
 import NotFound from "@/components/NotFound";
 import Layout from "@/components/layout/Layout";
-import BanUser from "./helpers/guards/BanUser";
+import TopicGuard from "./helpers/guards/TopicGuard";
 import WelcomeGuard from "@/helpers/guards/WelcomeGuard";
 import AuthLayout from "@/components/layout/AuthLayout";
 import RoleBasedGuard from "@/helpers/guards/RoleBasedGuard";
 import Donate from "./pages/donate";
 import Payment from "./pages/donate/payment";
 import Notification from "./pages/donate/notification";
-import SavePost from "./pages/post/save";
+import SavePost from "./pages/profile/save";
 import { ROLE } from "@/helpers/constants";
 
 const Popular = lazy(() => import("@/pages/popular"));
@@ -24,6 +24,7 @@ const ChangePassword = lazy(
 const SubmitPage = lazy(() => import("@/pages/submit"));
 const Comments = lazy(() => import("@/pages/topic/comments"));
 const TopcicManager = lazy(() => import("@/pages/manager/topics"));
+const CategoryManager = lazy(() => import("@/pages/manager/categories"));
 const ResetPassword = lazy(() => import("@/pages/auth/reset-password"));
 const Profile = lazy(() => import("@/pages/profile"));
 const ProfileSettings = lazy(() => import("@/pages/settings/profile"));
@@ -142,15 +143,28 @@ const Router: FC = () => {
                   )
                 }
               ]
+            },
+            {
+              path: "categories",
+              children: [
+                {
+                  index: true,
+                  element: (
+                    <Suspense>
+                      <CategoryManager />
+                    </Suspense>
+                  )
+                }
+              ]
             }
           ]
         },
         {
           path: "topic/:name",
           element: (
-            <BanUser>
+            <TopicGuard>
               <Outlet />
-            </BanUser>
+            </TopicGuard>
           ),
           children: [
             {
@@ -171,11 +185,16 @@ const Router: FC = () => {
             },
             {
               path: "comments/:id",
-              element: (
-                <Suspense>
-                  <Comments />
-                </Suspense>
-              )
+              children: [
+                {
+                  index: true,
+                  element: (
+                    <Suspense>
+                      <Comments />
+                    </Suspense>
+                  )
+                }
+              ]
             }
           ]
         },

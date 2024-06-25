@@ -1,35 +1,35 @@
-﻿using System.Net.Mail;
-using AutoMapper;
+﻿using AutoMapper;
 using FStudyForum.Core.Interfaces.IRepositories;
 using FStudyForum.Core.Interfaces.IServices;
-
-using FStudyForum.Core.Models.DTOs;
-
 using FStudyForum.Core.Models.DTOs.Attachment;
-
 using FStudyForum.Core.Models.DTOs.Post;
-using FStudyForum.Core.Models.DTOs.SavePost;
 using FStudyForum.Core.Models.Entities;
+using FStudyForum.Core.Models.DTOs;
+using FStudyForum.Core.Models.DTOs.SavePost;
 using Microsoft.AspNetCore.Identity;
+
 
 namespace FStudyForum.Infrastructure.Services
 {
     public class PostService : IPostService
     {
         private readonly IPostRepository _postRepository;
-        private readonly UserManager<ApplicationUser> _userManager;
+
+        private readonly IVoteRepository _voteRepository;
         private readonly IMapper _mapper;
-        public PostService(IPostRepository postRepository, IMapper mapper,
-            UserManager<ApplicationUser> userManager)
+        private readonly UserManager<ApplicationUser> _userManager;
+
+        public PostService(IPostRepository postRepository, IVoteRepository voteRepository, IMapper mapper, UserManager<ApplicationUser> userManager)
         {
             _postRepository = postRepository;
+            _voteRepository = voteRepository;
             _mapper = mapper;
             _userManager = userManager;
         }
 
         public async Task<SavePostDTO?> DeletePostByUser(SavePostDTO savedPost)
         {
-            if(savedPost.UserName == null)
+            if (savedPost.UserName == null)
             {
                 return null;
             }
@@ -43,13 +43,11 @@ namespace FStudyForum.Infrastructure.Services
             var post = await _postRepository.CreatePostAsync(postDTO);
             return new PostDTO
             {
-                Id = post.Id,
-                Title = post.Title,
-                Content = post.Content,
+                Id = post.Id
             };
         }
 
-        public async Task<PostDTO> GetPostById(long id)
+        public async Task<PostDTO> GetPostById(long id, string username)
         {
             var post = await _postRepository.GetPostByIdAsync(id)
                 ?? throw new Exception("Post not found");
@@ -61,16 +59,43 @@ namespace FStudyForum.Infrastructure.Services
                 TopicName = post.Topic.Name,
                 TopicAvatar = post.Topic.Avatar,
                 Content = post.Content,
-                VoteCount = post.Votes.Count,
+                VoteType = await _voteRepository.GetVotedType(username, id),
+                VoteCount = await _postRepository.GetVoteCount(post.Id),
                 CommentCount = post.Comments.Count,
-                Attachments = post.Attachments.Select(a => new AttachmentDTO { Type = a.Type, Url = a.FileUrl }),
+                Attachments = post.Attachments.Select(a => new AttachmentDTO { Id = a.Id, Type = a.Type, Url = a.FileUrl }),
                 Elapsed = DateTime.Now - post.CreatedAt,
             };
         }
 
-        public async Task<IEnumerable<PostDTO>> GetPosts()
+        public async Task<IEnumerable<PostDTO>> GetAll(string username, QueryPostDTO query)
         {
-            var posts = await _postRepository.GetPostsAsync();
+
+            var posts = await _postRepository.GetQuery(query);
+            var postDTOs = new List<PostDTO>();
+            foreach (var p in posts)
+            {
+                postDTOs.Add(new PostDTO
+                {
+                    Id = p.Id,
+                    Title = p.Title,
+                    Author = p.Creater.UserName!,
+                    TopicName = p.Topic.Name,
+                    TopicAvatar = p.Topic.Avatar,
+                    VoteType = await _voteRepository.GetVotedType(username, p.Id),
+                    Content = p.Content,
+                    VoteCount = await _postRepository.GetVoteCount(p.Id),
+                    CommentCount = p.Comments.Count,
+                    Attachments = p.Attachments.Select(a => new AttachmentDTO { Id = a.Id, Type = a.Type, Url = a.FileUrl }),
+                    Elapsed = DateTime.Now - p.CreatedAt
+                });
+            }
+
+            return postDTOs;
+        }
+
+        public async Task<IEnumerable<PostDTO>> SearchPostAsync(string keyword)
+        {
+            var posts = await _postRepository.SearchPostAsync(keyword);
             var postDTOs = posts.Select(p => new PostDTO
             {
                 Id = p.Id,
@@ -107,7 +132,7 @@ namespace FStudyForum.Infrastructure.Services
             await _postRepository.SavePostByUser(savedPost);
             return savedPostDTO;
         }
-        public async Task<bool> IsPostExists(SavePostDTO savedPostDTO) 
+        public async Task<bool> IsPostExists(SavePostDTO savedPostDTO)
         {
             return await _postRepository.IsPostExists(savedPostDTO);
         }
@@ -134,7 +159,7 @@ namespace FStudyForum.Infrastructure.Services
                 CommentCount = p.Comments.Count,
                 Attachments = p.Attachments.Select(a => new AttachmentDTO { Type = a.Type, Url = a.FileUrl }),
                 Elapsed = DateTime.Now - p.CreatedAt
-            });            
+            });
         }
     }
 }

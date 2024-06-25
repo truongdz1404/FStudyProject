@@ -1,6 +1,6 @@
-import AddTopicPopup from "@/components/topic/Popup/AddTopicPopup";
-import DeleteTopicPopup from "@/components/topic/Popup/DeleteTopicPopup";
-import UpdateTopicPopup from "@/components/topic/Popup/UpdateTopicPopup";
+import AddTopicPopup from "@/components/topic/popup/AddTopicPopup";
+import DeleteTopicPopup from "@/components/topic/popup/DeleteTopicPopup";
+import UpdateTopicPopup from "@/components/topic/popup/UpdateTopicPopup";
 import { cn } from "@/helpers/utils";
 import TopicService from "@/services/TopicService";
 import { Topic } from "@/types/topic";

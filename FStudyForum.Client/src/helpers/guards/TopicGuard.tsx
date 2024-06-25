@@ -6,7 +6,7 @@ import { AxiosError } from "axios";
 import { Response } from "@/types/response";
 import { checkIfTopicIsLocked } from "@/helpers/checkTopicLockedStatus";
 
-const BanUser: FC<PropsWithChildren> = ({ children }) => {
+const TopicGuard: FC<PropsWithChildren> = ({ children }) => {
   const { user } = useAuth();
   const { name } = useParams<{ name: string }>();
   const navigate = useNavigate();
@@ -20,7 +20,10 @@ const BanUser: FC<PropsWithChildren> = ({ children }) => {
     const fetchData = async () => {
       try {
         if (user) {
-          const { locked, timeDiffString } = await checkIfTopicIsLocked(user.username, `${name}`,);
+          const { locked, timeDiffString } = await checkIfTopicIsLocked(
+            user.username,
+            `${name}`
+          );
           if (locked) {
             setTimeDiff(timeDiffString);
           }
@@ -55,4 +58,4 @@ const BanUser: FC<PropsWithChildren> = ({ children }) => {
   return null;
 };
 
-export default BanUser;
+export default TopicGuard;

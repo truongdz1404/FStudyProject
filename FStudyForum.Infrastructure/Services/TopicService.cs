@@ -38,6 +38,8 @@ public class TopicService : ITopicService
                 Id = topic.Id,
                 Name = topic.Name,
                 Description = topic.Description,
+                Avatar = topic.Avatar,
+                Banner = topic.Panner,
                 Categories = topic.Categories.Select(c => c.Id).ToList()
             });
         }
@@ -56,6 +58,8 @@ public class TopicService : ITopicService
         {
             Name = topicDto.Name,
             Description = topicDto.Description,
+            //Avatar = topicDto.Avatar,
+            //Panner = topicDto.Banner,
             Categories = categories
         };
         var createdTopic = await _topicRepository.Create(topic);
@@ -76,6 +80,8 @@ public class TopicService : ITopicService
             Id = topic.Id,
             Name = topic.Name,
             Description = topic.Description,
+            Avatar = topic.Avatar,
+            Banner = topic.Panner,
             IsDeleted = topic.IsDeleted,
             Categories = categoryIds
         };
@@ -90,6 +96,8 @@ public class TopicService : ITopicService
 
         existedTopic.Name = topicDto.Name;
         existedTopic.Description = topicDto.Description;
+        existedTopic.Avatar = topicDto.Avatar;
+        existedTopic.Panner = topicDto.Banner;
         existedTopic.Categories.Clear();
         await _topicRepository.Update(existedTopic);
 
@@ -140,31 +148,19 @@ public class TopicService : ITopicService
 
     public async Task<TopicBanDTO> LockUser(TopicBanDTO lockUserDTO)
     {
-        DateTime bannedTime;
-        switch (lockUserDTO.Action)
+        var bannedTime = lockUserDTO.Action switch
         {
-            case "hour":
-                bannedTime = DateTime.Now.AddHours(lockUserDTO.BannerTime);
-                break;
-            case "day":
-                bannedTime = DateTime.Now.AddDays(lockUserDTO.BannerTime);
-                break;
-            case "month":
-                bannedTime = DateTime.Now.AddMonths(lockUserDTO.BannerTime);
-                break;
-            case "year":
-                bannedTime = DateTime.Now.AddYears(lockUserDTO.BannerTime);
-                break;
-            case "forever":
-                bannedTime = DateTime.Now.AddYears(lockUserDTO.BannerTime); 
-                break;
-            default:
-                throw new ArgumentException("Invalid banned time");
-        }
+            "hour" => DateTime.Now.AddHours(lockUserDTO.BannerTime),
+            "day" => DateTime.Now.AddDays(lockUserDTO.BannerTime),
+            "month" => DateTime.Now.AddMonths(lockUserDTO.BannerTime),
+            "year" => DateTime.Now.AddYears(lockUserDTO.BannerTime),
+            "forever" => DateTime.Now.AddYears(lockUserDTO.BannerTime),
+            _ => throw new ArgumentException("Invalid banned time"),
+        };
         var userExist = await _topicRepository.GetUserLocked(lockUserDTO);
-        if(userExist != null)
+        if (userExist != null)
         {
-            userExist.BannedTime =bannedTime;
+            userExist.BannedTime = bannedTime;
             await _topicRepository.UpdateTopicBan(userExist);
             return lockUserDTO;
         }
@@ -172,7 +168,7 @@ public class TopicService : ITopicService
                  ?? throw new Exception("User not found");
         var topic = await _topicRepository.GetById(lockUserDTO.TopicId)
             ?? throw new Exception("Topic not found");
-       
+
         await _topicRepository.LockUser(new TopicBan
         {
             Topic = topic,
@@ -213,6 +209,23 @@ public class TopicService : ITopicService
         });
     }
 
+    public async Task<IEnumerable<TopicDTO>> SearchTopicContainKeywordAsync(string keyword)
+    {
+        var topics = await _topicRepository.SearchTopicContainKeywordAsync(keyword);
+        var topicDTOs = new List<TopicDTO>();
+        foreach (var topic in topics)
+        {
+            topicDTOs.Add(new TopicDTO
+            {
+                Id = topic.Id,
+                Name = topic.Name,
+                Description = topic.Description,
+                IsDeleted = topic.IsDeleted,
+                Categories = topic.Categories.Select(c => c.Id).ToList()
+            });
+        }
+        return topicDTOs;
+    }
     public async Task<TopicDTO> GetTopicByPost(int postId)
     {
         var topic = await _topicRepository.GetTopicByPost(postId)

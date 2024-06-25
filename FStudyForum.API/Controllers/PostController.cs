@@ -3,6 +3,7 @@ using FStudyForum.Core.Interfaces.IServices;
 using FStudyForum.Core.Models.DTOs;
 using FStudyForum.Core.Models.DTOs.SavePost;
 using FStudyForum.Core.Models.DTOs.Post;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.Net;
@@ -20,12 +21,13 @@ namespace FStudyForum.API.Controllers
             _postService = postService;
         }
 
-        [HttpGet("all")]
-        public async Task<IActionResult> GetPosts()
+        [HttpGet("all"), Authorize]
+        public async Task<IActionResult> GetAll([FromQuery] QueryPostDTO query)
         {
             try
             {
-                var posts = await _postService.GetPosts();
+                var userName = User.Identity?.Name ?? throw new Exception("User is not authenticated!");
+                var posts = await _postService.GetAll(userName, query);
                 if (posts.IsNullOrEmpty())
                 {
                     return NotFound(new Response
@@ -51,12 +53,13 @@ namespace FStudyForum.API.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpGet, Authorize]
         public async Task<IActionResult> GetPost([FromQuery] long id)
         {
             try
             {
-                var post = await _postService.GetPostById(id);
+                var userName = User.Identity?.Name ?? throw new Exception("User is not authenticated!");
+                var post = await _postService.GetPostById(id, userName);
                 if (post == null)
                 {
                     return NotFound(new Response
@@ -82,18 +85,13 @@ namespace FStudyForum.API.Controllers
             }
         }
 
-        [HttpPost("create")]
+        [HttpPost("create"), Authorize]
         public async Task<IActionResult> CreatePost([FromBody] CreatePostDTO postDto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            var userName = User.FindFirstValue(ClaimTypes.Name);
-            if (userName == null) return Unauthorized(new Response
-            {
-                Status = ResponseStatus.ERROR,
-                Message = "User is not authenticated!"
-            });
             try
             {
+                var userName = User.FindFirstValue(ClaimTypes.Name) ?? throw new Exception("User is not authenticated!");
                 postDto.Author = userName;
                 var post = await _postService.CreatePost(postDto);
 

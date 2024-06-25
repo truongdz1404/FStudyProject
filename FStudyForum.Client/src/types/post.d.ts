@@ -4,6 +4,7 @@ export interface Post {
   topicAvatar: string;
   title: string;
   content: string;
+  voteType: number;
   voteCount: number;
   commentCount: number;
   elapsed: string;

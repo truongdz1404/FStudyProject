@@ -29,4 +29,5 @@ const showErrorToast = (message: string) => {
 
 const CustomToast: React.FC = () => <ToastContainer />;
 
+// eslint-disable-next-line react-refresh/only-export-components
 export { CustomToast, showSuccessToast, showErrorToast };

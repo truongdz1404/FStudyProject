@@ -6,6 +6,8 @@ namespace FStudyForum.Core.Interfaces.IRepositories
 {
     public interface ICategoryRepository : IBaseRepository<Category>
     {
-        Task<List<Category>> GetCategoriesByIds(List<long> categoryIds);
+        public Task<List<Category>> GetCategoriesByIds(List<long> categoryIds);
+        public Task<bool> CateExists(string categoryName);
+        public Task<Category?> GetCateByName(string name);
     }
 }

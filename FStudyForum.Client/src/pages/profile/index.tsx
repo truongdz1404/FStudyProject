@@ -127,7 +127,6 @@ const Profile = () => {
           <hr className="mt-4 border-blue-gray-50" />
         </AccordionBody>
       </Accordion>
-
       <div className="flex w-max gap-4">
         {tabItems.map(({ label, path }, index) => (
           <Link to={path} key={index}>
@@ -141,6 +140,7 @@ const Profile = () => {
               {label}
             </Typography>
           </Button>
+
           </Link>
         ))}
       </div>
@@ -157,14 +157,7 @@ const Profile = () => {
         </div>
       </Button>
       <hr className="my-2 border-blue-gray-50" />
-      <div className="flex justify-center h-screen">
-        <Typography className="text-sm capitalize font-semibold">
-          Hasn't posts yet
-        </Typography>
-      </div>
-      <div className="mt-[-80%]">
-        <Outlet />
-      </div>
+      <Outlet />
     </ContentLayout>
   );
 };

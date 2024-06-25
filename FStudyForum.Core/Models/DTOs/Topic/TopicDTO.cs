@@ -15,6 +15,8 @@ namespace FStudyForum.Core.Models.DTOs.Topic
     {
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
+        public string Avatar { get; set; } = string.Empty;
+        public string Banner { get; set; } = string.Empty;
         public List<long> Categories { get; set; } = new List<long>();
 
     }
@@ -22,6 +24,8 @@ namespace FStudyForum.Core.Models.DTOs.Topic
     {
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
+        public string Avatar { get; set; } = string.Empty;
+        public string Banner { get; set; } = string.Empty;
         public List<long> Categories { get; set; } = new List<long>();
     }
     public class DeleteTopicDTO

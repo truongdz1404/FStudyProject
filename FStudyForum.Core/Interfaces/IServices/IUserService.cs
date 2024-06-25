@@ -19,6 +19,9 @@ public interface IUserService
     Task<IdentityResult> ChangePasswordAsync(ChangePasswordDTO model);
     Task RemoveRefreshTokenAsync(string refreshToken);
     Task<string?> GetRefreshTokenAsync(string userName);
+
+    Task<IEnumerable<UserDTO>> SearchUserByName(string keyword);
+
     Task<UserDTO> LockUser(LockUserDTO lockUserDTO);
     Task<UserDTO> UnlockUser(LockUserDTO lockUserDTO);
     Task<bool> IsUserLocked(string userName);

@@ -24,27 +24,27 @@ const LightBox: FC<Props> = ({ index, hideArrow, sliders, close }) => {
       className="!overflow-hidden"
       render={{
         iconPrev: () => (
-          <div className="rounded-full bg-gray-900/50 text-white/50 hover:text-white hover:bg-gray-900/80 p-2 hidden md:block">
+          <div className="rounded-full bg-gray-900/50 text-white/50 hover:text-white hover:bg-gray-900/60 p-2 hidden md:block">
             <ChevronLeft strokeWidth={2} className={cn("w-6 h-6")} />
           </div>
         ),
         iconNext: () => (
-          <div className="rounded-full bg-gray-900/50 text-white/50 hover:text-white hover:bg-gray-900/80 p-2 hidden md:block">
+          <div className="rounded-full bg-gray-900/50 text-white/50 hover:text-white hover:bg-gray-900/60 p-2 hidden md:block">
             <ChevronRight strokeWidth={2} className={cn("w-6 h-6")} />
           </div>
         ),
         iconClose: () => (
-          <div className="rounded-full hover:bg-gray-900/60 p-2">
+          <div className="rounded-full bg-gray-900/80  hover:bg-gray-900/60 p-2">
             <X strokeWidth={2} className="w-6 h-6 text-white" />
           </div>
         ),
         iconZoomIn: () => (
-          <div className="rounded-full hover:bg-gray-900/60 p-2 text-white">
+          <div className="rounded-full bg-gray-900/50 hover:bg-gray-900/60 p-2 text-white">
             <ZoomIn strokeWidth={2} className={cn("w-6 h-6")} />
           </div>
         ),
         iconZoomOut: () => (
-          <div className="rounded-full hover:bg-gray-900/60 p-2 text-white">
+          <div className="rounded-full bg-gray-900/50 hover:bg-gray-900/60 p-2 text-white">
             <ZoomOut strokeWidth={2} className={cn("w-6 h-6 ")} />
           </div>
         ),
