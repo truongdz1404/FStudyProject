@@ -4,7 +4,6 @@ import {
   Ellipsis,
   Flag,
   LockKeyhole,
-  XCircle
 } from "lucide-react";
 import { Response } from "@/types/response";
 import React, { useEffect } from "react";
@@ -36,12 +35,11 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [topic, setTopic] = React.useState<Topic>(() => ({} as Topic));
   const [selectedTime, setSelectedTime] = React.useState("1 day");
-
   const { user } = useAuth();
   useEffect(() => {
     const checkPostByUserExist = async () => {
       const isPostExists = await SavedPostService.isPostSaved(
-        user?.username ?? "",
+        `${user?.username}`,
         post.id
       );
       if (isPostExists.data) {
@@ -82,12 +80,12 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
       if (!isSaved) {
         response = await SavedPostService.savedPost({
           postId: post.id,
-          username: user?.username ?? ""
+          username: `${user?.username}`
         });
         showSuccessToast(response.message);
       } else {
         response = await SavedPostService.deletePost(
-          user?.username ?? "",
+          `${user?.username}`,
           post.id
         );
         showSuccessToast(response.message);
@@ -122,8 +120,8 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
   ];
   const PostMenuItem = [
     {
-      icon: isSaved ? XCircle : Bookmark,
-      label: isSaved ? "Remove" : "Save",
+      icon: isSaved ?  Bookmark : Bookmark,
+      label: isSaved ? "Remove from saved" : "Save",
       path: "save"
     },
     {
@@ -152,6 +150,7 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
         <MenuList className="p-1">
           {PostMenuItem.map(({ label, icon, path }, key) => {
             const isLastItem = key === PostMenuItem.length - 1;
+            const isFirstItem = key === 0; 
             return (
               <MenuItem
                 key={label}
@@ -169,7 +168,8 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
               >
                 {React.createElement(icon, {
                   className: `h-4 w-4 ${isLastItem ? "text-red-500" : ""}`,
-                  strokeWidth: 2
+                  strokeWidth: 2,
+                  style: { fill: isFirstItem && isSaved ? 'black' : '' }
                 })}
                 <Typography
                   as={"span"}

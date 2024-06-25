@@ -143,7 +143,7 @@ namespace FStudyForum.API.Controllers
                 return Ok(new Response
                 {
                     Data = savePost,
-                    Message = "Post saved successfully",
+                    Message = "Post saved",
                     Status = (int)HttpStatusCode.OK + "",
                 });
             }
@@ -187,7 +187,7 @@ namespace FStudyForum.API.Controllers
                 return Ok(new Response
                 {
                     Data = post,
-                    Message = "Post deleted successfully",
+                    Message = "Removed from saved",
                     Status = (int)HttpStatusCode.OK + "",
                 });               
             }

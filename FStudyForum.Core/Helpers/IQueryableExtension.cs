@@ -19,11 +19,9 @@ public static class IQueryableExtension
     {
         if (!models.Any()) return models;
         if (string.IsNullOrWhiteSpace(orderBy)) return models;
-
         var @params = orderBy.Trim().Split(",");
         var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
         var builder = new StringBuilder();
-
         foreach (var param in @params)
         {
             if (string.IsNullOrWhiteSpace(param)) continue;

@@ -115,7 +115,9 @@ namespace FStudyForum.Infrastructure.Repositories
             .Include(sp => sp.Post) 
             .ThenInclude(p => p.Votes) 
             .Include(sp => sp.Post) 
-            .ThenInclude(p => p.Comments) 
+            .ThenInclude(p => p.Comments)
+            .Include(sp => sp.Post)
+            .ThenInclude(p => p.Attachments)
             .Where(sp => !sp.Post.Topic.IsDeleted)
             .Select(sp => sp.Post)
             .ToListAsync();

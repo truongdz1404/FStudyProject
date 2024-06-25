@@ -132,6 +132,7 @@ namespace FStudyForum.Infrastructure.Services
                 Content = p.Content,
                 VoteCount = p.Votes.Count,
                 CommentCount = p.Comments.Count,
+                Attachments = p.Attachments.Select(a => new AttachmentDTO { Type = a.Type, Url = a.FileUrl }),
                 Elapsed = DateTime.Now - p.CreatedAt
             });            
         }
