@@ -14,7 +14,6 @@ import CommentInput from "@/components/comment/CommentInput";
 import ReplyInput from "@/components/comment/ReplyInput";
 
 interface Props { }
-
 const Comments: FC<Props> = () => {
   const navigate = useNavigate();
   const { name: topicName, id: postId } = useParams<{ name: string; id: string }>();
@@ -30,7 +29,7 @@ const Comments: FC<Props> = () => {
     const expanded: { [key: number]: boolean } = {};
     const traverseComments = (commentList: Comment[]) => {
       commentList.forEach((comment) => {
-        expanded[comment.id] = !comment.replies || comment.replies.length < 2;
+        expanded[comment.id] = !comment.replies || comment.replies.length < 3;
         if (comment.replies) {
           traverseComments(comment.replies);
         }
