@@ -18,12 +18,11 @@ import {
   Radio
 } from "@material-tailwind/react";
 import { cn } from "@/helpers/utils";
-import { Comment } from "@/types/comment"; // Đổi Post sang Comment
+import { Comment } from "@/types/comment"; 
 import { useAuth } from "@/hooks/useAuth";
 import { AxiosError } from "axios";
 import { Topic } from "@/types/topic";
 import TopicService from "@/services/TopicService";
-// import CommentService from "@/services/CommentService";
 import BanUserService from "@/services/BanUserService";
 import "react-toastify/dist/ReactToastify.css";
 import { showErrorToast, showSuccessToast } from "../toast/Toast";
@@ -73,40 +72,6 @@ const MenuItemComment: React.FC<MenuItemCommentProps> = ({ comment, onDelete }) 
     topicBan();
   };
 
-
-  // const handleDeleteComment = async (id: string) => { 
-  //   try {
-  //     const response = await CommentService.deleteComment(id);
-  //     showSuccessToast(response.message);
-  //   } catch (e) {
-  //     const error = e as AxiosError<Response>;
-  //     showErrorToast((error?.response?.data as Response)?.message || error.message);
-  //   }
-  // };
-
-
-  // const handleSavedComment = async (comment: Comment) => {
-  //   try {
-  //     let response;
-  //     if (!isSaved) {
-  //       response = await SavedPostService.savedPost({
-  //         postId: comment.id,
-  //         username: user?.username ?? ""
-  //       });
-  //       showSuccessToast(response.message);
-  //     } else {
-  //       response = await SavedPostService.deletePost(
-  //         user?.username ?? "",
-  //         comment.id
-  //       );
-  //       showSuccessToast(response.message);
-  //     }
-  //     setIsSaved(prev => !prev);
-  //   } catch (e) {
-  //     const error = e as AxiosError<Response>;
-  //     showErrorToast((error?.response?.data as Response)?.message || error.message);
-  //   }
-  // };
 
   const LockedMenuItem = [
     {
