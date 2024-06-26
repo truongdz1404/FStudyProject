@@ -8,6 +8,7 @@ namespace FStudyForum.Core.Interfaces.IServices
     {
         public Task<IEnumerable<PostDTO>> GetAll(string username, QueryPostDTO query);
         public Task<PostDTO> GetPostById(long id, string username);
+        public Task<PostDTO> DeletePostById(long id, string username);
         public Task<PostDTO> CreatePost(CreatePostDTO postDTO);
         public Task<IEnumerable<PostDTO>> SearchPostAsync(string keyword);
         public Task<PaginatedData<PostDTO>> GetPaginatedData(int pageNumber, int pageSize);

@@ -137,7 +137,7 @@ const Profile = () => {
               size="sm"
               className="rounded-full bg-blue-gray-50"
             >
-              <Typography className="text-xs capitalize font-normal text-black">
+              <Typography className="text-sm capitalize font-normal text-black">
                 {label}
               </Typography>
             </Button>

@@ -160,5 +160,10 @@ namespace FStudyForum.Infrastructure.Services
                 Elapsed = DateTime.Now - p.CreatedAt
             });
         }
+
+        public Task<PostDTO> DeletePostById(long id, string username)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

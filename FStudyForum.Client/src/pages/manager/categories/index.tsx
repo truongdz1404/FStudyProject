@@ -2,7 +2,7 @@ import AddCategoryPopup from "@/components/category/Add";
 import DeleteCategoryPopup from "@/components/category/Delete";
 import UpdateCategoryPopup from "@/components/category/Update";
 import { cn } from "@/helpers/utils";
-import { Category} from "@/types/category";
+import { Category } from "@/types/category";
 import { useQuery } from "@tanstack/react-query";
 import {
   Card,
@@ -15,15 +15,11 @@ import {
   IconButton,
   Tooltip
 } from "@material-tailwind/react";
-import { ChevronsUpDown, 
-  Pencil, 
-  Plus, 
-  Trash 
-  } from "lucide-react";
+import { ChevronsUpDown, Pencil, Plus, Trash } from "lucide-react";
 import React from "react";
 import CategoryService from "@/services/CategoryService";
 
-const titles = ["Name", "Description","Types", "Action"];
+const titles = ["Name", "Description", "Types", "Action"];
 
 const CategoriesPage = () => {
   const openAddPopup = () => {
@@ -58,14 +54,14 @@ const CategoriesPage = () => {
     }
   };
 
-  const [selectCategory, setSelectCategory] = React.useState<Category | undefined>(
-    undefined
-  );
+  const [selectCategory, setSelectCategory] = React.useState<
+    Category | undefined
+  >(undefined);
   const [popupOpen, setPopupOpen] = React.useState(0);
 
-   const { data, isLoading } = useQuery({
-     queryKey: ["categories"],
-     queryFn: CategoryService.getAllCategory
+  const { data, isPending } = useQuery({
+    queryKey: ["categories"],
+    queryFn: CategoryService.getAllCategory
   });
   return (
     <>
@@ -115,7 +111,7 @@ const CategoriesPage = () => {
                 ))}
               </tr>
             </thead>
-            <tbody className={cn(isLoading && "hidden")}>
+            <tbody className={cn(isPending && "hidden")}>
               {data?.map((categories, index) => {
                 const isLast = index === data.length - 1;
                 const classes = isLast
@@ -159,8 +155,7 @@ const CategoriesPage = () => {
                         </div>
                       </div>
                     </td>
-                    <td className={classes}>   
-                    </td>
+                    <td className={classes}></td>
                     <td className={cn(classes)}>
                       <Tooltip content="Edit category">
                         <IconButton
@@ -201,7 +196,10 @@ const CategoriesPage = () => {
         </CardFooter>
       </Card>
       {popupOpen === 1 && (
-        <AddCategoryPopup onClose={closePopup} onCategoryCreated={reloadCategory} />
+        <AddCategoryPopup
+          onClose={closePopup}
+          onCategoryCreated={reloadCategory}
+        />
       )}
 
       {popupOpen === 2 && selectCategory && (
@@ -215,7 +213,7 @@ const CategoriesPage = () => {
 
       {popupOpen === 3 && selectCategory && (
         <DeleteCategoryPopup
-          open ={true}
+          open={true}
           onClose={closePopup}
           onDelete={handleDelete}
         />

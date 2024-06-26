@@ -66,11 +66,20 @@ namespace FStudyForum.API.Controllers
             try
             {
                 var topic = await _topicService.GetTopicByName(name);
-                return Ok(topic);
+                return Ok(new Response
+                {
+                    Message = "Get topic successfully",
+                    Status = ResponseStatus.SUCCESS,
+                    Data = topic
+                });
             }
             catch (Exception ex)
             {
-                return NotFound(ex.Message);
+                return NotFound(new Response
+                {
+                    Message = ex.Message,
+                    Status = ResponseStatus.ERROR,
+                });
             }
         }
         [HttpPut("update/{name}")]
@@ -110,7 +119,8 @@ namespace FStudyForum.API.Controllers
                     Message = isLocked ? "Check user locked successfully" : "Check user not locked successfully",
                     Data = isLocked
                 });
-            } catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 return BadRequest(new Response
                 {
@@ -125,7 +135,7 @@ namespace FStudyForum.API.Controllers
             try
             {
                 var topic = await _topicService.GetTopicByPost(postId);
-                if(topic == null)
+                if (topic == null)
                 {
                     return NotFound(new Response
                     {

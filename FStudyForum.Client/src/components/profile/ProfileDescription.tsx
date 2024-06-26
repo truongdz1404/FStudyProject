@@ -16,12 +16,8 @@ const convertGenderToString = (gender: number) => {
 };
 const ProfileDescription: FC<ProfileDescriptionProps> = ({ profile }) => {
   return (
-    <div className="text-black">
-      <Typography className="text-xs font-semibold ">About me: </Typography>
-      <Typography className="text-xs">{profile.bio}</Typography>
-      <Typography className="text-xs font-semibold mt-2">
-        Achievements:
-      </Typography>
+    <div className="text-blue-gray-800">
+      <Typography className="text-xs font-semibold">Achievements:</Typography>
       <div className="flex justify-around">
         <div className="flex flex-col items-center text-xs">
           <Typography className="text-sm font-medium">0</Typography>
@@ -42,6 +38,8 @@ const ProfileDescription: FC<ProfileDescriptionProps> = ({ profile }) => {
           {convertGenderToString(profile.gender)}
         </span>
       </Typography>
+      <Typography className="text-xs font-semibold mt-2">About me: </Typography>
+      <Typography className="text-xs ">{profile.bio}</Typography>
     </div>
   );
 };

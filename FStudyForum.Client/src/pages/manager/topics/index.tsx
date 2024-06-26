@@ -59,7 +59,7 @@ const TopicsPage = () => {
   );
   const [popupOpen, setPopupOpen] = React.useState(0);
 
-  const { data, isLoading } = useQuery({
+  const { data, isPending } = useQuery({
     queryKey: ["active-topics"],
     queryFn: TopicService.getActiveTopics
   });
@@ -111,7 +111,7 @@ const TopicsPage = () => {
                 ))}
               </tr>
             </thead>
-            <tbody className={cn(isLoading && "hidden")}>
+            <tbody className={cn(isPending && "hidden")}>
               {data?.map((topic, index) => {
                 const isLast = index === data.length - 1;
                 const classes = isLast

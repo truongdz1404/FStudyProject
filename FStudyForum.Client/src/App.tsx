@@ -3,6 +3,7 @@ import { ToastContainer } from "react-toastify";
 import Router from "./router";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import LoadingProvider from "./contexts/loading/LoadingContext";
 
 const queryClient = new QueryClient();
 export default function App() {
@@ -11,7 +12,9 @@ export default function App() {
       <AuthProvider>
         <ToastContainer />
         <QueryClientProvider client={queryClient}>
-          <Router />
+          <LoadingProvider>
+            <Router />
+          </LoadingProvider>
         </QueryClientProvider>
       </AuthProvider>
     </GoogleOAuthProvider>

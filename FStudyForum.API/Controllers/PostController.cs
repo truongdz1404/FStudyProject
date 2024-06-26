@@ -85,6 +85,38 @@ namespace FStudyForum.API.Controllers
             }
         }
 
+        [HttpGet, Authorize]
+        public async Task<IActionResult> RemovePost([FromQuery] long id)
+        {
+            try
+            {
+                var userName = User.Identity?.Name ?? throw new Exception("User is not authenticated!");
+                var post = await _postService.DeletePostById(id, userName);
+                if (post == null)
+                {
+                    return NotFound(new Response
+                    {
+                        Status = ResponseStatus.ERROR,
+                        Message = "Post not found",
+                    });
+                }
+                return Ok(new Response
+                {
+                    Message = "Get Post successfully",
+                    Status = ResponseStatus.SUCCESS,
+                    Data = post
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = ex.Message
+                });
+            }
+        }
+
         [HttpPost("create"), Authorize]
         public async Task<IActionResult> CreatePost([FromBody] CreatePostDTO postDto)
         {
@@ -171,8 +203,8 @@ namespace FStudyForum.API.Controllers
                     };
                     return BadRequest(responseNotFound);
                 }
-                var post = await _postService.DeletePostByUser(new SavePostDTO() 
-                { PostId = postID, UserName = username});
+                var post = await _postService.DeletePostByUser(new SavePostDTO()
+                { PostId = postID, UserName = username });
                 if (post == null)
                 {
                     return NotFound(new Response
@@ -187,7 +219,7 @@ namespace FStudyForum.API.Controllers
                     Data = post,
                     Message = "Post deleted successfully",
                     Status = (int)HttpStatusCode.OK + "",
-                });               
+                });
             }
             catch (Exception ex)
             {
@@ -215,8 +247,8 @@ namespace FStudyForum.API.Controllers
                     };
                     return BadRequest(responseNotFound);
                 }
-                var isPostExists = await _postService.IsPostExists(new SavePostDTO() 
-                { UserName = username, PostId = postId});
+                var isPostExists = await _postService.IsPostExists(new SavePostDTO()
+                { UserName = username, PostId = postId });
                 return Ok(new Response
                 {
                     Data = !isPostExists,

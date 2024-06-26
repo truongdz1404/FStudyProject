@@ -17,7 +17,6 @@ const TopicGuard: FC<PropsWithChildren> = ({ children }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      console.log(name);
       try {
         if (user) {
           const { locked, timeDiffString } = await checkIfTopicIsLocked(
@@ -30,7 +29,9 @@ const TopicGuard: FC<PropsWithChildren> = ({ children }) => {
           setLoading(false);
         }
       } catch (e) {
-        const error = e as AxiosError<Response>;
+        const error = e as AxiosError;
+        console.log(error);
+
         setError((error?.response?.data as Response)?.message || error.message);
         setLoading(false);
       }

@@ -1,16 +1,19 @@
 import { cn } from "@/helpers/utils";
 import { Topic } from "@/types/topic";
-import { Avatar, Button, Input } from "@material-tailwind/react";
+import { Avatar, Button, Input, Spinner } from "@material-tailwind/react";
 import { ChevronDown, Search } from "lucide-react";
 import React, { ChangeEvent } from "react";
 import Demo from "@/assets/images/user.png";
 import useOutsideClick from "@/hooks/useOutsideClick";
+import { useParams } from "react-router-dom";
 import TopicService from "@/services/TopicService";
 import { AxiosError } from "axios";
 import { Response } from "@/types/response";
 import ContentLayout from "@/components/layout/ContentLayout";
 import Editor from "@/components/post/Editor";
+import { useQuery } from "@tanstack/react-query";
 const SubmitPage = () => {
+  const { name } = useParams<{ name: string }>();
   const [topic, setTopic] = React.useState<Topic | undefined>();
   const [selectedIndex, setSelectedIndex] = React.useState(-1);
   const [foundTopics, setFoundTopics] = React.useState<Topic[]>([]);
@@ -21,6 +24,17 @@ const SubmitPage = () => {
     setFoundTopics([]);
     setSelectedIndex(-1);
   };
+
+  const { error, isPending } = useQuery({
+    queryKey: ["submit-get-topic"],
+    queryFn: async () => {
+      const topic = await TopicService.getTopicByName(name!);
+      setTopic(topic);
+      return topic;
+    },
+    enabled: !!name
+  });
+
   const handleSearch = async (event: ChangeEvent<HTMLInputElement>) => {
     const searchValue = event.target.value.trim().replace(/^t\//, "");
     if (searchValue == "") {
@@ -58,7 +72,10 @@ const SubmitPage = () => {
     setTopic(select);
     closeOpenSearch();
   };
-
+  if (name && isPending) return <></>;
+  if (name && error) {
+    return <Spinner className="mx-auto" />;
+  }
   return (
     <ContentLayout>
       <div className="mb-6">

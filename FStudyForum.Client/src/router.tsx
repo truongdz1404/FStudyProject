@@ -1,4 +1,4 @@
-import { FC, Suspense, lazy } from "react";
+import { FC, lazy } from "react";
 import { Navigate, Outlet, useRoutes } from "react-router-dom";
 import AuthGuard from "@/helpers/guards/AuthGuard";
 import NotFound from "@/components/NotFound";
@@ -12,27 +12,34 @@ import Payment from "./pages/donate/payment";
 import Notification from "./pages/donate/notification";
 import SavePost from "./pages/profile/save";
 import { ROLE } from "@/helpers/constants";
+import Loadable from "./helpers/loading/Loadable";
 
-const Popular = lazy(() => import("@/pages/popular"));
-const Memebers = lazy(() => import("@/pages/manager/members"));
-const Welcome = lazy(() => import("@/pages/welcome"));
-const Register = lazy(() => import("@/pages/auth/register"));
-const ConfirmEmail = lazy(() => import("@/pages/auth/confirm-email"));
-const ChangePassword = lazy(
-  () => import("@/pages/auth/reset-password/change-password")
+const Popular = Loadable(lazy(() => import("@/pages/popular")));
+const Memebers = Loadable(lazy(() => import("@/pages/manager/members")));
+const Welcome = Loadable(lazy(() => import("@/pages/welcome")));
+const Register = Loadable(lazy(() => import("@/pages/auth/register")));
+const ConfirmEmail = Loadable(lazy(() => import("@/pages/auth/confirm-email")));
+const ChangePassword = Loadable(
+  lazy(() => import("@/pages/auth/reset-password/change-password"))
 );
-const SubmitPage = lazy(() => import("@/pages/submit"));
-const Comments = lazy(() => import("@/pages/topic/comments"));
-const TopcicManager = lazy(() => import("@/pages/manager/topics"));
-const CategoryManager = lazy(() => import("@/pages/manager/categories"));
-const ResetPassword = lazy(() => import("@/pages/auth/reset-password"));
-const Profile = lazy(() => import("@/pages/profile"));
-const ProfileSettings = lazy(() => import("@/pages/settings/profile"));
-const SignIn = lazy(() => import("@/pages/auth/signin"));
-const Home = lazy(() => import("@/pages/home"));
-const TopicDetail = lazy(() => import("@/pages/topic"));
-const Topics = lazy(() => import("@/pages/topics"));
-const SignOut = lazy(() => import("@/pages/auth/signout"));
+const SubmitPage = Loadable(lazy(() => import("@/pages/submit")));
+const Comments = Loadable(lazy(() => import("@/pages/topic/comments")));
+const TopcicManager = Loadable(lazy(() => import("@/pages/manager/topics")));
+const CategoryManager = Loadable(
+  lazy(() => import("@/pages/manager/categories"))
+);
+const ResetPassword = Loadable(
+  lazy(() => import("@/pages/auth/reset-password"))
+);
+const Profile = Loadable(lazy(() => import("@/pages/profile")));
+const ProfileSettings = Loadable(
+  lazy(() => import("@/pages/settings/profile"))
+);
+const SignIn = Loadable(lazy(() => import("@/pages/auth/signin")));
+const Home = Loadable(lazy(() => import("@/pages/home")));
+const TopicDetail = Loadable(lazy(() => import("@/pages/topic")));
+const Topics = Loadable(lazy(() => import("@/pages/topics")));
+const SignOut = Loadable(lazy(() => import("@/pages/auth/signout")));
 const Router: FC = () => {
   return useRoutes([
     {
@@ -51,30 +58,18 @@ const Router: FC = () => {
         },
         {
           path: "home",
-          element: (
-            <Suspense>
-              <Home />
-            </Suspense>
-          )
+          element: <Home />
         },
         {
           path: "popular",
-          element: (
-            <Suspense>
-              <Popular />
-            </Suspense>
-          )
+          element: <Popular />
         },
         {
           path: "topics",
           children: [
             {
               index: true,
-              element: (
-                <Suspense>
-                  <Topics />
-                </Suspense>
-              )
+              element: <Topics />
             }
           ]
         },
@@ -83,27 +78,15 @@ const Router: FC = () => {
           children: [
             {
               index: true,
-              element: (
-                <Suspense>
-                  <Donate />
-                </Suspense>
-              )
+              element: <Donate />
             },
             {
               path: "payment",
-              element: (
-                <Suspense>
-                  <Payment />
-                </Suspense>
-              )
+              element: <Payment />
             },
             {
               path: "success",
-              element: (
-                <Suspense>
-                  <Notification />
-                </Suspense>
-              )
+              element: <Notification />
             }
           ]
         },
@@ -117,30 +100,18 @@ const Router: FC = () => {
           children: [
             {
               path: "members",
-              element: (
-                <Suspense>
-                  <Memebers />
-                </Suspense>
-              )
+              element: <Memebers />
             },
             {
               path: "analytics",
-              element: (
-                <Suspense>
-                  <>Analytics</>
-                </Suspense>
-              )
+              element: <>Analytics</>
             },
             {
               path: "topics",
               children: [
                 {
                   index: true,
-                  element: (
-                    <Suspense>
-                      <TopcicManager />
-                    </Suspense>
-                  )
+                  element: <TopcicManager />
                 }
               ]
             },
@@ -149,11 +120,7 @@ const Router: FC = () => {
               children: [
                 {
                   index: true,
-                  element: (
-                    <Suspense>
-                      <CategoryManager />
-                    </Suspense>
-                  )
+                  element: <CategoryManager />
                 }
               ]
             }
@@ -169,30 +136,18 @@ const Router: FC = () => {
           children: [
             {
               index: true,
-              element: (
-                <Suspense>
-                  <TopicDetail />
-                </Suspense>
-              )
+              element: <TopicDetail />
             },
             {
               path: "submit",
-              element: (
-                <Suspense>
-                  <>Topic submit</>
-                </Suspense>
-              )
+              element: <SubmitPage />
             },
             {
               path: "comments/:id",
               children: [
                 {
                   index: true,
-                  element: (
-                    <Suspense>
-                      <Comments />
-                    </Suspense>
-                  )
+                  element: <Comments />
                 }
               ]
             }
@@ -200,19 +155,11 @@ const Router: FC = () => {
         },
         {
           path: "profile/:name",
-          element: (
-            <Suspense>
-              <Profile />
-            </Suspense>
-          ),
+          element: <Profile />,
           children: [
             {
               path: "save",
-              element: (
-                <Suspense>
-                  <SavePost />
-                </Suspense>
-              )
+              element: <SavePost />
             }
           ]
         },
@@ -221,21 +168,13 @@ const Router: FC = () => {
           children: [
             {
               path: "profile",
-              element: (
-                <Suspense>
-                  <ProfileSettings />
-                </Suspense>
-              )
+              element: <ProfileSettings />
             }
           ]
         },
         {
           path: "submit",
-          element: (
-            <Suspense>
-              <SubmitPage />
-            </Suspense>
-          )
+          element: <SubmitPage />
         }
       ]
     },
@@ -249,11 +188,7 @@ const Router: FC = () => {
       children: [
         {
           path: "welcome",
-          element: (
-            <Suspense>
-              <Welcome />
-            </Suspense>
-          )
+          element: <Welcome />
         }
       ]
     },
@@ -263,56 +198,32 @@ const Router: FC = () => {
       children: [
         {
           path: "signin",
-          element: (
-            <Suspense>
-              <SignIn />
-            </Suspense>
-          )
+          element: <SignIn />
         },
         {
           path: "signout",
-          element: (
-            <Suspense>
-              <SignOut />
-            </Suspense>
-          )
+          element: <SignOut />
         },
         {
           path: "register",
-          element: (
-            <Suspense>
-              <Register />
-            </Suspense>
-          )
+          element: <Register />
         },
         {
           path: "reset-password",
           children: [
             {
               path: "change-password",
-              element: (
-                <Suspense>
-                  <ChangePassword />
-                </Suspense>
-              )
+              element: <ChangePassword />
             },
             {
               index: true,
-              element: (
-                <Suspense>
-                  <ResetPassword />
-                </Suspense>
-              )
+              element: <ResetPassword />
             }
           ]
         },
         {
           path: "confirm-email",
-          element: (
-            <Suspense>
-              <ConfirmEmail />
-            </Suspense>
-          )
+          element: <ConfirmEmail />
         }
       ]
     },
