@@ -12,6 +12,8 @@ import FilterComponent from "@/components/filter";
 import TopicFilter from "@/components/filter/TopicFilter";
 import NullLayout from "@/components/layout/NullLayout";
 import { Spinner } from "@material-tailwind/react";
+import { AxiosError } from "axios";
+import { Post } from "@/types/post";
 
 const HomePage: React.FC = () => {
   const [selectedFeature, setSelectedFeature] = React.useState<string | null>();
@@ -33,13 +35,20 @@ const HomePage: React.FC = () => {
   const { data, fetchNextPage, isLoading } = useInfiniteQuery({
     queryKey: ["home-infinite-query", selectedFeature, selectedTopic],
     queryFn: async ({ pageParam = 1 }) => {
-      const posts = await PostService.get(
-        (!selectedFeature && !selectedTopic) ? "all" : "filter",
-        pageParam,
-        LIMIT_SCROLLING_PAGNATION_RESULT,
-        selectedFeature ?? "",
-        selectedTopic ?? -1
-      );
+      let posts: Post[] = [];
+      try{
+          posts = await PostService.get(
+          (!selectedFeature && !selectedTopic) ? "all" : "filter",
+          pageParam,
+          LIMIT_SCROLLING_PAGNATION_RESULT,
+          selectedFeature ?? "",
+          selectedTopic ?? -1
+        );
+      }catch (error){
+        if (error instanceof AxiosError && error.response?.status === 404){
+          return [];
+        }
+      }
 
       return posts;
     },

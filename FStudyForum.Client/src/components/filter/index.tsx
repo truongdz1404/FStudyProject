@@ -11,7 +11,6 @@ interface FilterComponentProps {
 
 const FilterComponent: React.FC<FilterComponentProps> = ({ setSelectedFilter, selectedFilter, postCollection }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isChevronDown, setIsChevronDown] = useState(false);
   const node = useRef<HTMLDivElement>(null);
   const NEW = "new";
   const HOT = "hot";
@@ -23,7 +22,6 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setSelectedFilter, se
       if (node.current?.contains(e.target as Node)) {
         return;
       }
-      setIsChevronDown(false);
       setIsOpen(false);
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -37,16 +35,15 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setSelectedFilter, se
       <button
         onClick={() => {
           setIsOpen(!isOpen);
-          setIsChevronDown(!isChevronDown);
         }}
-        className="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-gray-100 focus:ring-blue-500"
+        className="relative inline-flex justify-center w-full px-4 py-2 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-gray-100 focus:ring-blue-500"
       >
         <Filter className="w-4 h-4 mr-2 mt-1" />
         Sort by
-        {isChevronDown ? <ChevronUp /> : <ChevronDown />}
+        {isOpen ? <ChevronUp /> : <ChevronDown />}
       </button>
       {isOpen && (
-        <div className="origin-top-left absolute left-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 px-2 py-2 z-50">
+        <div className="origin-top-left absolute mt-2 w-32 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 px-2 py-2 z-50">
           <div
             className={
               selectedFilter === NEW
