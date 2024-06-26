@@ -18,7 +18,7 @@ import {
 import { ChevronsUpDown, Pencil, Plus, Trash, ChevronLeft, ChevronRight } from "lucide-react";
 
 const titles = ["Name", "Description", "Action"];
-const PAGE_SIZE = 5; // Số phần tử mỗi trang
+const PAGE_SIZE = 5;
 
 const TopicsPage = () => {
   const [popupOpen, setPopupOpen] = useState(0);
@@ -137,7 +137,7 @@ const TopicsPage = () => {
                         </div>
                       </div>
                     </td>
-                    <td className={classes}>
+                    <td className={`${classes} break-words max-w-60`}>
                       <Typography
                         variant="small"
                         color="blue-gray"

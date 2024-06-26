@@ -1,4 +1,4 @@
-// src/components/topic/Popup/DeleteTopicPopup.tsx
+
 import React from "react"
 import { DialogBody, DialogFooter, Button } from "@material-tailwind/react"
 

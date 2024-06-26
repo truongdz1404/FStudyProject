@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import AddCategoryPopup from "@/components/category/Add";
 import DeleteCategoryPopup from "@/components/category/Delete";
 import UpdateCategoryPopup from "@/components/category/Update";
@@ -18,25 +18,28 @@ import { ChevronsUpDown, Pencil, Plus, Trash, ChevronLeft, ChevronRight } from "
 import CategoryService from "@/services/CategoryService";
 
 const titles = ["Name", "Description", "Types", "Action"];
-const PAGE_SIZE = 5; 
+const PAGE_SIZE = 5; // Number of items per page
 
 const CategoriesPage = () => {
   const [popupOpen, setPopupOpen] = useState(0);
   const [selectCategory, setSelectCategory] = useState<Category | undefined>(undefined);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const { data, isLoading } = useQuery({
+  // Fetching categories with react-query
+  const { data, isLoading} = useQuery({
     queryKey: ["categories"],
     queryFn: CategoryService.getAllCategory
   });
 
   const totalPages = Math.ceil((data?.length ?? 0) / PAGE_SIZE);
 
+  // Paginate data based on current page
   const paginatedData = data?.slice(
     (currentPage - 1) * PAGE_SIZE,
     currentPage * PAGE_SIZE
   );
 
+  // Open different popups
   const openAddPopup = () => setPopupOpen(1);
   const openEditPopup = (category: Category) => {
     setSelectCategory(category);
@@ -49,9 +52,10 @@ const CategoriesPage = () => {
   const closePopup = () => setPopupOpen(0);
 
   const reloadCategory = () => {
-
+    // Optional: Implement logic to refresh categories if needed
   };
 
+  // Delete category handler
   const handleDelete = async () => {
     if (!selectCategory) return;
     try {
@@ -63,6 +67,7 @@ const CategoriesPage = () => {
     }
   };
 
+  // Handle page change
   const handlePageChange = (newPage: number) => {
     if (newPage > 0 && newPage <= totalPages) {
       setCurrentPage(newPage);
@@ -139,7 +144,7 @@ const CategoriesPage = () => {
                         </div>
                       </div>
                     </td>
-                    <td className={classes}>
+                    <td className={`${classes} break-words max-w-60`}>
                       <Typography
                         variant="small"
                         color="blue-gray"
@@ -209,7 +214,11 @@ const CategoriesPage = () => {
         </CardBody>
       </Card>
       {popupOpen === 1 && (
-        <AddCategoryPopup onClose={closePopup} onCategoryCreated={reloadCategory} />
+        <AddCategoryPopup
+          onClose={closePopup}
+          onCategoryCreated={reloadCategory}
+          open={true} 
+        />
       )}
 
       {popupOpen === 2 && selectCategory && (
