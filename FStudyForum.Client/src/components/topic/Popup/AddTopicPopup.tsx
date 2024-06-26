@@ -5,10 +5,9 @@ import { useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { ChevronLeft, ChevronRight, CircleAlert, X } from "lucide-react";
 import { motion } from "framer-motion";
-import { Category } from "@/types/category"; 
+import { Category } from "@/types/category";
 import TopicService from "@/services/TopicService";
 import CategoryService from "@/services/CategoryService";
-
 interface AddTopicPopupProps {
   onClose: () => void;
   onTopicCreated: () => void;
@@ -17,8 +16,8 @@ interface AddTopicPopupProps {
 interface AddTopicFormInputs {
   topicName: string;
   description: string;
-  avatar: string; 
-  banner: string; 
+  avatar: string;
+  banner: string;
 }
 
 const validation = Yup.object().shape({
@@ -27,8 +26,8 @@ const validation = Yup.object().shape({
     .required("Topic name is required")
     .max(50, "Topic name must be no more than 50 characters"),
   description: Yup.string().trim().required("Description is required"),
-  avatar: Yup.string().required("Avatar is required"), 
-  banner: Yup.string().required("Banner is required"), 
+  avatar: Yup.string().required("Avatar is required"),
+  banner: Yup.string().required("Banner is required"),
 });
 
 const AddTopicPopup: React.FC<AddTopicPopupProps> = ({
@@ -132,10 +131,10 @@ const AddTopicPopup: React.FC<AddTopicPopupProps> = ({
       const previewUrl = reader.result as string;
       if (field === "avatar") {
         setAvatarPreview(previewUrl);
-        setValue("avatar", previewUrl); 
+        setValue("avatar", previewUrl);
       } else if (field === "banner") {
         setBannerPreview(previewUrl);
-        setValue("banner", previewUrl); 
+        setValue("banner", previewUrl);
       }
     };
     reader.readAsDataURL(file);

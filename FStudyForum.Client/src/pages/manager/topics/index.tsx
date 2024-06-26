@@ -1,3 +1,4 @@
+import { useState } from "react";
 import AddTopicPopup from "@/components/topic/popup/AddTopicPopup";
 import DeleteTopicPopup from "@/components/topic/popup/DeleteTopicPopup";
 import UpdateTopicPopup from "@/components/topic/popup/UpdateTopicPopup";
@@ -11,36 +12,43 @@ import {
   Typography,
   Button,
   CardBody,
-  // Chip,
-  //   CardFooter,
   IconButton,
   Tooltip
 } from "@material-tailwind/react";
-import { ChevronsUpDown, Pencil, Plus, Trash } from "lucide-react";
-import React from "react";
+import { ChevronsUpDown, Pencil, Plus, Trash, ChevronLeft, ChevronRight } from "lucide-react";
 
 const titles = ["Name", "Description", "Action"];
+const PAGE_SIZE = 5; // Số phần tử mỗi trang
 
 const TopicsPage = () => {
-  const openAddPopup = () => {
-    setPopupOpen(1);
-  };
+  const [popupOpen, setPopupOpen] = useState(0);
+  const [selectTopic, setSelectTopic] = useState<Topic | undefined>(undefined);
+  const [currentPage, setCurrentPage] = useState(1);
 
+  const { data, isLoading } = useQuery({
+    queryKey: ["active-topics"],
+    queryFn: TopicService.getActiveTopics
+  });
+
+  const totalPages = Math.ceil((data?.length ?? 0) / PAGE_SIZE);
+
+  const paginatedData = data?.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE
+  );
+
+  const openAddPopup = () => setPopupOpen(1);
   const openEditPopup = (topic: Topic) => {
     setSelectTopic(topic);
     setPopupOpen(2);
   };
-
   const openDeletePopup = (topic: Topic) => {
     setSelectTopic(topic);
     setPopupOpen(3);
   };
-  const closePopup = () => {
-    setPopupOpen(0);
-  };
+  const closePopup = () => setPopupOpen(0);
 
   const reloadTopics = () => {
-    // setReload(true);
   };
 
   const handleDelete = async () => {
@@ -54,15 +62,12 @@ const TopicsPage = () => {
     }
   };
 
-  const [selectTopic, setSelectTopic] = React.useState<Topic | undefined>(
-    undefined
-  );
-  const [popupOpen, setPopupOpen] = React.useState(0);
+  const handlePageChange = (newPage: number) => {
+    if (newPage > 0 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["active-topics"],
-    queryFn: TopicService.getActiveTopics
-  });
   return (
     <>
       <Card className="h-full w-full">
@@ -112,8 +117,8 @@ const TopicsPage = () => {
               </tr>
             </thead>
             <tbody className={cn(isLoading && "hidden")}>
-              {data?.map((topic, index) => {
-                const isLast = index === data.length - 1;
+              {paginatedData?.map((topic, index) => {
+                const isLast = index === paginatedData.length - 1;
                 const classes = isLast
                   ? "p-4"
                   : "p-4 border-b border-blue-gray-50";
@@ -165,6 +170,31 @@ const TopicsPage = () => {
               })}
             </tbody>
           </table>
+          <div className="flex justify-center mt-4">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="px-3 py-1 mx-1 text-sm bg-gray-200 rounded disabled:opacity-50"
+            >
+              <ChevronLeft className="w-4 h-4 inline" />
+            </button>
+            {Array.from({ length: totalPages }, (_, index) => (
+              <button
+                key={index}
+                onClick={() => handlePageChange(index + 1)}
+                className={`px-3 py-1 mx-1 text-sm rounded ${currentPage === index + 1 ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+              >
+                {index + 1}
+              </button>
+            ))}
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="px-3 py-1 mx-1 text-sm bg-gray-200 rounded disabled:opacity-50"
+            >
+              <ChevronRight className="w-4 h-4 inline" />
+            </button>
+          </div>
         </CardBody>
       </Card>
       {popupOpen === 1 && (
@@ -190,4 +220,5 @@ const TopicsPage = () => {
     </>
   );
 };
+
 export default TopicsPage;

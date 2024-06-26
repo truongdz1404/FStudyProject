@@ -14,6 +14,8 @@ interface UpdateTopicPopupProps {
 interface UpdateTopicFormInputs {
   topicName: string;
   description: string;
+  avatar: string;
+  banner: string;
   categories: string[];
 }
 
@@ -27,6 +29,8 @@ const UpdateTopicPopup: React.FC<UpdateTopicPopupProps> = ({
     defaultValues: {
       topicName: topic.name,
       description: topic.description,
+      avatar: topic.avatar,
+      banner: topic.banner,
       categories: topic.categories.map(String)
     }
   });
@@ -36,6 +40,8 @@ const UpdateTopicPopup: React.FC<UpdateTopicPopupProps> = ({
       const updatedTopic: UpdateTopicDTO = {
         name: data.topicName,
         description: data.description,
+        avatar: data.avatar,
+        banner: data.banner,
         categories: data.categories.map(Number)
       };
 

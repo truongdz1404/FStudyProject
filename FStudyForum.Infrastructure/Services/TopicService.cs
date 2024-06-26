@@ -58,8 +58,8 @@ public class TopicService : ITopicService
         {
             Name = topicDto.Name,
             Description = topicDto.Description,
-            //Avatar = topicDto.Avatar,
-            //Panner = topicDto.Banner,
+            Avatar = topicDto.Avatar,
+            Panner = topicDto.Banner,
             Categories = categories
         };
         var createdTopic = await _topicRepository.Create(topic);
@@ -138,6 +138,8 @@ public class TopicService : ITopicService
                 Id = topic.Id,
                 Name = topic.Name,
                 Description = topic.Description,
+                Avatar = topic.Avatar,
+                Banner = topic.Panner,
                 IsDeleted = topic.IsDeleted,
                 Categories = topic.Categories.Select(c => c.Id).ToList()
             });
