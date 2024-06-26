@@ -147,14 +147,28 @@ const ResponseForm = () => {
             </span>
           )}
         </div>
-        <div>
-          <Button
-            type="submit"
-            disabled={pending}
-            className="hover:cursor-pointer px-4 py-3 bg-orange-500 rounded-md text-white outline-none focus:ring-4 shadow-lg transform active:scale-100 transition-transform"
-          >
-            Gửi Phản Hồi
-          </Button>
+        <div className="flex justify-between">
+          <div>
+            <Button
+              type="submit"
+              disabled={pending}
+              className="hover:cursor-pointer px-4 py-3 bg-orange-500 rounded-md text-white outline-none focus:ring-4 shadow-lg transform active:scale-100 transition-transform"
+            >
+              Gửi Phản Hồi
+            </Button>
+          </div>
+          <div>
+            <Button
+              onClick={() =>
+                navigate(
+                  `/topic/${report?.content.ReportedTopicname}/comments/${report?.content.ReportedPostId}`
+                )
+              }
+              className="hover:cursor-pointer px-4 py-3 bg-red-500 rounded-md text-white outline-none focus:ring-4 shadow-lg transform active:scale-100 transition-transform"
+            >
+              Đi tới bài viết
+            </Button>
+          </div>
         </div>
       </form>
     </div>
