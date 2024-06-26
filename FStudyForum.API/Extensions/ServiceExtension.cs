@@ -23,6 +23,8 @@ public static class ServiceExtension
         services.AddScoped<IVoteService, VoteService>();
         services.AddScoped<ICommentService, CommentService>();
         services.AddScoped<IPaymentService, PaymentService>();
+        services.AddScoped<IQRCodeService, QRCodeService>();
+        services.AddScoped<IDonateService, DonateService>();
         #endregion
 
         #region Repositories

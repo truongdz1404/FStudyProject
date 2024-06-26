@@ -4,6 +4,7 @@ using FStudyForum.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FStudyForum.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20240626161344_newDBDonate")]
+    partial class newDBDonate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -563,19 +566,19 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "c5568f05-dd75-4f31-8f94-fedf4269b355",
+                            Id = "cb47e222-fc13-44bd-91b7-8e2beda51f9a",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "bcfd2592-da41-452c-b8da-37dce907bc45",
+                            Id = "80f0b51f-27c9-43f6-9480-d1a92e04f1b9",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "c9d6b607-7077-4c26-9627-794612d67b5d",
+                            Id = "457e661b-0351-4ff8-8851-4fbe7ccf73ef",
                             Name = "Moderator",
                             NormalizedName = "MODERATOR"
                         });

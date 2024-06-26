@@ -3,10 +3,10 @@ import { Link, useLocation } from "react-router-dom";
 import Thumbnail from "@/assets/images/check.png";
 import Error from "@/assets/images/close.png";
 import { cn } from "@/helpers/utils";
-import { ArrowLeft } from "lucide-react";
+
 const Notification = () => {
   const location = useLocation();
-  const { paymentResponse } = location.state || {};
+  const { donate } = location.state || {};
   const formatToVND = (amount: number): string => {
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
@@ -16,7 +16,7 @@ const Notification = () => {
   return (
     <>
       <div>
-        {paymentResponse && Number(paymentResponse.vnPayResponseCode) !== 24 ? (
+        {donate !== null && donate !== undefined ? (
           <div>
             <img src={Thumbnail} alt="payment" className="w-[20%] ml-[55%]" />
             <div className={cn("font-bold", "ml-[50%]", "mt-[5%]")}>
@@ -24,7 +24,7 @@ const Notification = () => {
             </div>
             <div className={cn("ml-[35%]")}>
               You have just successfully amount:{" "}
-              {formatToVND(paymentResponse.amount)}
+              {formatToVND(donate.amount)}
             </div>
           </div>
         ) : (
@@ -39,7 +39,6 @@ const Notification = () => {
           </div>
         )}
       </div>
-
       <Card color="transparent" shadow={false}>
         <Link to="/home">
           <Button className="mt-6 ml-[56%] bg-orange-500 w-[15%]" fullWidth>

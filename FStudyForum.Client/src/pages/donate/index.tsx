@@ -5,11 +5,8 @@ import { ArrowLeft, CircleAlert } from "lucide-react";
 import { useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { useAuth } from "@/hooks/useAuth";
-import { AxiosError } from "axios";
-import { Response } from "@/types/response";
 import React from "react";
-import PaymentService from "@/services/PaymentService";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 const validation = Yup.object({
   description: Yup.string(),
   amount: Yup.number()
@@ -26,7 +23,7 @@ const Donate = () => {
   const { user } = useAuth();
   const [error, setError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
-  const location = useLocation();
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -35,54 +32,15 @@ const Donate = () => {
     mode: "onTouched",
     resolver: yupResolver(validation)
   });
-
   const handleDonate = async (form: DonateInputs) => {
     if (user == null) {
       setError("User is not authenticated");
       return;
     }
     setLoading(true);
-
-    const save = async () => {
-      try {
-        const response = await PaymentService.generatePaymentUrl({
-          username: user.username,
-          fullname: `${user.firstName} ${user.lastName}`,
-          description: form.description || "",
-          amount: form.amount
-        });
-        window.location.href = `${response.data}`;
-      } catch (e) {
-        const error = e as AxiosError;
-        setError((error?.response?.data as Response)?.message || error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    save();
+    navigate("/donate/qrcode", {state: { amountByUser: form.amount, addInfoByUser: `${user.username} ${form.description}`}})
   };
-  React.useEffect(() => {
-    const fetchPaymentResponse = async () => {
-      const query = location.search;
-      if (query) {
-        try {
-          const response = await PaymentService.paymentResponse(query);
-          await PaymentService.saveUserDonate({
-            username: user?.username || "",
-            amount: response.amount || 0,
-            message: response.orderDescription || ""
-          });
-        } catch (e) {
-          const error = e as AxiosError;
-          setError(
-            (error?.response?.data as { message: string })?.message ||
-              error.message
-          );
-        }
-      }
-    };
-    fetchPaymentResponse();
-  }, [location.search]);
+  
   return (
     <>
       <div className="mb-6">
@@ -164,5 +122,4 @@ const Donate = () => {
     </>
   );
 };
-
 export default Donate;

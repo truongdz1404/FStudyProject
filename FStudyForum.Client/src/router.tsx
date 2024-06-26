@@ -8,10 +8,11 @@ import WelcomeGuard from "@/helpers/guards/WelcomeGuard";
 import AuthLayout from "@/components/layout/AuthLayout";
 import RoleBasedGuard from "@/helpers/guards/RoleBasedGuard";
 import Donate from "./pages/donate";
-import Payment from "./pages/donate/payment";
 import Notification from "./pages/donate/notification";
 import SavePost from "./pages/profile/save";
 import { ROLE } from "@/helpers/constants";
+import QRCodeLink from "./pages/donate/qrcode";
+
 
 const Popular = lazy(() => import("@/pages/popular"));
 const Memebers = lazy(() => import("@/pages/manager/members"));
@@ -51,9 +52,12 @@ const Router: FC = () => {
         },
         {
           path: "home",
+
           element: (
             <Suspense>
+             
               <Home />
+              
             </Suspense>
           )
         },
@@ -90,15 +94,15 @@ const Router: FC = () => {
               )
             },
             {
-              path: "payment",
-              element: (
-                <Suspense>
-                  <Payment />
-                </Suspense>
-              )
+            path: "qrcode",
+            element: (
+              <Suspense>
+                <QRCodeLink />
+              </Suspense>
+            )
             },
             {
-              path: "success",
+              path: "transaction",
               element: (
                 <Suspense>
                   <Notification />

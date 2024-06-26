@@ -1,29 +1,41 @@
 import { ResponseWith } from "@/types/response";
 import api from "./api";
-import { Donation, Payment, PaymentResponse } from "@/types/donate";
+import { ApiResponse, Donation, Payment, QRCode } from "@/types/donate";
+import axios from "axios";
 
-const getPayMentQR = async () => {
-  const response = await api.get<ResponseWith<Payment>>("QRcode/generate");
-  return response.data.data;
-};
+
 const generatePaymentUrl = async (payment: Payment) => {
   const response = await api.post<ResponseWith<Payment>>(
     "/Payment/generate-payment-url", payment
   );
   return response.data;
 };
-const paymentResponse= async(query: string) => {
-  const response = await api.get<ResponseWith<PaymentResponse>>(`/Payment/payment-response${query}`);
+const isExistTid = async (tid: string) => {
+  const response = await api.get<ResponseWith<boolean>>(`/donate/isExistTid/${tid}`);
   return response.data.data;
 }
 const saveUserDonate = async (donate: Donation) => {
-  const response = await api.post<ResponseWith<Donation>>("/Payment/save-user-donate", donate);
+  const response = await api.post<ResponseWith<Donation>>("/donate/save-user-donate", donate);
   return response.data.data;
 }
+const generateQRUrl = async (amountByUser: string, addInfoByUser:string) => {
+  const response = await api.get<ResponseWith<QRCode>>(`/donate/generate/${amountByUser}/${addInfoByUser}`);
+  return response.data;
+}
+const paymentResponseQR = async (apiGet: string, apiKey: string) => {
+  const response = await axios.get<ResponseWith<ApiResponse>>(apiGet, {
+    headers: {
+      Authorization: `apikey ${apiKey}`,
+      "Content-Type": "application/json"
+    }
+  });
+  return response.data.data
+}
 const PaymentService = {
-  getPayMentQR,
   generatePaymentUrl,
-  paymentResponse,
-  saveUserDonate
+  saveUserDonate,
+  generateQRUrl,
+  paymentResponseQR,
+  isExistTid
 };
 export default PaymentService;

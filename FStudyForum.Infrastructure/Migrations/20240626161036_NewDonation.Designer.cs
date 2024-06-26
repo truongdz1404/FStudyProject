@@ -4,6 +4,7 @@ using FStudyForum.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FStudyForum.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20240626161036_NewDonation")]
+    partial class NewDonation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -235,8 +238,7 @@ namespace FStudyForum.Infrastructure.Migrations
 
                     b.Property<string>("Tid")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -563,19 +565,19 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "c5568f05-dd75-4f31-8f94-fedf4269b355",
+                            Id = "a114ed63-ce6d-4acd-b6da-a56a858c1dba",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "bcfd2592-da41-452c-b8da-37dce907bc45",
+                            Id = "3b2b5c69-6a68-4dcc-8e40-06546e5a94eb",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "c9d6b607-7077-4c26-9627-794612d67b5d",
+                            Id = "044544a1-4418-4fe1-b831-9625891077fb",
                             Name = "Moderator",
                             NormalizedName = "MODERATOR"
                         });
