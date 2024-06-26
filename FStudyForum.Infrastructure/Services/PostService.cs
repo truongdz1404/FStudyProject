@@ -61,7 +61,7 @@ namespace FStudyForum.Infrastructure.Services
                 Content = post.Content,
                 VoteType = await _voteRepository.GetVotedType(username, id),
                 VoteCount = await _postRepository.GetVoteCount(post.Id),
-                CommentCount = post.Comments.Count,
+                CommentCount = post.Comments.Count(c => !c.IsDeleted),
                 Attachments = post.Attachments.Select(a => new AttachmentDTO { Id = a.Id, Type = a.Type, Url = a.FileUrl }),
                 Elapsed = DateTime.Now - post.CreatedAt,
             };
@@ -84,7 +84,7 @@ namespace FStudyForum.Infrastructure.Services
                     VoteType = await _voteRepository.GetVotedType(username, p.Id),
                     Content = p.Content,
                     VoteCount = await _postRepository.GetVoteCount(p.Id),
-                    CommentCount = p.Comments.Count,
+                    CommentCount = p.Comments.Count(c => !c.IsDeleted),
                     Attachments = p.Attachments.Select(a => new AttachmentDTO { Id = a.Id, Type = a.Type, Url = a.FileUrl }),
                     Elapsed = DateTime.Now - p.CreatedAt
                 });
@@ -105,7 +105,7 @@ namespace FStudyForum.Infrastructure.Services
                 TopicAvatar = p.Topic.Avatar,
                 Content = p.Content,
                 VoteCount = p.Votes.Count,
-                CommentCount = p.Comments.Count,
+                CommentCount = p.Comments.Count(c => !c.IsDeleted),
                 Attachments = p.Attachments.Select(a => new AttachmentDTO { Type = a.Type, Url = a.FileUrl }),
                 Elapsed = DateTime.Now - p.CreatedAt
             });
@@ -156,7 +156,7 @@ namespace FStudyForum.Infrastructure.Services
                 TopicAvatar = p.Topic.Avatar,
                 Content = p.Content,
                 VoteCount = p.Votes.Count,
-                CommentCount = p.Comments.Count,
+                CommentCount = p.Comments.Count(c => !c.IsDeleted),
                 Elapsed = DateTime.Now - p.CreatedAt
             });
         }

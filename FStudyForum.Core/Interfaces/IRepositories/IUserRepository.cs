@@ -7,4 +7,5 @@ public interface IUserRepository : IBaseRepository<ApplicationUser>
 {
     Task<ApplicationUser?> FindUserByRefreshTokenAsync(string refreshToken);
     Task<IEnumerable<ApplicationUser>> SearchUserByName(string keyword);
+    // Task<string?> GetUserAvatar(string name);
 }

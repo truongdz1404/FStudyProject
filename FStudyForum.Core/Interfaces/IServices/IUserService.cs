@@ -26,4 +26,7 @@ public interface IUserService
     Task<UserDTO> UnlockUser(LockUserDTO lockUserDTO);
     Task<bool> IsUserLocked(string userName);
     Task<DateTimeOffset?> GetUnlockTime(string userName);
+
+    // Task<string?> GetUserAvatar(string userName);
+
 }

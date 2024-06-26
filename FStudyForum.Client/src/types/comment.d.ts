@@ -5,8 +5,10 @@ export interface Comment {
   replyId: number;
   content: string;
   author: string;
+  voteType: number;
   voteCount: number;
-  createdAt: string;
+  avatar: string;
+  elapsed: string;
   updatedAt: string;
   replies?: Comment[]; 
   

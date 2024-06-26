@@ -4,6 +4,7 @@ using FStudyForum.Core.Models.DTOs.Comment;
 using FStudyForum.Core.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace FStudyForum.Infrastructure.Services
@@ -12,11 +13,14 @@ namespace FStudyForum.Infrastructure.Services
     {
         private readonly ICommentRepository _commentRepository;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IUserService _userService;
 
-        public CommentService(ICommentRepository commentRepository, UserManager<ApplicationUser> userManager)
+        public CommentService(ICommentRepository commentRepository, UserManager<ApplicationUser> userManager,
+        IUserService userService)
         {
             _commentRepository = commentRepository;
             _userManager = userManager;
+            _userService = userService;
         }
 
         public async Task<CommentDTO> GetCommentByIdAsync(long id)
@@ -63,6 +67,12 @@ namespace FStudyForum.Infrastructure.Services
             ?? throw new KeyNotFoundException("Comment not found");
             comment.IsDeleted = true;
             await _commentRepository.UpdateCommentAsync(comment);
+            var commentReplies = await _commentRepository.GetCommentsByReplyIdAsync(id);
+            foreach (var commentReply in commentReplies)
+            {
+                commentReply.IsDeleted = true;
+                await _commentRepository.UpdateCommentAsync(commentReply);
+            }
             return true;
         }
 
@@ -74,6 +84,7 @@ namespace FStudyForum.Infrastructure.Services
                 Content = comment.Content,
                 IsDeleted = comment.IsDeleted,
                 Author = comment.Creater.UserName,
+                Avatar = comment.Creater.Profile?.Avatar,
                 PostId = comment.Post.Id,
                 AttachmentId = comment.Attachment?.Id,
                 ReplyId = comment.ReplyTo?.Id,

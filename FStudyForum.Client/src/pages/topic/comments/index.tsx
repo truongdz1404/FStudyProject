@@ -16,14 +16,14 @@ import PostItem from "@/components/post/PostItem";
 import { Post } from "@/types/post";
 import { Response } from "@/types/response";
 import { Comment, CreateComment } from "@/types/comment";
-import MenuItemPost from "@/components/post/MenuItem";
+import MenuItemComment from "@/components/comment/MenuItem";
 import CommentInput from "@/components/comment/CommentInput";
 import ReplyInput from "@/components/comment/ReplyInput";
 import ContentLayout from "@/components/layout/ContentLayout";
 
 import Default from "@/assets/images/user.png";
 
-interface Props {}
+interface Props { }
 
 const Comments: FC<Props> = () => {
   const navigate = useNavigate();
@@ -41,11 +41,11 @@ const Comments: FC<Props> = () => {
     [key: number]: boolean;
   }>({});
 
-  const initializeExpandedComments = (comments: Comment[]) => {
+  const initializeExpandedComments = (comments: Comment[], number: number = 3) => {
     const expanded: { [key: number]: boolean } = {};
     const traverseComments = (commentList: Comment[]) => {
       commentList.forEach(comment => {
-        expanded[comment.id] = !comment.replies || comment.replies.length < 3;
+        expanded[comment.id] = !comment.replies || comment.replies.length < number;
         if (comment.replies) {
           traverseComments(comment.replies);
         }
@@ -77,9 +77,9 @@ const Comments: FC<Props> = () => {
   }, [post, postId, topicName]);
 
   useEffect(() => {
-    if (!postId) return;
-
     const fetchComments = async () => {
+      if (!postId) return;
+
       setLoading(true);
       try {
         const data = await CommentService.getCommentsByPostId(postId);
@@ -123,6 +123,25 @@ const Comments: FC<Props> = () => {
     }
   };
 
+  const handleDeleteComment = async (id: string) => {
+    try {
+      await CommentService.deleteComment(id);
+      setComments(prevComments => removeCommentById(prevComments, Number(id)));
+    } catch (e) {
+      const error = e as AxiosError<Response>;
+      setError((error?.response?.data as Response)?.message || error.message);
+    }
+  };
+
+  const removeCommentById = (comments: Comment[], id: number): Comment[] => {
+    return comments
+      .filter(comment => comment.id !== id)
+      .map(comment => ({
+        ...comment,
+        replies: removeCommentById(comment.replies || [], id),
+      }));
+  };
+
   const handleCreateComment = async (content: string) => {
     try {
       if (!postId) return;
@@ -130,7 +149,9 @@ const Comments: FC<Props> = () => {
         postId: Number(postId),
         content
       } as CreateComment);
-      setComments([...comments, newCommentData]);
+
+      const updatedComment = await CommentService.getCommentById(newCommentData.id.toString());
+      setComments([...comments, updatedComment]);
     } catch (e) {
       const error = e as AxiosError;
       setError((error?.response?.data as Response)?.message || error.message);
@@ -164,9 +185,12 @@ const Comments: FC<Props> = () => {
         replyId: commentId,
         content
       } as CreateComment);
+
+      // Fetch the updated reply to get complete data
+      const updatedReply = await CommentService.getCommentById(newReplyData.id.toString());
       const updatedComments = addReplyToComments(
         comments,
-        newReplyData,
+        updatedReply,
         commentId
       );
       setComments(updatedComments);
@@ -187,13 +211,14 @@ const Comments: FC<Props> = () => {
       [commentId]: !prev[commentId]
     }));
   };
+
   if (loading || !post) return null;
 
   const renderComment = (comment: Comment, level = 0) => (
     <div key={comment.id} className="py-2 " style={{ marginLeft: level * 20 }}>
       <div className="flex mb-2">
         <img
-          src={Default}
+          src={comment.avatar || Default}
           alt="avatar"
           className="w-8 h-8 rounded-full mr-2"
           style={{ flexShrink: 0 }}
@@ -205,7 +230,7 @@ const Comments: FC<Props> = () => {
           >
             <span className="font-bold text-xs">{comment.author}</span>
           </div>
-          <span className="text-xs text-gray-500">{comment.createdAt}</span>
+          <span className="text-xs text-gray-500">{comment.elapsed}</span>
           <span className="font text-sm">{comment.content}</span>
           <div className="flex space-x-7 text-gray-700 my-[0.5rem]">
             <div className="action flex items-center rounded-full bg-blue-gray-30">
@@ -232,7 +257,7 @@ const Comments: FC<Props> = () => {
             </div>
 
             <div className="action flex items-center">
-              <MenuItemPost post={post} />
+              <MenuItemComment key={comment.id} comment={comment} onDelete={handleDeleteComment} />
             </div>
           </div>
           {replyToCommentId === comment.id && (

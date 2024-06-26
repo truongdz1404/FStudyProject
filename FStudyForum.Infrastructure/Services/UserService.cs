@@ -232,4 +232,9 @@ public class UserService : IUserService
         }
         return userDTOs;
     }
+
+    // public async Task<string> GetUserAvatar(string username){
+    //     var user = await _userManager.FindByNameAsync(username);
+    //     return user?.Avatar;
+    // }
 }

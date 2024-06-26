@@ -101,8 +101,9 @@ namespace FStudyForum.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateComment([FromBody] CommentUpdateDTO commentUpdateDto)
+        public async Task<IActionResult> UpdateComment(long id, [FromBody] CommentUpdateDTO commentUpdateDto)
         {
+            commentUpdateDto.CommentId = id;
             var result = await _commentService.UpdateCommentAsync(commentUpdateDto);
             if (!result)
             {
