@@ -5,6 +5,7 @@ namespace FStudyForum.Core.Interfaces.IRepositories;
 
 public interface IUserRepository : IBaseRepository<ApplicationUser>
 {
-    Task<ApplicationUser?> FindUserByRefreshTokenAsync(string refreshToken);
-    Task<IEnumerable<ApplicationUser>> SearchUserByName(string keyword);
+    public Task<ApplicationUser?> FindUserByRefreshTokenAsync(string refreshToken);
+    public Task<IEnumerable<ApplicationUser>> SearchUserByName(string keyword);
+    public Task<IEnumerable<Topic>> GetModeratedTopics(string username);
 }

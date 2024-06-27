@@ -25,15 +25,15 @@ export interface UpdateTopicDTO {
   categories: number[];
 }
 export interface TopicBan {
-  username: string,
-  topicId: number,
-  action: string,
-  bannerTime: number
+  username: string;
+  topicId: number;
+  action: string;
+  bannerTime: number;
 }
 export interface TopicBanDTO {
-  username: string,
-  topicId: number,
+  username: string;
+  topicId: number;
 }
 export interface Unlocktime {
-  unlockTime: DateTime
+  unlockTime: DateTime;
 }

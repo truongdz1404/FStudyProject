@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import Thumbnail from "@/assets/images/check.png";
 import Error from "@/assets/images/close.png";
 import { cn } from "@/helpers/utils";
+import { ArrowLeft } from "lucide-react";
 const Notification = () => {
   const location = useLocation();
   const { paymentResponse } = location.state || {};
@@ -15,7 +16,7 @@ const Notification = () => {
   return (
     <>
       <div>
-        {paymentResponse ? (
+        {paymentResponse && Number(paymentResponse.vnPayResponseCode) !== 24 ? (
           <div>
             <img src={Thumbnail} alt="payment" className="w-[20%] ml-[55%]" />
             <div className={cn("font-bold", "ml-[50%]", "mt-[5%]")}>
@@ -28,13 +29,12 @@ const Notification = () => {
           </div>
         ) : (
           <div>
-            
-          <img src={Error} alt="payment" className="w-[20%] ml-[54%]" />
-          <div className={cn("font-bold", "ml-[54%]", "mt-[5%]")}>
-               Payment error!
+            <img src={Error} alt="payment" className="w-[20%] ml-[54%]" />
+            <div className={cn("font-bold", "ml-[54%]", "mt-[5%]")}>
+              Payment error!
             </div>
             <div className={cn("ml-[43%]")}>
-            Payment failed. Please try again!
+              Payment failed. Please try again!
             </div>
           </div>
         )}

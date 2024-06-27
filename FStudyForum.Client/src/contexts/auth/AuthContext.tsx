@@ -1,23 +1,23 @@
-import { Dispatch, FC, PropsWithChildren } from "react"
-import { AuthState } from "./types"
-import React from "react"
-import { PayloadAction, initialize, reducer } from "./reduce"
-import UserService from "@/services/UserService"
+import { Dispatch, FC, PropsWithChildren } from "react";
+import { AuthState } from "./types";
+import React from "react";
+import { PayloadAction, initialize, reducer } from "./reduce";
+import UserService from "@/services/UserService";
 
 export interface AuthContextType extends AuthState {
-  dispatch: Dispatch<PayloadAction<AuthState>>
+  dispatch: Dispatch<PayloadAction<AuthState>>;
 }
 
 const initialState: AuthState = {
   isAuthenticated: false,
   isInitialized: false,
   user: null
-}
+};
 
 export const AuthContext = React.createContext<AuthContextType>({
   ...initialState,
   dispatch: () => null
-})
+});
 
 const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
   const [authState, dispatchAuth] = React.useReducer(reducer, initialState);
@@ -42,4 +42,4 @@ const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
   );
 };
 
-export default AuthProvider
+export default AuthProvider;

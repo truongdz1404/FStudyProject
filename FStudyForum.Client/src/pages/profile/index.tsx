@@ -24,7 +24,7 @@ const tabItems = [
     path: ""
   },
   {
-    label: "Posts",
+    label: "Saved",
     path: "save"
   }
 ];
@@ -127,12 +127,10 @@ const Profile = () => {
           <hr className="mt-4 border-blue-gray-50" />
         </AccordionBody>
       </Accordion>
-
       <div className="flex w-max gap-4">
         {tabItems.map(({ label, path }) => (
-          <Link to={path}>
+          <Link to={path} key={label}>
             <Button
-              key={label}
               variant="text"
               size="sm"
               className="rounded-full bg-blue-gray-50"

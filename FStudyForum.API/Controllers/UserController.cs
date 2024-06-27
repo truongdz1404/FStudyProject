@@ -22,10 +22,6 @@ namespace FStudyForum.API.Controllers
             _identityService = identityService;
         }
 
-        public IActionResult GetTest()
-        {
-            return Ok("Hello World");
-        }
         [HttpGet("profile"), Authorize]
         public async Task<IActionResult> GetProfile()
         {
@@ -42,8 +38,6 @@ namespace FStudyForum.API.Controllers
                 Data = await _userService.GetProfileByName(userName)
             });
         }
-
-
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] QueryUserDTO query)
         {

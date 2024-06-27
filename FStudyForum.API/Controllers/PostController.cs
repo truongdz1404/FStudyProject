@@ -143,11 +143,12 @@ namespace FStudyForum.API.Controllers
                 });
             }
         }
-        [HttpPost("savePost")]
-        public async Task<IActionResult> SavePost([FromBody] SavePostDTO savedPostDTO)
+        [HttpPost("save/{postID}"), Authorize]
+        public async Task<IActionResult> SavePost([FromRoute] int postID)
         {
             try
             {
+                var userName = User.FindFirstValue(ClaimTypes.Name) ?? throw new Exception("User is not authenticated!");
                 if (!ModelState.IsValid)
                 {
                     var errors = ModelState.Values.SelectMany(v => v.Errors)
@@ -160,7 +161,7 @@ namespace FStudyForum.API.Controllers
                     };
                     return BadRequest(responseNotFound);
                 }
-                var savePost = await _postService.SavePostByUser(savedPostDTO);
+                var savePost = await _postService.SavePostByUser(new() { PostId = postID, UserName = userName });
                 if (savePost == null)
                 {
                     return NotFound(new Response
@@ -173,7 +174,7 @@ namespace FStudyForum.API.Controllers
                 return Ok(new Response
                 {
                     Data = savePost,
-                    Message = "Post saved successfully",
+                    Message = "Post saved",
                     Status = (int)HttpStatusCode.OK + "",
                 });
             }
@@ -186,11 +187,13 @@ namespace FStudyForum.API.Controllers
                 });
             }
         }
-        [HttpDelete("deletePost/{username}/{postID}")]
-        public async Task<IActionResult> DeletePost([FromRoute] string username, int postID)
+        [HttpDelete("remove-save/{postID}"), Authorize]
+        public async Task<IActionResult> RemoveSavedPost([FromRoute] int postID)
         {
             try
             {
+                var userName = User.FindFirstValue(ClaimTypes.Name) ?? throw new Exception("User is not authenticated!");
+
                 if (!ModelState.IsValid)
                 {
                     var errors = ModelState.Values.SelectMany(v => v.Errors)
@@ -203,8 +206,7 @@ namespace FStudyForum.API.Controllers
                     };
                     return BadRequest(responseNotFound);
                 }
-                var post = await _postService.DeletePostByUser(new SavePostDTO()
-                { PostId = postID, UserName = username });
+                var post = await _postService.DeletePostByUser(new() { PostId = postID, UserName = userName });
                 if (post == null)
                 {
                     return NotFound(new Response
@@ -217,7 +219,7 @@ namespace FStudyForum.API.Controllers
                 return Ok(new Response
                 {
                     Data = post,
-                    Message = "Post deleted successfully",
+                    Message = "Removed from saved",
                     Status = (int)HttpStatusCode.OK + "",
                 });
             }
@@ -230,7 +232,7 @@ namespace FStudyForum.API.Controllers
                 });
             }
         }
-        [HttpGet("isPostExists/{username}/{postId}")]
+        [HttpGet("saved/{username}/{postId}")]
         public async Task<IActionResult> IsPostExists(string username, int postId)
         {
             try
@@ -265,12 +267,12 @@ namespace FStudyForum.API.Controllers
                 });
             }
         }
-        [HttpGet("getSavePost/{username}")]
-        public async Task<IActionResult> GetListPostSaveByUser(string username)
+        [HttpGet("saved-all/{username}")]
+        public async Task<IActionResult> GetSavedPostsByUser(string username)
         {
             try
             {
-                var posts = await _postService.GetListPostSaveByUser(username);
+                var posts = await _postService.GetSavedPostsByUser(username);
                 if (posts.IsNullOrEmpty())
                 {
                     return NotFound(new Response

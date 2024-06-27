@@ -15,6 +15,6 @@ namespace FStudyForum.Core.Interfaces.IServices
         public Task<SavePostDTO?> SavePostByUser(SavePostDTO savedPostDTO);
         public Task<SavePostDTO?> DeletePostByUser(SavePostDTO savedPostDTO);
         public Task<bool> IsPostExists(SavePostDTO savedPostDTO);
-        public Task<IEnumerable<PostDTO>> GetListPostSaveByUser(string username);
+        public Task<IEnumerable<PostDTO>> GetSavedPostsByUser(string username);
     }
 }

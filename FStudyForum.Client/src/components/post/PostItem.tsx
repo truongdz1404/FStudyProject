@@ -3,7 +3,6 @@ import MenuItemPost from "./MenuItem";
 import { ArrowBigDown, ArrowBigUp, MessageSquare, Share } from "lucide-react";
 import { Post } from "@/types/post";
 import { Avatar } from "@material-tailwind/react";
-
 import Default from "@/assets/images/defaultTopic.png";
 import { cn, formatElapsedTime } from "@/helpers/utils";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -77,7 +76,7 @@ const PostItem: FC<PostProps> = ({ data, hideLess = true }) => {
     <div
       ref={containerRef}
       onClick={handleOutsideClick}
-      className="py-1 w-full "
+      className="py-1 px-4 w-full "
     >
       <div className="flex justify-between">
         <div className="flex items-center gap-x-2">

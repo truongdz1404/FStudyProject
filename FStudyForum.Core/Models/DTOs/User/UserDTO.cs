@@ -7,6 +7,7 @@ public class UserDTO
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
     public string Avatar { get; set; } = string.Empty;
+    public IList<string> ModeratedTopics { get; set; } = [];
     public IList<string> Roles { get; set; } = [];
 
 }

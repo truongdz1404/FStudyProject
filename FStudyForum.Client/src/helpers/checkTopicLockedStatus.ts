@@ -1,19 +1,19 @@
-import BanUserService from "@/services/BanUserService";
 import TopicService from "@/services/TopicService";
-import { Topic } from "@/types/topic";
 
 export const checkIfTopicIsLocked = async (
   username: string,
   topicName: string
 ) => {
-  const data = (await TopicService.getTopicByName(topicName)) as Topic;
-  const isLocked = await BanUserService.isLocked(username, data.id);
+  const isLocked = await TopicService.isLocked(username, topicName);
   if (isLocked.data) {
-    const unlockTimeResponse = await TopicService.unlockTime(username, data.id);
+    const unlockTimeResponse = await TopicService.unlockTime(
+      username,
+      topicName
+    );
     const unlockTimeDate = new Date(String(unlockTimeResponse.data));
     const now = new Date();
     if (now.getTime() >= unlockTimeDate.getTime()) {
-      await TopicService.unlocked(username, data.id);
+      await TopicService.unban(username, topicName);
       return { locked: false, timeDiffString: "" };
     } else {
       const timeDiff = unlockTimeDate.getTime() - now.getTime();

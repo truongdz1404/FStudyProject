@@ -190,7 +190,7 @@ const Comments: FC<Props> = () => {
   if (loading || !post) return null;
 
   const renderComment = (comment: Comment, level = 0) => (
-    <div key={comment.id} className="py-2 " style={{ marginLeft: level * 20 }}>
+    <div key={comment.id} className="py-2" style={{ marginLeft: level * 20 }}>
       <div className="flex mb-2">
         <img
           src={Default}
@@ -291,8 +291,10 @@ const Comments: FC<Props> = () => {
           <ArrowLeft className="w-4 h-4" />
         </div>
         <PostItem data={post} hideLess={false} />
-        <CommentInput onSubmit={handleCreateComment} />
-        <div className="mt-4">
+        <div className="px-4">
+          <CommentInput onSubmit={handleCreateComment} />
+        </div>
+        <div className="mt-4 px-4">
           {comments && comments.length > 0 ? (
             comments.map(comment => renderComment(comment))
           ) : (

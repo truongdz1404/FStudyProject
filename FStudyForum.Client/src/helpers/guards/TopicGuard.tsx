@@ -5,7 +5,6 @@ import { Alert } from "@material-tailwind/react";
 import { AxiosError } from "axios";
 import { Response } from "@/types/response";
 import { checkIfTopicIsLocked } from "@/helpers/checkTopicLockedStatus";
-import React from "react";
 
 const TopicGuard: FC<PropsWithChildren> = ({ children }) => {
   const { user } = useAuth();
@@ -13,9 +12,11 @@ const TopicGuard: FC<PropsWithChildren> = ({ children }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [timeDiff, setTimeDiff] = useState("");
-  const [error, setError] = React.useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
+    let intervalId: NodeJS.Timeout | undefined;
+
     const fetchData = async () => {
       try {
         if (user) {
@@ -36,7 +37,16 @@ const TopicGuard: FC<PropsWithChildren> = ({ children }) => {
         setLoading(false);
       }
     };
-    fetchData();
+
+    if (user) {
+      fetchData(); 
+      intervalId = setInterval(fetchData, 60000); 
+    }
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId); 
+      }
+    };
   }, [name, user, navigate]);
 
   if (error) {

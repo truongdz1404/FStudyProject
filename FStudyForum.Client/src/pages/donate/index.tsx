@@ -1,7 +1,7 @@
 import { cn } from "@/helpers/utils";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button, Input, Textarea } from "@material-tailwind/react";
-import { CircleAlert } from "lucide-react";
+import { ArrowLeft, CircleAlert } from "lucide-react";
 import { useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { useAuth } from "@/hooks/useAuth";
@@ -9,16 +9,16 @@ import { AxiosError } from "axios";
 import { Response } from "@/types/response";
 import React from "react";
 import PaymentService from "@/services/PaymentService";
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from "react-router-dom";
 const validation = Yup.object({
-  description: Yup.string().required("Description is required"),
+  description: Yup.string(),
   amount: Yup.number()
+    .typeError("Amount must be a number")
     .required("Amount is required")
-    .min(0, "Amount must be greater than 0")
+    .min(10000, "Amount must be greater than or equal 10.000đ")
 });
-
 interface DonateInputs {
-  description: string;
+  description?: string;
   amount: number;
 }
 
@@ -48,7 +48,7 @@ const Donate = () => {
         const response = await PaymentService.generatePaymentUrl({
           username: user.username,
           fullname: `${user.firstName} ${user.lastName}`,
-          description: form.description,
+          description: form.description || "",
           amount: form.amount
         });
         window.location.href = `${response.data}`;
@@ -61,20 +61,23 @@ const Donate = () => {
     };
     save();
   };
-    React.useEffect(() => {
+  React.useEffect(() => {
     const fetchPaymentResponse = async () => {
       const query = location.search;
       if (query) {
         try {
           const response = await PaymentService.paymentResponse(query);
           await PaymentService.saveUserDonate({
-            username: user?.username || '',
+            username: user?.username || "",
             amount: response.amount || 0,
-            message: response.orderDescription || ''
-          })       
+            message: response.orderDescription || ""
+          });
         } catch (e) {
           const error = e as AxiosError;
-          setError((error?.response?.data as { message: string })?.message || error.message);
+          setError(
+            (error?.response?.data as { message: string })?.message ||
+              error.message
+          );
         }
       }
     };
@@ -82,9 +85,22 @@ const Donate = () => {
   }, [location.search]);
   return (
     <>
+      <div className="mb-6">
+        <p className="text-md font-semibold flex gap-x-2 items-center">
+          <Link
+            to={`/home`}
+            className="rounded-full bg-blue-gray-50 hover:bg-blue-gray-100 p-2 -ml-10 hidden md:block"
+          >
+            <ArrowLeft className="w-4 h-4" />
+          </Link>
+          Donation
+        </p>
+        <p className="text-xs text-gray-600 text-left">
+          Tell us a bit about yourself to get started on our forum
+        </p>
+      </div>
       <form onSubmit={handleSubmit(handleDonate)} className="mt-2">
-        <div className="flex xl:justify-between xl:flex-row flex-col gap-y-4 xl:gap-x-4">        
-        </div>
+        <div className="flex xl:justify-between xl:flex-row flex-col gap-y-4 xl:gap-x-4"></div>
         <div className="w-full mt-6">
           <label htmlFor="phone" className="block text-gray-700 text-sm m-1">
             Amount

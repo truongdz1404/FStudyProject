@@ -5,7 +5,8 @@ import {
   CreateTopicDTO,
   UpdateTopicDTO,
   TopicBanDTO,
-  Unlocktime
+  Unlocktime,
+  TopicBan
 } from "@/types/topic";
 
 const getActiveTopics = async (): Promise<Topic[]> => {
@@ -37,31 +38,39 @@ const deleteTopic = async (name: string): Promise<void> => {
   await api.put<Topic>(`/topic/delete/${name}`);
 };
 
-const isLoked = async (username: string, topicId: number) => {
+const isLocked = async (username: string, topicName: string) => {
   const response = await api.post<ResponseWith<TopicBanDTO>>(
     "/topic/is-locked",
     {
       username,
-      topicId
+      topicName
     }
   );
   return response.data;
 };
-const unlockTime = async (username: string, topicId: number) => {
+const unlockTime = async (username: string, topicName: string) => {
   const response = await api.post<ResponseWith<Unlocktime>>(
     "/topic/unlock-time",
     {
       username,
-      topicId
+      topicName
     }
   );
   return response.data;
 };
-const unlocked = async (username: string, topicId: number) => {
+const unban = async (username: string, topicName: string) => {
   const response = await api.post<ResponseWith<Unlocktime>>("/topic/unlocked", {
     username,
-    topicId
+    topicName
   });
+  return response.data;
+};
+
+const ban = async (topicban: TopicBan) => {
+  const response = await api.post<ResponseWith<TopicBan>>(
+    "/topic/locked",
+    topicban
+  );
   return response.data;
 };
 
@@ -84,9 +93,10 @@ const TopicService = {
   search,
   create,
   update,
-  isLoked,
+  isLocked,
   unlockTime,
-  unlocked,
+  unban,
+  ban,
   deleteTopic,
   topicByPost
 };

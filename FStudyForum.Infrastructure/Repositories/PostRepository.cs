@@ -45,7 +45,7 @@ namespace FStudyForum.Infrastructure.Repositories
         }
 
 
-        public async Task DeleteByUser(SavedPost postByUser)
+        public async Task RemoveFromSavedByUser(SavedPost postByUser)
         {
             _dbContext.SavedPosts.Remove(postByUser);
             await _dbContext.SaveChangesAsync();
@@ -57,14 +57,14 @@ namespace FStudyForum.Infrastructure.Repositories
             && p.User.UserName == savePostDTO.UserName);
         }
 
-        public async Task<bool> IsPostExists(SavePostDTO savePostDTO)
+        public async Task<bool> IsSaved(SavePostDTO savePostDTO)
         {
             var post = await _dbContext.SavedPosts.FirstOrDefaultAsync(p => p.Post.Id == savePostDTO.PostId
            && p.User.UserName == savePostDTO.UserName);
             return post == null;
         }
 
-        public async Task SavePostByUser(SavedPost savedPost)
+        public async Task SavePost(SavedPost savedPost)
         {
             await _dbContext.SavedPosts.AddAsync(savedPost);
             await _dbContext.SaveChangesAsync();
@@ -139,7 +139,7 @@ namespace FStudyForum.Infrastructure.Repositories
                .Where(p => p.Topic.IsDeleted == false)
                .ToListAsync();
         }
-        public async Task<IEnumerable<Post>> GetListPostSaveByUser(string username)
+        public async Task<IEnumerable<Post>> GetSavedPostsByUser(string username)
         {
             var listPost = await _dbContext.SavedPosts
             .Where(sp => sp.User.UserName == username && !sp.Post.IsDeleted)
@@ -151,6 +151,8 @@ namespace FStudyForum.Infrastructure.Repositories
             .ThenInclude(p => p.Votes)
             .Include(sp => sp.Post)
             .ThenInclude(p => p.Comments)
+            .Include(sp => sp.Post)
+            .ThenInclude(p => p.Attachments)
             .Where(sp => !sp.Post.Topic.IsDeleted)
             .Select(sp => sp.Post)
             .ToListAsync();
