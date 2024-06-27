@@ -18,11 +18,11 @@ import { Response } from "@/types/response";
 import { Comment, CreateComment } from "@/types/comment";
 import MenuItemComment from "@/components/comment/MenuItem";
 import CommentInput from "@/components/comment/CommentInput";
+import CommentUpdate from "@/components/comment/CommentUpdate";
 import ReplyInput from "@/components/comment/ReplyInput";
 import ContentLayout from "@/components/layout/ContentLayout";
 
 import Default from "@/assets/images/user.png";
-
 interface Props { }
 
 const Comments: FC<Props> = () => {
@@ -35,6 +35,7 @@ const Comments: FC<Props> = () => {
   const [post, setPost] = useState<Post | undefined>(state?.data);
   const [comments, setComments] = useState<Comment[]>([]);
   const [replyToCommentId, setReplyToCommentId] = useState<number | null>(null);
+  const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [expandedComments, setExpandedComments] = useState<{
@@ -195,6 +196,7 @@ const Comments: FC<Props> = () => {
       );
       setComments(updatedComments);
       setReplyToCommentId(null);
+      initializeExpandedComments(updatedComments, 100)
     } catch (e) {
       const error = e as AxiosError;
       setError((error?.response?.data as Response)?.message || error.message);
@@ -203,6 +205,38 @@ const Comments: FC<Props> = () => {
 
   const handleReplyClick = (commentId: number) => {
     setReplyToCommentId(commentId);
+  };
+
+  const handleEditComment = (commentId: number) => {
+    setEditingCommentId(commentId);
+  };
+
+  const handleSaveEditedComment = async (commentId: number, content: string) => {
+    try {
+      await CommentService.updateComment(commentId.toString(), { content });
+      setComments(prevComments =>
+        updateCommentInTree(prevComments, commentId, content)
+      );
+      setEditingCommentId(null);
+    } catch (e) {
+      const error = e as AxiosError;
+      setError((error?.response?.data as Response)?.message || error.message);
+    }
+  };
+
+  const updateCommentInTree = (comments: Comment[], commentId: number, content: string): Comment[] => {
+    return comments.map(comment => {
+      if (comment.id === commentId) {
+        return { ...comment, content };
+      }
+      if (comment.replies && comment.replies.length > 0) {
+        return {
+          ...comment,
+          replies: updateCommentInTree(comment.replies, commentId, content)
+        };
+      }
+      return comment;
+    });
   };
 
   const toggleExpand = (commentId: number) => {
@@ -231,7 +265,16 @@ const Comments: FC<Props> = () => {
             <span className="font-bold text-xs">{comment.author}</span>
           </div>
           <span className="text-xs text-gray-500">{comment.elapsed}</span>
-          <span className="font text-sm">{comment.content}</span>
+          {editingCommentId === comment.id ? (
+            <CommentUpdate
+              commentId={comment.id}
+              content={comment.content}
+              onSave={handleSaveEditedComment}
+              onCancel={() => setEditingCommentId(null)}
+            />
+          ) : (
+            <span className="font text-sm">{comment.content}</span>
+          )}
           <div className="flex space-x-7 text-gray-700 my-[0.5rem]">
             <div className="action flex items-center rounded-full bg-blue-gray-30">
               <div className="hover:bg-blue-gray-100/75 rounded-full p-[0.25rem] cursor-pointer">
@@ -257,7 +300,12 @@ const Comments: FC<Props> = () => {
             </div>
 
             <div className="action flex items-center">
-              <MenuItemComment key={comment.id} comment={comment} onDelete={handleDeleteComment} />
+              <MenuItemComment
+                key={comment.id}
+                comment={comment}
+                onDelete={handleDeleteComment}
+                onEdit={handleEditComment}
+              />
             </div>
           </div>
           {replyToCommentId === comment.id && (

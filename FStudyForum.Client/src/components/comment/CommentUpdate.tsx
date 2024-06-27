@@ -1,5 +1,5 @@
 import { cn } from "@/helpers/utils";
-import { FC, useState } from "react";
+import { FC, useState, useEffect, useRef } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 
 interface CommentInputProps {
@@ -11,6 +11,14 @@ interface CommentInputProps {
 
 const CommentInput: FC<CommentInputProps> = ({ commentId, content, onSave, onCancel }) => {
   const [newContent, setNewContent] = useState<string>(content);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.focus();
+      textareaRef.current.selectionStart = textareaRef.current.selectionEnd = newContent.length;
+    }
+  }, [newContent]);
 
   const handleSave = () => {
     if (newContent.trim() !== "") {
@@ -21,7 +29,7 @@ const CommentInput: FC<CommentInputProps> = ({ commentId, content, onSave, onCan
   return (
     <div className="border rounded-2xl">
       <TextareaAutosize
-        autoFocus
+        ref={textareaRef}
         value={newContent}
         onChange={e => setNewContent(e.target.value)}
         className={cn(

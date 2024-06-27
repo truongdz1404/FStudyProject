@@ -62,7 +62,7 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
     const topicBan = async () => {
       const [time, action] = selectedTime.split(" ");
       try {
-       const response = await BanUserService.lockedUserByTopic({
+        const response = await BanUserService.lockedUserByTopic({
           username: post.author,
           topicId: topic.id,
           action: action,
@@ -159,13 +159,12 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
                   path === "save"
                     ? () => handleSavedPost(post)
                     : path === "ban"
-                    ? () => setIsModalOpen(true)
-                    : () => {}
+                      ? () => setIsModalOpen(true)
+                      : () => { }
                 }
-                className={`flex items-center gap-2 rounded ${
-                  isLastItem &&
+                className={`flex items-center gap-2 rounded ${isLastItem &&
                   "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
-                }`}
+                  }`}
               >
                 {React.createElement(icon, {
                   className: `h-4 w-4 ${isLastItem ? "text-red-500" : ""}`,
