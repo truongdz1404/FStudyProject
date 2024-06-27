@@ -1,6 +1,12 @@
-import { Ban, Bookmark, Ellipsis, Flag, LockKeyhole } from "lucide-react";
-import { Response } from "@/types/response";
 import React, { useEffect } from "react";
+import {
+  Ban,
+  Ellipsis,
+  Flag,
+  LockKeyhole,
+  Edit,
+  Trash
+} from "lucide-react";
 import {
   Button,
   Menu,
@@ -8,62 +14,52 @@ import {
   MenuList,
   MenuItem,
   Typography,
-  Dialog,
   Radio
 } from "@material-tailwind/react";
-import { usePosts } from "@/hooks/usePosts";
 import { cn } from "@/helpers/utils";
-import { Post } from "@/types/post";
+import { Comment } from "@/types/comment";
 import { useAuth } from "@/hooks/useAuth";
+import { Response } from "@/types/response";
 import { AxiosError } from "axios";
 import { Topic } from "@/types/topic";
 import TopicService from "@/services/TopicService";
+import BanUserService from "@/services/BanUserService";
+// import CommentService from "@/services/CommentService";
 import "react-toastify/dist/ReactToastify.css";
 import { showErrorToast, showSuccessToast } from "../toast/Toast";
-import PostService from "@/services/PostService";
-import ReportForm from "../report/ReportForm";
-type MenuItemPostProps = {
-  post: Post;
+
+type MenuItemCommentProps = {
+  comment: Comment;
+  onDelete: (id: string) => Promise<void>;
+  onEdit: (commentId: number, content: string) => void;
 };
-const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
-  const [openBan, setOpenBan] = React.useState(false);
-  const [openReport, setOpenReport] = React.useState(false);
-  const [isSaved, setIsSaved] = React.useState(false);
+
+const MenuItemComment: React.FC<MenuItemCommentProps> = ({ comment, onDelete, onEdit }) => {
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [topic, setTopic] = React.useState<Topic>(() => ({} as Topic));
   const [selectedTime, setSelectedTime] = React.useState("1 day");
-  const { setPostData } = usePosts();
 
   const { user } = useAuth();
 
-  const switchOpenReport = () => setOpenReport(!openReport);
-
   useEffect(() => {
-    const checkPostByUserExist = async () => {
-      const isPostExists = await PostService.isSaved(
-        `${user?.username}`,
-        post.id
-      );
-      if (isPostExists.data) {
-        setIsSaved(true);
-      }
-    };
     const fetchTopic = async () => {
-      const response = await TopicService.topicByPost(post.id);
+      const response = await TopicService.topicByPost(comment.postId);
       setTopic(response);
     };
     fetchTopic();
-    checkPostByUserExist();
-  }, [post.id, user?.username]);
+  }, [comment.postId, user?.username]);
+
   const handleTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedTime(event.target.value);
   };
+
   const locked = () => {
     const topicBan = async () => {
       const [time, action] = selectedTime.split(" ");
       try {
-        const response = await TopicService.ban({
-          username: post.author,
+        const response = await BanUserService.lockedUserByTopic({
+          username: comment.author,
           topicId: topic.id,
           action: action,
           bannerTime: Number(time)
@@ -71,112 +67,60 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
         showSuccessToast(response.message);
       } catch (e) {
         const error = e as AxiosError<Response>;
-        showErrorToast(
-          (error?.response?.data as Response)?.message || error.message
-        );
+        showErrorToast((error?.response?.data as Response)?.message || error.message);
       }
     };
     topicBan();
   };
-  const handleSavedPost = async (post: Post) => {
-    try {
-      let response;
-      if (!isSaved) {
-        response = await PostService.save(post.id);
-        showSuccessToast(response.message);
-      } else {
-        response = await PostService.removeFromSave(post.id);
-        showSuccessToast(response.message);
-      }
-      setIsSaved(prev => !prev);
-    } catch (e) {
-      const error = e as AxiosError<Response>;
-      showErrorToast(
-        (error?.response?.data as Response)?.message || error.message
-      );
-    }
-  };
   const LockedMenuItem = [
-    {
-      value: "1 hour",
-      label: "1 hour"
-    },
-    {
-      value: "1 day",
-      label: "1 day"
-    },
-    {
-      value: "1 month",
-      label: "1 month"
-    },
-    {
-      value: "1 year",
-      label: "1 year"
-    },
-    {
-      value: "1000 forever",
-      label: "Forever"
-    }
+    { value: "1 hour", label: "1 hour" },
+    { value: "1 day", label: "1 day" },
+    { value: "1 month", label: "1 month" },
+    { value: "1 year", label: "1 year" },
+    { value: "1000 forever", label: "Forever" }
   ];
-  const PostMenuItem = [
-    {
-      icon: Bookmark,
-      label: isSaved ? "Remove from saved" : "Save",
-      handle: () => handleSavedPost(post)
-    },
-    {
-      icon: Flag,
-      label: "Report",
-      handle: () => {
-        setPostData(post);
-        switchOpenReport();
-      }
-    },
-    {
-      icon: Ban,
-      label: "Ban user from topic",
-      handle: () => setOpenBan(true)
-    }
-  ];
+
+  const CommentMenuItem = comment.author === user?.username
+    ? [
+      { icon: Edit, label: "Edit", path: "edit" },
+      { icon: Trash, label: "Delete", path: "delete" }
+    ]
+    : [
+      { icon: Flag, label: "Report", path: "/report" },
+      { icon: Ban, label: "Ban", path: "ban" }
+    ];
+
   return (
     <>
       <Menu open={isMenuOpen} handler={setIsMenuOpen} placement="bottom-end">
         <MenuHandler>
-          <Button
-            variant="text"
-            color="blue-gray"
-            className="flex items-center rounded-full p-2 text-black"
-          >
+          <Button variant="text" color="blue-gray" className="flex items-center rounded-full p-0 px-1 text-black">
             <Ellipsis className="w-4 h-4" />
           </Button>
         </MenuHandler>
         <MenuList className="p-1">
-          {PostMenuItem.map(({ label, icon, handle }, key) => {
-            const isLastItem = key === PostMenuItem.length - 1;
-            const isSaveItem = label == "Remove from saved" || label == "Save";
+          {CommentMenuItem.map(({ label, icon, path }, key) => {
+            const isLastItem = key === CommentMenuItem.length - 1;
             return (
               <MenuItem
                 key={label}
-                onClick={handle}
-                className={`flex items-center gap-2 rounded  ${
-                  isLastItem &&
-                  "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
+                onClick={
+                  path === "edit"
+                    ? () => onEdit(comment.id, comment.content)
+                    : path === "delete"
+                      ? () => onDelete(comment.id.toString())
+                      : path === "ban"
+                        ? () => setIsModalOpen(true)
+                        : () => { }
+                }
+                className={`flex items-center gap-2 rounded ${isLastItem && "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
                   }`}
               >
                 {React.createElement(icon, {
-                  className: `h-4 w-4 ${
-                    isLastItem ? "text-red-500" : "text-blue-gray-700"
-                  }`,
-                  strokeWidth: 2,
-                  style: { fill: isSaveItem && isSaved ? "#455a64" : "" }
+                  className: `h-4 w-4 ${isLastItem ? "text-red-500" : ""}`,
+                  strokeWidth: 2
                 })}
-                <Typography
-                  as={"span"}
-                  className={cn(
-                    "font-normal text-sm",
-                    isLastItem ? "text-red-500" : "inherit"
-                  )}
-                >
+                <Typography as={"span"} className={cn("font-normal text-sm", isLastItem ? "text-red-500" : "inherit")}>
                   {label}
                 </Typography>
               </MenuItem>
@@ -184,15 +128,7 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
           })}
         </MenuList>
       </Menu>
-      <Dialog
-        className="max-w-[34rem] mb-6 p-5 max-h-full"
-        open={openReport}
-        handler={switchOpenReport}
-      >
-        <ReportForm />
-      </Dialog>
-
-      {openBan && (
+      {isModalOpen && (
         <div
           data-dialog-backdrop="dialog"
           data-dialog-backdrop-close="true"
@@ -202,7 +138,7 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
             "bg-black bg-opacity-60 opacity-100 backdrop-blur-sm",
             "transition-opacity duration-300"
           )}
-          onClick={() => setOpenBan(false)}
+          onClick={() => setIsModalOpen(false)}
         >
           <div
             data-dialog="dialog"
@@ -233,9 +169,7 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
               <div>
                 <div className={cn("flex gap-[2%]")}>
                   <div className={cn("font-bold text-black")}>Username:</div>
-                  <div className={cn("font-bold text-black")}>
-                    {post.author}
-                  </div>
+                  <div className={cn("font-bold text-black")}>{comment.author}</div>
                 </div>
                 <div className={cn("flex gap-[2%] mt-[2%]")}>
                   <div className={cn("font-bold text-black")}>Topic:</div>
@@ -279,7 +213,7 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
                   "center hover:bg-red-500/10 active:bg-red-500/30",
                   "disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                 )}
-                onClick={() => setOpenBan(false)}
+                onClick={() => setIsModalOpen(false)}
               >
                 Cancel
               </button>
@@ -295,7 +229,7 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
                   "disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                 )}
                 onClick={() => {
-                  setOpenBan(false), locked();
+                  setIsModalOpen(false), locked();
                 }}
               >
                 <LockKeyhole />
@@ -307,4 +241,4 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
     </>
   );
 };
-export default MenuItemPost;
+export default MenuItemComment;

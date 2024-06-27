@@ -43,6 +43,31 @@ namespace FStudyForum.API.Controllers
             }
 
         }
+        [HttpPost("comment"), Authorize]
+        public async Task<IActionResult> VoteComment(VoteCommentDTO voteDTO)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            try
+            {
+                var userName = User.FindFirstValue(ClaimTypes.Name) ?? throw new Exception("User is not authenticated!");
+                var voteCount = await _voteService.VoteComment(userName, voteDTO);
+                return Ok(new Response
+                {
+                    Message = "Vote comment successfully",
+                    Status = ResponseStatus.SUCCESS,
+                    Data = voteCount
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = ex.Message
+                });
+            }
+
+        }
 
     }
 }

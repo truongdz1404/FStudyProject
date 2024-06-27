@@ -4,6 +4,7 @@ using FStudyForum.Core.Models.DTOs.Comment;
 using FStudyForum.Core.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace FStudyForum.Infrastructure.Services
@@ -12,18 +13,23 @@ namespace FStudyForum.Infrastructure.Services
     {
         private readonly ICommentRepository _commentRepository;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IUserService _userService;
+        private readonly IVoteRepository _voteRepository;
 
-        public CommentService(ICommentRepository commentRepository, UserManager<ApplicationUser> userManager)
+        public CommentService(ICommentRepository commentRepository, UserManager<ApplicationUser> userManager,
+        IUserService userService, IVoteRepository voteRepository)
         {
             _commentRepository = commentRepository;
             _userManager = userManager;
+            _userService = userService;
+            _voteRepository = voteRepository;
         }
 
         public async Task<CommentDTO> GetCommentByIdAsync(long id)
         {
             var comment = await _commentRepository.GetCommentByIdAsync(id)
             ?? throw new Exception("Post not found");
-            return MapToCommentDTO(comment);
+            return await MapToCommentDTO(comment);
         }
 
         public async Task<IEnumerable<CommentDTO>> GetCommentsByPostIdAsync(long postId)
@@ -32,7 +38,7 @@ namespace FStudyForum.Infrastructure.Services
             var commentDTOs = new List<CommentDTO>();
             foreach (var comment in comments)
             {
-                commentDTOs.Add(MapToCommentDTO(comment));
+                commentDTOs.Add(await MapToCommentDTO(comment));
             }
             return commentDTOs;
         }
@@ -43,7 +49,7 @@ namespace FStudyForum.Infrastructure.Services
             var commentDTOs = new List<CommentDTO>();
             foreach (var comment in comments)
             {
-                commentDTOs.Add(MapToCommentDTO(comment));
+                commentDTOs.Add(await MapToCommentDTO(comment));
             }
 
             return commentDTOs;
@@ -52,7 +58,7 @@ namespace FStudyForum.Infrastructure.Services
         public async Task<CommentDTO> CreateCommentAsync(CreateCommentDTO commentCreateDto)
         {
             var comment = await _commentRepository.AddCommentAsync(commentCreateDto);
-            return MapToCommentDTO(comment);
+            return await MapToCommentDTO(comment);
         }
 
 
@@ -63,21 +69,32 @@ namespace FStudyForum.Infrastructure.Services
             ?? throw new KeyNotFoundException("Comment not found");
             comment.IsDeleted = true;
             await _commentRepository.UpdateCommentAsync(comment);
+            var commentReplies = await _commentRepository.GetCommentsByReplyIdAsync(id);
+            foreach (var commentReply in commentReplies)
+            {
+                commentReply.IsDeleted = true;
+                await _commentRepository.UpdateCommentAsync(commentReply);
+            }
             return true;
         }
 
-        private CommentDTO MapToCommentDTO(Comment comment)
+        private async Task<CommentDTO> MapToCommentDTO(Comment comment)
         {
+            if (comment.Creater.UserName == null)
+                throw new ArgumentNullException("Author not found");
             return new CommentDTO
             {
                 Id = comment.Id,
                 Content = comment.Content,
                 IsDeleted = comment.IsDeleted,
                 Author = comment.Creater.UserName,
+                Avatar = comment.Creater.Profile?.Avatar,
                 PostId = comment.Post.Id,
                 AttachmentId = comment.Attachment?.Id,
                 ReplyId = comment.ReplyTo?.Id,
-                VoteCount = comment.Votes.Count
+                VoteType = await _voteRepository.GetVotedCommentType(comment.Creater.UserName, comment.Id),
+                VoteCount = await _commentRepository.GetVoteCount(comment.Id),
+                Elapsed = DateTime.Now - comment.CreatedAt
             };
         }
 
@@ -89,7 +106,7 @@ namespace FStudyForum.Infrastructure.Services
                 foreach (var comment in comments)
                 {
                     if (comment != null)
-                        commentDTOs.Add(MapToCommentDTO(comment));
+                        commentDTOs.Add(await MapToCommentDTO(comment));
                 }
             return commentDTOs;
         }

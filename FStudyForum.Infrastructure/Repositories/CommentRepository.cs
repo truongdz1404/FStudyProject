@@ -21,16 +21,30 @@ namespace FStudyForum.Infrastructure.Repositories
                .Where(c => !c.IsDeleted)
                 .Include(c => c.Creater)
                 .Include(c => c.Post)
+                .Include(c => c.Creater.Profile)
                 .Include(c => c.Replies)
                 .Include(c => c.Votes)
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
+
 
         public async Task<IEnumerable<Comment>> GetCommentsByPostIdAsync(long postId)
         {
             return await _context.Comments
                 .Where(c => c.Post.Id == postId && !c.IsDeleted)
                 .Include(c => c.Creater)
+                .Include(c => c.Post)
+                .Include(c => c.Creater.Profile)
+                .Include(c => c.Replies)
+                .Include(c => c.Votes)
+                .ToListAsync();
+        }
+        public async Task<IEnumerable<Comment>> GetCommentsByReplyIdAsync(long replyId)
+        {
+            return await _context.Comments
+                .Where(c => c.ReplyTo!.Id == replyId && !c.IsDeleted)
+                .Include(c => c.Creater)
+                .Include(c => c.Creater.Profile)
                 .Include(c => c.Post)
                 .Include(c => c.Replies)
                 .Include(c => c.Votes)
@@ -79,12 +93,22 @@ namespace FStudyForum.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
+
+         public async Task<int> GetVoteCount(long id)
+        {
+            return await _dbContext.Votes
+                    .Where(v => v.Comment != null && v.Comment.Id == id)
+                    .SumAsync(v => v.IsUp ? 1 : -1);
+        }
+
+
         public async Task<IEnumerable<Comment?>> SearchCommentAsync(string keyword)
         {
             return await _context.Comments
                .Where(c => c.Content.Contains(keyword.Trim()) && !c.IsDeleted)
                .Include(c => c.Creater)
                .Include(c => c.Post)
+               .Include(c => c.Creater.Profile)
                .Include(c => c.Replies)
                .Include(c => c.Votes)
                .ToListAsync();
