@@ -9,5 +9,6 @@ namespace FStudyForum.Core.Interfaces.IServices
         Task<QRCodeDTO?> GenerateVietQRCodeAsync(string amountByUser, string addInfoByUser);
         Task<bool> CheckExistDonate(string tid);
         Task<DonationDTO> SaveUserDonate(DonationDTO donationDTO);
+        Task<bool> CheckTransactionWithCasso(string tid);
     }
 }

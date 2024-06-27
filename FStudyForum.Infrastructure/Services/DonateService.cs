@@ -7,6 +7,8 @@ using System.Text;
 using FStudyForum.Core.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 using AutoMapper;
+using System.Net.Http.Headers;
+using FStudyForum.Core.Constants;
 namespace FStudyForum.Infrastructure.Services
 {
     public class DonateService : IDonateService
@@ -70,6 +72,38 @@ namespace FStudyForum.Infrastructure.Services
             donation.User = user;
             await _donationRepository.SaveUserDonate(donation);
             return _mapper.Map<DonationDTO>(donation);
+        }
+        public async Task<bool> CheckTransactionWithCasso(string tid)
+        {
+            using (var httpClient = new HttpClient())
+            {
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("apikey", Casso.API_KEY);
+
+                // Thay thế URL bằng URL API_GET của bạn
+                string url = $"{Casso.API_GET}?tid={tid}";
+                var response = await httpClient.GetAsync(url);
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+
+                    // In ra nội dung phản hồi để kiểm tra
+                    Console.WriteLine("Hello ae toi test nhe" + content);
+
+                    var jsonResponse = Newtonsoft.Json.Linq.JObject.Parse(content);
+
+                    // Lấy mảng records từ JSON response
+                    var records = jsonResponse["data"]?["records"];
+
+                    if (records != null)
+                    {
+                        // Kiểm tra xem có giao dịch nào với tid tương ứng không
+                        var transaction = records.FirstOrDefault(t => t["tid"]?.ToString() == tid);
+                        return transaction != null;
+                    }
+                }
+
+                return false;
+            }
         }
     }
 }

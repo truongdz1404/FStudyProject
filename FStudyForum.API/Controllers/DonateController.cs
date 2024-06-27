@@ -73,11 +73,36 @@ namespace FStudyForum.API.Controllers
         {
             try
             {
+                var isTransactionWithCasso = await _donateService.CheckExistDonate("fddfgd");
+                Console.WriteLine("Hello ae toi test nhe" + isTransactionWithCasso);
                 var donation = await _donateService.SaveUserDonate(donationDTO);
                 return Ok(new Response
                 {
                     Data = donation,
                     Message = "Donation saved successfully",
+                    Status = ResponseStatus.SUCCESS
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = ex.Message
+                });
+            }
+        }
+        [HttpGet("checkTransaction/{tid}")]
+        public async Task<IActionResult> CheckTransactionWithCasso(string tid)
+        {
+            try
+            {
+                var isTransactionWithCasso = await _donateService.CheckTransactionWithCasso(tid);
+                Console.WriteLine("Hello ae toi test nhe" + isTransactionWithCasso);
+                return Ok(new Response
+                {
+                    Data = isTransactionWithCasso,
+                    Message = "Check transaction with casso successfully",
                     Status = ResponseStatus.SUCCESS
                 });
             }
