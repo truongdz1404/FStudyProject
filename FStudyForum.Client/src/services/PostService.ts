@@ -72,7 +72,7 @@ const create = async (post: CreatePost) => {
 };
 
 const getById = async (id: string) => {
-  const response = await api.get<ResponseWith<Post>>(`/post?id=${id}`);
+  const response = await api.get<ResponseWith<Post>>(`/post/${id}`);
   return response.data.data;
 };
 const PostService = {

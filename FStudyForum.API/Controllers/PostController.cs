@@ -54,7 +54,7 @@ namespace FStudyForum.API.Controllers
         }
 
         [HttpGet("filter"), Authorize]
-        public async Task<IActionResult> GetHotPosts([FromQuery] QueryPostDTO query)
+        public async Task<IActionResult> GetFiltedPosts([FromQuery] QueryPostDTO query)
         {
             try
             {
@@ -89,8 +89,8 @@ namespace FStudyForum.API.Controllers
             }
         }
 
-        [HttpGet, Authorize]
-        public async Task<IActionResult> GetPost([FromQuery] long id)
+        [HttpGet("{id}"), Authorize]
+        public async Task<IActionResult> GetPost([FromRoute] long id)
         {
             try
             {
