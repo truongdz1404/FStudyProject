@@ -1,6 +1,13 @@
 import ReportService from "@/services/ReportService";
-import { Button, Chip, DialogBody, DialogHeader } from "@material-tailwind/react";
+import {
+  Button,
+  Chip,
+  DialogBody,
+  DialogHeader
+} from "@material-tailwind/react";
 import { useEffect, useState } from "react";
+import TextareaAutosize from "react-textarea-autosize";
+
 import * as Yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -16,7 +23,6 @@ type ReportForm = {
   type: string;
   content?: string;
 };
-
 
 const validation = Yup.object().shape({
   type: Yup.string().required("Please select a report type"),
@@ -63,7 +69,7 @@ const ReportForm = () => {
           Content: form.content || "",
           ReportedPostId: postData?.id ?? -1,
           ReportedTopicname: postData?.topicName ?? "",
-          ReportedUsername: postData?.author ?? "",
+          ReportedUsername: postData?.author ?? ""
         },
         creater: user?.email ?? ""
       };
@@ -82,8 +88,12 @@ const ReportForm = () => {
   if (submitted) {
     return (
       <div>
-        <DialogHeader className="text-xl font-semibold text-gray-900">Report Submitted</DialogHeader>
-        <DialogBody className="text-sm text-gray-900 text-left">Thank you for your report. We will review it as soon as possible.</DialogBody>
+        <DialogHeader className="text-xl font-semibold text-gray-900">
+          Report Submitted
+        </DialogHeader>
+        <DialogBody className="text-sm text-gray-900 text-left">
+          Thank you for your report. We will review it as soon as possible.
+        </DialogBody>
         <div className="mt-6">
           <Button
             onClick={() => {
@@ -102,13 +112,18 @@ const ReportForm = () => {
 
   return (
     <div>
-      <DialogHeader className="text-xl font-semibold text-gray-900">Submit a Report</DialogHeader>
-      <DialogBody className="text-sm text-gray-900 text-left">Thanks for looking out for yourself and your fellow redditors by
+      <h1 className="text-lg font-semibold text-gray-900">Report</h1>
+      <p className="text-xs text-gray-900 text-left">
+        Thanks for looking out for yourself and your fellow redditors by
         reporting things that break the rules. Let us know what's happening, and
-        we'll look into it.</DialogBody>
-      <form onSubmit={handleSubmit(form => handleReport(form))}>
-        <div className="overflow-x-auto max-h-[20rem]">
-          <div className="mt-6 w-full flex flex-wrap gap-2">
+        we'll look into it.
+      </p>
+      <form
+        onSubmit={handleSubmit(form => handleReport(form))}
+        className="mt-4"
+      >
+        <div className="overflow-x-auto max-h-[20rem] no-scrollbar">
+          <div className=" w-full flex flex-wrap gap-2">
             {report.map((item, index) => (
               <div
                 key={index}
@@ -122,7 +137,7 @@ const ReportForm = () => {
                 aria-pressed={selectedReport === item ? "true" : "false"}
               >
                 <Chip
-                  className="rounded-full p-4 text-xs capitalize"
+                  className="rounded-full px-4 py-2 text-xs capitalize"
                   variant={selectedReport === item ? "filled" : "ghost"}
                   color="blue-gray"
                   value={item}
@@ -141,13 +156,13 @@ const ReportForm = () => {
               <CircleAlert className="w-3 h-3" /> {errors.type.message}
             </span>
           )}
-          <div className="flex justify-center px-4 ">
-            <textarea
-              className="w-full h-32 mt-6 p-4 rounded-lg bg-blue-gray-800 text-white"
+          <div className="flex justify-center">
+            <TextareaAutosize
+              className="w-full h-32 mt-6 p-4 rounded-lg bg-blue-gray-800 text-white text-sm"
               placeholder="Tell us more about the issue"
               disabled={pending}
               {...register("content")}
-            ></textarea>
+            />
           </div>
           <div>
             {!errors.type && error && (
@@ -160,7 +175,7 @@ const ReportForm = () => {
             <Button
               disabled={pending}
               type="submit"
-              className=" text-white px-6 py-2 rounded-lg w-full"
+              className=" text-white p-4 rounded-lg w-full"
               variant="gradient"
               color="deep-orange"
             >

@@ -40,7 +40,6 @@ const PostItem: FC<PostProps> = ({ data, hideLess = true }) => {
       containerRef.current.contains(event.target as Node) &&
       !actionRefs.current.some(action => action.contains(event.target as Node))
     ) {
-      console.log(data);
       navigate(`/topic/${data.topicName}/comments/${data.id}`, {
         state: { data, from: pathname }
       });
@@ -82,7 +81,7 @@ const PostItem: FC<PostProps> = ({ data, hideLess = true }) => {
         <div className="flex items-center gap-x-2">
           <Link
             to={`/topic/${data.topicName}`}
-            className="action flex items-center gap-x-2 z-20"
+            className="action flex items-center gap-x-2 z-10"
           >
             <Avatar src={Default} className="w-6 h-6" />
             <span className="text-xs">{`t/${data.topicName}`}</span>

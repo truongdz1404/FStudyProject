@@ -52,8 +52,9 @@ const sidebarListItems = [
       {
         label: "Donate",
         icon: CircleDollarSign,
-        path: "/donate"
-      }      
+        path: "/donate",
+        items: []
+      }
     ]
   },
   {

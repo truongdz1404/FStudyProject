@@ -79,8 +79,8 @@ function ProfileMenu() {
             <MenuItem
               key={label}
               onClick={() => {
-                if( action ) action();
-                handleNavigate(path)
+                if (action) action();
+                handleNavigate(path);
               }}
               className={`flex items-center gap-2 rounded ${
                 isLastItem &&
@@ -171,9 +171,10 @@ const Header = React.memo(({ openSidebar }: HeaderProps) => {
   const [topic, setTopic] = React.useState<Topic | undefined>();
   React.useEffect(() => {
     setTopic(undefined);
+    if (!name) return;
     const fetchTopic = async () => {
       try {
-        const topic = await TopicService.getTopicByName(name!);
+        const topic = await TopicService.getTopicByName(name);
         setTopic(topic);
       } catch (error) {
         console.error(error);
@@ -192,7 +193,7 @@ const Header = React.memo(({ openSidebar }: HeaderProps) => {
   }, []);
 
   return (
-    <Navbar className="max-w-screen-3xl rounded-none p-1 shadow-sm ">
+    <Navbar className="max-w-screen-3xl rounded-none p-1 shadow-sm z-50">
       <div className="relative mx-auto flex items-center justify-between text-blue-gray-900">
         <div className="flex items-center w-1/4 lg:w-1/3">
           <IconButton

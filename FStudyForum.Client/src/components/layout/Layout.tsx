@@ -18,7 +18,7 @@ const Layout = () => {
         <Sidebar />
       </div>
       <div className="flex flex-col items-center">
-        <div className="max-w-screen-md w-full lg:w-3/4 xl:w-1/2 p-4">
+        <div className="max-w-screen-md w-full lg:w-3/4 xl:w-1/2 px-4 py-2">
           <Content />
         </div>
       </div>

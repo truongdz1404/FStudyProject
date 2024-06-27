@@ -242,7 +242,7 @@ namespace FStudyForum.API.Controllers
                     };
                     return BadRequest(responseNotFound);
                 }
-                var post = await _postService.DeletePostByUser(new() { PostId = postID, UserName = userName });
+                var post = await _postService.RemoveFromSavedByUser(new() { PostId = postID, UserName = userName });
                 if (post == null)
                 {
                     return NotFound(new Response

@@ -31,13 +31,10 @@ const get = async (
   type: string,
   pageNumber: number,
   pageSize: number,
-  feature?: string,
-  topic?: number
+  filter: string
 ) => {
   const response = await api.get<ResponseWith<Post[]>>(
-    `/post/${type}?pageNumber=${pageNumber}&pageSize=${pageSize}` +
-      (feature !== "" ? `&Feature=${feature}` : "") +
-      (topic !== -1 ? `&TopicId=${topic}` : "")
+    `/post/${type}?pageNumber=${pageNumber}&pageSize=${pageSize}&filter=${filter}`
   );
 
   return response.data.data;

@@ -1,7 +1,6 @@
 import { Ban, Bookmark, Ellipsis, Flag, LockKeyhole } from "lucide-react";
 import { Response } from "@/types/response";
 import React, { useEffect } from "react";
-// import ReportForm from "@/pages/manager/report/form";
 import {
   Button,
   Menu,
@@ -9,7 +8,7 @@ import {
   MenuList,
   MenuItem,
   Typography,
-  // Dialog,
+  Dialog,
   Radio
 } from "@material-tailwind/react";
 import { usePosts } from "@/hooks/usePosts";
@@ -22,12 +21,13 @@ import TopicService from "@/services/TopicService";
 import "react-toastify/dist/ReactToastify.css";
 import { showErrorToast, showSuccessToast } from "../toast/Toast";
 import PostService from "@/services/PostService";
+import ReportForm from "../report/ReportForm";
 type MenuItemPostProps = {
   post: Post;
 };
 const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
   const [openBan, setOpenBan] = React.useState(false);
-  const [showReportModal, setShowReportModal] = React.useState(false);
+  const [openReport, setOpenReport] = React.useState(false);
   const [isSaved, setIsSaved] = React.useState(false);
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [topic, setTopic] = React.useState<Topic>(() => ({} as Topic));
@@ -36,7 +36,7 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
 
   const { user } = useAuth();
 
-  const handleOpenReport = () => setShowReportModal(!showReportModal);
+  const switchOpenReport = () => setOpenReport(!openReport);
 
   useEffect(() => {
     const checkPostByUserExist = async () => {
@@ -129,7 +129,7 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
       label: "Report",
       handle: () => {
         setPostData(post);
-        handleOpenReport();
+        switchOpenReport();
       }
     },
     {
@@ -184,6 +184,14 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
           })}
         </MenuList>
       </Menu>
+      <Dialog
+        className="max-w-[34rem] mb-6 p-5 max-h-full"
+        open={openReport}
+        handler={switchOpenReport}
+      >
+        <ReportForm />
+      </Dialog>
+
       {openBan && (
         <div
           data-dialog-backdrop="dialog"

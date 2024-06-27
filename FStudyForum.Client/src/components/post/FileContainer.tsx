@@ -44,14 +44,20 @@ const getContainerHeight = (
 
 const FileContainer: FC<Props> = ({ files, onClick }) => {
   const containerRef = React.useRef<HTMLDivElement>(null);
-  const [width] = useSize(containerRef);
   const [open, setOpen] = React.useState(-1);
-  if (files.length == 0) return null;
-  const height = getContainerHeight(files, width);
+  const [width] = useSize(containerRef);
+  const [height, setHeight] = React.useState(0);
+
+  React.useEffect(() => {
+    if (containerRef && width !== 0)
+      setHeight(getContainerHeight(files, width));
+  }, [files, width]);
+
   const handleViewDetail = (index?: number, id?: number) => {
     onClick(id);
     setOpen(index ?? 0);
   };
+  if (files.length == 0) return null;
   return (
     <div className="action" ref={containerRef}>
       {files.length == 1 ? (

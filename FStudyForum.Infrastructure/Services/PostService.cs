@@ -8,7 +8,6 @@ using FStudyForum.Core.Models.Entities;
 using FStudyForum.Core.Models.DTOs;
 using FStudyForum.Core.Models.DTOs.SavePost;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
 
 
 namespace FStudyForum.Infrastructure.Services
@@ -16,7 +15,6 @@ namespace FStudyForum.Infrastructure.Services
     public class PostService : IPostService
     {
         private readonly IPostRepository _postRepository;
-
         private readonly IVoteRepository _voteRepository;
         private readonly IMapper _mapper;
         private readonly UserManager<ApplicationUser> _userManager;
@@ -29,12 +27,9 @@ namespace FStudyForum.Infrastructure.Services
             _userManager = userManager;
         }
 
-        public async Task<SavePostDTO?> DeletePostByUser(SavePostDTO savedPost)
+        public async Task<SavePostDTO?> RemoveFromSavedByUser(SavePostDTO savedPost)
         {
-            if (savedPost.UserName == null)
-            {
-                return null;
-            }
+            if (savedPost.UserName == null) throw new Exception("User not found");
             var postByUser = await _postRepository.FindPostByUser(savedPost)
                 ?? throw new Exception("Not found");
             await _postRepository.RemoveFromSavedByUser(postByUser);

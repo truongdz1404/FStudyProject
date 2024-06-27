@@ -82,7 +82,7 @@ const Donate = () => {
       }
     };
     fetchPaymentResponse();
-  }, [location.search]);
+  }, [location.search, user?.username]);
   return (
     <>
       <div className="mb-6">
@@ -96,7 +96,8 @@ const Donate = () => {
           Donation
         </p>
         <p className="text-xs text-gray-600 text-left">
-          Tell us a bit about yourself to get started on our forum
+          If you love this forum and want it to continue operating, please
+          donate to us
         </p>
       </div>
       <form onSubmit={handleSubmit(handleDonate)} className="mt-2">
@@ -157,7 +158,7 @@ const Donate = () => {
             className="mt-4 w-full lg:w-fit normal-case text-sm"
             disabled={loading}
           >
-            Paymant VNPAY
+            Donate
           </Button>
         </div>
       </form>

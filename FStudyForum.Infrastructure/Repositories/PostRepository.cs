@@ -91,11 +91,8 @@ namespace FStudyForum.Infrastructure.Repositories
                 .Include(p => p.Votes)
                 .Include(p => p.Attachments)
                 .Include(p => p.Comments)
-                .OrderBy(p => p.Id) // Use Skip/Take for pagination
-                .Paginate(query.PageNumber, query.PageSize) //1 2 3 5 
+                .Paginate(query.PageNumber, query.PageSize)
                 .Sort(query.OrderBy)
-                .Where(p => p.Topic.IsDeleted == false)
-                .AsSplitQuery() // EF Core 5.0
                 .ToListAsync();
         }
 
@@ -103,29 +100,18 @@ namespace FStudyForum.Infrastructure.Repositories
         {
             IQueryable<Post> queryable = _dbContext.Posts
                 .Include(p => p.Topic)
-                .Where(p => p.IsDeleted == false)
+                .Where(p => !p.IsDeleted && !p.Topic.IsDeleted)
                 .Include(p => p.Creater)
                 .Include(p => p.Votes)
                 .Include(p => p.Attachments)
-                .Include(p => p.Comments)
-                .Where(p => p.Topic.IsDeleted == false)
-                .AsSplitQuery();
+                .Include(p => p.Comments);
 
-            if (query.TopicId != -1)
-                queryable = queryable.Where(p => p.Topic.Id == query.TopicId);
-
-            switch (query.Feature)
+            queryable = query.Filter switch
             {
-                case "hot":
-                    queryable = queryable.OrderByDescending(p => p.Votes.Sum(v => v.IsUp ? 1 : 0) + p.Comments.Count);
-                    break;
-                case "new":
-                    queryable = queryable.OrderByDescending(p => p.CreatedAt);
-                    break;
-                default:
-                    queryable = queryable.OrderBy(p => p.Id);
-                    break;
-            }
+                "Hot" => queryable.OrderByDescending(p => p.Votes.Sum(v => v.IsUp ? 1 : 0) + p.Comments.Count),
+                "New" => queryable.OrderByDescending(p => p.CreatedAt),
+                _ => queryable.OrderBy(p => p.Id),
+            };
             return await queryable
                 .Paginate(query.PageNumber, query.PageSize)
                 .ToListAsync();
