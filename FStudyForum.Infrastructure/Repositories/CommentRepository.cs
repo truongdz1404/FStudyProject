@@ -28,8 +28,6 @@ namespace FStudyForum.Infrastructure.Repositories
         }
 
 
-
-
         public async Task<IEnumerable<Comment>> GetCommentsByPostIdAsync(long postId)
         {
             return await _context.Comments
@@ -94,6 +92,15 @@ namespace FStudyForum.Infrastructure.Repositories
             _context.Comments.Update(comment);
             await _context.SaveChangesAsync();
         }
+
+
+         public async Task<int> GetVoteCount(long id)
+        {
+            return await _dbContext.Votes
+                    .Where(v => v.Comment != null && v.Comment.Id == id)
+                    .SumAsync(v => v.IsUp ? 1 : -1);
+        }
+
 
         public async Task<IEnumerable<Comment?>> SearchCommentAsync(string keyword)
         {

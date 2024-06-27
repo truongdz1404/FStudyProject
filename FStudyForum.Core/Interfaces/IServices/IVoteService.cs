@@ -8,5 +8,6 @@ namespace FStudyForum.Core.Interfaces.IServices
     {
         public Task<IEnumerable<Vote>> GetVotes();
         public Task<int> VotePost(string userName, VoteDTO voteDTO);
+        public Task<int> VoteComment(string userName, VoteCommentDTO voteCommentDTO);
     }
 }

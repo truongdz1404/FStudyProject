@@ -1,10 +1,13 @@
-import { FC} from "react";
-import { ArrowBigUp, ArrowBigDown, MessageSquare, Plus, Minus } from "lucide-react";
+import { FC } from "react";
+import { ArrowBigUp, ArrowBigDown, MessageSquare, Plus, Minus} from "lucide-react";
 import { Comment } from "@/types/comment";
 import ReplyInput from "@/components/comment/ReplyInput";
 import MenuItemComment from "@/components/comment/MenuItem";
 import CommentUpdate from "@/components/comment/CommentUpdate";
 import Default from "@/assets/images/user.png";
+import {formatElapsedTime } from "@/helpers/utils";
+import { Link } from "react-router-dom";
+
 
 interface CommentItemProps {
   comment: Comment;
@@ -12,7 +15,7 @@ interface CommentItemProps {
   expandedComments: { [key: number]: boolean };
   toggleExpand: (commentId: number) => void;
   handleReplyClick: (commentId: number | null) => void;
-  handleDeleteComment: (id: string ) => Promise<void>;
+  handleDeleteComment: (id: string) => Promise<void>;
   handleCreateReply: (commentId: number, content: string) => void;
   handleEditComment: (commentId: number | null) => void;
   handleSaveEditedComment: (commentId: number, content: string) => void;
@@ -47,9 +50,17 @@ const CommentItem: FC<CommentItemProps> = ({
             className="flex items-center"
             style={{ marginTop: "0.5rem", marginBottom: "0.5rem" }}
           >
-            <span className="font-bold text-xs">{comment.author}</span>
+            <Link
+            to={`/profile/${comment.author}`}
+            className="action text-xs font-bold hidden lg:block"
+          >{`${comment.author}`}</Link>
+            {/* <span className="font-bold text-xs">{comment.author}</span> */}
+            <span className="text-xs font-light ml-1">•</span>
+            <span className="text-xs font-light ml-1">
+              {formatElapsedTime(comment.elapsed)}
+            </span>
           </div>
-          <span className="text-xs text-gray-500">{comment.elapsed}</span>
+
           {editingCommentId === comment.id ? (
             <CommentUpdate
               commentId={comment.id}

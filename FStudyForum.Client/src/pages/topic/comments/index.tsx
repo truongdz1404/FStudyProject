@@ -12,7 +12,6 @@ import { Comment, CreateComment } from "@/types/comment";
 import CommentInput from "@/components/comment/CommentInput";
 import ContentLayout from "@/components/layout/ContentLayout";
 import CommentItem from "@/components/comment/CommentItem";
-
 interface Props {}
 
 const Comments: FC<Props> = () => {

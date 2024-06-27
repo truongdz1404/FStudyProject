@@ -14,20 +14,22 @@ namespace FStudyForum.Infrastructure.Services
         private readonly ICommentRepository _commentRepository;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUserService _userService;
+        private readonly IVoteRepository _voteRepository;
 
         public CommentService(ICommentRepository commentRepository, UserManager<ApplicationUser> userManager,
-        IUserService userService)
+        IUserService userService, IVoteRepository voteRepository)
         {
             _commentRepository = commentRepository;
             _userManager = userManager;
             _userService = userService;
+            _voteRepository = voteRepository;
         }
 
         public async Task<CommentDTO> GetCommentByIdAsync(long id)
         {
             var comment = await _commentRepository.GetCommentByIdAsync(id)
             ?? throw new Exception("Post not found");
-            return MapToCommentDTO(comment);
+            return await MapToCommentDTO(comment);
         }
 
         public async Task<IEnumerable<CommentDTO>> GetCommentsByPostIdAsync(long postId)
@@ -36,7 +38,7 @@ namespace FStudyForum.Infrastructure.Services
             var commentDTOs = new List<CommentDTO>();
             foreach (var comment in comments)
             {
-                commentDTOs.Add(MapToCommentDTO(comment));
+                commentDTOs.Add(await MapToCommentDTO(comment));
             }
             return commentDTOs;
         }
@@ -47,7 +49,7 @@ namespace FStudyForum.Infrastructure.Services
             var commentDTOs = new List<CommentDTO>();
             foreach (var comment in comments)
             {
-                commentDTOs.Add(MapToCommentDTO(comment));
+                commentDTOs.Add(await MapToCommentDTO(comment));
             }
 
             return commentDTOs;
@@ -56,7 +58,7 @@ namespace FStudyForum.Infrastructure.Services
         public async Task<CommentDTO> CreateCommentAsync(CreateCommentDTO commentCreateDto)
         {
             var comment = await _commentRepository.AddCommentAsync(commentCreateDto);
-            return MapToCommentDTO(comment);
+            return await MapToCommentDTO(comment);
         }
 
 
@@ -76,7 +78,7 @@ namespace FStudyForum.Infrastructure.Services
             return true;
         }
 
-        private CommentDTO MapToCommentDTO(Comment comment)
+        private async Task<CommentDTO> MapToCommentDTO(Comment comment)
         {
             return new CommentDTO
             {
@@ -88,7 +90,9 @@ namespace FStudyForum.Infrastructure.Services
                 PostId = comment.Post.Id,
                 AttachmentId = comment.Attachment?.Id,
                 ReplyId = comment.ReplyTo?.Id,
-                VoteCount = comment.Votes.Count
+                VoteType = await _voteRepository.GetVotedType(comment.Creater!.UserName, comment.Id),
+                VoteCount = comment.Votes.Count,
+                Elapsed = DateTime.Now - comment.CreatedAt
             };
         }
 
@@ -100,7 +104,7 @@ namespace FStudyForum.Infrastructure.Services
                 foreach (var comment in comments)
                 {
                     if (comment != null)
-                        commentDTOs.Add(MapToCommentDTO(comment));
+                        commentDTOs.Add(await MapToCommentDTO(comment));
                 }
             return commentDTOs;
         }

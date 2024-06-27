@@ -1,3 +1,5 @@
+using FStudyForum.Core.Constants;
+
 namespace FStudyForum.Core.Models.DTOs.Comment;
 
  public class CommentDTO
@@ -7,8 +9,11 @@ namespace FStudyForum.Core.Models.DTOs.Comment;
         public bool IsDeleted { get; set; } = false;
         public string? Author { get; set; } = string.Empty;
         public string? Avatar { get; set; }
+        public VoteType VoteType { get; set; } = VoteType.UNVOTE;
         public int VoteCount { get; set; }
         public long PostId { get; set; }
         public long? AttachmentId { get; set; }
         public long? ReplyId { get; set; }
+        public TimeSpan Elapsed { get; set; }
+
     }
