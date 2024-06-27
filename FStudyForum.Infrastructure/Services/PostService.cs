@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Linq.Dynamic.Core;
+using AutoMapper;
 using FStudyForum.Core.Interfaces.IRepositories;
 using FStudyForum.Core.Interfaces.IServices;
 using FStudyForum.Core.Models.DTOs.Attachment;
@@ -7,6 +8,7 @@ using FStudyForum.Core.Models.Entities;
 using FStudyForum.Core.Models.DTOs;
 using FStudyForum.Core.Models.DTOs.SavePost;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 
 
 namespace FStudyForum.Infrastructure.Services
@@ -38,6 +40,12 @@ namespace FStudyForum.Infrastructure.Services
             await _postRepository.RemoveFromSavedByUser(postByUser);
             return savedPost;
         }
+        public async Task<List<PostDTO>> GetPostByTopicName(string topicName)
+        {
+            var posts = await _postRepository.GetPostsByTopicNameAsync(topicName);
+            return _mapper.Map<List<PostDTO>>(posts);
+        }
+
         public async Task<PostDTO> CreatePost(CreatePostDTO postDTO)
         {
             var post = await _postRepository.CreatePostAsync(postDTO);
@@ -90,6 +98,32 @@ namespace FStudyForum.Infrastructure.Services
                 });
             }
 
+            return postDTOs;
+        }
+
+        public async Task<IEnumerable<PostDTO>> GetFilterPosts(string username, QueryPostDTO query)
+        {
+            var posts = await _postRepository.GetFilterPostsAsync(query);
+            var postDTOs = new List<PostDTO>();
+            foreach (var p in posts)
+            {
+                postDTOs.Add(new PostDTO
+                {
+                    Id = p.Id,
+                    Title = p.Title,
+                    Author = p.Creater.UserName!,
+                    TopicName = p.Topic.Name,
+                    TopicAvatar = p.Topic.Avatar,
+                    VoteType = await _voteRepository.GetVotedType(username, p.Id),
+                    UpVoteCount = p.Votes.Count(v => v.IsUp),
+                    DownVoteCount = p.Votes.Count(v => !v.IsUp),
+                    Content = p.Content,
+                    VoteCount = await _postRepository.GetVoteCount(p.Id),
+                    CommentCount = p.Comments.Count,
+                    Attachments = p.Attachments.Select(a => new AttachmentDTO { Id = a.Id, Type = a.Type, Url = a.FileUrl }),
+                    Elapsed = DateTime.Now - p.CreatedAt
+                });
+            }
             return postDTOs;
         }
 

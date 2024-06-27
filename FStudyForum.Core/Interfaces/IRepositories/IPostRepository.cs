@@ -15,8 +15,8 @@ public interface IPostRepository : IBaseRepository<Post>
     public Task SavePost(SavedPost savedPost);
     public Task<bool> IsSaved(SavePostDTO savePostDTO);
     public Task<SavedPost?> FindPostByUser(SavePostDTO savePostDTO);
-    public Task RemoveFromSavedByUser(SavedPost postByUser);
-    public Task<IEnumerable<Post>> GetSavedPostsByUser(string username);
+    public Task DeleteByUser(SavedPost postByUser);
+    public Task<IEnumerable<Post>> GetListPostSaveByUser(string username);
 }
 
 

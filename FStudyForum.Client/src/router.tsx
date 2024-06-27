@@ -11,6 +11,7 @@ import Donate from "./pages/donate";
 import Payment from "./pages/donate/payment";
 import Notification from "./pages/donate/notification";
 import SavePost from "./pages/profile/save";
+import { PostProvider } from "./contexts/posts/PostContext";
 import { ROLE } from "@/helpers/constants";
 import Loadable from "./helpers/loading/Loadable";
 
@@ -40,6 +41,11 @@ const Home = Loadable(lazy(() => import("@/pages/home")));
 const TopicDetail = Loadable(lazy(() => import("@/pages/topic")));
 const Topics = Loadable(lazy(() => import("@/pages/topics")));
 const SignOut = Loadable(lazy(() => import("@/pages/auth/signout")));
+const ListReport = Loadable(lazy(() => import("@/pages/manager/report/list")));
+const Response = Loadable(
+  lazy(() => import("@/pages/manager/report/response"))
+);
+
 const Router: FC = () => {
   return useRoutes([
     {
@@ -47,7 +53,9 @@ const Router: FC = () => {
       element: (
         <AuthGuard>
           <WelcomeGuard>
-            <Layout />
+            <PostProvider>
+              <Layout />
+            </PostProvider>
           </WelcomeGuard>
         </AuthGuard>
       ),
@@ -123,6 +131,14 @@ const Router: FC = () => {
                   element: <CategoryManager />
                 }
               ]
+            },
+            {
+              path: "report",
+              element: <ListReport />
+            },
+            {
+              path: "report/:reportId",
+              element: <Response />
             }
           ]
         },

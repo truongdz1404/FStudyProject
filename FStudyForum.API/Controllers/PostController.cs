@@ -53,6 +53,42 @@ namespace FStudyForum.API.Controllers
             }
         }
 
+        [HttpGet("filter"), Authorize]
+        public async Task<IActionResult> GetHotPosts([FromQuery] QueryPostDTO query)
+        {
+            try
+            {
+                var username = User.Identity?.Name
+                    ?? throw new Exception("User is not authenticated!");
+                var posts = await _postService.GetFilterPosts(username, query);
+                if (posts.IsNullOrEmpty())
+                {
+                    return NotFound(new Response
+                    {
+                        Status = ResponseStatus.ERROR,
+                        Message = "Posts not found",
+                    });
+                }
+                else
+                {
+                    return Ok(new Response
+                    {
+                        Message = "Get Posts successfully",
+                        Status = ResponseStatus.SUCCESS,
+                        Data = posts
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = ex.Message
+                });
+            }
+        }
+
         [HttpGet, Authorize]
         public async Task<IActionResult> GetPost([FromQuery] long id)
         {
@@ -298,5 +334,30 @@ namespace FStudyForum.API.Controllers
                 });
             }
         }
+
+
+        [HttpGet("topic={topicName}")]
+        public async Task<IActionResult> GetPostsByTopicName(string topicName)
+        {
+            var posts = await _postService.GetPostByTopicName(topicName);
+            if (posts.IsNullOrEmpty())
+            {
+                return NotFound(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = "Posts not found",
+                });
+            }
+            return Ok(new Response
+            {
+                Message = "Get Posts successfully",
+                Status = ResponseStatus.SUCCESS,
+                Data = posts
+            });
+        }
+
+
+
+
     }
 }

@@ -1,6 +1,7 @@
 import { Ban, Bookmark, Ellipsis, Flag, LockKeyhole } from "lucide-react";
 import { Response } from "@/types/response";
 import React, { useEffect } from "react";
+// import ReportForm from "@/pages/manager/report/form";
 import {
   Button,
   Menu,
@@ -8,8 +9,10 @@ import {
   MenuList,
   MenuItem,
   Typography,
+  // Dialog,
   Radio
 } from "@material-tailwind/react";
+import { usePosts } from "@/hooks/usePosts";
 import { cn } from "@/helpers/utils";
 import { Post } from "@/types/post";
 import { useAuth } from "@/hooks/useAuth";
@@ -24,11 +27,17 @@ type MenuItemPostProps = {
 };
 const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
   const [openBan, setOpenBan] = React.useState(false);
+  const [showReportModal, setShowReportModal] = React.useState(false);
   const [isSaved, setIsSaved] = React.useState(false);
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [topic, setTopic] = React.useState<Topic>(() => ({} as Topic));
   const [selectedTime, setSelectedTime] = React.useState("1 day");
+  const { setPostData } = usePosts();
+
   const { user } = useAuth();
+
+  const handleOpenReport = () => setShowReportModal(!showReportModal);
+
   useEffect(() => {
     const checkPostByUserExist = async () => {
       const isPostExists = await PostService.isSaved(
@@ -118,7 +127,10 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
     {
       icon: Flag,
       label: "Report",
-      handle: () => {}
+      handle: () => {
+        setPostData(post);
+        handleOpenReport();
+      }
     },
     {
       icon: Ban,

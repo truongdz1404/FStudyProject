@@ -27,12 +27,45 @@ const getSavedPosts = async (username: string) => {
   return response.data.data;
 };
 
-const get = async (pageNumber: number, pageSize: number, topic?: number) => {
+const get = async (
+  type: string,
+  pageNumber: number,
+  pageSize: number,
+  feature?: string,
+  topic?: number
+) => {
   const response = await api.get<ResponseWith<Post[]>>(
-    `/post/all?pageNumber=${pageNumber}&pageSize=${pageSize}` +
-      (topic ? `&topic=${topic}` : "")
+    `/post/${type}?pageNumber=${pageNumber}&pageSize=${pageSize}` +
+      (feature !== "" ? `&Feature=${feature}` : "") +
+      (topic !== -1 ? `&TopicId=${topic}` : "")
   );
 
+  return response.data.data;
+};
+
+const getPostsByTopicName = async (topic: string) => {
+  console.log("Get posts by topic id");
+  const response = await api.get<ResponseWith<Post[]>>(`/post/topic=${topic}`);
+  return response.data.data;
+};
+
+const getPosts = async () => {
+  const response = await api.get<ResponseWith<Post[]>>(`/post/all`);
+  return response.data.data;
+};
+
+const getPostsByFeature = async (
+  topicName: string | null,
+  postType: string
+) => {
+  let response;
+  if (topicName) {
+    response = await api.get<ResponseWith<Post[]>>(
+      `/post/${postType}/topic=${topicName}`
+    );
+  } else {
+    response = await api.get<ResponseWith<Post[]>>(`/post/${postType}`);
+  }
   return response.data.data;
 };
 
@@ -50,9 +83,12 @@ const PostService = {
   removeFromSave,
   isSaved,
   getSavedPosts,
+  getPostsByTopicName,
   get,
   create,
-  getById
+  getById,
+  getPosts,
+  getPostsByFeature
 };
 
 export default PostService;

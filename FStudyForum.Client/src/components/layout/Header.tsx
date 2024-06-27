@@ -44,7 +44,10 @@ function ProfileMenu() {
     {
       label: "Sign Out",
       icon: PowerIcon,
-      path: "/auth/signout"
+      path: "/auth/signout",
+      action: () => {
+        sessionStorage.clear();
+      }
     }
   ];
   const handleNavigate = (path: string) => {
@@ -70,12 +73,15 @@ function ProfileMenu() {
         </Button>
       </MenuHandler>
       <MenuList className="p-1">
-        {profileMenuItems.map(({ label, icon, path }, key) => {
+        {profileMenuItems.map(({ label, icon, path, action }, key) => {
           const isLastItem = key === profileMenuItems.length - 1;
           return (
             <MenuItem
               key={label}
-              onClick={() => handleNavigate(path)}
+              onClick={() => {
+                if( action ) action();
+                handleNavigate(path)
+              }}
               className={`flex items-center gap-2 rounded ${
                 isLastItem &&
                 "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
@@ -201,6 +207,9 @@ const Header = React.memo(({ openSidebar }: HeaderProps) => {
           <Link
             to="/"
             className="mx-2 xl:mx-4 cursor-pointer py-1.5 font-medium flex items-center select-none"
+            onClick={() => {
+              sessionStorage.clear();
+            }}
           >
             <Icons.logo className="h-8 w-8" />
             <span className="hidden text-zinc-700 text-md font-bold md:block">
