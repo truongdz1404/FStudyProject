@@ -80,6 +80,8 @@ namespace FStudyForum.Infrastructure.Services
 
         private async Task<CommentDTO> MapToCommentDTO(Comment comment)
         {
+            if (comment.Creater.UserName == null)
+                throw new ArgumentNullException("Author not found");
             return new CommentDTO
             {
                 Id = comment.Id,
@@ -90,7 +92,7 @@ namespace FStudyForum.Infrastructure.Services
                 PostId = comment.Post.Id,
                 AttachmentId = comment.Attachment?.Id,
                 ReplyId = comment.ReplyTo?.Id,
-                VoteType = await _voteRepository.GetVotedCommentType(comment.Creater!.UserName, comment.Id),
+                VoteType = await _voteRepository.GetVotedCommentType(comment.Creater.UserName, comment.Id),
                 VoteCount = await _commentRepository.GetVoteCount(comment.Id),
                 Elapsed = DateTime.Now - comment.CreatedAt
             };
