@@ -1,5 +1,11 @@
 import { FC } from "react";
-import { ArrowBigUp, ArrowBigDown, MessageSquare, Plus, Minus } from "lucide-react";
+import {
+  ArrowBigUp,
+  ArrowBigDown,
+  MessageSquare,
+  Plus,
+  Minus
+} from "lucide-react";
 import { Comment } from "@/types/comment";
 import ReplyInput from "@/components/comment/ReplyInput";
 import MenuItemComment from "@/components/comment/MenuItem";
@@ -23,7 +29,7 @@ type CommentItemProps = {
   handleSaveEditedComment: (commentId: number, content: string) => void;
   replyToCommentId: number | null;
   editingCommentId: number | null;
-}
+};
 
 const CommentItem: FC<CommentItemProps> = ({
   comment,
@@ -36,9 +42,8 @@ const CommentItem: FC<CommentItemProps> = ({
   handleEditComment,
   handleSaveEditedComment,
   replyToCommentId,
-  editingCommentId,
+  editingCommentId
 }) => {
-
   const [voteType, setVoteType] = React.useState(comment.voteType);
   const [voteCount, setVoteCount] = React.useState(comment.voteCount);
 
@@ -50,15 +55,15 @@ const CommentItem: FC<CommentItemProps> = ({
   const handleVote = async (type: number) => {
     const realType = voteType === type ? VOTE_TYPE.UNVOTE : type;
     setVoteType(realType);
-    setVoteCount((prevCount) =>
-      prevCount +
-      (realType === VOTE_TYPE.UP ? 1 : realType === VOTE_TYPE.DOWN ? -1 : 0)
+    setVoteCount(
+      prevCount =>
+        prevCount +
+        (realType === VOTE_TYPE.UP ? 1 : realType === VOTE_TYPE.DOWN ? -1 : 0)
     );
     try {
       const count = await VoteService.voteComment(comment.id, realType);
       setVoteCount(count);
     } catch (error) {
-      // Quay lại trạng thái bỏ phiếu trước đó nếu có lỗi
       setVoteType(voteType);
       setVoteCount(comment.voteCount);
     }
@@ -74,12 +79,20 @@ const CommentItem: FC<CommentItemProps> = ({
           style={{ flexShrink: 0 }}
         />
         <div className="flex flex-col w-full">
-          <div className="flex items-center" style={{ marginTop: "0.5rem", marginBottom: "0.5rem" }}>
-            <Link to={`/profile/${comment.author}`} className="action text-xs font-bold hidden lg:block">
+          <div
+            className="flex items-center"
+            style={{ marginTop: "0.5rem", marginBottom: "0.5rem" }}
+          >
+            <Link
+              to={`/profile/${comment.author}`}
+              className="action text-xs font-bold hidden lg:block"
+            >
               {`${comment.author}`}
             </Link>
             <span className="text-xs font-light ml-1">•</span>
-            <span className="text-xs font-light ml-1">{formatElapsedTime(comment.elapsed)}</span>
+            <span className="text-xs font-light ml-1">
+              {formatElapsedTime(comment.elapsed)}
+            </span>
           </div>
 
           {editingCommentId === comment.id ? (
@@ -93,34 +106,32 @@ const CommentItem: FC<CommentItemProps> = ({
             <span className="font text-sm">{comment.content}</span>
           )}
           <div className="flex space-x-7 text-gray-700 my-[0.5rem]">
-            <div
-              className={cn(
-                "action flex items-center rounded-full bg-blue-gray-50",
-                voteType !== VOTE_TYPE.UNVOTE &&
-                (voteType === VOTE_TYPE.UP ? "bg-red-400" : "bg-blue-400")
-              )}
-            >
+            <div className={cn("action flex items-center")}>
               <div
                 className="hover:bg-blue-gray-900/15 rounded-full p-[0.25rem] cursor-pointer"
                 onClick={() => handleVote(VOTE_TYPE.UP)}
               >
                 <ArrowBigUp
                   strokeWidth={1.2}
-                  fill={voteType === VOTE_TYPE.UP ? "white" : "transparent"}
-                  className={cn("w-6 h-6 hover:text-red-400", voteType === VOTE_TYPE.UP && "text-white")}
+                  fill={voteType === VOTE_TYPE.UP ? "#ef5350" : "transparent"}
+                  className={cn(
+                    "w-6 h-6 hover:text-red-400",
+                    voteType === VOTE_TYPE.UP && "text-red-400"
+                  )}
                 />
               </div>
-              <span className={cn("text-xs font-medium", voteType !== VOTE_TYPE.UNVOTE && "text-white")}>
-                {voteCount}
-              </span>
+              <span className={cn("text-xs font-medium")}>{voteCount}</span>
               <div
                 className="hover:bg-blue-gray-900/15 rounded-full p-[0.25rem] cursor-pointer"
                 onClick={() => handleVote(VOTE_TYPE.DOWN)}
               >
                 <ArrowBigDown
                   strokeWidth={1.2}
-                  fill={voteType === VOTE_TYPE.DOWN ? "white" : "transparent"}
-                  className={cn("w-6 h-6 hover:text-blue-400", voteType === VOTE_TYPE.DOWN && "text-white")}
+                  fill={voteType === VOTE_TYPE.DOWN ? "#42a5f5" : "transparent"}
+                  className={cn(
+                    "w-6 h-6 hover:text-blue-400",
+                    voteType === VOTE_TYPE.DOWN && "text-blue-400"
+                  )}
                 />
               </div>
             </div>
@@ -149,12 +160,21 @@ const CommentItem: FC<CommentItemProps> = ({
           )}
           {comment.replies && comment.replies.length > 0 && (
             <>
-              <button className="text-xs text-gray-500 flex items-center space-x-1" onClick={() => toggleExpand(comment.id)}>
+              <button
+                className="text-xs text-gray-500 flex items-center space-x-1"
+                onClick={() => toggleExpand(comment.id)}
+              >
                 <div className="p-0.5 border rounded-full">
-                  {expandedComments[comment.id] ? <Minus size={12} /> : <Plus size={12} />}
+                  {expandedComments[comment.id] ? (
+                    <Minus size={12} />
+                  ) : (
+                    <Plus size={12} />
+                  )}
                 </div>
                 <span>
-                  {expandedComments[comment.id] ? "" : `${comment.replies.length} replies`}
+                  {expandedComments[comment.id]
+                    ? ""
+                    : `${comment.replies.length} replies`}
                 </span>
               </button>
               {expandedComments[comment.id] && (

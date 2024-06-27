@@ -1,12 +1,5 @@
 import React, { useEffect } from "react";
-import {
-  Ban,
-  Ellipsis,
-  Flag,
-  LockKeyhole,
-  Edit,
-  Trash
-} from "lucide-react";
+import { Ban, Ellipsis, Flag, LockKeyhole, Edit, Trash } from "lucide-react";
 import {
   Button,
   Menu,
@@ -23,7 +16,6 @@ import { Response } from "@/types/response";
 import { AxiosError } from "axios";
 import { Topic } from "@/types/topic";
 import TopicService from "@/services/TopicService";
-import BanUserService from "@/services/BanUserService";
 // import CommentService from "@/services/CommentService";
 import "react-toastify/dist/ReactToastify.css";
 import { showErrorToast, showSuccessToast } from "../toast/Toast";
@@ -34,7 +26,11 @@ type MenuItemCommentProps = {
   onEdit: (commentId: number, content: string) => void;
 };
 
-const MenuItemComment: React.FC<MenuItemCommentProps> = ({ comment, onDelete, onEdit }) => {
+const MenuItemComment: React.FC<MenuItemCommentProps> = ({
+  comment,
+  onDelete,
+  onEdit
+}) => {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [topic, setTopic] = React.useState<Topic>(() => ({} as Topic));
@@ -58,7 +54,7 @@ const MenuItemComment: React.FC<MenuItemCommentProps> = ({ comment, onDelete, on
     const topicBan = async () => {
       const [time, action] = selectedTime.split(" ");
       try {
-        const response = await BanUserService.lockedUserByTopic({
+        const response = await TopicService.ban({
           username: comment.author,
           topicId: topic.id,
           action: action,
@@ -67,7 +63,9 @@ const MenuItemComment: React.FC<MenuItemCommentProps> = ({ comment, onDelete, on
         showSuccessToast(response.message);
       } catch (e) {
         const error = e as AxiosError<Response>;
-        showErrorToast((error?.response?.data as Response)?.message || error.message);
+        showErrorToast(
+          (error?.response?.data as Response)?.message || error.message
+        );
       }
     };
     topicBan();
@@ -80,21 +78,26 @@ const MenuItemComment: React.FC<MenuItemCommentProps> = ({ comment, onDelete, on
     { value: "1000 forever", label: "Forever" }
   ];
 
-  const CommentMenuItem = comment.author === user?.username
-    ? [
-      { icon: Edit, label: "Edit", path: "edit" },
-      { icon: Trash, label: "Delete", path: "delete" }
-    ]
-    : [
-      { icon: Flag, label: "Report", path: "/report" },
-      { icon: Ban, label: "Ban", path: "ban" }
-    ];
+  const CommentMenuItem =
+    comment.author === user?.username
+      ? [
+          { icon: Edit, label: "Edit", path: "edit" },
+          { icon: Trash, label: "Delete", path: "delete" }
+        ]
+      : [
+          { icon: Flag, label: "Report", path: "/report" },
+          { icon: Ban, label: "Ban", path: "ban" }
+        ];
 
   return (
     <>
       <Menu open={isMenuOpen} handler={setIsMenuOpen} placement="bottom-end">
         <MenuHandler>
-          <Button variant="text" color="blue-gray" className="flex items-center rounded-full p-0 px-1 text-black">
+          <Button
+            variant="text"
+            color="blue-gray"
+            className="flex items-center rounded-full p-2 text-black"
+          >
             <Ellipsis className="w-4 h-4" />
           </Button>
         </MenuHandler>
@@ -108,19 +111,27 @@ const MenuItemComment: React.FC<MenuItemCommentProps> = ({ comment, onDelete, on
                   path === "edit"
                     ? () => onEdit(comment.id, comment.content)
                     : path === "delete"
-                      ? () => onDelete(comment.id.toString())
-                      : path === "ban"
-                        ? () => setIsModalOpen(true)
-                        : () => { }
+                    ? () => onDelete(comment.id.toString())
+                    : path === "ban"
+                    ? () => setIsModalOpen(true)
+                    : () => {}
                 }
-                className={`flex items-center gap-2 rounded ${isLastItem && "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
-                  }`}
+                className={`flex items-center gap-2 rounded ${
+                  isLastItem &&
+                  "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
+                }`}
               >
                 {React.createElement(icon, {
                   className: `h-4 w-4 ${isLastItem ? "text-red-500" : ""}`,
                   strokeWidth: 2
                 })}
-                <Typography as={"span"} className={cn("font-normal text-sm", isLastItem ? "text-red-500" : "inherit")}>
+                <Typography
+                  as={"span"}
+                  className={cn(
+                    "font-normal text-sm",
+                    isLastItem ? "text-red-500" : "inherit"
+                  )}
+                >
                   {label}
                 </Typography>
               </MenuItem>
@@ -169,7 +180,9 @@ const MenuItemComment: React.FC<MenuItemCommentProps> = ({ comment, onDelete, on
               <div>
                 <div className={cn("flex gap-[2%]")}>
                   <div className={cn("font-bold text-black")}>Username:</div>
-                  <div className={cn("font-bold text-black")}>{comment.author}</div>
+                  <div className={cn("font-bold text-black")}>
+                    {comment.author}
+                  </div>
                 </div>
                 <div className={cn("flex gap-[2%] mt-[2%]")}>
                   <div className={cn("font-bold text-black")}>Topic:</div>
