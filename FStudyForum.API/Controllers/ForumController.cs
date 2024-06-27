@@ -18,4 +18,14 @@ public class ForumController : ControllerBase
             Data = Major.All
         });
     }
+    [HttpGet("categoryType")]
+    public IActionResult GetAllCategoryTypes()
+    {
+        return Ok(new Response
+        {
+            Status = ResponseStatus.SUCCESS,
+            Message = "Get all types successfully",
+            Data = CategoryType.All
+        });
+    }
 }
