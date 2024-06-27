@@ -8,13 +8,13 @@ import WelcomeGuard from "@/helpers/guards/WelcomeGuard";
 import AuthLayout from "@/components/layout/AuthLayout";
 import RoleBasedGuard from "@/helpers/guards/RoleBasedGuard";
 import Donate from "./pages/donate";
-import Payment from "./pages/donate/payment";
 import Notification from "./pages/donate/notification";
 import SavePost from "./pages/profile/save";
 import { PostProvider } from "./contexts/posts/PostContext";
 import { ROLE } from "@/helpers/constants";
 import Loadable from "./helpers/loading/Loadable";
 
+const QRCode = Loadable(lazy(() => import("./pages/donate/qrcode")));
 const Popular = Loadable(lazy(() => import("@/pages/popular")));
 const Memebers = Loadable(lazy(() => import("@/pages/manager/members")));
 const Welcome = Loadable(lazy(() => import("@/pages/welcome")));
@@ -89,11 +89,11 @@ const Router: FC = () => {
               element: <Donate />
             },
             {
-              path: "payment",
-              element: <Payment />
+              path: "qrcode",
+              element: <QRCode />
             },
             {
-              path: "success",
+              path: "transaction",
               element: <Notification />
             }
           ]

@@ -233,6 +233,11 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Tid")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -558,19 +563,19 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "4801bc70-c789-4b25-9811-72c788163b10",
+                            Id = "47140919-f62f-4943-a025-0f93fdccad41",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "e355c20c-6eda-481c-b8a6-7ad7cee2e1ed",
+                            Id = "5620fdfe-e1e0-4e2c-9d67-667dacdee53c",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "dcf7bd8c-a442-4eeb-b425-c311ce667c90",
+                            Id = "df3486bb-01e7-43c2-853f-c457a1ad1e1f",
                             Name = "Moderator",
                             NormalizedName = "MODERATOR"
                         });

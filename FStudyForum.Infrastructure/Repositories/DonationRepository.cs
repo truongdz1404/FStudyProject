@@ -1,6 +1,7 @@
 ﻿using FStudyForum.Core.Interfaces.IRepositories;
 using FStudyForum.Core.Models.Entities;
 using FStudyForum.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace FStudyForum.Infrastructure.Repositories
 {
@@ -14,6 +15,10 @@ namespace FStudyForum.Infrastructure.Repositories
         {
             await _dbContext.Donations.AddAsync(donation);
             await _dbContext.SaveChangesAsync();
+        }
+        public async Task<Donation?> GetDonationByTid(string tid)
+        {
+            return await _dbContext.Donations.FirstOrDefaultAsync(d => d.Tid == tid);
         }
     }
 }

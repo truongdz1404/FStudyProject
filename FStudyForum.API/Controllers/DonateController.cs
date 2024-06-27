@@ -1,25 +1,26 @@
 ﻿using FStudyForum.Core.Interfaces.IServices;
 using FStudyForum.Core.Models.DTOs;
+using FStudyForum.Core.Models.DTOs.Donation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FStudyForum.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class QRCodeController : ControllerBase
+    public class DonateController : ControllerBase
     {
-        private readonly IQRCodeService _qrCodeService;
-        public QRCodeController(IQRCodeService qrCodeService)
+        private readonly IDonateService _donateService;
+        public DonateController(IDonateService donateService)
         {
-            _qrCodeService = qrCodeService;
+            _donateService = donateService;
         }
         [HttpGet("generate/{amountByUser}/{addInfoByUser}")]
         public async Task<IActionResult> GenerateQrCode(string amountByUser, string addInfoByUser)
         {
             try
             {
-                var qrCodeData = await _qrCodeService.GenerateVietQRCodeAsync(amountByUser, addInfoByUser);
-                if(qrCodeData == null)
+                var qrCodeData = await _donateService.GenerateVietQRCodeAsync(amountByUser, addInfoByUser);
+                if (qrCodeData == null)
                 {
                     return BadRequest(new Response
                     {
@@ -28,7 +29,7 @@ namespace FStudyForum.API.Controllers
                         Message = "Generate QR code failed!"
                     });
                 }
-                    
+
                 return Ok(new Response
                 {
                     Data = qrCodeData?.Data,
@@ -50,14 +51,37 @@ namespace FStudyForum.API.Controllers
         {
             try
             {
-                var isExist = await _qrCodeService.CheckExistDonate(tid);
+                var isExist = await _donateService.CheckExistDonate(tid);
                 return Ok(new Response
                 {
                     Data = isExist,
                     Status = ResponseStatus.SUCCESS,
                     Message = "Check exist donate successfully"
                 });
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = ex.Message
+                });
+            }
+        }
+        [HttpPost("save-user-donate")]
+        public async Task<IActionResult> SaveUserDonate([FromBody] DonationDTO donationDTO)
+        {
+            try
+            {
+                var donation = await _donateService.SaveUserDonate(donationDTO);
+                return Ok(new Response
+                {
+                    Data = donation,
+                    Message = "Donation saved successfully",
+                    Status = ResponseStatus.SUCCESS
+                });
+            }
+            catch (Exception ex)
             {
                 return BadRequest(new Response
                 {

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FStudyForum.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20240619093737_UpdateDB")]
-    partial class UpdateDB
+    [Migration("20240627073009_Final")]
+    partial class Final
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -235,6 +235,11 @@ namespace FStudyForum.Infrastructure.Migrations
 
                     b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Tid")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -561,19 +566,19 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "5702775e-8228-471d-a1da-9281268ec8d7",
+                            Id = "47140919-f62f-4943-a025-0f93fdccad41",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "293a69d9-ee5e-4da7-a20a-656465f0ca65",
+                            Id = "5620fdfe-e1e0-4e2c-9d67-667dacdee53c",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "fa6407df-fb61-45a1-a30f-f406e5d077c1",
+                            Id = "df3486bb-01e7-43c2-853f-c457a1ad1e1f",
                             Name = "Moderator",
                             NormalizedName = "MODERATOR"
                         });

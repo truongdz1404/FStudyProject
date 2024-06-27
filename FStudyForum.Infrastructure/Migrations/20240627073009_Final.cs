@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace FStudyForum.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdateDB : Migration
+    public partial class Final : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -157,6 +157,7 @@ namespace FStudyForum.Infrastructure.Migrations
                     Amount = table.Column<long>(type: "bigint", nullable: false),
                     Message = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Tid = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -561,9 +562,9 @@ namespace FStudyForum.Infrastructure.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "293a69d9-ee5e-4da7-a20a-656465f0ca65", null, "User", "USER" },
-                    { "5702775e-8228-471d-a1da-9281268ec8d7", null, "Admin", "ADMIN" },
-                    { "fa6407df-fb61-45a1-a30f-f406e5d077c1", null, "Moderator", "MODERATOR" }
+                    { "47140919-f62f-4943-a025-0f93fdccad41", null, "Admin", "ADMIN" },
+                    { "5620fdfe-e1e0-4e2c-9d67-667dacdee53c", null, "User", "USER" },
+                    { "df3486bb-01e7-43c2-853f-c457a1ad1e1f", null, "Moderator", "MODERATOR" }
                 });
 
             migrationBuilder.CreateIndex(

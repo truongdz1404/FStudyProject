@@ -44,7 +44,7 @@ const HomePage: React.FC = () => {
 
   const posts = data?.pages.flatMap(p => p) ?? [];
   if (isPending) return <Spinner className="mx-auto" />;
-
+  
   return (
     <ContentLayout>
       <div className="relative flex text-left z-20">
