@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Alert, DialogBody, DialogFooter, Button } from "@material-tailwind/react";
 import { UpdateCategoryDTO, Category } from "@/types/category";
 import CategoryService from "@/services/CategoryService";
-import CategoryTypeService from "@/services/CategoryTypeService"; // Import service for category types
+import CategoryTypeService from "@/services/CategoryTypeService"; 
 
 interface UpdateCategoryPopupProps {
   open: boolean;
@@ -22,10 +22,9 @@ const UpdateCategoryPopup: React.FC<UpdateCategoryPopupProps> = ({
   const [type, setType] = useState(category.type);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [categoryTypes, setCategoryTypes] = useState<string[]>([]); // State for category types
+  const [categoryTypes, setCategoryTypes] = useState<string[]>([]); 
 
   useEffect(() => {
-    // Fetch category types when component mounts or category changes
     const fetchData = async () => {
       try {
         const types = await CategoryTypeService.getAll();
@@ -60,7 +59,7 @@ const UpdateCategoryPopup: React.FC<UpdateCategoryPopupProps> = ({
       setCategoryName(category.name);
       setDescription(category.description);
       setType(category.type);
-      setError(null); // Clear any previous errors when the popup opens
+      setError(null); 
     }
   }, [open, category]);
 
@@ -68,7 +67,7 @@ const UpdateCategoryPopup: React.FC<UpdateCategoryPopupProps> = ({
     <div className={`fixed inset-0 flex items-center justify-center bg-gray-700 bg-opacity-50 z-50 ${open ? "block" : "hidden"}`}>
       <div className="bg-white rounded-md p-4 shadow-lg w-80">
         <DialogBody>
-          <h2 className="text-xl font-bold mb-4">Update Category</h2>
+          <h2 className="text-xl text-black font-bold mb-4">Update Category</h2>
           {error && (
             <Alert color="red" className="mb-4">
               {error}
@@ -80,7 +79,7 @@ const UpdateCategoryPopup: React.FC<UpdateCategoryPopupProps> = ({
             </Alert>
           )}
           <div className="mb-4">
-            <label htmlFor="categoryName" className="block font-bold mb-1">
+            <label htmlFor="categoryName" className="block font-bold mb-1 text-black">
               Category Name:
             </label>
             <input
@@ -88,31 +87,31 @@ const UpdateCategoryPopup: React.FC<UpdateCategoryPopupProps> = ({
               id="categoryName"
               value={categoryName}
               onChange={(e) => setCategoryName(e.target.value)}
-              className="border border-gray-300 rounded px-2 py-1 w-full"
+              className="border border-gray-300 rounded px-2 py-1 w-full text-black" 
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="description" className="block font-bold mb-1">
+            <label htmlFor="description" className="block font-bold mb-1 text-black">
               Description:
             </label>
             <textarea
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="border border-gray-300 rounded px-2 py-1 w-full h-24 resize-none"
+              className="border border-gray-300 rounded px-2 py-1 w-full h-24 resize-none text-black" 
             ></textarea>
           </div>
           <div className="mb-4">
-            <label htmlFor="type" className="block font-bold mb-1">
+            <label htmlFor="type" className="block font-bold mb-1 text-black">
               Type:
             </label>
             <select
               id="type"
               value={type}
               onChange={(e) => setType(e.target.value)}
-              className="border border-gray-300 rounded px-2 py-1 w-full"
-            >    
-              <option value={type}>{type}</option>            
+              className="border border-gray-300 rounded px-2 py-1 w-full text-black" 
+            >
+              <option value={type}>{type}</option>
               {categoryTypes.map((type) => (
                 <option key={type} value={type}>
                   {type}
@@ -128,7 +127,7 @@ const UpdateCategoryPopup: React.FC<UpdateCategoryPopupProps> = ({
             ripple={true}
             className="text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-md focus:outline-none"
           >
-            Update Category
+            Update
           </Button>
           <Button
             onClick={onClose}

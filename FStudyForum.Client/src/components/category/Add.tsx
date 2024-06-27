@@ -15,19 +15,17 @@ const AddCategoryPopup: React.FC<AddCategoryPopupProps> = ({ open, onClose, onCa
   const [description, setDescription] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [categoryTypes, setCategoryTypes] = useState<string[]>([]); // State for category types
-  const [selectedCategoryType, setSelectedCategoryType] = useState<string>(""); // State for selected category type
+  const [categoryTypes, setCategoryTypes] = useState<string[]>([]);
+  const [selectedCategoryType, setSelectedCategoryType] = useState<string>("");
 
   useEffect(() => {
-    // Fetch category types when component mounts
     const fetchData = async () => {
       try {
         const types = await CategoryTypeService.getAll();
         setCategoryTypes(types);
 
-        // Set the default selected category type
         if (types.length > 0) {
-          setSelectedCategoryType(types[0]); // Select the first category type by default
+          setSelectedCategoryType(types[0]);
         }
       } catch (error) {
         console.error("Error fetching category types:", error);
@@ -63,7 +61,7 @@ const AddCategoryPopup: React.FC<AddCategoryPopupProps> = ({ open, onClose, onCa
     <div className={`fixed inset-0 flex items-center justify-center bg-gray-700 bg-opacity-50 z-50 ${open ? "block" : "hidden"}`}>
       <div className="bg-white rounded-md p-4 shadow-lg w-80">
         <DialogBody>
-          <h2 className="text-xl font-bold mb-4">Add Category</h2>
+          <h2 className="text-xl font-bold mb-4 text-black">Add Category</h2>
           {error && (
             <Alert color="red" className="mb-4">
               {error}
@@ -75,7 +73,7 @@ const AddCategoryPopup: React.FC<AddCategoryPopupProps> = ({ open, onClose, onCa
             </Alert>
           )}
           <div className="mb-4">
-            <label htmlFor="categoryName" className="block font-bold mb-1">
+            <label htmlFor="categoryName" className="block font-bold mb-1 text-black">
               Category Name:
             </label>
             <input
@@ -83,29 +81,29 @@ const AddCategoryPopup: React.FC<AddCategoryPopupProps> = ({ open, onClose, onCa
               id="categoryName"
               value={categoryName}
               onChange={(e) => setCategoryName(e.target.value)}
-              className="border border-gray-300 rounded px-2 py-1 w-full"
+              className="border border-gray-300 rounded px-2 py-1 w-full text-black"
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="description" className="block font-bold mb-1">
+            <label htmlFor="description" className="block font-bold mb-1 text-black">
               Description:
             </label>
             <textarea
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="border border-gray-300 rounded px-2 py-1 w-full h-24 resize-none"
+              className="border border-gray-300 rounded px-2 py-1 w-full h-24 resize-none text-black"
             ></textarea>
           </div>
           <div className="mb-4">
-            <label htmlFor="type" className="block font-bold mb-1">
+            <label htmlFor="type" className="block font-bold mb-1 text-black">
               Type:
             </label>
             <select
               id="type"
               value={selectedCategoryType}
               onChange={(e) => setSelectedCategoryType(e.target.value)}
-              className="border border-gray-300 rounded px-2 py-1 w-full"
+              className="border border-gray-300 rounded px-2 py-1 w-full text-black"
             >
               <option value="">Select Category Type</option>
               {categoryTypes.map((type) => (
@@ -122,7 +120,7 @@ const AddCategoryPopup: React.FC<AddCategoryPopupProps> = ({ open, onClose, onCa
             color="blue"
             className="mr-2"
           >
-            Add Category
+            Add
           </Button>
           <Button
             onClick={onClose}
