@@ -84,14 +84,14 @@ namespace FStudyForum.Infrastructure.Repositories
 
         public async Task RemoveVoteComment(string username, long commentId)
         {
-            var removeVote = await FindVote(username, commentId)
+            var removeVote = await FindVoteComment(username, commentId)
                 ?? throw new Exception("User has not voted on this post yet");
             await Delete(removeVote);
         }
 
         public async Task UpdateVoteComment(string username, long commentId, bool isUp)
         {
-            var removeVote = await FindVote(username, commentId)
+            var removeVote = await FindVoteComment(username, commentId)
                 ?? throw new Exception("User has not voted on this post yet");
             removeVote.IsUp = isUp;
             await Update(removeVote);

@@ -90,8 +90,8 @@ namespace FStudyForum.Infrastructure.Services
                 PostId = comment.Post.Id,
                 AttachmentId = comment.Attachment?.Id,
                 ReplyId = comment.ReplyTo?.Id,
-                VoteType = await _voteRepository.GetVotedType(comment.Creater!.UserName, comment.Id),
-                VoteCount = comment.Votes.Count,
+                VoteType = await _voteRepository.GetVotedCommentType(comment.Creater!.UserName, comment.Id),
+                VoteCount = await _commentRepository.GetVoteCount(comment.Id),
                 Elapsed = DateTime.Now - comment.CreatedAt
             };
         }

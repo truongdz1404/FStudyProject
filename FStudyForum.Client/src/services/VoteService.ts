@@ -8,9 +8,17 @@ const votePost = async (postId: number, type: number) => {
   });
   return response.data.data;
 };
+const voteComment = async (commentId: number, type: number) => {
+  const response = await api.post<ResponseWith<number>>("/vote/comment", {
+    commentId,
+    type
+  });
+  return response.data.data;
+};
 
 const VoteService = {
-  votePost
+  votePost,
+  voteComment
 };
 
 export default VoteService;
