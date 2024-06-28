@@ -7,6 +7,9 @@ import * as Yup from "yup";
 import { useAuth } from "@/hooks/useAuth";
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
+import PaymentService from "@/services/PaymentService";
+import { AxiosError } from "axios";
+import { Donation } from "@/types/donate";
 const validation = Yup.object({
   description: Yup.string(),
   amount: Yup.number()
@@ -23,6 +26,7 @@ const Donate = () => {
   const { user } = useAuth();
   const [error, setError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
+  const [donation, setDonation] = React.useState<Donation | null>(null);
   const navigate = useNavigate();
   const {
     register,
@@ -38,9 +42,34 @@ const Donate = () => {
       return;
     }
     setLoading(true);
-    navigate("/donate/qrcode", {state: { amountByUser: form.amount, addInfoByUser: `${user.username} ${form.description}`}})
+    try {
+      const response = await PaymentService.saveUserDonate({
+        amount: form.amount,
+        message: `${user.username}${form.description}`,
+        username: user.username,
+        tid: null
+      });
+      setDonation(response);
+    } catch (e) {
+      const error = e as AxiosError;
+      setError(
+        (error?.response?.data as { message: string })?.message || error.message
+      );
+    }
   };
-  
+  React.useEffect(() => {
+    if (donation !== null) {
+      navigate("/donate/qrcode", {
+        state: {
+          amountByUser: donation.amount,
+          addInfoByUser: `${donation.id}${donation.message}`,
+          amount: donation.amount,
+          id: donation.id,
+          message: donation.message
+        }
+      });
+    }
+  }, [donation, navigate]);
   return (
     <>
       <div className="mb-6">

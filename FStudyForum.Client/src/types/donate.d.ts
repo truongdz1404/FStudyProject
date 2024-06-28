@@ -40,8 +40,21 @@ export interface Record {
     when: string;
 }
 export interface Donation{
+    id: int;
     amount: number;
     message: string;
     username: string;
-    tid: string;
+    tid: string | null;
+}
+export interface CreateDonation {
+    amount: number;
+    message: string;
+    username: string;
+    tid: string | null;
+}
+export interface UpdateDonation {
+    amount: number;
+    message: string;
+    username: string;
+    tid: string | null;
 }

@@ -11,5 +11,5 @@ public class Donation : BaseEntity
     public string Message { get; set; } = string.Empty;
     public required virtual ApplicationUser User { get; set; }
     [MaxLength(20)]
-    public string Tid { get; set; } = string.Empty;
+    public string? Tid { get; set; }
 }

@@ -64,7 +64,7 @@ namespace FStudyForum.Infrastructure.Services
             }
         }
 
-        public async Task<DonationDTO> SaveUserDonate(DonationDTO donationDTO)
+        public async Task<DonationDTO> SaveUserDonate(CreateDonationDTO donationDTO)
         {
             var user = await _userManager.FindByNameAsync(donationDTO.Username)
                 ?? throw new Exception("User not found");
@@ -86,9 +86,6 @@ namespace FStudyForum.Infrastructure.Services
                 {
                     var content = await response.Content.ReadAsStringAsync();
 
-                    // In ra nội dung phản hồi để kiểm tra
-                    Console.WriteLine("Hello ae toi test nhe" + content);
-
                     var jsonResponse = Newtonsoft.Json.Linq.JObject.Parse(content);
 
                     // Lấy mảng records từ JSON response
@@ -104,6 +101,26 @@ namespace FStudyForum.Infrastructure.Services
 
                 return false;
             }
+        }
+        public async Task<DonationDTO> GetDonationByUser(string username)
+        {
+            var donationByUser = await _donationRepository.GetDonationByUser(username)
+                ?? throw new Exception("Not found.");
+            return _mapper.Map<DonationDTO>(donationByUser);
+        }
+        public async Task<DonationDTO> UpdateDonate(int id, UpdateDonationDTO updateDonationDTO)
+        {
+            var donation = await _donationRepository.GetById(id)
+                ?? throw new Exception("Not found.");
+            _mapper.Map(updateDonationDTO, donation);
+            await _donationRepository.Update(donation);
+            return _mapper.Map<DonationDTO>(donation);
+        }
+        public async Task<bool> CheckDonation(string username, int id, string message, decimal amount)
+        {
+            var donation = await _donationRepository.GetDonation(id, username, amount, message)
+                ?? throw new Exception("Not found.");
+            return donation != null;
         }
     }
 }

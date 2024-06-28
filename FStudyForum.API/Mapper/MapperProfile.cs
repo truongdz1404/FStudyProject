@@ -22,6 +22,7 @@ public class MapperProfile : AutoMapper.Profile
         CreateMap<Post, PostDTO>().ReverseMap();
         CreateMap<SavedPost, SavePostDTO>().ReverseMap();
         CreateMap<Donation, DonationDTO>().ReverseMap();
+        CreateMap<Donation, CreateDonationDTO>().ReverseMap();
         CreateMap<Category, CategoryDTO>().ReverseMap();
     }
 }
