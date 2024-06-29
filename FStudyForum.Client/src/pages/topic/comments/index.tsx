@@ -253,7 +253,7 @@ const Comments: FC<Props> = () => {
         </div>
         <div className="mt-4 px-4">
           {comments && comments.length > 0 ? (
-            comments.map(comment => (
+            comments.slice().reverse().map(comment => ( 
               <CommentItem
                 key={comment.id}
                 comment={comment}

@@ -19,7 +19,7 @@ const ReplyInput: FC<ReplyInputProps> = ({ commentId, onSubmit, onCancel }) => {
   };
 
   return (
-    <div className="border rounded-2xl">
+    <div className="border rounded-2xl reply-input">
       <TextareaAutosize
         autoFocus
         value={newReply}

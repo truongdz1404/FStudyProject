@@ -73,6 +73,7 @@ namespace FStudyForum.Infrastructure.Services
             foreach (var commentReply in commentReplies)
             {
                 commentReply.IsDeleted = true;
+                await SoftDeleteCommentAsync(commentReply.Id);
                 await _commentRepository.UpdateCommentAsync(commentReply);
             }
             return true;
