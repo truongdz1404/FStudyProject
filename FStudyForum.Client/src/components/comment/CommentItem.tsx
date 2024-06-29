@@ -41,6 +41,7 @@ const CommentItem: FC<CommentItemProps> = ({
   const [voteCount, setVoteCount] = useState(comment.voteCount);
   const commentRef = useRef<HTMLDivElement>(null);
   const [childHeight, setChildHeight] = useState(0);
+  const spanRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     setVoteType(comment.voteType);
@@ -116,8 +117,10 @@ const CommentItem: FC<CommentItemProps> = ({
             <span className="text-xs font-light ml-1">{formatElapsedTime(comment.elapsed)}</span>
           </div>
           {comment.replies && comment.replies.length > 0 && (
-            <svg height="200" width="40" className="absolute left-[-5px] top-12">
-              <line x1="20" y1="0" x2="20" y2={replyToCommentId === comment.id ? "140" : "50"} stroke="gray" strokeWidth="1" />
+            <svg height={(spanRef.current?.clientHeight || 0) + 140} width="40" className="absolute left-[-5px] top-12">
+              <line x1="20" y1="0" x2="20" y2={(replyToCommentId === comment.id || editingCommentId === comment.id)
+                ? `${(spanRef.current?.clientHeight || 0) + 120}` : `${(spanRef.current?.clientHeight || 0) + 32}`}
+                stroke="gray" strokeWidth="1" />
             </svg>
           )}
           {editingCommentId === comment.id ? (
@@ -128,7 +131,7 @@ const CommentItem: FC<CommentItemProps> = ({
               onCancel={() => handleEditComment(null)}
             />
           ) : (
-            <span className="font text-sm">{comment.content}</span>
+            <span ref={spanRef} className="font text-sm">{comment.content}</span>
           )}
           <div className="flex space-x-7 text-gray-700 my-[0.5rem]">
             <div className={cn("action flex items-center")}>

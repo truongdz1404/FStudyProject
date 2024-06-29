@@ -12,7 +12,7 @@ import { Comment, CreateComment } from "@/types/comment";
 import CommentInput from "@/components/comment/CommentInput";
 import ContentLayout from "@/components/layout/ContentLayout";
 import CommentItem from "@/components/comment/CommentItem";
-interface Props {}
+interface Props { }
 
 const Comments: FC<Props> = () => {
   const navigate = useNavigate();
@@ -108,7 +108,7 @@ const Comments: FC<Props> = () => {
     }
   };
 
-  const handleDeleteComment = async (id: string ) => {
+  const handleDeleteComment = async (id: string) => {
     try {
       await CommentService.deleteComment(id);
       setComments(prevComments => removeCommentById(prevComments, Number(id)));
@@ -253,7 +253,7 @@ const Comments: FC<Props> = () => {
         </div>
         <div className="mt-4 px-4">
           {comments && comments.length > 0 ? (
-            comments.slice().reverse().map(comment => ( 
+            comments.slice().reverse().map(comment => (
               <CommentItem
                 key={comment.id}
                 comment={comment}
