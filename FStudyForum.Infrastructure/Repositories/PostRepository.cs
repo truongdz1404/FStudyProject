@@ -1,11 +1,11 @@
 ﻿using FStudyForum.Core.Interfaces.IRepositories;
 using FStudyForum.Core.Models.DTOs;
 using FStudyForum.Core.Models.DTOs.Post;
-using FStudyForum.Core.Models.DTOs.SavePost;
 using FStudyForum.Core.Models.Entities;
 using FStudyForum.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using FStudyForum.Core.Helpers;
+using FStudyForum.Core.Models.DTOs.Topic;
 
 
 namespace FStudyForum.Infrastructure.Repositories

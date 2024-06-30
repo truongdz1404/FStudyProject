@@ -6,8 +6,8 @@ using FStudyForum.Core.Models.DTOs.Attachment;
 using FStudyForum.Core.Models.DTOs.Post;
 using FStudyForum.Core.Models.Entities;
 using FStudyForum.Core.Models.DTOs;
-using FStudyForum.Core.Models.DTOs.SavePost;
 using Microsoft.AspNetCore.Identity;
+using FStudyForum.Core.Models.DTOs.Topic;
 
 
 namespace FStudyForum.Infrastructure.Services

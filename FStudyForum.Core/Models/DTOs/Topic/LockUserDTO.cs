@@ -1,6 +1,4 @@
-﻿
-
-namespace FStudyForum.Core.Models.DTOs.LockUser
+﻿namespace FStudyForum.Core.Models.DTOs.Topic
 {
     public class LockUserDTO
     {

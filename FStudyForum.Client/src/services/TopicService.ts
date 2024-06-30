@@ -2,10 +2,9 @@ import { ResponseWith } from "@/types/response";
 import api from "./api";
 import {
   Topic,
-  CreateTopicDTO,
-  UpdateTopicDTO,
-  TopicBanDTO,
-  Unlocktime,
+  CreateTopic,
+  UpdateTopic,
+  CreateTopicBan,
   TopicBan
 } from "@/types/topic";
 
@@ -13,7 +12,6 @@ const getActiveTopics = async (): Promise<Topic[]> => {
   const response = await api.get<Topic[]>("/topic/active-all");
   return response.data;
 };
-
 
 const getTopics = async () => {
   const response = await api.get<ResponseWith<Topic[]>>("/topic/all");
@@ -25,12 +23,12 @@ const getTopicByName = async (name: string) => {
   return response.data.data;
 };
 
-const create = async (topic: CreateTopicDTO): Promise<Topic> => {
+const create = async (topic: CreateTopic): Promise<Topic> => {
   const response = await api.post<Topic>("/topic/create", topic);
   return response.data;
 };
 
-const update = async (name: string, topic: UpdateTopicDTO): Promise<Topic> => {
+const update = async (name: string, topic: UpdateTopic): Promise<Topic> => {
   const response = await api.put<Topic>(`/topic/update/${name}`, topic);
   return response.data;
 };
@@ -39,37 +37,24 @@ const deleteTopic = async (name: string): Promise<void> => {
   await api.put<Topic>(`/topic/delete/${name}`);
 };
 
-const isLocked = async (username: string, topicName: string) => {
-  const response = await api.post<ResponseWith<TopicBanDTO>>(
-    "/topic/is-locked",
-    {
-      username,
-      topicName
-    }
+const checkBannedUser = async (username: string, topicName: string) => {
+  const response = await api.get<ResponseWith<TopicBan>>(
+    `/topic/check-banned?username=${username}&topicName=${topicName}`
   );
-  return response.data;
+  return response.data.data;
 };
-const unlockTime = async (username: string, topicName: string) => {
-  const response = await api.post<ResponseWith<Unlocktime>>(
-    "/topic/unlock-time",
-    {
-      username,
-      topicName
-    }
-  );
-  return response.data;
-};
-const unban = async (username: string, topicName: string) => {
-  const response = await api.post<ResponseWith<Unlocktime>>("/topic/unlocked", {
+
+const unbanUser = async (username: string, topicName: string) => {
+  const response = await api.post<Response>("/topic/unban", {
     username,
     topicName
   });
   return response.data;
 };
 
-const ban = async (topicban: TopicBan) => {
+const banUser = async (topicban: CreateTopicBan) => {
   const response = await api.post<ResponseWith<TopicBan>>(
-    "/topic/locked",
+    "/topic/ban",
     topicban
   );
   return response.data;
@@ -81,12 +66,7 @@ const search = async (value: string) => {
   );
   return response.data.data;
 };
-const topicByPost = async (postId: number) => {
-  const response = await api.get<ResponseWith<Topic>>(
-    `/topic/getTopicByPost/${postId}`
-  );
-  return response.data.data;
-};
+
 const TopicService = {
   getTopics,
   getActiveTopics,
@@ -94,12 +74,10 @@ const TopicService = {
   search,
   create,
   update,
-  isLocked,
-  unlockTime,
-  unban,
-  ban,
   deleteTopic,
-  topicByPost
+  checkBannedUser,
+  unbanUser,
+  banUser
 };
 
 export default TopicService;

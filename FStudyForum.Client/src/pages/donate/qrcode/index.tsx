@@ -1,4 +1,3 @@
-import { API_GET, API_KEY } from "@/helpers/constants";
 import { cn } from "@/helpers/utils";
 import { useAuth } from "@/hooks/useAuth";
 import PaymentService from "@/services/PaymentService";
@@ -32,7 +31,11 @@ const QRCodeLink = () => {
   React.useEffect(() => {
     const paymentResponse = async () => {
       try {
-        const result = await PaymentService.paymentResponseQR(API_GET, API_KEY);
+        const result = await PaymentService.paymentResponseQR(
+          import.meta.env.VTTE_API_DONATION_URL,
+          import.meta.env.VITE_API_DONATION_KEY
+        );
+
         let lastRecord = null;
         if (result.records.length > 0) {
           lastRecord = result.records[result.records.length - 1];

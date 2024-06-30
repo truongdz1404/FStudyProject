@@ -11,17 +11,14 @@ import {
   Dialog,
   Radio
 } from "@material-tailwind/react";
-import { usePosts } from "@/hooks/usePosts";
 import { cn } from "@/helpers/utils";
 import { Post } from "@/types/post";
 import { useAuth } from "@/hooks/useAuth";
 import { AxiosError } from "axios";
-import { Topic } from "@/types/topic";
 import TopicService from "@/services/TopicService";
-import "react-toastify/dist/ReactToastify.css";
-import { showErrorToast, showSuccessToast } from "../toast/Toast";
 import PostService from "@/services/PostService";
 import ReportForm from "../report/ReportForm";
+import { showErrorToast, showSuccessToast } from "@/helpers/toast";
 type MenuItemPostProps = {
   post: Post;
 };
@@ -30,16 +27,13 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
   const [openReport, setOpenReport] = React.useState(false);
   const [isSaved, setIsSaved] = React.useState(false);
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-  const [topic, setTopic] = React.useState<Topic>(() => ({} as Topic));
   const [selectedTime, setSelectedTime] = React.useState("1 day");
-  const { setPostData } = usePosts();
-
   const { user } = useAuth();
 
   const switchOpenReport = () => setOpenReport(!openReport);
 
   useEffect(() => {
-    const checkPostByUserExist = async () => {
+    const checkSavedByUser = async () => {
       const isPostExists = await PostService.isSaved(
         `${user?.username}`,
         post.id
@@ -48,25 +42,20 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
         setIsSaved(true);
       }
     };
-    const fetchTopic = async () => {
-      const response = await TopicService.topicByPost(post.id);
-      setTopic(response);
-    };
-    fetchTopic();
-    checkPostByUserExist();
+    checkSavedByUser();
   }, [post.id, user?.username]);
   const handleTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedTime(event.target.value);
   };
-  const locked = () => {
+  const handleBan = () => {
     const topicBan = async () => {
       const [time, action] = selectedTime.split(" ");
       try {
-        const response = await TopicService.ban({
+        const response = await TopicService.banUser({
           username: post.author,
-          topicId: topic.id,
+          topicName: post.topicName,
           action: action,
-          bannerTime: Number(time)
+          time: Number(time)
         });
         showSuccessToast(response.message);
       } catch (e) {
@@ -78,7 +67,7 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
     };
     topicBan();
   };
-  const handleSavedPost = async (post: Post) => {
+  const handleSave = async (post: Post) => {
     try {
       let response;
       if (!isSaved) {
@@ -96,39 +85,24 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
       );
     }
   };
-  const LockedMenuItem = [
-    {
-      value: "1 hour",
-      label: "1 hour"
-    },
-    {
-      value: "1 day",
-      label: "1 day"
-    },
-    {
-      value: "1 month",
-      label: "1 month"
-    },
-    {
-      value: "1 year",
-      label: "1 year"
-    },
-    {
-      value: "1000 forever",
-      label: "Forever"
-    }
+
+  const TimeBanMenu = [
+    { value: "1 hour", label: "1 hour" },
+    { value: "1 day", label: "1 day" },
+    { value: "1 month", label: "1 month" },
+    { value: "1 year", label: "1 year" },
+    { value: "1000 forever", label: "Forever" }
   ];
   const PostMenuItem = [
     {
       icon: Bookmark,
       label: isSaved ? "Remove from saved" : "Save",
-      handle: () => handleSavedPost(post)
+      handle: () => handleSave(post)
     },
     {
       icon: Flag,
       label: "Report",
       handle: () => {
-        setPostData(post);
         switchOpenReport();
       }
     },
@@ -161,7 +135,7 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
                 className={`flex items-center gap-2 rounded  ${
                   isLastItem &&
                   "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
-                  }`}
+                }`}
               >
                 {React.createElement(icon, {
                   className: `h-4 w-4 ${
@@ -189,7 +163,7 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
         open={openReport}
         handler={switchOpenReport}
       >
-        <ReportForm />
+        <ReportForm postId={post.id} topicName={post.topicName} />
       </Dialog>
 
       {openBan && (
@@ -239,14 +213,16 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
                 </div>
                 <div className={cn("flex gap-[2%] mt-[2%]")}>
                   <div className={cn("font-bold text-black")}>Topic:</div>
-                  <div className={cn("font-bold text-black")}>{topic.name}</div>
+                  <div className={cn("font-bold text-black")}>
+                    {post.topicName}
+                  </div>
                 </div>
                 <div>
                   <div>
                     <div className="flex mt-[2%]">
-                      <div className={cn("font-bold text-black")}>Locked:</div>
+                      <div className={cn("font-bold text-black")}>Time:</div>
                       <div className={cn("mt-[-1.4%]")}>
-                        {LockedMenuItem.map(({ value, label }, key) => (
+                        {TimeBanMenu.map(({ value, label }, key) => (
                           <Radio
                             key={key}
                             name="type"
@@ -295,7 +271,7 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
                   "disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                 )}
                 onClick={() => {
-                  setOpenBan(false), locked();
+                  setOpenBan(false), handleBan();
                 }}
               >
                 <LockKeyhole />

@@ -7,7 +7,7 @@ import {
   LIMIT_SCROLLING_PAGNATION_RESULT,
   SessionStorageKey
 } from "@/helpers/constants";
-import PostFilter from "@/components/filter/PostFilter";
+import PostFilter from "@/components/post/PostFilter";
 import React from "react";
 import NullLayout from "@/components/layout/NullLayout";
 import { Spinner } from "@material-tailwind/react";
@@ -44,7 +44,7 @@ const HomePage: React.FC = () => {
 
   const posts = data?.pages.flatMap(p => p) ?? [];
   if (isPending) return <Spinner className="mx-auto" />;
-  
+
   return (
     <ContentLayout>
       <div className="relative flex text-left z-20">

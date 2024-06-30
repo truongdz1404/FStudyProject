@@ -8,9 +8,16 @@ import Paragraph from "@tiptap/extension-paragraph";
 import Text from "@tiptap/extension-text";
 import Bold from "@tiptap/extension-bold";
 import Placeholder from "@tiptap/extension-placeholder";
-import parse from "html-react-parser";
+import parse, {
+  DOMNode,
+  Element,
+  HTMLReactParserOptions,
+  attributesToProps,
+  domToReact
+} from "html-react-parser";
 import Code from "@tiptap/extension-code";
 import { cn } from "@/helpers/utils";
+import TruncateMarkup from "react-truncate-markup";
 
 interface Props {
   className?: string;
@@ -18,27 +25,51 @@ interface Props {
   hide: boolean;
 }
 
+const options: HTMLReactParserOptions = {
+  replace: domNode => {
+    const { attribs, name, children } = domNode as Element;
+
+    if (attribs && name === "p") {
+      return (
+        <span {...attributesToProps(attribs)}>
+          {" "}
+          {children && domToReact(children as DOMNode[], options)}
+        </span>
+      );
+    }
+
+    return false;
+  }
+};
+
 const EditorOutput: FC<Props> = ({ content, className, hide }) => {
+  const parseContent = (content: string, options?: HTMLReactParserOptions) => {
+    return parse(
+      generateHTML(JSON.parse(content) as JSONContent, [
+        Document,
+        Dropcursor,
+        Image,
+        Paragraph.configure({
+          HTMLAttributes: { className: "break-words" }
+        }),
+        Text,
+        Bold,
+        Placeholder,
+        Code
+      ]),
+      options
+    );
+  };
   return (
-    <div className={cn(className, hide && "max-h-16 overflow-hidden relative")}>
-      <div className={cn("text-sm w-full")}>
-        {parse(
-          generateHTML(JSON.parse(content) as JSONContent, [
-            Document,
-            Dropcursor,
-            Image,
-            Paragraph.configure({
-              HTMLAttributes: { className: "break-words" }
-            }),
-            Text,
-            Bold,
-            Placeholder,
-            Code
-          ])
-        )}
-      </div>
-      {hide && (
-        <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-white/50 to-transparent" />
+    <div className={cn(className)}>
+      {hide ? (
+        <TruncateMarkup lines={4}>
+          <div className={cn("text-sm w-full")}>
+            {parseContent(content, options)}
+          </div>
+        </TruncateMarkup>
+      ) : (
+        <div className={cn("text-sm w-full")}>{parseContent(content)}</div>
       )}
     </div>
   );

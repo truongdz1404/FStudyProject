@@ -13,15 +13,15 @@ namespace FStudyForum.Infrastructure.Services
     {
         private readonly ICommentRepository _commentRepository;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IUserService _userService;
         private readonly IVoteRepository _voteRepository;
 
-        public CommentService(ICommentRepository commentRepository, UserManager<ApplicationUser> userManager,
-        IUserService userService, IVoteRepository voteRepository)
+        public CommentService(
+            ICommentRepository commentRepository,
+            UserManager<ApplicationUser> userManager,
+            IVoteRepository voteRepository)
         {
             _commentRepository = commentRepository;
             _userManager = userManager;
-            _userService = userService;
             _voteRepository = voteRepository;
         }
 
@@ -81,7 +81,7 @@ namespace FStudyForum.Infrastructure.Services
         private async Task<CommentDTO> MapToCommentDTO(Comment comment)
         {
             if (comment.Creater.UserName == null)
-                throw new ArgumentNullException("Author not found");
+                throw new Exception("Author not found");
             return new CommentDTO
             {
                 Id = comment.Id,
@@ -89,6 +89,7 @@ namespace FStudyForum.Infrastructure.Services
                 IsDeleted = comment.IsDeleted,
                 Author = comment.Creater.UserName,
                 Avatar = comment.Creater.Profile?.Avatar,
+                TopicName = comment.Post.Topic.Name,
                 PostId = comment.Post.Id,
                 AttachmentId = comment.Attachment?.Id,
                 ReplyId = comment.ReplyTo?.Id,

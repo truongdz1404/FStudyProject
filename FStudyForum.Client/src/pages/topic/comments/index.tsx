@@ -1,6 +1,6 @@
 import { FC, useState, useEffect } from "react";
 import { AxiosError } from "axios";
-import { useParams, useLocation, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { Alert } from "@material-tailwind/react";
 import PostService from "@/services/PostService";
@@ -16,21 +16,29 @@ interface Props {}
 
 const Comments: FC<Props> = () => {
   const navigate = useNavigate();
-  const { name: topicName, id: postId } = useParams<{ name: string; id: string }>();
-  const { state } = useLocation();
-  const [post, setPost] = useState<Post | undefined>(state?.data);
+  const { name: topicName, id: postId } = useParams<{
+    name: string;
+    id: string;
+  }>();
+  const [post, setPost] = useState<Post | undefined>();
   const [comments, setComments] = useState<Comment[]>([]);
   const [replyToCommentId, setReplyToCommentId] = useState<number | null>(null);
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-  const [expandedComments, setExpandedComments] = useState<{ [key: number]: boolean }>({});
+  const [expandedComments, setExpandedComments] = useState<{
+    [key: number]: boolean;
+  }>({});
 
-  const initializeExpandedComments = (comments: Comment[], number: number = 3) => {
+  const initializeExpandedComments = (
+    comments: Comment[],
+    number: number = 3
+  ) => {
     const expanded: { [key: number]: boolean } = {};
     const traverseComments = (commentList: Comment[]) => {
       commentList.forEach(comment => {
-        expanded[comment.id] = !comment.replies || comment.replies.length < number;
+        expanded[comment.id] =
+          !comment.replies || comment.replies.length < number;
         if (comment.replies) {
           traverseComments(comment.replies);
         }
@@ -101,14 +109,10 @@ const Comments: FC<Props> = () => {
   };
 
   const handleBack = () => {
-    if (state?.from) {
-      navigate(-1);
-    } else {
-      navigate(`/topic/${topicName}`);
-    }
+    navigate(-1);
   };
 
-  const handleDeleteComment = async (id: string ) => {
+  const handleDeleteComment = async (id: string) => {
     try {
       await CommentService.deleteComment(id);
       setComments(prevComments => removeCommentById(prevComments, Number(id)));
@@ -123,7 +127,7 @@ const Comments: FC<Props> = () => {
       .filter(comment => comment.id !== id)
       .map(comment => ({
         ...comment,
-        replies: removeCommentById(comment.replies || [], id),
+        replies: removeCommentById(comment.replies || [], id)
       }));
   };
 
@@ -135,7 +139,9 @@ const Comments: FC<Props> = () => {
         content
       } as CreateComment);
 
-      const updatedComment = await CommentService.getCommentById(newCommentData.id.toString());
+      const updatedComment = await CommentService.getCommentById(
+        newCommentData.id.toString()
+      );
       setComments([...comments, updatedComment]);
     } catch (e) {
       const error = e as AxiosError;
@@ -172,7 +178,9 @@ const Comments: FC<Props> = () => {
       } as CreateComment);
 
       // Fetch the updated reply to get complete data
-      const updatedReply = await CommentService.getCommentById(newReplyData.id.toString());
+      const updatedReply = await CommentService.getCommentById(
+        newReplyData.id.toString()
+      );
       const updatedComments = addReplyToComments(
         comments,
         updatedReply,
@@ -180,7 +188,7 @@ const Comments: FC<Props> = () => {
       );
       setComments(updatedComments);
       setReplyToCommentId(null);
-      initializeExpandedComments(updatedComments, 100)
+      initializeExpandedComments(updatedComments, 100);
     } catch (e) {
       const error = e as AxiosError;
       setError((error?.response?.data as Response)?.message || error.message);
@@ -195,7 +203,10 @@ const Comments: FC<Props> = () => {
     setEditingCommentId(commentId);
   };
 
-  const handleSaveEditedComment = async (commentId: number, content: string) => {
+  const handleSaveEditedComment = async (
+    commentId: number,
+    content: string
+  ) => {
     try {
       await CommentService.updateComment(commentId.toString(), { content });
       setComments(prevComments =>
@@ -208,7 +219,11 @@ const Comments: FC<Props> = () => {
     }
   };
 
-  const updateCommentInTree = (comments: Comment[], commentId: number, content: string): Comment[] => {
+  const updateCommentInTree = (
+    comments: Comment[],
+    commentId: number,
+    content: string
+  ): Comment[] => {
     return comments.map(comment => {
       if (comment.id === commentId) {
         return { ...comment, content };

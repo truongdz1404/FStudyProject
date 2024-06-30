@@ -240,7 +240,7 @@ const Header = React.memo(({ openSidebar }: HeaderProps) => {
               <span className="my-auto truncate">t/{topic.name}</span>
               <button
                 type="button"
-                className=" bg-blue-gray-900/50 rounded-full p-1 my-auto"
+                className=" bg-blue-gray-900/80 rounded-full p-1 my-auto"
                 onClick={() => setTopic(undefined)}
               >
                 <X className="w-3 h-3 text-white" strokeWidth={3} />

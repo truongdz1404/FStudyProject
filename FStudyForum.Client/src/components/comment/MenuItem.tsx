@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Ban, Ellipsis, Flag, LockKeyhole, Edit, Trash } from "lucide-react";
 import {
   Button,
@@ -14,11 +14,8 @@ import { Comment } from "@/types/comment";
 import { useAuth } from "@/hooks/useAuth";
 import { Response } from "@/types/response";
 import { AxiosError } from "axios";
-import { Topic } from "@/types/topic";
 import TopicService from "@/services/TopicService";
-// import CommentService from "@/services/CommentService";
-import "react-toastify/dist/ReactToastify.css";
-import { showErrorToast, showSuccessToast } from "../toast/Toast";
+import { showErrorToast, showSuccessToast } from "@/helpers/toast";
 
 type MenuItemCommentProps = {
   comment: Comment;
@@ -33,32 +30,23 @@ const MenuItemComment: React.FC<MenuItemCommentProps> = ({
 }) => {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-  const [topic, setTopic] = React.useState<Topic>(() => ({} as Topic));
   const [selectedTime, setSelectedTime] = React.useState("1 day");
 
   const { user } = useAuth();
-
-  useEffect(() => {
-    const fetchTopic = async () => {
-      const response = await TopicService.topicByPost(comment.postId);
-      setTopic(response);
-    };
-    fetchTopic();
-  }, [comment.postId, user?.username]);
 
   const handleTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedTime(event.target.value);
   };
 
-  const locked = () => {
+  const handleBan = () => {
     const topicBan = async () => {
       const [time, action] = selectedTime.split(" ");
       try {
-        const response = await TopicService.ban({
+        const response = await TopicService.banUser({
           username: comment.author,
-          topicId: topic.id,
+          topicName: comment.topicName,
           action: action,
-          bannerTime: Number(time)
+          time: Number(time)
         });
         showSuccessToast(response.message);
       } catch (e) {
@@ -70,7 +58,7 @@ const MenuItemComment: React.FC<MenuItemCommentProps> = ({
     };
     topicBan();
   };
-  const LockedMenuItem = [
+  const TimeBanMenu = [
     { value: "1 hour", label: "1 hour" },
     { value: "1 day", label: "1 day" },
     { value: "1 month", label: "1 month" },
@@ -186,14 +174,16 @@ const MenuItemComment: React.FC<MenuItemCommentProps> = ({
                 </div>
                 <div className={cn("flex gap-[2%] mt-[2%]")}>
                   <div className={cn("font-bold text-black")}>Topic:</div>
-                  <div className={cn("font-bold text-black")}>{topic.name}</div>
+                  <div className={cn("font-bold text-black")}>
+                    {comment.topicName}
+                  </div>
                 </div>
                 <div>
                   <div>
                     <div className="flex mt-[2%]">
-                      <div className={cn("font-bold text-black")}>Locked:</div>
+                      <div className={cn("font-bold text-black")}>Time:</div>
                       <div className={cn("mt-[-1.4%]")}>
-                        {LockedMenuItem.map(({ value, label }, key) => (
+                        {TimeBanMenu.map(({ value, label }, key) => (
                           <Radio
                             key={key}
                             name="type"
@@ -242,7 +232,7 @@ const MenuItemComment: React.FC<MenuItemCommentProps> = ({
                   "disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                 )}
                 onClick={() => {
-                  setIsModalOpen(false), locked();
+                  setIsModalOpen(false), handleBan();
                 }}
               >
                 <LockKeyhole />

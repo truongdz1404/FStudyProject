@@ -2,7 +2,6 @@
 using FStudyForum.Core.Interfaces.IRepositories;
 using FStudyForum.Core.Interfaces.IServices;
 using FStudyForum.Core.Models.DTOs.Topic;
-using FStudyForum.Core.Models.DTOs.TopicBan;
 using FStudyForum.Core.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 namespace FStudyForum.Infrastructure.Services;
@@ -146,56 +145,43 @@ public class TopicService : ITopicService
         }
         return topicDTOs;
     }
-    
 
-
-    public async Task<TopicBanDTO> LockUser(TopicBanDTO lockUserDTO)
+    public async Task<TopicBanDTO> BanUser(CreateTopicBanDTO topicBan)
     {
-        var bannedTime = lockUserDTO.Action switch
-        {
-            "hour" => DateTime.Now.AddHours(lockUserDTO.BannerTime),
-            "day" => DateTime.Now.AddDays(lockUserDTO.BannerTime),
-            "month" => DateTime.Now.AddMonths(lockUserDTO.BannerTime),
-            "year" => DateTime.Now.AddYears(lockUserDTO.BannerTime),
-            "forever" => DateTime.Now.AddYears(lockUserDTO.BannerTime),
-            _ => throw new ArgumentException("Invalid banned time"),
-        };
-        var userExist = await _topicRepository.GetUserLocked(lockUserDTO);
-        if (userExist != null)
-        {
-            userExist.BannedTime = bannedTime;
-            await _topicRepository.UpdateTopicBan(userExist);
-            return lockUserDTO;
-        }
-        var user = await _userManager.FindByNameAsync(lockUserDTO.UserName)
-                 ?? throw new Exception("User not found");
-        var topic = await _topicRepository.GetById(lockUserDTO.TopicId)
+        var user = await _userManager.FindByNameAsync(topicBan.UserName)
+            ?? throw new Exception("User not found");
+        var topic = await _topicRepository.GetByName(topicBan.TopicName)
             ?? throw new Exception("Topic not found");
-
-        await _topicRepository.LockUser(new TopicBan
+        var bannedTime = DateTime.Now.AddHours(topicBan.Time);
+        var existedTopicBan = await _topicRepository.GetTopBan(topicBan.UserName, topicBan.TopicName);
+        if (existedTopicBan != null)
+        {
+            existedTopicBan.BannedTime = bannedTime;
+            await _topicRepository.UpdateTopicBan(existedTopicBan);
+            return new() { BannedTime = bannedTime };
+        }
+        await _topicRepository.BanUser(new TopicBan
         {
             Topic = topic,
             User = user,
             BannedTime = bannedTime,
         });
-        return lockUserDTO;
+        return new() { BannedTime = bannedTime };
+
     }
 
-    public async Task<TopicBanDTO> UnlockUser(TopicBanDTO lockUserDTO)
+    public async Task UnbanUser(string username, string topic)
     {
-        var topicBan = await _topicRepository.GetUserLocked(lockUserDTO)
-            ?? throw new Exception("Topic Ban not found");
-        await _topicRepository.UnlockUser(topicBan);
-        return lockUserDTO;
+        var topicBan = await _topicRepository.GetTopBan(username, topic)
+            ?? throw new Exception("User is not banned");
+        await _topicRepository.UnbanUser(topicBan);
     }
-    public async Task<DateTimeOffset?> GetUnlockTime(TopicBanDTO lockUserDTO)
+    public async Task<TopicBanDTO> CheckBannedUser(string username, string topicName)
     {
-        return await _topicRepository.GetUnlockTime(lockUserDTO);
-    }
+        var topicBan = await _topicRepository.GetTopBan(username, topicName)
+            ?? throw new Exception("User is not banned");
+        return new() { BannedTime = topicBan.BannedTime };
 
-    public async Task<bool> IsUserLocked(TopicBanDTO lockUserDTO)
-    {
-        return await _topicRepository.GetUserLocked(lockUserDTO) != null;
     }
     public async Task<IEnumerable<TopicDTO>> Search(string value, int size)
     {

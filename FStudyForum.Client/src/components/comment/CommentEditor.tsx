@@ -9,7 +9,7 @@ interface CommentInputProps {
   onCancel: () => void;
 }
 
-const CommentInput: FC<CommentInputProps> = ({ commentId, content, onSave, onCancel }) => {
+const CommentEditor: FC<CommentInputProps> = ({ commentId, content, onSave, onCancel }) => {
   const [newContent, setNewContent] = useState<string>(content);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -55,4 +55,4 @@ const CommentInput: FC<CommentInputProps> = ({ commentId, content, onSave, onCan
   );
 };
 
-export default CommentInput;
+export default CommentEditor;

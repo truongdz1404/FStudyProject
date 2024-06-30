@@ -3,7 +3,6 @@ using FStudyForum.Core.Interfaces.IServices;
 using FStudyForum.Core.Models.DTOs;
 using FStudyForum.Core.Models.DTOs.Vote;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FStudyForum.API.Controllers
@@ -18,7 +17,7 @@ namespace FStudyForum.API.Controllers
             _voteService = voteService;
         }
 
-        [HttpPost("post"), Authorize]
+        [HttpPatch("post"), Authorize]
         public async Task<IActionResult> VotePost(VoteDTO voteDTO)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -43,7 +42,7 @@ namespace FStudyForum.API.Controllers
             }
 
         }
-        [HttpPost("comment"), Authorize]
+        [HttpPatch("comment"), Authorize]
         public async Task<IActionResult> VoteComment(VoteCommentDTO voteDTO)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);

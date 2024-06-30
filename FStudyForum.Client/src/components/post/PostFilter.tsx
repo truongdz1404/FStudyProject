@@ -4,21 +4,14 @@ import useOutsideClick from "@/hooks/useOutsideClick";
 import { ChevronUp } from "lucide-react";
 import React from "react";
 
-interface FilterComponentProps {
+interface Props {
   setFilter: (filter: string) => void;
   filter: string;
 }
 
-const PostFilter: React.FC<FilterComponentProps> = ({ setFilter, filter }) => {
+const PostFilter: React.FC<Props> = ({ setFilter, filter }) => {
   const [isOpen, setIsOpen] = React.useState(false);
-  const filterMenu = [
-    {
-      name: "New"
-    },
-    {
-      name: "Hot"
-    }
-  ];
+  const filterMenu = [{ name: "New" }, { name: "Hot" }];
   const ref = useOutsideClick(() => setIsOpen(false));
   return (
     <div ref={ref} className="border-b w-full pb-2 pl-2">

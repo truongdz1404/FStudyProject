@@ -1,6 +1,5 @@
-using FStudyForum.Core.Models.DTOs.TopicBan;
+using FStudyForum.Core.Models.DTOs.Topic;
 using FStudyForum.Core.Models.Entities;
-using Microsoft.AspNetCore.Mvc;
 
 namespace FStudyForum.Core.Interfaces.IRepositories;
 
@@ -11,10 +10,10 @@ public interface ITopicRepository : IBaseRepository<Topic>
     public Task<Topic?> GetByName(string name);
     public Task<bool> TopicExists(string topicName);
     public Task<IEnumerable<Topic>> SearchTopicContainKeywordAsync(string keyword);
-    public Task<TopicBan> LockUser(TopicBan lockUser);
-    public Task<TopicBan> UnlockUser(TopicBan lockUser);
-    public Task<TopicBan?> GetUserLocked(TopicBanDTO lockUser);
-    public Task<DateTimeOffset?> GetUnlockTime(TopicBanDTO lockUser);
+    public Task<TopicBan> BanUser(TopicBan topicBan);
+    public Task<TopicBan> UnbanUser(TopicBan topicBan);
+    public Task<TopicBan?> GetTopBan(string username, string topic);
+    public Task<DateTimeOffset?> GetUnlockTime(CreateTopicBanDTO lockUser);
     public Task UpdateTopicBan(TopicBan topicBan);
     public Task<Topic?> GetTopicByPost(int postId);
 }

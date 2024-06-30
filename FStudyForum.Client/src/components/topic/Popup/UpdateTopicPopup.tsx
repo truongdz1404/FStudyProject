@@ -3,7 +3,7 @@ import { Button } from "@material-tailwind/react";
 import { useForm } from "react-hook-form";
 import TopicService from "@/services/TopicService";
 import CategoryService from "@/services/CategoryService";
-import { UpdateTopicDTO, Topic as TopicType } from "@/types/topic";
+import { UpdateTopic, Topic as TopicType } from "@/types/topic";
 import { Category } from "@/types/category";
 
 interface UpdateTopicPopupProps {
@@ -25,25 +25,26 @@ const UpdateTopicPopup: React.FC<UpdateTopicPopupProps> = ({
   open,
   topic,
   onClose,
-  onUpdate,
+  onUpdate
 }) => {
-  const { register, handleSubmit, setValue, watch } = useForm<UpdateTopicFormInputs>({
-    defaultValues: {
-      topicName: topic.name,
-      description: topic.description,
-      avatar: topic.avatar,
-      banner: topic.banner,
-      categories: topic.categories.map(String),
-    },
-  });
+  const { register, handleSubmit, setValue, watch } =
+    useForm<UpdateTopicFormInputs>({
+      defaultValues: {
+        topicName: topic.name,
+        description: topic.description,
+        avatar: topic.avatar,
+        banner: topic.banner,
+        categories: topic.categories.map(String)
+      }
+    });
 
-  const [categories, setCategories] = useState<Category[]>([]); 
-  const [activeStep, setActiveStep] = useState(1); 
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [activeStep, setActiveStep] = useState(1);
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const fetchedCategories = await CategoryService.getAllCategory(); 
+        const fetchedCategories = await CategoryService.getAllCategory();
         setCategories(fetchedCategories);
       } catch (error) {
         console.error("Error fetching categories:", error);
@@ -54,21 +55,21 @@ const UpdateTopicPopup: React.FC<UpdateTopicPopupProps> = ({
   }, []);
 
   const handleNext = () => {
-    setActiveStep((prevStep) => prevStep + 1);
+    setActiveStep(prevStep => prevStep + 1);
   };
 
   const handleBack = () => {
-    setActiveStep((prevStep) => prevStep - 1);
+    setActiveStep(prevStep => prevStep - 1);
   };
 
   const onSubmit = async (data: UpdateTopicFormInputs) => {
     try {
-      const updatedTopic: UpdateTopicDTO = {
+      const updatedTopic: UpdateTopic = {
         name: data.topicName,
         description: data.description,
         avatar: data.avatar,
         banner: data.banner,
-        categories: data.categories.map(Number),
+        categories: data.categories.map(Number)
       };
 
       await TopicService.update(topic.name, updatedTopic);
@@ -126,8 +127,8 @@ const UpdateTopicPopup: React.FC<UpdateTopicPopupProps> = ({
                     required: "Topic name is required",
                     maxLength: {
                       value: 50,
-                      message: "Topic name must be no more than 50 characters",
-                    },
+                      message: "Topic name must be no more than 50 characters"
+                    }
                   })}
                   className="border border-gray-300 rounded px-2 py-1 w-full"
                 />
@@ -139,7 +140,7 @@ const UpdateTopicPopup: React.FC<UpdateTopicPopupProps> = ({
                 <textarea
                   id="description"
                   {...register("description", {
-                    required: "Description is required",
+                    required: "Description is required"
                   })}
                   className="border border-gray-300 rounded px-2 py-1 w-full h-24 resize-none"
                 ></textarea>
@@ -194,10 +195,14 @@ const UpdateTopicPopup: React.FC<UpdateTopicPopupProps> = ({
                   Categories:
                 </label>
                 <div className="grid grid-cols-3 gap-4">
-                  {categories.map((category) => (
+                  {categories.map(category => (
                     <Button
                       key={category.id}
-                      color={watch("categories").includes(String(category.id)) ? "black" : "white"}
+                      color={
+                        watch("categories").includes(String(category.id))
+                          ? "black"
+                          : "white"
+                      }
                       onClick={() => {
                         const selectedCategories = [...watch("categories")];
                         const categoryIndex = selectedCategories.indexOf(
@@ -211,7 +216,9 @@ const UpdateTopicPopup: React.FC<UpdateTopicPopupProps> = ({
                         setValue("categories", selectedCategories);
                       }}
                       className={`rounded-full border border-black px-2 py-1 ${
-                        watch("categories").includes(String(category.id)) ? "text-white" : "text-black"
+                        watch("categories").includes(String(category.id))
+                          ? "text-white"
+                          : "text-black"
                       }`}
                     >
                       {category.name}

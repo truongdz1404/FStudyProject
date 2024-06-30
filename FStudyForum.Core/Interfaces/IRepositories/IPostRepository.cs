@@ -1,6 +1,6 @@
 
 using FStudyForum.Core.Models.DTOs.Post;
-using FStudyForum.Core.Models.DTOs.SavePost;
+using FStudyForum.Core.Models.DTOs.Topic;
 using FStudyForum.Core.Models.Entities;
 
 namespace FStudyForum.Core.Interfaces.IRepositories;

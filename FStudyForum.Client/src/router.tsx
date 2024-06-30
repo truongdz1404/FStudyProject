@@ -10,7 +10,6 @@ import RoleBasedGuard from "@/helpers/guards/RoleBasedGuard";
 import Donate from "./pages/donate";
 import Notification from "./pages/donate/notification";
 import SavePost from "./pages/profile/save";
-import { PostProvider } from "./contexts/posts/PostContext";
 import { ROLE } from "@/helpers/constants";
 import Loadable from "./helpers/loading/Loadable";
 
@@ -53,9 +52,7 @@ const Router: FC = () => {
       element: (
         <AuthGuard>
           <WelcomeGuard>
-            <PostProvider>
-              <Layout />
-            </PostProvider>
+            <Layout />
           </WelcomeGuard>
         </AuthGuard>
       ),

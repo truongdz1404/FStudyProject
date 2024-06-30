@@ -4,7 +4,6 @@ using FStudyForum.Core.Models.Entities;
 using FStudyForum.Core.Models.DTOs.Topic;
 using FStudyForum.Core.Models.DTOs;
 using FStudyForum.Core.Models.DTOs.Post;
-using FStudyForum.Core.Models.DTOs.SavePost;
 using FStudyForum.Core.Models.DTOs.Donation;
 using FStudyForum.Core.Models.DTOs.Category;
 using FStudyForum.Core.Models.DTOs.Report;
@@ -27,12 +26,12 @@ public class MapperProfile : AutoMapper.Profile
 
         // Post Mapper
         CreateMap<PostDTO, Post>().ReverseMap();
-        
+
         // Report Mapper
         CreateMap<Report, ReportDTO>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type))
-            .ForMember(dest => dest.Content, opt => opt.MapFrom(src => 
+            .ForMember(dest => dest.Content, opt => opt.MapFrom(src =>
                 JsonConvert.DeserializeObject<ReportContent>(src.Content) ?? new ReportContent()))
             .ForMember(dest => dest.ResponseContent, opt => opt.MapFrom(src => src.ResponseContent))
             .ForMember(dest => dest.Creater, opt => opt.MapFrom(src => src.Creater.Email));
@@ -40,7 +39,7 @@ public class MapperProfile : AutoMapper.Profile
         CreateMap<ReportDTO, Report>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type))
-            .ForMember(dest => dest.Content, opt => opt.MapFrom(src => 
+            .ForMember(dest => dest.Content, opt => opt.MapFrom(src =>
                 JsonConvert.SerializeObject(src.Content) ?? string.Empty))
             .ForMember(dest => dest.ResponseContent, opt => opt.MapFrom(src => src.ResponseContent))
             .ForMember(dest => dest.Creater, opt => opt.MapFrom<ReportResolver>());

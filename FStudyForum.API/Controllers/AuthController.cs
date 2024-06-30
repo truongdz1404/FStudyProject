@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using FStudyForum.Core.Helpers;
 using Microsoft.AspNetCore.Authentication;
-using FStudyForum.Core.Models.DTOs.LockUser;
+using FStudyForum.Core.Models.DTOs.Topic;
 
 namespace FStudyForum.API.Controllers;
 

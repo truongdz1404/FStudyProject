@@ -1,5 +1,5 @@
 ﻿
-namespace FStudyForum.Core.Models.DTOs.SavePost
+namespace FStudyForum.Core.Models.DTOs.Topic
 {
     public class SavePostDTO
     {

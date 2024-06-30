@@ -1,6 +1,6 @@
 using FStudyForum.Core.Models.DTOs;
 using FStudyForum.Core.Models.DTOs.Post;
-using FStudyForum.Core.Models.DTOs.SavePost;
+using FStudyForum.Core.Models.DTOs.Topic;
 
 namespace FStudyForum.Core.Interfaces.IServices
 {

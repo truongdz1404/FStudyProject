@@ -1,11 +1,12 @@
 ﻿using System.Security.Claims;
 using FStudyForum.Core.Interfaces.IServices;
 using FStudyForum.Core.Models.DTOs;
-using FStudyForum.Core.Models.DTOs.SavePost;
 using FStudyForum.Core.Models.DTOs.Post;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using FStudyForum.Core.Models.DTOs.Topic;
+
 using System.Net;
 
 namespace FStudyForum.API.Controllers

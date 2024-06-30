@@ -1,8 +1,9 @@
-
 export interface Comment {
   id: number;
   postId: number;
   replyId: number;
+  topicName: string;
+  attachmentId: number;
   content: string;
   author: string;
   voteType: number;
@@ -10,8 +11,7 @@ export interface Comment {
   avatar: string;
   elapsed: string;
   updatedAt: string;
-  replies?: Comment[]; 
-  
+  replies?: Comment[];
 }
 
 export interface CreateComment {

@@ -1,9 +1,9 @@
 using FStudyForum.Core.Models.DTOs.Auth;
-using FStudyForum.Core.Models.DTOs.LockUser;
 using FStudyForum.Core.Models.DTOs;
 using FStudyForum.Core.Models.DTOs.Token;
 using FStudyForum.Core.Models.DTOs.User;
 using Microsoft.AspNetCore.Identity;
+using FStudyForum.Core.Models.DTOs.Topic;
 namespace FStudyForum.Core.Interfaces.IServices;
 
 public interface IUserService
@@ -27,6 +27,5 @@ public interface IUserService
     Task<bool> IsUserLocked(string userName);
     Task<DateTimeOffset?> GetUnlockTime(string userName);
 
-    // Task<string?> GetUserAvatar(string userName);
 
 }

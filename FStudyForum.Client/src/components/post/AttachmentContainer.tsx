@@ -42,15 +42,14 @@ const getContainerHeight = (
   );
 };
 
-const FileContainer: FC<Props> = ({ files, onClick }) => {
+const AttachmentContainer: FC<Props> = ({ files, onClick }) => {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [open, setOpen] = React.useState(-1);
   const [width] = useSize(containerRef);
   const [height, setHeight] = React.useState(0);
 
   React.useEffect(() => {
-    if (containerRef && width !== 0)
-      setHeight(getContainerHeight(files, width));
+    setHeight(getContainerHeight(files, width));
   }, [files, width]);
 
   const handleViewDetail = (index?: number, id?: number) => {
@@ -59,7 +58,7 @@ const FileContainer: FC<Props> = ({ files, onClick }) => {
   };
   if (files.length == 0) return null;
   return (
-    <div className="action" ref={containerRef}>
+    <div className="action w-full z-0" ref={containerRef}>
       {files.length == 1 ? (
         <div
           style={{ height: height }}
@@ -160,4 +159,4 @@ const FileContainer: FC<Props> = ({ files, onClick }) => {
   );
 };
 
-export default FileContainer;
+export default AttachmentContainer;

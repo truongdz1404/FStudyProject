@@ -9,7 +9,7 @@ import {
 import { Comment } from "@/types/comment";
 import ReplyInput from "@/components/comment/ReplyInput";
 import MenuItemComment from "@/components/comment/MenuItem";
-import CommentUpdate from "@/components/comment/CommentUpdate";
+import CommentEditor from "@/components/comment/CommentEditor";
 import Default from "@/assets/images/user.png";
 import { cn, formatElapsedTime } from "@/helpers/utils";
 import { Link } from "react-router-dom";
@@ -47,22 +47,12 @@ const CommentItem: FC<CommentItemProps> = ({
   const [voteType, setVoteType] = React.useState(comment.voteType);
   const [voteCount, setVoteCount] = React.useState(comment.voteCount);
 
-  React.useEffect(() => {
-    setVoteType(comment.voteType);
-    setVoteCount(comment.voteCount);
-  }, [comment]);
-
   const handleVote = async (type: number) => {
     const realType = voteType === type ? VOTE_TYPE.UNVOTE : type;
     setVoteType(realType);
-    setVoteCount(
-      prevCount =>
-        prevCount +
-        (realType === VOTE_TYPE.UP ? 1 : realType === VOTE_TYPE.DOWN ? -1 : 0)
-    );
+    setVoteCount(comment.voteCount - comment.voteType + realType);
     try {
-      const count = await VoteService.voteComment(comment.id, realType);
-      setVoteCount(count);
+      await VoteService.voteComment(comment.id, realType);
     } catch (error) {
       setVoteType(voteType);
       setVoteCount(comment.voteCount);
@@ -85,7 +75,7 @@ const CommentItem: FC<CommentItemProps> = ({
           >
             <Link
               to={`/profile/${comment.author}`}
-              className="action text-xs font-bold hidden lg:block"
+              className="action text-xs font-bold"
             >
               {`${comment.author}`}
             </Link>
@@ -96,7 +86,7 @@ const CommentItem: FC<CommentItemProps> = ({
           </div>
 
           {editingCommentId === comment.id ? (
-            <CommentUpdate
+            <CommentEditor
               commentId={comment.id}
               content={comment.content}
               onSave={handleSaveEditedComment}

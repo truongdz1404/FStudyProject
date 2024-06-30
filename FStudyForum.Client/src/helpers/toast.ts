@@ -1,9 +1,6 @@
-import React from "react";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import "@/assets/styles/toast/custom-toast.css";
+import { toast } from "react-toastify";
 
-const showSuccessToast = (message: string) => {
+export const showSuccessToast = (message: string) => {
   toast.success(message, {
     position: "bottom-center",
     autoClose: 2000,
@@ -15,7 +12,7 @@ const showSuccessToast = (message: string) => {
     bodyClassName: "custom-toast-body"
   });
 };
-const showErrorToast = (message: string) => {
+export const showErrorToast = (message: string) => {
   toast.error(message, {
     position: "bottom-center",
     autoClose: 2000,
@@ -27,8 +24,3 @@ const showErrorToast = (message: string) => {
     bodyClassName: "custom-toast-body"
   });
 };
-
-const CustomToast: React.FC = () => <ToastContainer />;
-
-// eslint-disable-next-line react-refresh/only-export-components
-export { CustomToast, showSuccessToast, showErrorToast };

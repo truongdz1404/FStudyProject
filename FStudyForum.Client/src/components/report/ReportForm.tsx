@@ -5,7 +5,7 @@ import {
   DialogBody,
   DialogHeader
 } from "@material-tailwind/react";
-import { useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 
 import * as Yup from "yup";
@@ -16,9 +16,7 @@ import { CircleAlert } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { AxiosError } from "axios";
 import { useMutation } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
 import { Response } from "@/types/response";
-import { usePosts } from "@/hooks/usePosts";
 type ReportForm = {
   type: string;
   content?: string;
@@ -29,13 +27,16 @@ const validation = Yup.object().shape({
   content: Yup.string()
 });
 
-const ReportForm = () => {
+type Props = {
+  postId: number;
+  topicName: string;
+};
+
+const ReportForm: FC<Props> = ({ postId, topicName }) => {
   const [report, setReport] = useState<string[]>([]);
   const [selectedReport, setSelectedReport] = useState<string>();
   const { user } = useAuth();
-  const navigate = useNavigate();
   const [error, setError] = useState("");
-  const { postData } = usePosts();
   const [submitted, setSubmitted] = useState(false);
   const {
     register,
@@ -62,19 +63,17 @@ const ReportForm = () => {
 
   const { mutate: handleReport, isPending: pending } = useMutation({
     mutationFn: async (form: ReportForm) => {
-      if (!user) navigate("/auth/signin");
       const payload = {
         type: form.type,
         content: {
-          Content: form.content || "",
-          ReportedPostId: postData?.id ?? -1,
-          ReportedTopicname: postData?.topicName ?? "",
-          ReportedUsername: postData?.author ?? ""
+          Content: form.content,
+          ReportedPostId: postId,
+          ReportedTopicname: topicName,
+          ReportedUsername: user?.username ?? ""
         },
         creater: user?.email ?? ""
       };
-      console.log(payload);
-      await ReportService.SendReport(payload);
+      await ReportService.sendReport(payload);
     },
     onSuccess: async () => {
       setSubmitted(true);

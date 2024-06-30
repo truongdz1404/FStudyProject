@@ -1,6 +1,6 @@
-import { Button, Card } from "@material-tailwind/react";
-import { Link, useLocation } from "react-router-dom";
-import Thumbnail from "@/assets/images/check.png";
+// import { Button, Card } from "@material-tailwind/react";
+import { useLocation } from "react-router-dom";
+import Success from "@/assets/images/check.png";
 import Error from "@/assets/images/close.png";
 import { cn } from "@/helpers/utils";
 
@@ -17,14 +17,13 @@ const Notification = () => {
     <>
       <div>
         {donate !== null && donate !== undefined ? (
-          <div>
-            <img src={Thumbnail} alt="payment" className="w-[20%] ml-[55%]" />
-            <div className={cn("font-bold", "ml-[50%]", "mt-[5%]")}>
+          <div className="flex flex-col">
+            <img src={Success} alt="payment" className="w-20 mx-auto" />
+            <div className={cn("font-bold", "mx-auto", "mt-5")}>
               Thank You Very Much!
             </div>
-            <div className={cn("ml-[35%]")}>
-              You have just successfully amount:{" "}
-              {formatToVND(donate.amount)}
+            <div className={cn("mx-auto text-sm")}>
+              You have just successfully amount: {formatToVND(donate.amount)}
             </div>
           </div>
         ) : (
@@ -39,13 +38,13 @@ const Notification = () => {
           </div>
         )}
       </div>
-      <Card color="transparent" shadow={false}>
+      {/* <Card color="transparent" shadow={false}>
         <Link to="/home">
           <Button className="mt-6 ml-[56%] bg-orange-500 w-[15%]" fullWidth>
             OK
           </Button>
         </Link>
-      </Card>
+      </Card> */}
     </>
   );
 };
