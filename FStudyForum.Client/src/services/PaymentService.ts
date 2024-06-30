@@ -4,16 +4,6 @@ import { ApiResponse, CreateDonation, Donation, Payment, QRCode, UpdateDonation 
 import axios from "axios";
 
 
-const generatePaymentUrl = async (payment: Payment) => {
-  const response = await api.post<ResponseWith<Payment>>(
-    "/Payment/generate-payment-url", payment
-  );
-  return response.data;
-};
-const isExistTid = async (tid: string) => {
-  const response = await api.get<ResponseWith<boolean>>(`/donate/isExistTid/${tid}`);
-  return response.data.data;
-}
 const saveUserDonate = async (donate: CreateDonation) => {
   const response = await api.post<ResponseWith<Donation>>("/donate/save-user-donate", donate);
   return response.data.data;
@@ -44,11 +34,9 @@ const updateDonate = async (donate: UpdateDonation, id: number) => {
   return response.data.data;
 }
 const PaymentService = {
-  generatePaymentUrl,
   saveUserDonate,
   generateQRUrl,
   paymentResponseQR,
-  isExistTid,
   getDonateByUser,
   checkDonate,
   updateDonate

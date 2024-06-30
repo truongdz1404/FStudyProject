@@ -46,42 +46,12 @@ namespace FStudyForum.API.Controllers
                 });
             }
         }
-        [HttpGet("isExistTid/{tid}")]
-        public async Task<IActionResult> CheckExistDonate(string tid)
-        {
-            try
-            {
-                var isExist = await _donateService.CheckExistDonate(tid);
-                return Ok(new Response
-                {
-                    Data = isExist,
-                    Status = ResponseStatus.SUCCESS,
-                    Message = "Check exist donate successfully"
-                });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new Response
-                {
-                    Status = ResponseStatus.ERROR,
-                    Message = ex.Message
-                });
-            }
-        }
+        
         [HttpPost("save-user-donate")]
         public async Task<IActionResult> SaveUserDonate([FromBody] CreateDonationDTO donationDTO)
         {
             try
             {
-               //var isTransactionWithCasso = await _donateService.CheckExistDonate(donationDTO.Tid);
-               //if(!isTransactionWithCasso)
-               // {
-               //     return NotFound(new Response
-               //     {
-               //         Status = ResponseStatus.ERROR,
-               //         Message = "Transaction ID is exist"
-               //     });
-               // }
                 var donation = await _donateService.SaveUserDonate(donationDTO);
                 return Ok(new Response
                 {
@@ -129,7 +99,7 @@ namespace FStudyForum.API.Controllers
             }
         }
         [HttpPut("updateDonate/{id}")]
-        public async Task<IActionResult> UpdateDonate([FromRoute] int id, [FromBody] UpdateDonationDTO updateDonationDTO)
+        public async Task<IActionResult> UpdateDonate([FromRoute] long id, [FromBody] UpdateDonationDTO updateDonationDTO)
         {
             try
             {

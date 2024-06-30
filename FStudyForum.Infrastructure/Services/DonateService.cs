@@ -7,8 +7,6 @@ using System.Text;
 using FStudyForum.Core.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 using AutoMapper;
-using System.Net.Http.Headers;
-using FStudyForum.Core.Constants;
 namespace FStudyForum.Infrastructure.Services
 {
     public class DonateService : IDonateService
@@ -27,11 +25,6 @@ namespace FStudyForum.Infrastructure.Services
             _userManager = userManager;
             _mapper = mapper;
         }
-        public async Task<bool> CheckExistDonate(string tid)
-        {
-            return await _donationRepository.GetDonationByTid(tid) == null;
-        }
-
         public async Task<QRCodeDTO?> GenerateVietQRCodeAsync(string amountByUser, string addInfoByUser)
         {
             var client = _httpClientFactory.CreateClient();
@@ -73,42 +66,14 @@ namespace FStudyForum.Infrastructure.Services
             await _donationRepository.SaveUserDonate(donation);
             return _mapper.Map<DonationDTO>(donation);
         }
-        public async Task<bool> CheckTransactionWithCasso(string tid)
-        {
-            using (var httpClient = new HttpClient())
-            {
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("apikey", Casso.API_KEY);
-
-                // Thay thế URL bằng URL API_GET của bạn
-                string url = $"{Casso.API_GET}?tid={tid}";
-                var response = await httpClient.GetAsync(url);
-                if (response.IsSuccessStatusCode)
-                {
-                    var content = await response.Content.ReadAsStringAsync();
-
-                    var jsonResponse = Newtonsoft.Json.Linq.JObject.Parse(content);
-
-                    // Lấy mảng records từ JSON response
-                    var records = jsonResponse["data"]?["records"];
-
-                    if (records != null)
-                    {
-                        // Kiểm tra xem có giao dịch nào với tid tương ứng không
-                        var transaction = records.FirstOrDefault(t => t["tid"]?.ToString() == tid);
-                        return transaction != null;
-                    }
-                }
-
-                return false;
-            }
-        }
+        
         public async Task<DonationDTO> GetDonationByUser(string username)
         {
             var donationByUser = await _donationRepository.GetDonationByUser(username)
                 ?? throw new Exception("Not found.");
             return _mapper.Map<DonationDTO>(donationByUser);
         }
-        public async Task<DonationDTO> UpdateDonate(int id, UpdateDonationDTO updateDonationDTO)
+        public async Task<DonationDTO> UpdateDonate(long id, UpdateDonationDTO updateDonationDTO)
         {
             var donation = await _donationRepository.GetById(id)
                 ?? throw new Exception("Not found.");
@@ -118,9 +83,13 @@ namespace FStudyForum.Infrastructure.Services
         }
         public async Task<bool> CheckDonation(string username, int id, string message, decimal amount)
         {
-            var donation = await _donationRepository.GetDonation(id, username, amount, message)
+            var donation = await _donationRepository.GetDonationByUser(username)
                 ?? throw new Exception("Not found.");
-            return donation != null;
+            if(donation.Id == id && donation.Message == message && donation.Amount == amount)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

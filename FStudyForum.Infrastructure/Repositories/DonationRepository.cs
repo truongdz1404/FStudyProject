@@ -26,11 +26,5 @@ namespace FStudyForum.Infrastructure.Repositories
                 .OrderByDescending(d => d.Id).FirstOrDefaultAsync();
             return donationByUser;
         }
-        public async Task<Donation?> GetDonation(int id, string username, decimal amount, string message)
-        {
-            return await _dbContext.Donations.Where(d => d.User.UserName!.Equals(username))
-                .OrderByDescending(d => d.Id).FirstOrDefaultAsync(d => d.Id == id 
-                && d.Amount == amount && d.Message == message);
-        }
     }
 }

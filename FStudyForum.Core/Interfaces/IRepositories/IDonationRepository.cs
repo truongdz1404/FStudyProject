@@ -8,6 +8,5 @@ namespace FStudyForum.Core.Interfaces.IRepositories
         Task SaveUserDonate(Donation donation);
         Task<Donation?> GetDonationByTid(string tid);
         Task<Donation?> GetDonationByUser(string username);
-        Task<Donation?> GetDonation(int id, string username, decimal amount, string message);
     }
 }

@@ -106,6 +106,10 @@ const QRCodeLink = () => {
             <span className="text-gray-600">Ngân hàng</span>
             <div className="text-2xl text-blue-500 font-bold">MB Bank</div>
           </div>
+          <div className="mb-2">
+            <span className="text-gray-600">Nội dung</span>
+            <div className="text-2xl text-blue-500 font-bold">{state.addInfoByUser}</div>
+          </div>
         </div>
       </div>
       <Alert className="mt-[5%]" color="blue">
