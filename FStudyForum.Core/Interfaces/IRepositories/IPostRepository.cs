@@ -18,6 +18,10 @@ public interface IPostRepository : IBaseRepository<Post>
     public Task RemoveFromSavedByUser(SavedPost postByUser);
     public Task<IEnumerable<Post>> GetSavedPostsByUser(string username);
     public Task<IEnumerable<Post>> GetFilterPostsAsync(QueryPostDTO query);
+    public Task AddRecentPost(RecentPost recentPost);
+    public Task<bool> IsExistInRecent(RecentPostDTO recentPostDTO);
+    public Task<IEnumerable<Post>> GetRecentPosts(string username);
+    public Task ClearRecentPosts(string username);
 }
 
 

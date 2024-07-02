@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace FStudyForum.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Fuck : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -442,6 +442,37 @@ namespace FStudyForum.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "tblRecentPosts",
+                schema: "dbo",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    PostId = table.Column<long>(type: "bigint", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_tblRecentPosts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_tblRecentPosts_tblPosts_PostId",
+                        column: x => x.PostId,
+                        principalSchema: "dbo",
+                        principalTable: "tblPosts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_tblRecentPosts_tblUsers_UserId",
+                        column: x => x.UserId,
+                        principalSchema: "dbo",
+                        principalTable: "tblUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "tblSavedPosts",
                 schema: "dbo",
                 columns: table => new
@@ -562,9 +593,9 @@ namespace FStudyForum.Infrastructure.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "09527422-f616-4481-a227-792a9ae076ff", null, "Moderator", "MODERATOR" },
-                    { "4fb5f00b-8a28-4f78-aad3-ffd82d7b45bf", null, "Admin", "ADMIN" },
-                    { "d403d78c-2459-4e9e-adb1-476479c8e629", null, "User", "USER" }
+                    { "01d2a80c-eb93-48eb-a10a-4f055f4d62c4", null, "User", "USER" },
+                    { "5ad9f1ba-35e3-4645-b22f-14f2820b768a", null, "Moderator", "MODERATOR" },
+                    { "7f64d9ec-76b5-40b8-8392-77c04ff948ce", null, "Admin", "ADMIN" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -627,6 +658,18 @@ namespace FStudyForum.Infrastructure.Migrations
                 table: "tblProfiles",
                 column: "UserId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_tblRecentPosts_PostId",
+                schema: "dbo",
+                table: "tblRecentPosts",
+                column: "PostId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_tblRecentPosts_UserId",
+                schema: "dbo",
+                table: "tblRecentPosts",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_tblReports_CreaterId",
@@ -749,6 +792,10 @@ namespace FStudyForum.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "tblProfiles",
+                schema: "dbo");
+
+            migrationBuilder.DropTable(
+                name: "tblRecentPosts",
                 schema: "dbo");
 
             migrationBuilder.DropTable(

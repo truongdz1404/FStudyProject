@@ -180,6 +180,108 @@ namespace FStudyForum.API.Controllers
                 });
             }
         }
+
+        [HttpPost("recent/{postID}"), Authorize]
+        public async Task<IActionResult> AddRecentPost([FromRoute]int postID)
+        {
+            try
+            {
+                var userName = User.FindFirstValue(ClaimTypes.Name) 
+                    ?? throw new Exception("User is not authenticated!");
+                if (!ModelState.IsValid)
+                {
+                    var errors = ModelState.Values.SelectMany(v => v.Errors)
+                               .Select(e => e.ErrorMessage)
+                               .ToList();
+                    var responseNotFound = new Response
+                    {
+                        Status = (int)HttpStatusCode.BadRequest + "",
+                        Message = string.Join("; ", errors)
+                    };
+                    return BadRequest(responseNotFound);
+                }
+                var recentPost = await _postService.AddRecentPostByUser(new() { PostId = postID, UserName = userName });
+                if (recentPost == null)
+                {
+                    return NotFound(new Response
+                    {
+                        Data = recentPost,
+                        Message = "User is not found.",
+                        Status = (int)HttpStatusCode.NotFound + ""
+                    });
+                }
+                return Ok(new Response
+                {
+                    Data = recentPost,
+                    Message = "Post added to recent",
+                    Status = (int)HttpStatusCode.OK + "",
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = ex.Message
+                });
+            }
+        }
+
+        [HttpGet("recent"), Authorize]
+        public async Task<IActionResult> GetAllRecentPosts()
+        {
+            try
+            {
+                var userName = User.FindFirstValue(ClaimTypes.Name) 
+                    ?? throw new Exception("User is not authenticated!");
+                var posts = await _postService.GetRecentPostsByUser(userName);
+                if (posts.IsNullOrEmpty())
+                {
+                    return NotFound(new Response
+                    {
+                        Status = ResponseStatus.ERROR,
+                        Message = "Posts not found",
+                    });
+                }
+                return Ok(new Response
+                {
+                    Message = "Get Posts successfully",
+                    Status = ResponseStatus.SUCCESS,
+                    Data = posts
+                });
+            } catch (Exception ex)
+            {
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = ex.Message
+                });
+            }
+        }   
+
+        [HttpDelete("clear-recent"), Authorize]
+        public async Task<IActionResult> ClearRecentPosts()
+        {
+            try
+            {
+                var userName = User.FindFirstValue(ClaimTypes.Name) 
+                    ?? throw new Exception("User is not authenticated!");
+                await _postService.ClearRecentPostsByUser(userName);
+                return Ok(new Response
+                {
+                    Message = "Get Posts successfully",
+                    Status = ResponseStatus.SUCCESS,
+                });
+            } catch (Exception ex)
+            {
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = ex.Message
+                });
+            }
+        }
+
         [HttpPost("save/{postID}"), Authorize]
         public async Task<IActionResult> SavePost([FromRoute] int postID)
         {

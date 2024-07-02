@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FStudyForum.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20240702142931_Fuck")]
-    partial class Fuck
+    [Migration("20240702151344_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -354,6 +354,36 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.ToTable("tblProfiles", "dbo");
                 });
 
+            modelBuilder.Entity("FStudyForum.Core.Models.Entities.RecentPost", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("PostId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PostId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("tblRecentPosts", "dbo");
+                });
+
             modelBuilder.Entity("FStudyForum.Core.Models.Entities.Report", b =>
                 {
                     b.Property<long>("Id")
@@ -565,19 +595,19 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "4fb5f00b-8a28-4f78-aad3-ffd82d7b45bf",
+                            Id = "7f64d9ec-76b5-40b8-8392-77c04ff948ce",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "d403d78c-2459-4e9e-adb1-476479c8e629",
+                            Id = "01d2a80c-eb93-48eb-a10a-4f055f4d62c4",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "09527422-f616-4481-a227-792a9ae076ff",
+                            Id = "5ad9f1ba-35e3-4645-b22f-14f2820b768a",
                             Name = "Moderator",
                             NormalizedName = "MODERATOR"
                         });
@@ -802,6 +832,25 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("FStudyForum.Core.Models.Entities.RecentPost", b =>
+                {
+                    b.HasOne("FStudyForum.Core.Models.Entities.Post", "Post")
+                        .WithMany("RecentViews")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FStudyForum.Core.Models.Entities.ApplicationUser", "User")
+                        .WithMany("RecentPosts")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Post");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("FStudyForum.Core.Models.Entities.Report", b =>
                 {
                     b.HasOne("FStudyForum.Core.Models.Entities.ApplicationUser", "Creater")
@@ -967,6 +1016,8 @@ namespace FStudyForum.Infrastructure.Migrations
 
                     b.Navigation("Profile");
 
+                    b.Navigation("RecentPosts");
+
                     b.Navigation("Reports");
 
                     b.Navigation("SavedPosts");
@@ -991,6 +1042,8 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.Navigation("Attachments");
 
                     b.Navigation("Comments");
+
+                    b.Navigation("RecentViews");
 
                     b.Navigation("SavedByUsers");
 

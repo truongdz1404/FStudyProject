@@ -9,6 +9,7 @@ import React from "react";
 import NullLayout from "@/components/layout/NullLayout";
 import { Spinner } from "@material-tailwind/react";
 import useSearchParam from "@/hooks/useSearchParam";
+import RecentPost from "@/components/post/RecentPost";
 
 const HomePage: React.FC = () => {
   const [filter, setFilter] = useSearchParam<string>({
@@ -20,13 +21,18 @@ const HomePage: React.FC = () => {
   const { data, fetchNextPage, isPending, isFetchingNextPage } =
     useInfiniteQuery({
       queryKey: [`home-${filter}-query`],
-      queryFn: async ({ pageParam }) => {
-        return await PostService.get(
-          "filter",
-          pageParam,
-          LIMIT_SCROLLING_PAGNATION_RESULT,
-          filter
-        );
+      queryFn: async ({ pageParam = 1 }) => {
+        try {
+          const posts = await PostService.get(
+            "filter",
+            pageParam,
+            LIMIT_SCROLLING_PAGNATION_RESULT,
+            filter
+          );
+          return posts;
+        } catch (e) {
+          return [];
+        }
       },
       getNextPageParam: (_, pages) => pages.length + 1,
       initialPageParam: 1
@@ -37,11 +43,15 @@ const HomePage: React.FC = () => {
     }
   }, [inView, fetchNextPage]);
 
+  const addRecentPost = (postId: number) => {
+    PostService.addRecentPost(postId);
+  };
+
   const posts = data?.pages.flatMap(p => p) ?? [];
   if (isPending) return <Spinner className="mx-auto" />;
 
   return (
-    <ContentLayout>
+    <ContentLayout pannel={<RecentPost />}>
       <div className="relative flex text-left z-20">
         <PostFilter setFilter={setFilter} filter={filter} />
       </div>
@@ -49,7 +59,10 @@ const HomePage: React.FC = () => {
       {posts.map((post, index) => {
         return (
           <div key={index} className="w-full">
-            <div className="hover:bg-gray-50 rounded-lg w-full">
+            <div
+              onClick={() => addRecentPost(post.id)}
+              className="hover:bg-gray-50 rounded-lg w-full"
+            >
               <PostItem key={index} data={post} />
             </div>
             <hr className="my-1 border-blue-gray-50" />

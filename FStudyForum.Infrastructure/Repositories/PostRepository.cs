@@ -70,6 +70,30 @@ namespace FStudyForum.Infrastructure.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
+        public async Task AddRecentPost(RecentPost recentPost)
+        {
+            var existedPost = await _dbContext.RecentPosts
+                .Where(rp => rp.User.UserName == recentPost.User.UserName)
+                .OrderBy(rp => rp.CreatedAt)
+                .ToListAsync();
+
+            while (existedPost.Count > 9)
+            {
+                _dbContext.RecentPosts.Remove(existedPost.First());
+                existedPost.RemoveAt(0);
+            }
+
+            await _dbContext.RecentPosts.AddAsync(recentPost);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<bool> IsExistInRecent(RecentPostDTO recentPostDTO)
+        {
+            var post = await _dbContext.RecentPosts.FirstOrDefaultAsync(p => p.Post.Id == recentPostDTO.PostId
+            && p.User.UserName == recentPostDTO.UserName);
+            return post == null;
+        }
+
         public async Task<Post?> GetPostByIdAsync(long id)
         {
             return await _dbContext.Posts
@@ -180,5 +204,32 @@ namespace FStudyForum.Infrastructure.Repositories
             return listPost;
         }
 
+        public async Task<IEnumerable<Post>> GetRecentPosts(string username)
+        {
+            var listPost = await _dbContext.RecentPosts
+                .Where(rp => rp.User.UserName == username && !rp.Post.IsDeleted)
+                .Include(rp => rp.Post)
+                .ThenInclude(p => p.Creater)
+                .Include(rp => rp.Post)
+                .ThenInclude(p => p.Topic)
+                .Include(sp => sp.Post)
+                .ThenInclude(p => p.Votes)
+                .Include(rp => rp.Post)
+                .ThenInclude(p => p.Comments)
+                .Include(rp => rp.Post)
+                .ThenInclude(p => p.Attachments)
+                .Where(rp => !rp.Post.Topic.IsDeleted)
+                .Select(rp => rp.Post)
+                .ToListAsync();
+            return listPost;
+        }
+
+        public async Task ClearRecentPosts(string username)
+        {
+            var recentPosts = _dbContext.RecentPosts
+                .Where(rp => rp.User.UserName == username);
+            _dbContext.RecentPosts.RemoveRange(recentPosts);
+            await _dbContext.SaveChangesAsync();
+        }
     }
 }
