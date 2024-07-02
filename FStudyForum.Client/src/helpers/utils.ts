@@ -26,28 +26,22 @@ export function formatElapsedTime(elapsed: string): string {
   const totalMonths = Math.floor(totalDays / 30);
   const totalYears = Math.floor(totalDays / 365);
 
-  if (totalYears > 0) {
+  if (totalYears > 0)
     return `${totalYears} year${totalYears > 1 ? "s" : ""} ago`;
-  } else if (totalMonths > 0) {
+  else if (totalMonths > 0)
     return `${totalMonths} month${totalMonths > 1 ? "s" : ""} ago`;
-  } else if (totalDays > 0) {
+  else if (totalDays > 0)
     return `${totalDays} day${totalDays > 1 ? "s" : ""} ago`;
-  } else if (totalHours > 0) {
+  else if (totalHours > 0)
     return `${totalHours} hr${totalHours > 1 ? "s" : ""} ago`;
-  } else {
-    return `${totalMinutes} min${totalMinutes > 1 ? "s" : ""} ago`;
-  }
+  return `${totalMinutes} min${totalMinutes > 1 ? "s" : ""} ago`;
 }
 
 export function validateFileType(file: File) {
   return ALLOWED_FILE_TYPES.includes(file.type);
 }
 
-export const ImageUtil = {
-  getInfo
-};
-
-function getInfo(file: File): Promise<{
+export function getImageParams(file: File): Promise<{
   colorThief: string;
   width: number;
   height: number;
@@ -77,4 +71,19 @@ function getInfo(file: File): Promise<{
     };
     reader.readAsDataURL(file);
   });
+}
+
+export function stringToColor(str: string) {
+  let hash = 0;
+  let i;
+
+  for (i = 0; i < str.length; i += 1) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  let color = "#";
+  for (i = 0; i < 3; i += 1) {
+    const value = (hash >> (i * 8)) & 0xff;
+    color += `00${value.toString(16)}`.slice(-2);
+  }
+  return color;
 }

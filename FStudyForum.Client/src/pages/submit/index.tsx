@@ -1,22 +1,23 @@
 import { cn } from "@/helpers/utils";
 import { Topic } from "@/types/topic";
-import { Avatar, Button, Input, Spinner } from "@material-tailwind/react";
+import { Avatar, Button, Input } from "@material-tailwind/react";
 import { ChevronDown, Search } from "lucide-react";
 import React, { ChangeEvent } from "react";
 import Demo from "@/assets/images/user.png";
 import useOutsideClick from "@/hooks/useOutsideClick";
-import { useParams } from "react-router-dom";
 import TopicService from "@/services/TopicService";
 import { AxiosError } from "axios";
 import { Response } from "@/types/response";
 import ContentLayout from "@/components/layout/ContentLayout";
 import Editor from "@/components/post/Editor";
-import { useQuery } from "@tanstack/react-query";
+import { useRouterParam } from "@/hooks/useRouterParam";
+import { useNavigate } from "react-router-dom";
 const SubmitPage = () => {
-  const { name } = useParams<{ name: string }>();
-  const [topic, setTopic] = React.useState<Topic | undefined>();
+  const navigate = useNavigate();
+
   const [selectedIndex, setSelectedIndex] = React.useState(-1);
   const [foundTopics, setFoundTopics] = React.useState<Topic[]>([]);
+  const { topic } = useRouterParam();
   const searchRef = useOutsideClick(() => closeOpenSearch());
   const [openSearch, setOpenSearch] = React.useState(false);
   const closeOpenSearch = () => {
@@ -24,16 +25,6 @@ const SubmitPage = () => {
     setFoundTopics([]);
     setSelectedIndex(-1);
   };
-
-  const { error, isPending } = useQuery({
-    queryKey: ["submit-get-topic"],
-    queryFn: async () => {
-      const topic = await TopicService.getTopicByName(name!);
-      setTopic(topic);
-      return topic;
-    },
-    enabled: !!name
-  });
 
   const handleSearch = async (event: ChangeEvent<HTMLInputElement>) => {
     const searchValue = event.target.value.trim().replace(/^t\//, "");
@@ -53,29 +44,30 @@ const SubmitPage = () => {
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "ArrowUp") {
-      setSelectedIndex(prevIndex =>
-        prevIndex > 0 ? prevIndex - 1 : foundTopics.length - 1
-      );
-    } else if (event.key === "ArrowDown") {
-      setSelectedIndex(prevIndex =>
-        prevIndex < foundTopics.length - 1 ? prevIndex + 1 : 0
-      );
-    } else if (event.key === "Enter") {
-      if (selectedIndex !== -1) {
-        handleSelect(foundTopics[selectedIndex]);
-      }
+    switch (event.key) {
+      case "ArrowUp":
+        event.preventDefault();
+        setSelectedIndex(prevIndex =>
+          prevIndex > 0 ? prevIndex - 1 : foundTopics.length - 1
+        );
+        break;
+      case "ArrowDown":
+        event.preventDefault();
+        setSelectedIndex(prevIndex =>
+          prevIndex < foundTopics.length - 1 ? prevIndex + 1 : 0
+        );
+        break;
+      case "Enter":
+        if (selectedIndex !== -1) handleSelect(foundTopics[selectedIndex]);
+        break;
     }
   };
 
   const handleSelect = async (select: Topic) => {
-    setTopic(select);
+    navigate(`/topic/${select.name}/submit`);
     closeOpenSearch();
   };
-  if (name && isPending) return <></>;
-  if (name && error) {
-    return <Spinner className="mx-auto" />;
-  }
+
   return (
     <ContentLayout>
       <div className="mb-6">

@@ -1,4 +1,4 @@
-import { FC, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { AxiosError } from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
@@ -12,9 +12,9 @@ import { Comment, CreateComment } from "@/types/comment";
 import CommentInput from "@/components/comment/CommentInput";
 import ContentLayout from "@/components/layout/ContentLayout";
 import CommentItem from "@/components/comment/CommentItem";
-interface Props {}
+import TopicDescription from "@/components/topic/TopicDescription";
 
-const Comments: FC<Props> = () => {
+const Comments = () => {
   const navigate = useNavigate();
   const { name: topicName, id: postId } = useParams<{
     name: string;
@@ -248,7 +248,7 @@ const Comments: FC<Props> = () => {
   if (loading || !post) return null;
 
   return (
-    <ContentLayout>
+    <ContentLayout pannel={<TopicDescription />}>
       <div className="relative">
         {error && (
           <Alert color="red" className="mb-4">

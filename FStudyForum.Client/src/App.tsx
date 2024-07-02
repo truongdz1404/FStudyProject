@@ -9,10 +9,11 @@ export default function App() {
   return (
     <GoogleOAuthProvider clientId={import.meta.env.VITE_CLIENT_ID}>
       <AuthProvider>
-        <CustomToast />
         <QueryClientProvider client={queryClient}>
-          <Router />
+            <Router />
+
         </QueryClientProvider>
+        <CustomToast />
       </AuthProvider>
     </GoogleOAuthProvider>
   );

@@ -22,10 +22,13 @@ const PostVote: FC<Props> = ({ postId, initType, initCount }) => {
 
   const handleVote = async (type: number) => {
     const voteType = vote === type ? VOTE_TYPE.UNVOTE : type;
+    const voteCount = initCount - initType + voteType;
     setVote(voteType);
-    setCount(initCount - initType + voteType);
+    setCount(voteCount);
+
     try {
-      await VoteService.votePost(postId, voteType);
+      const count = await VoteService.votePost(postId, voteType);
+      setCount(count);
     } catch (error) {
       setVote(vote);
       setCount(count);
@@ -45,14 +48,10 @@ const PostVote: FC<Props> = ({ postId, initType, initCount }) => {
       >
         <ArrowBigUp
           strokeWidth={1.2}
-          fill={
-            vote !== VOTE_TYPE.UNVOTE && vote === VOTE_TYPE.UP
-              ? "white"
-              : "transparent"
-          }
           className={cn(
             "w-6 h-6  hover:text-red-400",
-            vote !== VOTE_TYPE.UNVOTE && "text-white hover:text-white"
+            vote !== VOTE_TYPE.UNVOTE && "text-white hover:text-white",
+            vote !== VOTE_TYPE.UNVOTE && vote === VOTE_TYPE.UP && "fill-white"
           )}
         />
       </div>
@@ -70,14 +69,10 @@ const PostVote: FC<Props> = ({ postId, initType, initCount }) => {
       >
         <ArrowBigDown
           strokeWidth={1.2}
-          fill={
-            vote !== VOTE_TYPE.UNVOTE && vote === VOTE_TYPE.DOWN
-              ? "white"
-              : "transparent"
-          }
           className={cn(
             "w-6 h-6  hover:text-blue-400",
-            vote !== VOTE_TYPE.UNVOTE && "text-white hover:text-white"
+            vote !== VOTE_TYPE.UNVOTE && "text-white hover:text-white",
+            vote !== VOTE_TYPE.UNVOTE && vote === VOTE_TYPE.DOWN && "fill-white"
           )}
         />
       </div>

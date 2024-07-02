@@ -4,9 +4,9 @@ import ImageWithLoading from "../ui/ImageWithLoading";
 import { Carousel } from "@material-tailwind/react";
 import React from "react";
 import { cn } from "@/helpers/utils";
-import useSize from "@react-hook/size";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import LightBox from "./LightBox";
+import { useSize } from "@/hooks/useSize";
 // import BoxComment from "../comment/BoxComment";
 
 type Props = {
@@ -45,27 +45,29 @@ const getContainerHeight = (
 const AttachmentContainer: FC<Props> = ({ files, onClick }) => {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [open, setOpen] = React.useState(-1);
-  const [width] = useSize(containerRef);
+  const { width } = useSize(containerRef);
   const [height, setHeight] = React.useState(0);
-
   React.useEffect(() => {
-    setHeight(getContainerHeight(files, width));
+    if (width != 0 && containerRef.current != null)
+      setHeight(getContainerHeight(files, width));
   }, [files, width]);
 
-  const handleViewDetail = (index?: number, id?: number) => {
+  const openLightBox = (index?: number, id?: number) => {
     onClick(id);
     setOpen(index ?? 0);
   };
+
   if (files.length == 0) return null;
+
   return (
     <div className="action w-full z-0" ref={containerRef}>
       {files.length == 1 ? (
         <div
           style={{ height: height }}
           className={cn(
-            "max-h-[16rem] md:max-h-[20rem] lg:max-h-[28rem] w-full object-contain relative overflow-hidden rounded-md "
+            "max-h-[20rem] lg:max-h-[28rem] w-full object-contain relative overflow-hidden rounded-md "
           )}
-          onClick={() => handleViewDetail()}
+          onClick={() => openLightBox()}
         >
           <img
             src={files[0].url}
@@ -133,7 +135,7 @@ const AttachmentContainer: FC<Props> = ({ files, onClick }) => {
               key={index}
               style={{ height: height }}
               className="max-h-[16rem] md:max-h-[20rem] lg:max-h-[28rem] object-contain relative overflow-hidden "
-              onClick={() => handleViewDetail(index, file.id)}
+              onClick={() => openLightBox(index, file.id)}
             >
               <img
                 src={file.url}

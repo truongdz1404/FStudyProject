@@ -16,11 +16,21 @@ body {
 
 
 @layer utilities {
+    .scrollbar::-webkit-scrollbar {
+        display: block;
+        width: 6px;
+    }
+    .scrollbar::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+    .scrollbar::-webkit-scrollbar-thumb {
+        background: #adadad;
+        border-radius: 5px;
+    }
+    .scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #9d9d9d;
+    }
     .no-scrollbar::-webkit-scrollbar {
         display: none;
-    }
-    .no-scrollbar {
-        -ms-overflow-style: none; 
-        scrollbar-width: none; 
     }
 }

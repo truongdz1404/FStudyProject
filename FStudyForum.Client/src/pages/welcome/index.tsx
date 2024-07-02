@@ -6,10 +6,10 @@ import MajorService from "@/services/MajorService";
 import ProfileService from "@/services/ProfileService";
 import UserService from "@/services/UserService";
 import { yupResolver } from "@hookform/resolvers/yup";
-import Success from "@/assets/images/motivation.gif";
-import { Chip, Input, Radio, Step, Stepper } from "@material-tailwind/react";
+import Success from "@/assets/images/check.png";
+import { Input, Radio, Step, Stepper } from "@material-tailwind/react";
 import { motion } from "framer-motion";
-import { ChevronLeft, ChevronRight, CircleAlert } from "lucide-react";
+import { Check, CircleAlert } from "lucide-react";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -68,26 +68,22 @@ const Welcome = () => {
       setActiveStep(cur => cur - 1);
     }
   };
-
-  const [selectedMajor, setSelectedMajor] = React.useState(
-    "Software Engineering"
-  );
+  const [major, setMajor] = React.useState("Software Engineering");
   const [majors, setMajors] = React.useState<string[]>([]);
   React.useEffect(() => {
     if (user == null) return;
-    (async () => {
+    if (Boolean(user?.avatar) == true) navigate("/");
+    const fetchMajor = async () => {
       try {
         setLoading(true);
-        const majors = await MajorService.getAll();
-        setMajors(majors);
-        await ProfileService.getByUsername(user.username);
-        navigate("/");
+        setMajors(await MajorService.getAll());
       } catch (error) {
         console.error(error);
       } finally {
         setLoading(false);
       }
-    })();
+    };
+    fetchMajor();
   }, [user, navigate]);
 
   const handleNext = async () => {
@@ -111,7 +107,7 @@ const Welcome = () => {
       const payload = {
         firstName: form.firstName,
         lastName: form.lastName,
-        major: selectedMajor,
+        major: major,
         gender: form.gender,
         avatar: "/src/assets/images/user.png",
         phone: form.phone
@@ -132,7 +128,7 @@ const Welcome = () => {
       <>
         <div className={cn(step != 0 && "hidden")}>
           <div className="mb-6">
-            <p className="text-xl font-semibold">Basic Info</p>
+            <p className="text-md font-semibold">Basic Info</p>
             <p className="text-xs text-gray-600 text-left">
               Tell us a bit about yourself to get started on our forum
             </p>
@@ -267,24 +263,22 @@ const Welcome = () => {
 
         <div className={cn(step != 1 && "hidden", "max-h-full")}>
           <div className="mb-6">
-            <p className="text-xl font-semibold">Select your major</p>
+            <p className="text-md font-semibold">Select your major</p>
             <p className="text-xs text-gray-600 text-left">
               Share your major with us to receive relevant topic suggestions
             </p>
-            <div className="overflow-x-auto max-h-[20rem]">
-              <div className="mt-6 w-full flex flex-wrap gap-2">
+            <div className="overflow-y-auto max-h-[20rem]">
+              <div className="mt-6 w-full flex flex-wrap gap-2 overflow-hidden">
                 {majors.map(name => (
                   <div
                     key={name}
-                    onClick={() => setSelectedMajor(name)}
-                    className="hover:cursor-pointer"
+                    onClick={() => setMajor(name)}
+                    className={cn(
+                      "hover:cursor-pointer bg-blue-gray-400 rounded-full text-xs text-blue-gray-50 px-2 py-1 text-center",
+                      major == name && "bg-blue-gray-800"
+                    )}
                   >
-                    <Chip
-                      color="blue-gray"
-                      variant={selectedMajor != name ? "ghost" : "filled"}
-                      value={name}
-                      className={cn("rounded-full capitalize")}
-                    />
+                    {name}
                   </div>
                 ))}
               </div>
@@ -292,9 +286,9 @@ const Welcome = () => {
           </div>
         </div>
         <div className={cn(step != 2 && "hidden")}>
-          <div className="mt-6  flex flex-col items-center justify-center">
-            <img className="w-20 h-20" src={Success} />
-            <p className="text-lg font-semibold text-blue-gray-800">
+          <div className="mt-8 gap-y-2 flex flex-col items-center justify-center">
+            <img className="w-16 h-16" src={Success} />
+            <p className="text-sm text-blue-gray-800">
               Get ready to explore a new world!
             </p>
           </div>
@@ -311,11 +305,11 @@ const Welcome = () => {
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ ease: "easeInOut", duration: 0.75 }}
-        className="w-full max-w-screen-sm xl:w-1/3 h-full xl:h-[88%] xl:border xl:rounded-md xl:shadow-md p-8 flex flex-col"
+        className="w-full max-w-screen-sm h-full flex flex-col my-8 px-2"
       >
         <div className="text-center mb-4">
           <Icons.logo className="w-10 h-10 mx-auto" />
-          <span className="font-bold text-xl ">Welcome to FStudy</span>
+          <span className="font-bold text-lg">Welcome to FStudy</span>
         </div>
         <Stepper
           activeStep={activeStep}
@@ -326,25 +320,37 @@ const Welcome = () => {
           className="mb-4"
         >
           <Step
-            className="!bg-orange-300 !text-white w-8 h-8"
+            className="!bg-orange-300 !text-white w-6 h-6"
             activeClassName="!bg-deep-orange-400"
             completedClassName="!bg-deep-orange-400"
           >
-            1
+            {activeStep > 0 ? (
+              <Check className="w-4 h-4" strokeWidth={3} />
+            ) : (
+              <span className="text-xs">1</span>
+            )}
           </Step>
           <Step
-            className="!bg-orange-300 !text-white w-8 h-8"
+            className="!bg-orange-300 !text-white w-6 h-6"
             activeClassName="!bg-deep-orange-400"
             completedClassName="!bg-deep-orange-400"
           >
-            2
+            {activeStep > 1 ? (
+              <Check className="w-4 h-4" strokeWidth={3} />
+            ) : (
+              <span className="text-xs">2</span>
+            )}
           </Step>
           <Step
-            className="!bg-orange-300 !text-white w-8 h-8"
+            className="!bg-orange-300 !text-white w-6 h-6"
             activeClassName="!bg-deep-orange-400"
             completedClassName="!bg-deep-orange-400"
           >
-            3
+            {activeStep > 2 ? (
+              <Check className="w-4 h-4" strokeWidth={3} />
+            ) : (
+              <span className="text-xs">3</span>
+            )}
           </Step>
         </Stepper>
 
@@ -357,30 +363,27 @@ const Welcome = () => {
           {renderStep(activeStep)}
         </motion.div>
 
-        <div className="flex justify-between mt-auto">
+        <div className="flex justify-end gap-x-2 mt-auto text-xs font-semibold w-full">
           <button
             type="button"
             onClick={() => {
               !loading && prevStep();
             }}
             className={cn(
-              "flex gap-x-2 text-deep-orange-400 hover:cursor-pointer select-none font-bold",
-              isFirstStep && "text-orange-100"
+              "bg-deep-orange-400 text-white rounded-sm px-4 py-2",
+              isFirstStep && "bg-deep-orange-200"
             )}
           >
-            <ChevronLeft /> Back
+            Back
           </button>
           <button
             type={isLastStep ? "submit" : "button"}
             onClick={() => {
               !loading && !isLastStep && handleNext();
             }}
-            className={cn(
-              "flex gap-x-2 text-deep-orange-400 hover:cursor-pointer select-none font-bold"
-            )}
+            className={cn("bg-deep-orange-400 rounded-sm text-white px-4 py-2")}
           >
             {!isLastStep ? "Next" : "Finish"}
-            <ChevronRight />
           </button>
         </div>
       </motion.div>

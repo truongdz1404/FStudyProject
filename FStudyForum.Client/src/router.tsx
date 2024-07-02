@@ -167,7 +167,7 @@ const Router: FC = () => {
           ]
         },
         {
-          path: "profile/:name",
+          path: "profile/:username",
           element: <Profile />,
           children: [
             {

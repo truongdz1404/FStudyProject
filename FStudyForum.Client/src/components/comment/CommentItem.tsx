@@ -52,7 +52,8 @@ const CommentItem: FC<CommentItemProps> = ({
     setVoteType(realType);
     setVoteCount(comment.voteCount - comment.voteType + realType);
     try {
-      await VoteService.voteComment(comment.id, realType);
+      const count = await VoteService.voteComment(comment.id, realType);
+      setVoteCount(count);
     } catch (error) {
       setVoteType(voteType);
       setVoteCount(comment.voteCount);

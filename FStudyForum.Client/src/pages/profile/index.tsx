@@ -30,11 +30,11 @@ const tabItems = [
 ];
 const Profile = () => {
   const { user } = useAuth();
-  const { name } = useParams<{ name: string }>();
+  const { username } = useParams<{ username: string }>();
   const { data: profile, error } = useQuery({
-    queryKey: [`profile-${name}`],
-    queryFn: () => ProfileService.getByUsername(name!),
-    enabled: !!name
+    queryKey: [`profile-${username}`],
+    queryFn: () => ProfileService.getByUsername(username!),
+    enabled: !!username
   });
 
   const [open, setOpen] = React.useState(0);
@@ -69,7 +69,7 @@ const Profile = () => {
               to="/settings/profile"
               className={cn(
                 "absolute bottom-0 right-0 bg-blue-gray-50 rounded-full",
-                user?.username !== name && "hidden"
+                user?.username !== username && "hidden"
               )}
             >
               <Camera className="h-4 w-4 m-1" strokeWidth={1.5} />
@@ -80,7 +80,7 @@ const Profile = () => {
             to="/settings/profile"
             className={cn(
               "absolute bottom-0 right-0 bg-blue-gray-50 rounded-full m-2 font-normal",
-              user?.username !== name && "hidden"
+              user?.username !== username && "hidden"
             )}
           >
             <Camera className="h-4 w-4 m-1 " strokeWidth={1.5} />
@@ -90,12 +90,14 @@ const Profile = () => {
             <p className="font-semibold text-md">
               {profile.lastName + " " + profile.firstName}
             </p>
-            <p className="text-xs font-light">{"u/" + name?.toLowerCase()}</p>
+            <p className="text-xs font-light">
+              {"u/" + username?.toLowerCase()}
+            </p>
           </div>
           <Link
             className={cn(
               "mt-2 absolute right-0",
-              user?.username !== name && "hidden"
+              user?.username !== username && "hidden"
             )}
             to="/settings/profile"
           >
@@ -145,7 +147,10 @@ const Profile = () => {
       <Button
         size="sm"
         variant="outlined"
-        className={cn("rounded-full mt-2", user?.username !== name && "hidden")}
+        className={cn(
+          "rounded-full mt-2",
+          user?.username !== username && "hidden"
+        )}
       >
         <div className="flex items-center">
           <Plus size={"16"} />

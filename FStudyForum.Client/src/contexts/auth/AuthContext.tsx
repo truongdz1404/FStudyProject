@@ -23,7 +23,7 @@ const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
   const [authState, dispatchAuth] = React.useReducer(reducer, initialState);
 
   React.useEffect(() => {
-    const fetchUserProfile = async () => {
+    const fetchProfile = async () => {
       try {
         const user = await UserService.getProfile();
         dispatchAuth(initialize({ isAuthenticated: true, user }));
@@ -32,7 +32,7 @@ const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
       }
     };
 
-    fetchUserProfile();
+    fetchProfile();
   }, []);
 
   return (

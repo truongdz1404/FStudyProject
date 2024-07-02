@@ -1,4 +1,3 @@
-import { SessionStorageKey } from "@/helpers/constants";
 import { cn } from "@/helpers/utils";
 import useOutsideClick from "@/hooks/useOutsideClick";
 import { ChevronUp } from "lucide-react";
@@ -14,14 +13,14 @@ const PostFilter: React.FC<Props> = ({ setFilter, filter }) => {
   const filterMenu = [{ name: "New" }, { name: "Hot" }];
   const ref = useOutsideClick(() => setIsOpen(false));
   return (
-    <div ref={ref} className="border-b w-full pb-2 pl-2">
+    <div ref={ref} className="border-b w-full pb-2 pl-2 mb-1">
       <button
         onClick={() => {
           setIsOpen(!isOpen);
         }}
         className="relative flex gap-x-1 justify-center items-center p-2 text-xs text-gray-700 bg-white hover:bg-blue-gray-50 rounded-full"
       >
-        {filter}
+        {isOpen ? "Sort by" : filter}
         <ChevronUp
           className={`mx-auto w-4 h-4 transition-transform ${
             isOpen ? "rotate-180" : ""
@@ -41,11 +40,10 @@ const PostFilter: React.FC<Props> = ({ setFilter, filter }) => {
             <div
               key={name}
               className={cn(
-                "block p-4 text-sm  text-gray-700 hover:bg-blue-gray-100 cursor-pointer",
+                "block p-4 text-sm text-gray-700 hover:bg-blue-gray-100 cursor-pointer",
                 filter === name && "bg-blue-gray-50"
               )}
               onClick={() => {
-                sessionStorage.setItem(SessionStorageKey.SelectedFilter, name);
                 setFilter(name);
                 setIsOpen(false);
               }}

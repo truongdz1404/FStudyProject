@@ -138,11 +138,13 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
                 }`}
               >
                 {React.createElement(icon, {
-                  className: `h-4 w-4 ${
-                    isLastItem ? "text-red-500" : "text-blue-gray-700"
-                  }`,
-                  strokeWidth: 2,
-                  style: { fill: isSaveItem && isSaved ? "#455a64" : "" }
+                  className: cn(
+                    `h-4 w-4 ${
+                      isLastItem ? "text-red-500" : "text-blue-gray-700"
+                    }`,
+                    isSaveItem && isSaved && "fill-blue-gray-700"
+                  ),
+                  strokeWidth: 2
                 })}
                 <Typography
                   as={"span"}
@@ -163,7 +165,11 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
         open={openReport}
         handler={switchOpenReport}
       >
-        <ReportForm postId={post.id} topicName={post.topicName} />
+        <ReportForm
+          postId={post.id}
+          topicName={post.topicName}
+          handler={switchOpenReport}
+        />
       </Dialog>
 
       {openBan && (

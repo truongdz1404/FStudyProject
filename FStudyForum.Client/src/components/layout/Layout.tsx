@@ -4,13 +4,14 @@ import Header from "./Header";
 import Sidebar from "./Sidebar";
 import { cn } from "@/helpers/utils";
 import { Drawer } from "@material-tailwind/react";
+import RouterParamProvider from "@/contexts/router/RouterParamContext";
 
 const Layout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
   const openSidebar = React.useCallback(() => setIsSidebarOpen(true), []);
   const closeSidebar = React.useCallback(() => setIsSidebarOpen(false), []);
   return (
-    <div className="font-inter ">
+    <RouterParamProvider>
       <div className="sticky top-0 z-30 w-full">
         <Header openSidebar={openSidebar} />
       </div>
@@ -25,7 +26,7 @@ const Layout = () => {
       <Drawer open={isSidebarOpen} onClose={closeSidebar}>
         <Sidebar handleClose={closeSidebar} />
       </Drawer>
-    </div>
+    </RouterParamProvider>
   );
 };
 export default Layout;

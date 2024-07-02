@@ -1,10 +1,5 @@
 import ReportService from "@/services/ReportService";
-import {
-  Button,
-  Chip,
-  DialogBody,
-  DialogHeader
-} from "@material-tailwind/react";
+import { Button, Chip } from "@material-tailwind/react";
 import { FC, useEffect, useState } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 
@@ -12,7 +7,7 @@ import * as Yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { cn } from "@/helpers/utils";
-import { CircleAlert } from "lucide-react";
+import { CircleAlert, X } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { AxiosError } from "axios";
 import { useMutation } from "@tanstack/react-query";
@@ -30,9 +25,10 @@ const validation = Yup.object().shape({
 type Props = {
   postId: number;
   topicName: string;
+  handler: () => void;
 };
 
-const ReportForm: FC<Props> = ({ postId, topicName }) => {
+const ReportForm: FC<Props> = ({ postId, topicName, handler }) => {
   const [report, setReport] = useState<string[]>([]);
   const [selectedReport, setSelectedReport] = useState<string>();
   const { user } = useAuth();
@@ -87,18 +83,16 @@ const ReportForm: FC<Props> = ({ postId, topicName }) => {
   if (submitted) {
     return (
       <div>
-        <DialogHeader className="text-xl font-semibold text-gray-900">
+        <h1 className="text-lg font-semibold text-gray-900">
           Report Submitted
-        </DialogHeader>
-        <DialogBody className="text-sm text-gray-900 text-left">
+        </h1>
+        <p className="text-xs text-gray-900 text-left">
           Thank you for your report. We will review it as soon as possible.
-        </DialogBody>
-        <div className="mt-6">
+        </p>
+        <div className="flex w-full justify-end">
           <Button
-            onClick={() => {
-              window.location.reload();
-            }}
-            className="text-white px-6 py-2 rounded-lg w-full"
+            onClick={handler}
+            className="text-white p-3 px-6 rounded-lg mt-4 capitalize"
             variant="gradient"
             color="deep-orange"
           >
@@ -110,7 +104,14 @@ const ReportForm: FC<Props> = ({ postId, topicName }) => {
   }
 
   return (
-    <div>
+    <div className="relative">
+      <button
+        type="button"
+        className="absolute p-1 bg-blue-gray-700/50 rounded-full right-0"
+        onClick={handler}
+      >
+        <X className="text-white w-4 h-4" />
+      </button>
       <h1 className="text-lg font-semibold text-gray-900">Report</h1>
       <p className="text-xs text-gray-900 text-left">
         Thanks for looking out for yourself and your fellow redditors by
@@ -155,9 +156,9 @@ const ReportForm: FC<Props> = ({ postId, topicName }) => {
               <CircleAlert className="w-3 h-3" /> {errors.type.message}
             </span>
           )}
-          <div className="flex justify-center">
+          <div className="flex justify-center bg-blue-gray-700 mt-4 rounded-lg">
             <TextareaAutosize
-              className="w-full h-32 mt-6 p-4 rounded-lg bg-blue-gray-800 text-white text-sm"
+              className="w-full p-4 appearance-none overflow-hidden bg-transparent text-white text-sm focus:outline-none resize-none"
               placeholder="Tell us more about the issue"
               disabled={pending}
               {...register("content")}

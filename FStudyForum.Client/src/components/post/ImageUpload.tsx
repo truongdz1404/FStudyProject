@@ -1,6 +1,6 @@
 import { forwardRef } from "react";
 import { Trash2 } from "lucide-react";
-import { ImageUtil, cn } from "@/helpers/utils";
+import { cn, getImageParams } from "@/helpers/utils";
 import React from "react";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { storage } from "@/helpers/storage";
@@ -29,12 +29,10 @@ const ImageUpload = forwardRef<HTMLTableRowElement, ImageUploadProps>(
       if (uploaded || file.get) return;
       const startUpload = async () => {
         setUploaded(true);
-        const info = await ImageUtil.getInfo(file.data);
+        const { width, height } = await getImageParams(file.data);
         const storageRef = ref(
           storage,
-          `images/attachment${crypto.randomUUID()}_width${info.width}_height${
-            info.height
-          }`
+          `images/attachment${crypto.randomUUID()}_width${width}_height${height}`
         );
         const metadata = {
           contentType: "image/jpeg"

@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using FStudyForum.API.Extensions;
+using FStudyForum.API.Hubs;
 using FStudyForum.API.Mapper;
 using FStudyForum.Core.Constants;
 using FStudyForum.Core.Models.Configs;
@@ -89,13 +90,13 @@ builder.Services
             }
         };
     });
-
-
 builder.Services.RegisterService();
+builder.Services.AddSignalR();
 var app = builder.Build();
 app.UseWebSockets(new WebSocketOptions { KeepAliveInterval = TimeSpan.FromSeconds(2) });
 app.UseCors(Policy.SINGLE_PAGE_APP);
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapHub<ChatHub>("/hub");
 app.Run();

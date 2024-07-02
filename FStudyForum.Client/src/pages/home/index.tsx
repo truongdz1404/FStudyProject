@@ -3,29 +3,24 @@ import ContentLayout from "@/components/layout/ContentLayout";
 import PostItem from "@/components/post/PostItem";
 import { useInView } from "react-intersection-observer";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import {
-  LIMIT_SCROLLING_PAGNATION_RESULT,
-  SessionStorageKey
-} from "@/helpers/constants";
+import { LIMIT_SCROLLING_PAGNATION_RESULT } from "@/helpers/constants";
 import PostFilter from "@/components/post/PostFilter";
 import React from "react";
 import NullLayout from "@/components/layout/NullLayout";
 import { Spinner } from "@material-tailwind/react";
+import useSearchParam from "@/hooks/useSearchParam";
 
 const HomePage: React.FC = () => {
-  const [filter, setFilter] = React.useState<string>("New");
+  const [filter, setFilter] = useSearchParam<string>({
+    key: "filter",
+    defaultValue: "New"
+  });
   const { ref, inView } = useInView();
-
-  React.useEffect(() => {
-    const filter = sessionStorage.getItem(SessionStorageKey.SelectedFilter);
-    if (filter) setFilter(filter);
-    else setFilter("New");
-  }, []);
 
   const { data, fetchNextPage, isPending, isFetchingNextPage } =
     useInfiniteQuery({
       queryKey: [`home-${filter}-query`],
-      queryFn: async ({ pageParam = 1 }) => {
+      queryFn: async ({ pageParam }) => {
         return await PostService.get(
           "filter",
           pageParam,

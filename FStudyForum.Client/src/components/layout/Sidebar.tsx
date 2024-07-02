@@ -1,4 +1,5 @@
 import { ROLE } from "@/helpers/constants";
+import { cn } from "@/helpers/utils";
 import { useAuth } from "@/hooks/useAuth";
 import {
   List,
@@ -16,12 +17,12 @@ import {
   AreaChart,
   BookUser,
   ChevronDown,
-  CircleDollarSign,
   Home,
   Rocket,
   SquareGanttChart,
-  Tags,
-  Flag
+  Flag,
+  HandCoins,
+  Tags
 } from "lucide-react";
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -51,7 +52,7 @@ const sidebarListItems = [
       },
       {
         label: "Donate",
-        icon: CircleDollarSign,
+        icon: HandCoins,
         path: "/donate",
         items: []
       }
@@ -105,18 +106,18 @@ const Sidebar = React.memo(({ handleClose }: SidebarProps) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { user } = useAuth();
-  const segments = pathname.split("/").filter(s => s !== "");
 
-  const [collapse, setCollapse] = React.useState(
-    segments.length != 0 ? segments[0] : ""
-  );
+  const [collapse, setCollapse] = React.useState<string[]>([]);
 
-  const switchCollapse = (label: string) => {
-    setCollapse(isCollapse(label) ? "" : label);
+  const toggleLabel = (label: string) => {
+    setCollapse(prev =>
+      prev.includes(label)
+        ? prev.filter(item => item !== label)
+        : [...prev, label]
+    );
   };
 
-  const isCollapse = (label: string) =>
-    collapse.toLowerCase() === label.toLowerCase();
+  const isCollapse = (label: string) => collapse.includes(label);
 
   const handleView = (path: string) => {
     handleClose?.();
@@ -139,39 +140,38 @@ const Sidebar = React.memo(({ handleClose }: SidebarProps) => {
                       onClick={() => handleView(path)}
                       selected={pathname === path}
                       key={label}
-                      className="text-sm"
+                      className={cn("text-sm")}
                     >
                       <ListItemPrefix>
-                        {React.createElement(icon, { className: "h-5 w-5" })}
+                        {React.createElement(icon, {
+                          className: cn("h-5 w-5 text-blue-gray-700")
+                        })}
                       </ListItemPrefix>
                       {label}
                     </ListItem>
                   ) : (
                     <Accordion
                       key={label}
-                      open={isCollapse(label)}
+                      open={!isCollapse(label)}
                       icon={
                         <ChevronDown
                           className={`mx-auto h-4 w-4 transition-transform ${
-                            isCollapse(label) ? "rotate-180" : ""
+                            !isCollapse(label) ? "rotate-180" : ""
                           }`}
                         />
                       }
                     >
                       <AccordionHeader
-                        onClick={() => switchCollapse(label)}
-                        className="border-b-0 p-3 hover:bg-gray-50 rounded-md"
+                        onClick={() => toggleLabel(label)}
+                        className="border-b-0 p-3 hover:bg-blue-gray-50 rounded-md"
                       >
-                        <ListItemPrefix>
-                          <SquareGanttChart className="h-5 w-5" />
-                        </ListItemPrefix>
-                        <Typography className="mr-auto text-sm font-medium">
+                        <Typography className="mr-auto text-xs uppercase tracking-widest">
                           {label}
                         </Typography>
                       </AccordionHeader>
                       <AccordionBody className="py-1">
                         {items && items.length > 0 ? (
-                          <List className="p-0 pl-2 text-sm">
+                          <List className="p-0 text-sm">
                             {items.map(({ label, icon, path }) => (
                               <ListItem
                                 onClick={() => handleView(path)}

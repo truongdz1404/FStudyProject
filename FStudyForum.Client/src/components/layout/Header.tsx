@@ -24,11 +24,10 @@ import {
   X
 } from "lucide-react";
 import { cn } from "@/helpers/utils";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Icons } from "../Icons";
 import { useAuth } from "@/hooks/useAuth";
-import TopicService from "@/services/TopicService";
-import { Topic } from "@/types/topic";
+import { useRouterParam } from "@/hooks/useRouterParam";
 
 function ProfileMenu() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
@@ -67,7 +66,7 @@ function ProfileMenu() {
             variant="circular"
             size="sm"
             alt="avatar"
-            className="border border-gray-500 p-0.5 bg-white"
+            className=" bg-white"
             src={user?.avatar ?? "/src/assets/images/user.png"}
           />
         </Button>
@@ -167,22 +166,11 @@ type HeaderProps = {
 const Header = React.memo(({ openSidebar }: HeaderProps) => {
   const [isNavOpen, setIsNavOpen] = React.useState(false);
   const toggleIsNavOpen = () => setIsNavOpen(cur => !cur);
-  const { name } = useParams<{ name: string }>();
-  const [topic, setTopic] = React.useState<Topic | undefined>();
+  const { topic } = useRouterParam();
+  const [isAll, setIsAll] = React.useState(false);
   React.useEffect(() => {
-    setTopic(undefined);
-    if (!name) return;
-    const fetchTopic = async () => {
-      try {
-        const topic = await TopicService.getTopicByName(name);
-        setTopic(topic);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    fetchTopic();
-  }, [name]);
-
+    setIsAll(false);
+  }, [topic]);
   React.useEffect(() => {
     const checkResponsive = () =>
       window.innerWidth >= 960 && setIsNavOpen(false);
@@ -220,31 +208,32 @@ const Header = React.memo(({ openSidebar }: HeaderProps) => {
         </div>
         <div
           className={cn(
-            "w-1/2 lg:w-1/3 max-w-screen-md bg-blue-gray-50 h-10 rounded-full text-sm",
+            "w-1/2 md:w-2/5 max-w-screen-md bg-blue-gray-50 h-10 rounded-full text-sm",
             "flex gap-x-2"
           )}
         >
-          <span className="my-auto pl-3">
+          <span className="my-auto ps-3">
             <Search className="h-[1.18rem] text-blue-gray-700" />
           </span>
-          {topic && (
+          {!isAll && topic && (
             <span
               className={cn(
-                "rounded-full bg-blue-gray-700/15 my-1 px-2 text-xs flex gap-x-2"
+                "rounded-full bg-blue-gray-700/15 my-1 text-xs flex gap-x-2 items-center"
               )}
             >
-              <Avatar
-                src={topic.avatar || Default}
-                className="w-5 h-5 my-auto"
-              />
-              <span className="my-auto truncate">t/{topic.name}</span>
-              <button
-                type="button"
-                className=" bg-blue-gray-900/80 rounded-full p-1 my-auto"
-                onClick={() => setTopic(undefined)}
+              <div className="h-full aspect-square  rounded-full flex items-center justify-center">
+                <Avatar src={topic.avatar || Default} className="w-5 h-5" />
+              </div>
+
+              <span className="truncate">t/{topic.name}</span>
+              <div
+                className="h-full aspect-square hover:bg-blue-gray-200/50 rounded-full flex items-center justify-center cursor-pointer"
+                onClick={() => setIsAll(false)}
               >
-                <X className="w-3 h-3 text-white" strokeWidth={3} />
-              </button>
+                <div className=" bg-blue-gray-900/80 rounded-full p-1">
+                  <X className="w-3 h-3 text-white" strokeWidth={3} />
+                </div>
+              </div>
             </span>
           )}
           <span className="my-auto flex-1">
