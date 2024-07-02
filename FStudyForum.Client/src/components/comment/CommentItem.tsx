@@ -172,7 +172,7 @@ const CommentItem: FC<CommentItemProps> = ({
                 <div className="p-0.5 border rounded-full absolute left-[5px] top-25">
                   {expandedComments[comment.id] ? <Minus size={12} /> : <Plus size={12} />}
                   {comment.replies && comment.replies.length > 1 && expandedComments[comment.id] && (
-                    <svg height={childHeight} width="40" className="absolute left-[-11.8px] ">
+                    <svg height={childHeight} width="40" className="absolute left-[-11.5px] ">
                       <line x1="20" y1="10" x2="20"
                         y2={childHeight}
                         stroke="gray" strokeWidth="1" />
