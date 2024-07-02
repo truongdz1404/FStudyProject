@@ -3,9 +3,10 @@
 
 namespace FStudyForum.Core.Interfaces.IRepositories
 {
-    public interface IDonationRepository
+    public interface IDonationRepository : IBaseRepository<Donation>
     {
         Task SaveUserDonate(Donation donation);
         Task<Donation?> GetDonationByTid(string tid);
+        Task<Donation?> GetDonationByUser(string username);
     }
 }

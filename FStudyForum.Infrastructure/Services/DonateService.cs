@@ -25,11 +25,6 @@ namespace FStudyForum.Infrastructure.Services
             _userManager = userManager;
             _mapper = mapper;
         }
-        public async Task<bool> CheckExistDonate(string tid)
-        {
-            return await _donationRepository.GetDonationByTid(tid) == null;
-        }
-
         public async Task<QRCodeDTO?> GenerateVietQRCodeAsync(string amountByUser, string addInfoByUser)
         {
             var client = _httpClientFactory.CreateClient();
@@ -62,7 +57,7 @@ namespace FStudyForum.Infrastructure.Services
             }
         }
 
-        public async Task<DonationDTO> SaveUserDonate(DonationDTO donationDTO)
+        public async Task<DonationDTO> SaveUserDonate(CreateDonationDTO donationDTO)
         {
             var user = await _userManager.FindByNameAsync(donationDTO.Username)
                 ?? throw new Exception("User not found");
@@ -70,6 +65,31 @@ namespace FStudyForum.Infrastructure.Services
             donation.User = user;
             await _donationRepository.SaveUserDonate(donation);
             return _mapper.Map<DonationDTO>(donation);
+        }
+        
+        public async Task<DonationDTO> GetDonationByUser(string username)
+        {
+            var donationByUser = await _donationRepository.GetDonationByUser(username)
+                ?? throw new Exception("Not found.");
+            return _mapper.Map<DonationDTO>(donationByUser);
+        }
+        public async Task<DonationDTO> UpdateDonate(long id, UpdateDonationDTO updateDonationDTO)
+        {
+            var donation = await _donationRepository.GetById(id)
+                ?? throw new Exception("Not found.");
+            _mapper.Map(updateDonationDTO, donation);
+            await _donationRepository.Update(donation);
+            return _mapper.Map<DonationDTO>(donation);
+        }
+        public async Task<bool> CheckDonation(string username, int id, string message, decimal amount)
+        {
+            var donation = await _donationRepository.GetDonationByUser(username)
+                ?? throw new Exception("Not found.");
+            if(donation.Id == id && donation.Message == message && donation.Amount == amount)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

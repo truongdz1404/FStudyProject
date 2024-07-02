@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FStudyForum.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20240627073009_Final")]
-    partial class Final
+    [Migration("20240702142931_Fuck")]
+    partial class Fuck
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -237,7 +237,6 @@ namespace FStudyForum.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Tid")
-                        .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
@@ -566,19 +565,19 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "47140919-f62f-4943-a025-0f93fdccad41",
+                            Id = "4fb5f00b-8a28-4f78-aad3-ffd82d7b45bf",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "5620fdfe-e1e0-4e2c-9d67-667dacdee53c",
+                            Id = "d403d78c-2459-4e9e-adb1-476479c8e629",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "df3486bb-01e7-43c2-853f-c457a1ad1e1f",
+                            Id = "09527422-f616-4481-a227-792a9ae076ff",
                             Name = "Moderator",
                             NormalizedName = "MODERATOR"
                         });

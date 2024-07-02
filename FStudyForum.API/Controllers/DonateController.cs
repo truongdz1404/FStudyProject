@@ -46,17 +46,18 @@ namespace FStudyForum.API.Controllers
                 });
             }
         }
-        [HttpGet("isExistTid/{tid}")]
-        public async Task<IActionResult> CheckExistDonate(string tid)
+        
+        [HttpPost("save-user-donate")]
+        public async Task<IActionResult> SaveUserDonate([FromBody] CreateDonationDTO donationDTO)
         {
             try
             {
-                var isExist = await _donateService.CheckExistDonate(tid);
+                var donation = await _donateService.SaveUserDonate(donationDTO);
                 return Ok(new Response
                 {
-                    Data = isExist,
-                    Status = ResponseStatus.SUCCESS,
-                    Message = "Check exist donate successfully"
+                    Data = donation,
+                    Message = "Donation saved successfully",
+                    Status = ResponseStatus.SUCCESS
                 });
             }
             catch (Exception ex)
@@ -68,17 +69,68 @@ namespace FStudyForum.API.Controllers
                 });
             }
         }
-        [HttpPost("save-user-donate")]
-        public async Task<IActionResult> SaveUserDonate([FromBody] DonationDTO donationDTO)
+        [HttpGet("getDonateByUsername/{username}")]
+        public async Task<IActionResult> GetDonateByUser(string username)
         {
             try
             {
-                var donation = await _donateService.SaveUserDonate(donationDTO);
+                var donateByUser = await _donateService.GetDonationByUser(username);
+                if(donateByUser == null)
+                {
+                    return NotFound(new Response
+                    {
+                        Status = ResponseStatus.ERROR,
+                        Message = "Not found."
+                    });
+                }
                 return Ok(new Response
                 {
+                    Data = donateByUser,
+                    Status = ResponseStatus.SUCCESS,
+                    Message = "Find user donate successfully."
+                });
+            } catch(Exception ex)
+            {
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = ex.Message
+                });
+            }
+        }
+        [HttpPut("updateDonate/{id}")]
+        public async Task<IActionResult> UpdateDonate([FromRoute] long id, [FromBody] UpdateDonationDTO updateDonationDTO)
+        {
+            try
+            {
+                var donation = await _donateService.UpdateDonate(id, updateDonationDTO);
+                return Ok( new Response
+                {
                     Data = donation,
-                    Message = "Donation saved successfully",
-                    Status = ResponseStatus.SUCCESS
+                    Status = ResponseStatus.SUCCESS,
+                    Message = "Update successfully"
+                }
+                );
+            } catch(Exception ex)
+            {
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = ex.Message
+                });
+            }
+        }
+        [HttpGet("checkDonate/{id}/{username}/{message}/{amount}")]
+        public async Task<IActionResult> CheckDonation(int id, string username,string message, decimal amount)
+        {
+            try
+            {
+                var isExist = await _donateService.CheckDonation(username, id, message, amount);
+                return Ok(new Response
+                {
+                    Data = isExist,
+                    Status = ResponseStatus.SUCCESS,
+                    Message = "Check donation successfully"
                 });
             }
             catch (Exception ex)
