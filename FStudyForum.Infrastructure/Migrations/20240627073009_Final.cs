@@ -473,6 +473,37 @@ namespace FStudyForum.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "tblRecentPosts",
+                schema: "dbo",
+                columns: table => new 
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    PostId = table.Column<long>(type: "bigint", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table => 
+                {
+                    table.PrimaryKey("PK_tblRecentPosts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_tblRecentPosts_tblPosts_PostId",
+                        column: x => x.PostId,
+                        principalSchema: "dbo",
+                        principalTable: "tblPosts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_tblRecentPosts_tblUsers_UserId",
+                        column: x => x.UserId,
+                        principalSchema: "dbo",
+                        principalTable: "tblUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "tblComments",
                 schema: "dbo",
                 columns: table => new
@@ -661,6 +692,18 @@ namespace FStudyForum.Infrastructure.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_tblRecentPosts_PostId",
+                schema: "dbo",
+                table: "tblRecentPosts",
+                column: "PostId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_tblRecentPosts_UserId",
+                schema: "dbo",
+                table: "tblRecentPosts",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_tblTopicBans_TopicId",
                 schema: "dbo",
                 table: "tblTopicBans",
@@ -761,6 +804,10 @@ namespace FStudyForum.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "tblSavedPosts",
+                schema: "dbo");
+
+            migrationBuilder.DropTable(
+                name: "tblRecentPosts",
                 schema: "dbo");
 
             migrationBuilder.DropTable(

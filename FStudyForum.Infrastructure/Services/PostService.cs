@@ -161,6 +161,54 @@ namespace FStudyForum.Infrastructure.Services
             await _postRepository.SavePost(savedPost);
             return savedPostDTO;
         }
+
+        public async Task<RecentPostDTO?> AddRecentPostByUser(RecentPostDTO recentPostDTO)
+        {
+            if (!await _postRepository.IsExistInRecent(recentPostDTO))
+            {
+                throw new Exception("Post has already exist in Recent.");
+            }
+            var user = await _userManager.FindByNameAsync(recentPostDTO.UserName)
+                ?? throw new Exception("User not found");
+            var post = await _postRepository.GetById(recentPostDTO.PostId)
+                ?? throw new Exception(nameof(recentPostDTO.PostId) + "is not valid");
+            var recentPost = _mapper.Map<RecentPost>(recentPostDTO);
+            recentPost.User = user;
+            recentPost.Post = post;
+            await _postRepository.AddRecentPost(recentPost);
+            return recentPostDTO;
+        }
+
+        public async Task<IEnumerable<PostDTO>> GetRecentPostsByUser(string username)
+        {
+            var posts = await _postRepository.GetRecentPosts(username)
+                ?? throw new Exception("Not found.");
+            var postDTOs = new List<PostDTO>();
+            foreach (var p in posts)
+            {
+                postDTOs.Add(new PostDTO
+                {
+                    Id = p.Id,
+                    Title = p.Title,
+                    Author = p.Creater.UserName!,
+                    TopicName = p.Topic.Name,
+                    TopicAvatar = p.Topic.Avatar,
+                    VoteType = await _voteRepository.GetVotedType(username, p.Id),
+                    Content = p.Content,
+                    VoteCount = await _postRepository.GetVoteCount(p.Id),
+                    CommentCount = p.Comments.Count,
+                    Attachments = p.Attachments.Select(a => new AttachmentDTO { Id = a.Id, Type = a.Type, Url = a.FileUrl }),
+                    Elapsed = DateTime.Now - p.CreatedAt
+                });
+            }
+            return postDTOs;
+        }
+
+        public async Task ClearRecentPostsByUser(string username)
+        {
+            await _postRepository.ClearRecentPosts(username);
+        }
+
         public async Task<bool> IsPostExists(SavePostDTO savedPostDTO)
         {
             return await _postRepository.IsSaved(savedPostDTO);

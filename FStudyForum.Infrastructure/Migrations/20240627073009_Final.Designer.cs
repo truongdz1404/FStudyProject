@@ -421,6 +421,36 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.ToTable("tblSavedPosts", "dbo");
                 });
 
+            modelBuilder.Entity("FStudyForum.Core.Models.Entities.RecentPost", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("PostId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PostId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("tblRecentPosts", "dbo");
+                });
+
             modelBuilder.Entity("FStudyForum.Core.Models.Entities.Topic", b =>
                 {
                     b.Property<long>("Id")
@@ -833,6 +863,25 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("FStudyForum.Core.Models.Entities.RecentPost", b =>
+                {
+                    b.HasOne("FStudyForum.Core.Models.Entities.Post", "Post")
+                        .WithMany("RecentViews")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FStudyForum.Core.Models.Entities.ApplicationUser", "User")
+                        .WithMany("RecentPosts")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Post");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("FStudyForum.Core.Models.Entities.TopicBan", b =>
                 {
                     b.HasOne("FStudyForum.Core.Models.Entities.Topic", "Topic")
@@ -972,6 +1021,8 @@ namespace FStudyForum.Infrastructure.Migrations
 
                     b.Navigation("SavedPosts");
 
+                    b.Navigation("RecentPosts");
+
                     b.Navigation("Votes");
                 });
 
@@ -994,6 +1045,8 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.Navigation("Comments");
 
                     b.Navigation("SavedByUsers");
+
+                    b.Navigation("RecentViews");
 
                     b.Navigation("Votes");
                 });

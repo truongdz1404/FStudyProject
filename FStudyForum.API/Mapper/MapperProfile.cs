@@ -21,6 +21,7 @@ public class MapperProfile : AutoMapper.Profile
         CreateMap<ProfileDTO, Profile>().ReverseMap();
         CreateMap<PaginatedData<Post>, PaginatedData<PostDTO>>().ReverseMap();
         CreateMap<SavedPost, SavePostDTO>().ReverseMap();
+        CreateMap<RecentPost, RecentPostDTO>().ReverseMap();
         CreateMap<Donation, DonationDTO>().ReverseMap();
         CreateMap<Category, CategoryDTO>().ReverseMap();
 

@@ -57,6 +57,10 @@ public class ApplicationDBContext(DbContextOptions options)
            .WithOne(sp => sp.User);
 
         builder.Entity<ApplicationUser>()
+            .HasMany(u => u.RecentPosts)
+            .WithOne(rp => rp.User);
+
+        builder.Entity<ApplicationUser>()
             .HasMany(u => u.ModeratedTopics)
             .WithMany(t => t.ModeratedByUsers)
             .UsingEntity("tblModerators");
@@ -78,6 +82,10 @@ public class ApplicationDBContext(DbContextOptions options)
         builder.Entity<Post>()
            .HasMany(p => p.SavedByUsers)
            .WithOne(sb => sb.Post);
+
+        builder.Entity<Post>()
+            .HasMany(p => p.RecentViews)
+            .WithOne(rv => rv.Post);
 
         builder.Entity<Post>()
             .HasMany(p => p.Votes)
@@ -127,6 +135,7 @@ public class ApplicationDBContext(DbContextOptions options)
     public DbSet<Attachment> Attachments { get; set; }
     public DbSet<Donation> Donations { get; set; }
     public DbSet<SavedPost> SavedPosts { get; set; }
+    public DbSet<RecentPost> RecentPosts { get; set; }
     public DbSet<TopicBan> TopicBans { get; set; }
 }
 
