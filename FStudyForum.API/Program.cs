@@ -18,7 +18,7 @@ var jwtSection = builder.Configuration.GetSection("JWT");
 builder.Services.Configure<JwtConfig>(jwtSection);
 builder.Services.Configure<GoogleConfig>(builder.Configuration.GetSection("Google"));
 builder.Services.Configure<VNPayConfig>(builder.Configuration.GetSection("VnPay"));
-
+builder.Services.Configure<EmailConfig>(builder.Configuration.GetSection("EmailApiKey"));
 var jwtConfig = jwtSection.Get<JwtConfig>()
     ?? throw new Exception("Jwt options have not been set!");
 builder.Services.AddDbContext<ApplicationDBContext>(options =>

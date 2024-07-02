@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import {
   ArrowBigUp,
   ArrowBigDown,
@@ -14,7 +14,6 @@ import Default from "@/assets/images/user.png";
 import { cn, formatElapsedTime } from "@/helpers/utils";
 import { Link } from "react-router-dom";
 import { VOTE_TYPE } from "@/helpers/constants";
-import React from "react";
 import VoteService from "@/services/VoteService";
 
 type CommentItemProps = {
@@ -44,8 +43,47 @@ const CommentItem: FC<CommentItemProps> = ({
   replyToCommentId,
   editingCommentId
 }) => {
-  const [voteType, setVoteType] = React.useState(comment.voteType);
-  const [voteCount, setVoteCount] = React.useState(comment.voteCount);
+  const [voteType, setVoteType] = useState(comment.voteType);
+  const [voteCount, setVoteCount] = useState(comment.voteCount);
+  const commentRef = useRef<HTMLDivElement>(null);
+  const [childHeight, setChildHeight] = useState(0);
+  const spanRef = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    if (commentRef.current && expandedComments[comment.id]) {
+      let totalHeight = 0;
+      const comments: Element[] = [];
+      commentRef.current?.querySelectorAll(".comment-child").forEach(child => {
+        const childComment = child.querySelector(".comment") as HTMLDivElement;
+        const childLevel = parseInt(childComment?.dataset.level || "0", 10);
+        const isReplyOrEditing =
+          childComment?.dataset.replyTo === `${replyToCommentId}` ||
+          childComment?.dataset.editing === `${editingCommentId}`;
+        if (childLevel === level + 1) {
+          comments.push(child);
+        }
+        if (isReplyOrEditing) {
+          const inputHeight =
+            commentRef.current?.querySelector(".reply-input")?.clientHeight ||
+            0;
+          totalHeight += inputHeight;
+        }
+      });
+      comments.forEach((comment, index) => {
+        if (index !== comments.length - 1) {
+          totalHeight += comment.clientHeight;
+        }
+      });
+      setChildHeight(totalHeight + 2);
+    }
+  }, [
+    expandedComments,
+    comment.replies,
+    comment.id,
+    level,
+    replyToCommentId,
+    editingCommentId
+  ]);
 
   const handleVote = async (type: number) => {
     const realType = voteType === type ? VOTE_TYPE.UNVOTE : type;
@@ -61,7 +99,23 @@ const CommentItem: FC<CommentItemProps> = ({
   };
 
   return (
-    <div key={comment.id} className="py-2" style={{ marginLeft: level * 20 }}>
+    <div
+      ref={commentRef}
+      key={comment.id}
+      className="py-2 relative comment"
+      data-level={level}
+      style={{ marginLeft: level * 0 }}
+    >
+      {level > 0 && (
+        <svg height="50" width="20" className="absolute left-[-20px] top-0">
+          <path
+            d="M10 -20 L10 20 Q10 25 20 25"
+            stroke="gray"
+            strokeWidth="1"
+            fill="none"
+          />
+        </svg>
+      )}
       <div className="flex mb-2">
         <img
           src={comment.avatar || Default}
@@ -76,16 +130,36 @@ const CommentItem: FC<CommentItemProps> = ({
           >
             <Link
               to={`/profile/${comment.author}`}
-              className="action text-xs font-bold"
+              className="action text-xs font-bold hidden lg:block"
             >
-              {`${comment.author}`}
+              {comment.author}
             </Link>
             <span className="text-xs font-light ml-1">•</span>
             <span className="text-xs font-light ml-1">
               {formatElapsedTime(comment.elapsed)}
             </span>
           </div>
-
+          {comment.replies && comment.replies.length > 0 && (
+            <svg
+              height={(spanRef.current?.clientHeight || 0) + 140}
+              width="40"
+              className="absolute left-[-5px] top-12"
+            >
+              <line
+                x1="20"
+                y1="0"
+                x2="20"
+                y2={
+                  replyToCommentId === comment.id ||
+                  editingCommentId === comment.id
+                    ? `${(spanRef.current?.clientHeight || 0) + 120}`
+                    : `${(spanRef.current?.clientHeight || 0) + 32}`
+                }
+                stroke="gray"
+                strokeWidth="1"
+              />
+            </svg>
+          )}
           {editingCommentId === comment.id ? (
             <CommentEditor
               commentId={comment.id}
@@ -94,7 +168,9 @@ const CommentItem: FC<CommentItemProps> = ({
               onCancel={() => handleEditComment(null)}
             />
           ) : (
-            <span className="font text-sm">{comment.content}</span>
+            <span ref={spanRef} className="font text-sm">
+              {comment.content}
+            </span>
           )}
           <div className="flex space-x-7 text-gray-700 my-[0.5rem]">
             <div className={cn("action flex items-center")}>
@@ -155,12 +231,30 @@ const CommentItem: FC<CommentItemProps> = ({
                 className="text-xs text-gray-500 flex items-center space-x-1"
                 onClick={() => toggleExpand(comment.id)}
               >
-                <div className="p-0.5 border rounded-full">
+                <div className="p-0.5 border rounded-full absolute left-[5px] top-25">
                   {expandedComments[comment.id] ? (
                     <Minus size={12} />
                   ) : (
                     <Plus size={12} />
                   )}
+                  {comment.replies &&
+                    comment.replies.length > 1 &&
+                    expandedComments[comment.id] && (
+                      <svg
+                        height={childHeight}
+                        width="40"
+                        className="absolute left-[-11.5px] "
+                      >
+                        <line
+                          x1="20"
+                          y1="10"
+                          x2="20"
+                          y2={childHeight}
+                          stroke="gray"
+                          strokeWidth="1"
+                        />
+                      </svg>
+                    )}
                 </div>
                 <span>
                   {expandedComments[comment.id]
@@ -169,23 +263,29 @@ const CommentItem: FC<CommentItemProps> = ({
                 </span>
               </button>
               {expandedComments[comment.id] && (
-                <div className="ml-2 border-l-2">
-                  {comment.replies.map(reply => (
-                    <CommentItem
-                      key={reply.id}
-                      comment={reply}
-                      level={level + 1}
-                      expandedComments={expandedComments}
-                      toggleExpand={toggleExpand}
-                      handleReplyClick={handleReplyClick}
-                      handleDeleteComment={handleDeleteComment}
-                      handleCreateReply={handleCreateReply}
-                      handleEditComment={handleEditComment}
-                      handleSaveEditedComment={handleSaveEditedComment}
-                      replyToCommentId={replyToCommentId}
-                      editingCommentId={editingCommentId}
-                    />
-                  ))}
+                <div
+                  className="relative"
+                  style={{ marginLeft: "-16px", marginTop: "8px" }}
+                >
+                  <div className="ml">
+                    {comment.replies.map(reply => (
+                      <div key={reply.id} className="relative comment-child">
+                        <CommentItem
+                          comment={reply}
+                          level={level + 1}
+                          expandedComments={expandedComments}
+                          toggleExpand={toggleExpand}
+                          handleReplyClick={handleReplyClick}
+                          handleDeleteComment={handleDeleteComment}
+                          handleCreateReply={handleCreateReply}
+                          handleEditComment={handleEditComment}
+                          handleSaveEditedComment={handleSaveEditedComment}
+                          replyToCommentId={replyToCommentId}
+                          editingCommentId={editingCommentId}
+                        />
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </>
