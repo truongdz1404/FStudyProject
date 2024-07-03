@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FStudyForum.Core.Interfaces.IRepositories;
 using FStudyForum.Core.Interfaces.IServices;
+using FStudyForum.Core.Models.DTOs.Search;
 using FStudyForum.Core.Models.DTOs.Topic;
 using FStudyForum.Core.Models.DTOs.TopicBan;
 using FStudyForum.Core.Models.Entities;
@@ -212,9 +213,9 @@ public class TopicService : ITopicService
         });
     }
 
-    public async Task<IEnumerable<TopicDTO>> SearchTopicContainKeywordAsync(string keyword)
+    public async Task<IEnumerable<TopicDTO>> SearchTopicContainKeywordAsync(QuerySearchTopicDTO query)
     {
-        var topics = await _topicRepository.SearchTopicContainKeywordAsync(keyword);
+        var topics = await _topicRepository.SearchTopicContainKeywordAsync(query);
         var topicDTOs = new List<TopicDTO>();
         foreach (var topic in topics)
         {

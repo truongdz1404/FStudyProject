@@ -17,7 +17,7 @@ const useQuery = () => {
 
 const SearchPage: React.FC = () => {
     const { ref, inView } = useInView();
-    const [hasMore, setHasMore] = React.useState(true); // Thêm state này
+    const [hasMore, setHasMore] = React.useState(true); 
     const query = useQuery();
     const keyword = query.get('keyword');
 
@@ -32,12 +32,12 @@ const SearchPage: React.FC = () => {
                     LIMIT_SCROLLING_PAGNATION_RESULT,
                 );
                 if (result.length < LIMIT_SCROLLING_PAGNATION_RESULT) {
-                    setHasMore(false); // Nếu kết quả trả về ít hơn giới hạn, set hasMore là false
+                    setHasMore(false); 
                 }
                 return result;
             } catch (error) {
                 if (error instanceof Error && error.message === 'Request failed with status code 404') {
-                    setHasMore(false); // Ngừng gọi API nếu trả về 404
+                    setHasMore(false); 
                     return [];
                 } else {
                     throw error;
@@ -81,7 +81,6 @@ const SearchPage: React.FC = () => {
                                 <img src={user?.avatar || "/src/assets/images/user.png"} alt={user?.username} className="ml-3 w-12 h-12 rounded-full mr-4" />
                                 <div>
                                     <h3 className="font-bold mb-1">{user?.username}</h3>
-                                    {/* <p className="text-gray-600">{user?.description}</p> */}
                                 </div>
                             </div>
                             <hr className="my-1 border-blue-gray-50 w-full" />

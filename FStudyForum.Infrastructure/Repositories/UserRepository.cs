@@ -17,19 +17,15 @@ public class UserRepository(ApplicationDBContext dbContext)
         return await _dbContext.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
     }
 
-    // public Task<string?> GetUserAvatar(string name)
-    // {
-    //     return await _dbContext.Users.Find(name).;
-    // }
-
     public async Task<IEnumerable<ApplicationUser>> SearchUserByName(QuerySearchUserDTO query)
     {
-        IQueryable<ApplicationUser> queryable =_dbContext.Users
+        IQueryable<ApplicationUser> queryable = _dbContext.Users
         .AsSplitQuery()
-        .Where(u => u.UserName!.Contains(query.Keyword.Trim()));
-         return await queryable
-                .Paginate(query.PageNumber, query.PageSize)
-                .ToListAsync();
+        .Where(u => u.UserName!.Contains(query.Keyword.Trim()))
+               .OrderBy(u => u.Id);
+        return await queryable
+               .Paginate(query.PageNumber, query.PageSize)
+               .ToListAsync();
     }
 
     public async Task<IEnumerable<Topic>> GetModeratedTopics(string username)

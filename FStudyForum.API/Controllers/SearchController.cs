@@ -117,11 +117,11 @@ namespace FStudyForum.API.Controllers
         }
 
         [HttpGet("topic")]
-        public async Task<IActionResult> SearchTopic([FromQuery] string keyword)
+        public async Task<IActionResult> SearchTopic([FromQuery] QuerySearchTopicDTO query)
         {
             try
             {
-                var topics = await _topicService.SearchTopicContainKeywordAsync(keyword);
+                var topics = await _topicService.SearchTopicContainKeywordAsync(query);
                 if (topics.IsNullOrEmpty())
                     return NotFound(new Response
                     {

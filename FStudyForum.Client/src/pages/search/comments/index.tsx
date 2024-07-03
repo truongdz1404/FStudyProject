@@ -51,7 +51,7 @@ const SearchCommentPage: React.FC = () => {
                 };
             } catch (error: unknown) {
                 if (error instanceof Error && error.message === 'Request failed with status code 404') {
-                    return { data: [], nextPage: undefined, hasMore: false }; // Ngừng gọi API nếu trả về 404
+                    return { data: [], nextPage: undefined, hasMore: false };
                 } else {
                     throw error;
                 }

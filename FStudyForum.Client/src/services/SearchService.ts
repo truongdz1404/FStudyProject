@@ -16,7 +16,6 @@ const searchComments = async (
 
 const searchPosts = async (
   keyword: string,
-  // type: string,
   pageNumber: number,
   pageSize: number,
   filter: string

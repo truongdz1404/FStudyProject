@@ -43,12 +43,12 @@ const SearchPage: React.FC = () => {
                         filter
                     );
                     if (result.length < LIMIT_SCROLLING_PAGNATION_RESULT) {
-                        setHasMore(false); // Nếu kết quả trả về ít hơn giới hạn, set hasMore là false
+                        setHasMore(false); 
                     }
                     return result;
                 } catch (error) {
                     if (error instanceof Error && error.message === 'Request failed with status code 404') {
-                        setHasMore(false); // Ngừng gọi API nếu trả về 404
+                        setHasMore(false); 
                         return [];
                     } else {
                         throw error;
@@ -66,7 +66,7 @@ const SearchPage: React.FC = () => {
             return;
         }
 
-        if (inView && hasMore) { // Chỉ gọi fetchNextPage khi hasMore là true
+        if (inView && hasMore) { 
             fetchNextPage();
         }
     }, [inView, fetchNextPage, posts.length, isPending, hasMore]);
