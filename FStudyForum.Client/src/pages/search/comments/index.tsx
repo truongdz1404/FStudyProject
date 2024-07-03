@@ -2,7 +2,7 @@ import React from "react";
 import SearchService from "@/services/SearchService";
 import PostService from "@/services/PostService";
 import ContentLayout from "@/components/layout/ContentLayout";
-import PostItem from "@/components/post/PostItem";
+import PostItem from "@/components/search/PostItemSearch";
 import { useInView } from "react-intersection-observer";
 import { useQuery } from "@tanstack/react-query";
 import { SessionStorageKey } from "@/helpers/constants";
@@ -36,7 +36,7 @@ const SearchCommentPage: React.FC = () => {
             const comments = await SearchService.searchComments(keyword);
             const posts = await Promise.all(comments.map(comment => PostService.getById(comment.postId.toString())));
             return comments.map((comment, index) => ({
-                comment,
+                comment: comment,
                 post: posts[index],
             }));
         },
@@ -63,12 +63,9 @@ const SearchCommentPage: React.FC = () => {
             </div>
             {results.length === 0 && !isPending && <NullLayout />}
             {results.map(({ post, comment }, index) => (
-                <div key={index} className="w-full">
-                    <div className="hover:bg-gray-50 rounded-lg w-full">
-                        <PostItem key={index} data={post} />
-                        <div className="pl-4">
-                            <p>{comment.content}</p>
-                        </div>
+                <div key={index} className="w-full ">
+                    <div className="hover:bg-gray-100 rounded-lg w-full py-3">
+                        <PostItem key={index} data={post} comment={comment}/>
                     </div>
                     <hr className="my-1 border-blue-gray-50" />
                 </div>
