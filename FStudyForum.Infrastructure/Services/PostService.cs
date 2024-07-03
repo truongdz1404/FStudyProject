@@ -8,6 +8,7 @@ using FStudyForum.Core.Models.Entities;
 using FStudyForum.Core.Models.DTOs;
 using FStudyForum.Core.Models.DTOs.SavePost;
 using Microsoft.AspNetCore.Identity;
+using FStudyForum.Core.Models.DTOs.Search;
 
 
 namespace FStudyForum.Infrastructure.Services
@@ -122,22 +123,29 @@ namespace FStudyForum.Infrastructure.Services
             return postDTOs;
         }
 
-        public async Task<IEnumerable<PostDTO>> SearchPostAsync(string keyword)
+        public async Task<IEnumerable<PostDTO>> SearchPostAsync(string username, QuerySearchPostDTO query)
         {
-            var posts = await _postRepository.SearchPostAsync(keyword);
-            var postDTOs = posts.Select(p => new PostDTO
+           var posts = await _postRepository.SearchPostAsync(query);
+            var postDTOs = new List<PostDTO>();
+            foreach (var p in posts)
             {
-                Id = p.Id,
-                Title = p.Title,
-                Author = p.Creater.UserName!,
-                TopicName = p.Topic.Name,
-                TopicAvatar = p.Topic.Avatar,
-                Content = p.Content,
-                VoteCount = p.Votes.Count,
-                CommentCount = p.Comments.Count(c => !c.IsDeleted),
-                Attachments = p.Attachments.Select(a => new AttachmentDTO { Type = a.Type, Url = a.FileUrl }),
-                Elapsed = DateTime.Now - p.CreatedAt
-            });
+                postDTOs.Add(new PostDTO
+                {
+                    Id = p.Id,
+                    Title = p.Title,
+                    Author = p.Creater.UserName!,
+                    TopicName = p.Topic.Name,
+                    TopicAvatar = p.Topic.Avatar,
+                    VoteType = await _voteRepository.GetVotedType(username, p.Id),
+                    UpVoteCount = p.Votes.Count(v => v.IsUp),
+                    DownVoteCount = p.Votes.Count(v => !v.IsUp),
+                    Content = p.Content,
+                    VoteCount = await _postRepository.GetVoteCount(p.Id),
+                    CommentCount = p.Comments.Count,
+                    Attachments = p.Attachments.Select(a => new AttachmentDTO { Id = a.Id, Type = a.Type, Url = a.FileUrl }),
+                    Elapsed = DateTime.Now - p.CreatedAt
+                });
+            }
             return postDTOs;
         }
 

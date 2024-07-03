@@ -169,6 +169,8 @@ const Header = React.memo(({ openSidebar }: HeaderProps) => {
   const toggleIsNavOpen = () => setIsNavOpen(cur => !cur);
   const { name } = useParams<{ name: string }>();
   const [topic, setTopic] = React.useState<Topic | undefined>();
+  const [searchTerm, setSearchTerm] = React.useState("");
+  const navigate = useNavigate();
   React.useEffect(() => {
     setTopic(undefined);
     if (!name) return;
@@ -182,6 +184,13 @@ const Header = React.memo(({ openSidebar }: HeaderProps) => {
     };
     fetchTopic();
   }, [name]);
+
+
+  const handleSearchSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && searchTerm.trim()) {
+      navigate(`/search/posts?keyword=${searchTerm.trim()}`);
+    }
+  };
 
   React.useEffect(() => {
     const checkResponsive = () =>
@@ -247,12 +256,15 @@ const Header = React.memo(({ openSidebar }: HeaderProps) => {
               </button>
             </span>
           )}
-          <span className="my-auto flex-1">
+           <span className="my-auto flex-1">
             <input
               type="text"
-              name="serch"
+              name="search"
               placeholder="Search"
               className="focus:outline-none bg-transparent w-full pr-4"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyDown={handleSearchSubmit}
             />
           </span>
         </div>

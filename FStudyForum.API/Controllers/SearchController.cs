@@ -2,6 +2,8 @@ using FStudyForum.Core.Models.DTOs;
 using FStudyForum.Core.Interfaces.IServices;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using FStudyForum.Core.Models.DTOs.Search;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FStudyForum.API.Controllers
 {
@@ -22,25 +24,29 @@ namespace FStudyForum.API.Controllers
 
         }
 
-        [HttpGet("comment")]    
+        [HttpGet("comment")]
         public async Task<IActionResult> SearchComment([FromQuery] string keyword)
         {
-            try{
-            var comments = await _commentService.SearchCommentAsync(keyword);
-            if (comments.IsNullOrEmpty()){
-                return NotFound(new Response        
+            try
+            {
+                var comments = await _commentService.SearchCommentAsync(keyword);
+                if (comments.IsNullOrEmpty())
+                {
+                    return NotFound(new Response
                     {
                         Status = ResponseStatus.ERROR,
                         Message = "Comments not found",
                     });
-            }
-            return Ok(new Response
+                }
+                return Ok(new Response
                 {
                     Message = "Get Comments successfully",
                     Status = ResponseStatus.SUCCESS,
                     Data = comments
                 });
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 return BadRequest(new Response
                 {
                     Status = ResponseStatus.ERROR,
@@ -48,25 +54,28 @@ namespace FStudyForum.API.Controllers
                 });
             }
         }
-        
-        [HttpGet("user")]    
+
+        [HttpGet("user")]
         public async Task<IActionResult> SearchUser([FromQuery] string keyword)
         {
-            try{
-            var users = await _userService.SearchUserByName(keyword);
-            if (users.IsNullOrEmpty())
-                return NotFound(new Response        
+            try
+            {
+                var users = await _userService.SearchUserByName(keyword);
+                if (users.IsNullOrEmpty())
+                    return NotFound(new Response
                     {
                         Status = ResponseStatus.ERROR,
                         Message = "Users not found",
                     });
-            return Ok(new Response
+                return Ok(new Response
                 {
                     Message = "Get Users successfully",
                     Status = ResponseStatus.SUCCESS,
                     Data = users
                 });
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 return BadRequest(new Response
                 {
                     Status = ResponseStatus.ERROR,
@@ -74,24 +83,29 @@ namespace FStudyForum.API.Controllers
                 });
             }
         }
-        [HttpGet("post")]    
-        public async Task<IActionResult> SearchPost([FromQuery] string keyword)
+        [HttpGet("post"), Authorize]
+        public async Task<IActionResult> SearchPost([FromQuery] QuerySearchPostDTO query)
         {
-            try{
-            var posts = await _postService.SearchPostAsync(keyword);
-            if (posts.IsNullOrEmpty())
-                return NotFound(new Response        
+            try
+            {
+                var username = User.Identity?.Name
+                    ?? throw new Exception("User is not authenticated!");
+                var posts = await _postService.SearchPostAsync(username, query);
+                if (posts.IsNullOrEmpty())
+                    return NotFound(new Response
                     {
                         Status = ResponseStatus.ERROR,
                         Message = "Posts not found",
                     });
-            return Ok(new Response
+                return Ok(new Response
                 {
                     Message = "Get Posts successfully",
                     Status = ResponseStatus.SUCCESS,
                     Data = posts
                 });
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 return BadRequest(new Response
                 {
                     Status = ResponseStatus.ERROR,
@@ -99,24 +113,27 @@ namespace FStudyForum.API.Controllers
                 });
             }
         }
-        [HttpGet("topic")]    
+        [HttpGet("topic")]
         public async Task<IActionResult> SearchTopic([FromQuery] string keyword)
         {
-            try{
-            var topics = await _topicService.SearchTopicContainKeywordAsync(keyword);
-            if (topics.IsNullOrEmpty())
-                return NotFound(new Response        
+            try
+            {
+                var topics = await _topicService.SearchTopicContainKeywordAsync(keyword);
+                if (topics.IsNullOrEmpty())
+                    return NotFound(new Response
                     {
                         Status = ResponseStatus.ERROR,
                         Message = "Topics not found",
                     });
-            return Ok(new Response
+                return Ok(new Response
                 {
                     Message = "Get Topics successfully",
                     Status = ResponseStatus.SUCCESS,
                     Data = topics
                 });
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 return BadRequest(new Response
                 {
                     Status = ResponseStatus.ERROR,
@@ -125,6 +142,6 @@ namespace FStudyForum.API.Controllers
             }
         }
     }
-        
-    
+
+
 }

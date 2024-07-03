@@ -40,6 +40,10 @@ const SignIn = Loadable(lazy(() => import("@/pages/auth/signin")));
 const Home = Loadable(lazy(() => import("@/pages/home")));
 const TopicDetail = Loadable(lazy(() => import("@/pages/topic")));
 const Topics = Loadable(lazy(() => import("@/pages/topics")));
+const SearchPage = Loadable(lazy(() => import("@/pages/search/posts")));
+const SearchTopics = Loadable(lazy(() => import("@/pages/search/topics")));
+const SearchComments = Loadable(lazy(() => import("@/pages/search/comments")));
+const SearchPeople = Loadable(lazy(() => import("@/pages/search/people")));
 const SignOut = Loadable(lazy(() => import("@/pages/auth/signout")));
 const ListReport = Loadable(lazy(() => import("@/pages/manager/report/list")));
 const Response = Loadable(
@@ -191,6 +195,27 @@ const Router: FC = () => {
         {
           path: "submit",
           element: <SubmitPage />
+        },
+        {
+          path: "search",
+          children: [
+            {
+              path: "posts",
+              element: <SearchPage />
+            },
+            {
+              path: "topics",
+              element: <SearchTopics />
+            },
+            {
+              path: "comments",
+              element: <SearchComments />
+            },
+            {
+              path: "people",
+              element: <SearchPeople />
+            },
+          ]
         }
       ]
     },

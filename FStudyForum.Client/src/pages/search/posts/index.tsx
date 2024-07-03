@@ -1,0 +1,94 @@
+import React from "react";
+import SearchService from "@/services/SearchService";
+import ContentLayout from "@/components/layout/ContentLayout";
+import PostItem from "@/components/post/PostItem";
+import { useInView } from "react-intersection-observer";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import {
+    LIMIT_SCROLLING_PAGNATION_RESULT,
+    SessionStorageKey
+} from "@/helpers/constants";
+import PostFilter from "@/components/filter/PostFilter";
+import NullLayout from "@/components/layout/NullLayout";
+import { Spinner } from "@material-tailwind/react";
+import { useLocation } from 'react-router-dom';
+import SearchButton from "@/components/search/SearchButton";
+
+const useQuery = () => {
+    return new URLSearchParams(useLocation().search);
+};
+
+const SearchPage: React.FC = () => {
+    const [filter, setFilter] = React.useState<string>("New");
+    const { ref, inView } = useInView();
+
+    const query = useQuery();
+    const keyword = query.get('keyword');
+
+    React.useEffect(() => {
+        const savedFilter = sessionStorage.getItem(SessionStorageKey.SelectedFilter);
+        if (savedFilter) setFilter(savedFilter);
+        else setFilter("New");
+    }, []);
+
+    const { data, fetchNextPage, isPending, isFetchingNextPage, refetch } =
+        useInfiniteQuery({
+            queryKey: [`search-${filter}-query`, keyword],
+            queryFn: async ({ pageParam = 1 }) => {
+                return await SearchService.searchPosts(
+                    keyword || "",
+                    pageParam,
+                    LIMIT_SCROLLING_PAGNATION_RESULT,
+                    filter
+                );
+            },
+            getNextPageParam: (_, pages) => pages.length + 1,
+            initialPageParam: 1
+        });
+
+    const posts = data?.pages.flatMap(p => p) ?? [];
+
+    React.useEffect(() => {
+      
+        if (inView) {
+            fetchNextPage();
+        }
+    }, [inView, fetchNextPage]);
+
+    React.useEffect(() => {
+        refetch();
+    }, [keyword, refetch]);
+
+    if (isPending) return <Spinner className="mx-auto" />;
+
+    return (
+        <ContentLayout>
+            <div className="relative flex text-left z-20 mt-3">
+                <SearchButton />
+            </div>
+            <div className="relative flex text-left z-20">
+                <PostFilter setFilter={setFilter} filter={filter} />
+            </div>
+            {posts.length === 0 && !isPending && <NullLayout />}
+            {posts.map((post, index) => (
+                <div key={index} className="w-full">
+                    <div className="hover:bg-gray-50 rounded-lg w-full">
+                        <PostItem key={index} data={post} />
+                    </div>
+                    <hr className="my-1 border-blue-gray-50" />
+                </div>
+            ))}
+            <div ref={ref} className="text-center">
+                {isFetchingNextPage ? (
+                    <Spinner className="mx-auto" />
+                ) : (
+                    <span className="text-xs font-light">
+                        Nothing more
+                    </span>
+                )}
+            </div>
+        </ContentLayout>
+    );
+};
+
+export default SearchPage;
