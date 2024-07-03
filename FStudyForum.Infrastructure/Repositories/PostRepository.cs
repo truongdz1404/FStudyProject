@@ -157,7 +157,8 @@ namespace FStudyForum.Infrastructure.Repositories
              .Include(p => p.Votes)
              .Include(p => p.Attachments)
              .Include(p => p.Comments)
-            .Where(p => (p.IsDeleted == false && p.Title.Contains(query.Keyword.Trim()) && !p.Topic.IsDeleted) || p.Content.Contains(query.Keyword.Trim()));
+             .AsSplitQuery()
+             .Where(p => (p.IsDeleted == false && p.Title.Contains(query.Keyword.Trim()) && !p.Topic.IsDeleted) || p.Content.Contains(query.Keyword.Trim()));
             queryable = query.Filter switch
             {
                 "Hot" => queryable.OrderByDescending(p => p.Votes.Sum(v => v.IsUp ? 1 : 0) + p.Comments.Count),

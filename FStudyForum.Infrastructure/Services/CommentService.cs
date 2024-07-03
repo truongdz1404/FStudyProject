@@ -1,6 +1,7 @@
 using FStudyForum.Core.Interfaces.IRepositories;
 using FStudyForum.Core.Interfaces.IServices;
 using FStudyForum.Core.Models.DTOs.Comment;
+using FStudyForum.Core.Models.DTOs.Search;
 using FStudyForum.Core.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
@@ -99,9 +100,9 @@ namespace FStudyForum.Infrastructure.Services
             };
         }
 
-        public async Task<IEnumerable<CommentDTO>> SearchCommentAsync(string keyword)
+        public async Task<IEnumerable<CommentDTO>> SearchCommentAsync(QuerySearchCommentDTO query)
         {
-            var comments = await _commentRepository.SearchCommentAsync(keyword);
+            var comments = await _commentRepository.SearchCommentAsync(query);
             var commentDTOs = new List<CommentDTO>();
             if (comments != null)
                 foreach (var comment in comments)

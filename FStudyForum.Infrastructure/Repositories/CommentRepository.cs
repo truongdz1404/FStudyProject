@@ -1,8 +1,10 @@
 using FStudyForum.Core.Interfaces.IRepositories;
 using FStudyForum.Core.Models.DTOs.Comment;
+using FStudyForum.Core.Models.DTOs.Search;
 using FStudyForum.Core.Models.Entities;
 using FStudyForum.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using FStudyForum.Core.Helpers;
 
 namespace FStudyForum.Infrastructure.Repositories
 {
@@ -94,7 +96,7 @@ namespace FStudyForum.Infrastructure.Repositories
         }
 
 
-         public async Task<int> GetVoteCount(long id)
+        public async Task<int> GetVoteCount(long id)
         {
             return await _dbContext.Votes
                     .Where(v => v.Comment != null && v.Comment.Id == id)
@@ -102,16 +104,25 @@ namespace FStudyForum.Infrastructure.Repositories
         }
 
 
-        public async Task<IEnumerable<Comment?>> SearchCommentAsync(string keyword)
+        public async Task<IEnumerable<Comment?>> SearchCommentAsync(QuerySearchCommentDTO query)
         {
-            return await _context.Comments
-               .Where(c => c.Content.Contains(keyword.Trim()) && !c.IsDeleted)
-               .Include(c => c.Creater)
-               .Include(c => c.Post)
-               .Include(c => c.Creater.Profile)
-               .Include(c => c.Replies)
-               .Include(c => c.Votes)
-               .ToListAsync();
+            IQueryable<Comment> queryable = _context.Comments
+              .Include(c => c.Creater)
+              .ThenInclude(c => c.Profile)
+              .Include(c => c.Post)
+              .Include(c => c.Replies)
+              .Include(c => c.Votes)
+              .AsSplitQuery()
+              .Where(c => c.Content.Contains(query.Keyword.Trim()) && !c.IsDeleted);
+            queryable = query.Filter switch
+            {
+                "Hot" => queryable.OrderByDescending(c => c.Votes.Sum(v => v.IsUp ? 1 : 0)),
+                "New" => queryable.OrderByDescending(c => c.CreatedAt),
+                _ => queryable.OrderBy(p => p.Id),
+            };
+            return await queryable
+                .Paginate(query.PageNumber, query.PageSize)
+                .ToListAsync();
         }
     }
 }

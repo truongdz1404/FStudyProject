@@ -24,43 +24,14 @@ namespace FStudyForum.API.Controllers
 
         }
 
-        [HttpGet("comment")]
-        public async Task<IActionResult> SearchComment([FromQuery] string keyword)
-        {
-            try
-            {
-                var comments = await _commentService.SearchCommentAsync(keyword);
-                if (comments.IsNullOrEmpty())
-                {
-                    return NotFound(new Response
-                    {
-                        Status = ResponseStatus.ERROR,
-                        Message = "Comments not found",
-                    });
-                }
-                return Ok(new Response
-                {
-                    Message = "Get Comments successfully",
-                    Status = ResponseStatus.SUCCESS,
-                    Data = comments
-                });
-            }
-            catch (Exception e)
-            {
-                return BadRequest(new Response
-                {
-                    Status = ResponseStatus.ERROR,
-                    Message = e.Message
-                });
-            }
-        }
+
 
         [HttpGet("user")]
-        public async Task<IActionResult> SearchUser([FromQuery] string keyword)
+        public async Task<IActionResult> SearchUser([FromQuery] QuerySearchUserDTO query)
         {
             try
             {
-                var users = await _userService.SearchUserByName(keyword);
+                var users = await _userService.SearchUserByName(query);
                 if (users.IsNullOrEmpty())
                     return NotFound(new Response
                     {
@@ -113,6 +84,38 @@ namespace FStudyForum.API.Controllers
                 });
             }
         }
+
+        [HttpGet("comment")]
+        public async Task<IActionResult> SearchComment([FromQuery] QuerySearchCommentDTO query)
+        {
+            try
+            {
+                var comments = await _commentService.SearchCommentAsync(query);
+                if (comments.IsNullOrEmpty())
+                {
+                    return NotFound(new Response
+                    {
+                        Status = ResponseStatus.ERROR,
+                        Message = "Comments not found",
+                    });
+                }
+                return Ok(new Response
+                {
+                    Message = "Get Comments successfully",
+                    Status = ResponseStatus.SUCCESS,
+                    Data = comments
+                });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = e.Message
+                });
+            }
+        }
+
         [HttpGet("topic")]
         public async Task<IActionResult> SearchTopic([FromQuery] string keyword)
         {

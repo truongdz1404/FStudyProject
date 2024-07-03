@@ -17,6 +17,7 @@ const useQuery = () => {
 
 const SearchPage: React.FC = () => {
     const { ref, inView } = useInView();
+    const [hasMore, setHasMore] = React.useState(true); // Thêm state này
 
     const query = useQuery();
     const keyword = query.get('keyword');
@@ -25,12 +26,25 @@ const SearchPage: React.FC = () => {
         useInfiniteQuery({
             queryKey: [`search-query`, keyword],
             queryFn: async ({ pageParam = 1 }) => {
-                return await SearchService.searchTopics(
+                try {
+                const result = await SearchService.searchTopics(
                     keyword || "",
                     pageParam,
                     LIMIT_SCROLLING_PAGNATION_RESULT,
                 );
-            },
+                if (result.length < LIMIT_SCROLLING_PAGNATION_RESULT) {
+                    setHasMore(false); // Nếu kết quả trả về ít hơn giới hạn, set hasMore là false
+                }
+                return result;
+            } catch (error) {
+                if (error instanceof Error && error.message === 'Request failed with status code 404') {
+                    setHasMore(false); // Ngừng gọi API nếu trả về 404
+                    return [];
+                } else {
+                    throw error;
+                }
+            }
+        },
             getNextPageParam: (_, pages) => pages.length + 1,
             initialPageParam: 1
         });
@@ -38,10 +52,10 @@ const SearchPage: React.FC = () => {
     const topics = data?.pages.flatMap(page => page) ?? [];
 
     React.useEffect(() => {
-        if (inView) {
+        if (inView && hasMore) { // Chỉ gọi fetchNextPage khi hasMore là true
             fetchNextPage();
         }
-    }, [inView, fetchNextPage]);
+    }, [inView, fetchNextPage, hasMore]);
 
     React.useEffect(() => {
         refetch();

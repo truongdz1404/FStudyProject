@@ -17,7 +17,7 @@ const useQuery = () => {
 
 const SearchPage: React.FC = () => {
     const { ref, inView } = useInView();
-
+    const [hasMore, setHasMore] = React.useState(true); // Thêm state này
     const query = useQuery();
     const keyword = query.get('keyword');
 
@@ -25,23 +25,35 @@ const SearchPage: React.FC = () => {
         useInfiniteQuery({
             queryKey: [`search-query`, keyword],
             queryFn: async ({ pageParam = 1 }) => {
-                return await SearchService.searchUsers(
+                try {
+                const result = await SearchService.searchUsers(
                     keyword || "",
                     pageParam,
                     LIMIT_SCROLLING_PAGNATION_RESULT,
                 );
-            },
+                if (result.length < LIMIT_SCROLLING_PAGNATION_RESULT) {
+                    setHasMore(false); // Nếu kết quả trả về ít hơn giới hạn, set hasMore là false
+                }
+                return result;
+            } catch (error) {
+                if (error instanceof Error && error.message === 'Request failed with status code 404') {
+                    setHasMore(false); // Ngừng gọi API nếu trả về 404
+                    return [];
+                } else {
+                    throw error;
+                }
+            }
+        },
             getNextPageParam: (_, pages) => pages.length + 1,
             initialPageParam: 1
         });
-
     const users = data?.pages.flatMap(page => page) ?? [];
 
     React.useEffect(() => {
-        if (inView) {
+        if (inView && hasMore) {
             fetchNextPage();
         }
-    }, [inView, fetchNextPage]);
+    }, [inView, fetchNextPage, hasMore]);
 
     React.useEffect(() => {
         refetch();
@@ -82,7 +94,7 @@ const SearchPage: React.FC = () => {
                     <Spinner className="mx-auto" />
                 ) : (
                     <span className="text-xs font-light">
-                       Nothing more
+                        Nothing more
                     </span>
                 )}
             </div>

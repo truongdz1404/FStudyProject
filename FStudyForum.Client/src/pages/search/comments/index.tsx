@@ -4,7 +4,7 @@ import PostService from "@/services/PostService";
 import ContentLayout from "@/components/layout/ContentLayout";
 import PostItem from "@/components/search/PostItemSearch";
 import { useInView } from "react-intersection-observer";
-import { useInfiniteQuery} from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { LIMIT_SCROLLING_PAGNATION_RESULT, SessionStorageKey } from "@/helpers/constants";
 import CommentFilter from "@/components/filter/CommentFilter";
 import NullLayout from "@/components/layout/NullLayout";
@@ -33,28 +33,36 @@ const SearchCommentPage: React.FC = () => {
         queryKey: [`search-${filter}-comments`, keyword],
         queryFn: async ({ pageParam = 1 }) => {
             if (!keyword) return { data: [], nextPage: undefined, hasMore: false };
-            const comments = await SearchService.searchComments(
-                keyword,
-                pageParam,
-                LIMIT_SCROLLING_PAGNATION_RESULT,
-                filter
-            );
-            const posts = await Promise.all(comments.map(comment => PostService.getById(comment.postId.toString())));
-            return {
-                data: comments.map((comment, index) => ({
-                    comment: comment,
-                    post: posts[index],
-                })),
-                nextPage: comments.length === LIMIT_SCROLLING_PAGNATION_RESULT ? pageParam + 1 : undefined,
-                hasMore: comments.length === LIMIT_SCROLLING_PAGNATION_RESULT,
-            };
+            try {
+                const comments = await SearchService.searchComments(
+                    keyword,
+                    pageParam,
+                    LIMIT_SCROLLING_PAGNATION_RESULT,
+                    filter
+                );
+                const posts = await Promise.all(comments.map(comment => PostService.getById(comment.postId.toString())));
+                return {
+                    data: comments.map((comment, index) => ({
+                        comment: comment,
+                        post: posts[index],
+                    })),
+                    nextPage: comments.length === LIMIT_SCROLLING_PAGNATION_RESULT ? pageParam + 1 : undefined,
+                    hasMore: comments.length === LIMIT_SCROLLING_PAGNATION_RESULT,
+                };
+            } catch (error: unknown) {
+                if (error instanceof Error && error.message === 'Request failed with status code 404') {
+                    return { data: [], nextPage: undefined, hasMore: false }; // Ngừng gọi API nếu trả về 404
+                } else {
+                    throw error;
+                }
+            }
         },
         getNextPageParam: (lastPage) => lastPage.hasMore ? lastPage.nextPage : undefined,
         enabled: !!keyword,
         initialPageParam: 1,
     });
-    const results = comments?.pages.flatMap(page => page.data) || [];
 
+    const results = comments?.pages.flatMap(page => page.data) || [];
 
     React.useEffect(() => {
         if (inView && !isFetching) {
