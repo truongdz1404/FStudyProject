@@ -5,8 +5,12 @@ import { Post } from "@/types/post";
 import { User } from "@/types/user";
 import { Topic } from "@/types/topic";
 
-const searchComments = async (keyword: string) => {
-  const response = await api.get<ResponseWith<Comment[]>>(`/search/comment?keyword=${keyword}`);
+const searchComments = async (
+  keyword: string,
+  pageNumber: number,
+  pageSize: number,
+  filter: string) => {
+  const response = await api.get<ResponseWith<Comment[]>>(`/search/comment?keyword=${keyword}&pageNumber=${pageNumber}&pageSize=${pageSize}&filter=${filter}`);
   return response.data.data;
 };
 
