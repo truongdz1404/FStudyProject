@@ -10,8 +10,8 @@ using FStudyForum.Core.Models.DTOs.Auth;
 using FStudyForum.Core.Exceptions;
 using FStudyForum.Core.Helpers;
 using FStudyForum.Infrastructure.Repositories;
-using FStudyForum.Core.Models.DTOs.LockUser;
 using FStudyForum.Core.Models.DTOs;
+using FStudyForum.Core.Models.DTOs.Topic;
 namespace FStudyForum.Infrastructure.Services;
 
 public class UserService : IUserService
@@ -27,7 +27,8 @@ public class UserService : IUserService
         ITokenService tokenService,
         IUserRepository userRepository,
         IMapper mapper,
-        IProfileRepository profileRepository)
+        IProfileRepository profileRepository
+    )
     {
         _userManager = userManager;
         _tokenService = tokenService;
@@ -77,26 +78,22 @@ public class UserService : IUserService
         var user = await _userManager.FindByNameAsync(username)
             ?? throw new Exception("UserName is invalid");
 
-        return await ConvertToDTO(user);
+        return await GetProfileByUser(user);
     }
 
-    private async Task<UserDTO> ConvertToDTO(ApplicationUser user)
+    private async Task<UserDTO> GetProfileByUser(ApplicationUser user)
     {
         var profile = await _profileRepository.GetByName(user.UserName!);
-        if (profile == null) return new UserDTO
-        {
-            Username = user.UserName!,
-            Email = user.Email!,
-            Roles = await _userManager.GetRolesAsync(user),
-        };
         return new UserDTO
         {
             Username = user.UserName!,
             Email = user.Email!,
             Roles = await _userManager.GetRolesAsync(user),
-            FirstName = profile.FirstName,
-            LastName = profile.LastName,
-            Avatar = profile.Avatar,
+            Mods = (await _userRepository.GetModeratedTopics(user.UserName!)).Select(p => p.Name).ToList(),
+            Banneds = (await _userRepository.GetBannedTopics(user.UserName!))
+                .Select(b => new TopicBanDTO() { TopicName = b.Topic.Name, BannedTime = b.BannedTime })
+                .ToList(),
+            Avatar = profile?.Avatar ?? string.Empty
         };
     }
 
@@ -163,20 +160,13 @@ public class UserService : IUserService
     public async Task<UserDTO> LockUser(LockUserDTO lockUserDTO)
     {
         if (string.IsNullOrEmpty(lockUserDTO.UserName) || lockUserDTO.LockoutDays <= 0)
-        {
-           throw new Exception("Invalid input");
-        }
+            throw new Exception("Invalid input");
         var user = await _userManager.FindByNameAsync(lockUserDTO.UserName)
             ?? throw new Exception("User not found");
         var result = await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.Now.AddDays(lockUserDTO.LockoutDays));
-        if (result.Succeeded)
-        {           
-            return _mapper.Map<UserDTO>(user);
-        }
-        else
-        {
-            throw new Exception("Lockout failed");
-        }
+        if (result.Succeeded) throw new Exception("Lockout failed");
+        return _mapper.Map<UserDTO>(user);
+
     }
 
     public async Task<UserDTO> UnlockUser(LockUserDTO lockUserDTO)
@@ -200,7 +190,7 @@ public class UserService : IUserService
     public async Task<bool> IsUserLocked(string userName)
     {
         var user = await _userManager.FindByNameAsync(userName)
-            ?? throw new ApplicationException($"User '{userName}' not found.");       
+            ?? throw new ApplicationException($"User '{userName}' not found.");
         return await _userManager.IsLockedOutAsync(user);
     }
     public async Task<DateTimeOffset?> GetUnlockTime(string userName)
@@ -216,7 +206,7 @@ public class UserService : IUserService
 
         var userDTOs = new List<UserDTO>();
         foreach (var user in users)
-            userDTOs.Add(await ConvertToDTO(user));
+            userDTOs.Add(await GetProfileByUser(user));
 
         return new(userDTOs, totalCount);
     }
@@ -228,8 +218,13 @@ public class UserService : IUserService
         if (users != null)
         {
             foreach (var user in users)
-                userDTOs.Add(await ConvertToDTO(user));
+                userDTOs.Add(await GetProfileByUser(user));
         }
         return userDTOs;
     }
+
+    // public async Task<string> GetUserAvatar(string username){
+    //     var user = await _userManager.FindByNameAsync(username);
+    //     return user?.Avatar;
+    // }
 }

@@ -13,8 +13,10 @@ namespace FStudyForum.Core.Interfaces.IRepositories
         Task<Comment?> GetCommentByIdAsync(long id);
         Task<IEnumerable<Comment?>> SearchCommentAsync(string keyword);
         Task<IEnumerable<Comment>> GetCommentsByPostIdAsync(long postId);
+        Task<IEnumerable<Comment>> GetCommentsByReplyIdAsync(long replyId);
         Task<IEnumerable<Comment>> GetCommentsByAttachmentIdAsync(long attachmentId);
         Task<Comment> AddCommentAsync(CreateCommentDTO createCommentDTO);
+        public Task<int> GetVoteCount(long Id);
         Task UpdateCommentAsync(Comment comment);
     }
 }

@@ -1,4 +1,4 @@
-// src/components/topic/Popup/DeleteTopicPopup.tsx
+
 import React from "react"
 import { DialogBody, DialogFooter, Button } from "@material-tailwind/react"
 
@@ -21,7 +21,7 @@ const DeleteCategory: React.FC<DeleteCategorycPopupProps> = ({
     >
       <div className="bg-white rounded-md p-4 shadow-lg z-50 w-80">
         <DialogBody>
-          <p>Are you sure you want to delete this topic?</p>
+          <p>Delete this category?</p>
         </DialogBody>
         <DialogFooter className="flex justify-end">
           <Button

@@ -1,12 +1,13 @@
-﻿using AutoMapper;
+﻿using System.Linq.Dynamic.Core;
+using AutoMapper;
 using FStudyForum.Core.Interfaces.IRepositories;
 using FStudyForum.Core.Interfaces.IServices;
 using FStudyForum.Core.Models.DTOs.Attachment;
 using FStudyForum.Core.Models.DTOs.Post;
 using FStudyForum.Core.Models.Entities;
 using FStudyForum.Core.Models.DTOs;
-using FStudyForum.Core.Models.DTOs.SavePost;
 using Microsoft.AspNetCore.Identity;
+using FStudyForum.Core.Models.DTOs.Topic;
 
 
 namespace FStudyForum.Infrastructure.Services
@@ -14,7 +15,6 @@ namespace FStudyForum.Infrastructure.Services
     public class PostService : IPostService
     {
         private readonly IPostRepository _postRepository;
-
         private readonly IVoteRepository _voteRepository;
         private readonly IMapper _mapper;
         private readonly UserManager<ApplicationUser> _userManager;
@@ -27,17 +27,20 @@ namespace FStudyForum.Infrastructure.Services
             _userManager = userManager;
         }
 
-        public async Task<SavePostDTO?> DeletePostByUser(SavePostDTO savedPost)
+        public async Task<SavePostDTO?> RemoveFromSavedByUser(SavePostDTO savedPost)
         {
-            if (savedPost.UserName == null)
-            {
-                return null;
-            }
+            if (savedPost.UserName == null) throw new Exception("User not found");
             var postByUser = await _postRepository.FindPostByUser(savedPost)
                 ?? throw new Exception("Not found");
-            await _postRepository.DeleteByUser(postByUser);
+            await _postRepository.RemoveFromSavedByUser(postByUser);
             return savedPost;
         }
+        public async Task<List<PostDTO>> GetPostByTopicName(string topicName)
+        {
+            var posts = await _postRepository.GetPostsByTopicNameAsync(topicName);
+            return _mapper.Map<List<PostDTO>>(posts);
+        }
+
         public async Task<PostDTO> CreatePost(CreatePostDTO postDTO)
         {
             var post = await _postRepository.CreatePostAsync(postDTO);
@@ -61,7 +64,7 @@ namespace FStudyForum.Infrastructure.Services
                 Content = post.Content,
                 VoteType = await _voteRepository.GetVotedType(username, id),
                 VoteCount = await _postRepository.GetVoteCount(post.Id),
-                CommentCount = post.Comments.Count,
+                CommentCount = post.Comments.Count(c => !c.IsDeleted),
                 Attachments = post.Attachments.Select(a => new AttachmentDTO { Id = a.Id, Type = a.Type, Url = a.FileUrl }),
                 Elapsed = DateTime.Now - post.CreatedAt,
             };
@@ -84,12 +87,38 @@ namespace FStudyForum.Infrastructure.Services
                     VoteType = await _voteRepository.GetVotedType(username, p.Id),
                     Content = p.Content,
                     VoteCount = await _postRepository.GetVoteCount(p.Id),
-                    CommentCount = p.Comments.Count,
+                    CommentCount = p.Comments.Count(c => !c.IsDeleted),
                     Attachments = p.Attachments.Select(a => new AttachmentDTO { Id = a.Id, Type = a.Type, Url = a.FileUrl }),
                     Elapsed = DateTime.Now - p.CreatedAt
                 });
             }
 
+            return postDTOs;
+        }
+
+        public async Task<IEnumerable<PostDTO>> GetFilterPosts(string username, QueryPostDTO query)
+        {
+            var posts = await _postRepository.GetFilterPostsAsync(query);
+            var postDTOs = new List<PostDTO>();
+            foreach (var p in posts)
+            {
+                postDTOs.Add(new PostDTO
+                {
+                    Id = p.Id,
+                    Title = p.Title,
+                    Author = p.Creater.UserName!,
+                    TopicName = p.Topic.Name,
+                    TopicAvatar = p.Topic.Avatar,
+                    VoteType = await _voteRepository.GetVotedType(username, p.Id),
+                    UpVoteCount = p.Votes.Count(v => v.IsUp),
+                    DownVoteCount = p.Votes.Count(v => !v.IsUp),
+                    Content = p.Content,
+                    VoteCount = await _postRepository.GetVoteCount(p.Id),
+                    CommentCount = p.Comments.Count,
+                    Attachments = p.Attachments.Select(a => new AttachmentDTO { Id = a.Id, Type = a.Type, Url = a.FileUrl }),
+                    Elapsed = DateTime.Now - p.CreatedAt
+                });
+            }
             return postDTOs;
         }
 
@@ -105,7 +134,7 @@ namespace FStudyForum.Infrastructure.Services
                 TopicAvatar = p.Topic.Avatar,
                 Content = p.Content,
                 VoteCount = p.Votes.Count,
-                CommentCount = p.Comments.Count,
+                CommentCount = p.Comments.Count(c => !c.IsDeleted),
                 Attachments = p.Attachments.Select(a => new AttachmentDTO { Type = a.Type, Url = a.FileUrl }),
                 Elapsed = DateTime.Now - p.CreatedAt
             });
@@ -118,7 +147,7 @@ namespace FStudyForum.Infrastructure.Services
             {
                 return null;
             }
-            if (!await _postRepository.IsPostExists(savedPostDTO))
+            if (!await _postRepository.IsSaved(savedPostDTO))
             {
                 throw new Exception("Post is Exists.");
             }
@@ -129,12 +158,12 @@ namespace FStudyForum.Infrastructure.Services
             var savedPost = _mapper.Map<SavedPost>(savedPostDTO);
             savedPost.User = user;
             savedPost.Post = post;
-            await _postRepository.SavePostByUser(savedPost);
+            await _postRepository.SavePost(savedPost);
             return savedPostDTO;
         }
         public async Task<bool> IsPostExists(SavePostDTO savedPostDTO)
         {
-            return await _postRepository.IsPostExists(savedPostDTO);
+            return await _postRepository.IsSaved(savedPostDTO);
         }
 
         public Task<PaginatedData<PostDTO>> GetPaginatedData(int pageNumber, int pageSize)
@@ -142,24 +171,36 @@ namespace FStudyForum.Infrastructure.Services
             throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<PostDTO>> GetListPostSaveByUser(string username)
+        public async Task<IEnumerable<PostDTO>> GetSavedPostsByUser(string username)
         {
 
-            var posts = await _postRepository.GetListPostSaveByUser(username
+            var posts = await _postRepository.GetSavedPostsByUser(username
                 ?? throw new Exception("Not found."));
-            return posts.Select(p => new PostDTO
+            var postDTOs = new List<PostDTO>();
+            foreach (var p in posts)
             {
-                Id = p.Id,
-                Title = p.Title,
-                Author = p.Creater.UserName!,
-                TopicName = p.Topic.Name,
-                TopicAvatar = p.Topic.Avatar,
-                Content = p.Content,
-                VoteCount = p.Votes.Count,
-                CommentCount = p.Comments.Count,
-                Attachments = p.Attachments.Select(a => new AttachmentDTO { Type = a.Type, Url = a.FileUrl }),
-                Elapsed = DateTime.Now - p.CreatedAt
-            });
+                postDTOs.Add(new PostDTO
+                {
+                    Id = p.Id,
+                    Title = p.Title,
+                    Author = p.Creater.UserName!,
+                    TopicName = p.Topic.Name,
+                    TopicAvatar = p.Topic.Avatar,
+                    VoteType = await _voteRepository.GetVotedType(username, p.Id),
+                    Content = p.Content,
+                    VoteCount = await _postRepository.GetVoteCount(p.Id),
+                    CommentCount = p.Comments.Count,
+                    Attachments = p.Attachments.Select(a => new AttachmentDTO { Id = a.Id, Type = a.Type, Url = a.FileUrl }),
+                    Elapsed = DateTime.Now - p.CreatedAt
+                });
+            }
+
+            return postDTOs;
+        }
+
+        public Task<PostDTO> DeletePostById(long id, string username)
+        {
+            throw new NotImplementedException();
         }
     }
 }

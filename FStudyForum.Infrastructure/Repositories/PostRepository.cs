@@ -1,11 +1,11 @@
 ﻿using FStudyForum.Core.Interfaces.IRepositories;
 using FStudyForum.Core.Models.DTOs;
 using FStudyForum.Core.Models.DTOs.Post;
-using FStudyForum.Core.Models.DTOs.SavePost;
 using FStudyForum.Core.Models.Entities;
 using FStudyForum.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using FStudyForum.Core.Helpers;
+using FStudyForum.Core.Models.DTOs.Topic;
 
 
 namespace FStudyForum.Infrastructure.Repositories
@@ -45,7 +45,7 @@ namespace FStudyForum.Infrastructure.Repositories
         }
 
 
-        public async Task DeleteByUser(SavedPost postByUser)
+        public async Task RemoveFromSavedByUser(SavedPost postByUser)
         {
             _dbContext.SavedPosts.Remove(postByUser);
             await _dbContext.SaveChangesAsync();
@@ -57,14 +57,14 @@ namespace FStudyForum.Infrastructure.Repositories
             && p.User.UserName == savePostDTO.UserName);
         }
 
-        public async Task<bool> IsPostExists(SavePostDTO savePostDTO)
+        public async Task<bool> IsSaved(SavePostDTO savePostDTO)
         {
             var post = await _dbContext.SavedPosts.FirstOrDefaultAsync(p => p.Post.Id == savePostDTO.PostId
            && p.User.UserName == savePostDTO.UserName);
             return post == null;
         }
 
-        public async Task SavePostByUser(SavedPost savedPost)
+        public async Task SavePost(SavedPost savedPost)
         {
             await _dbContext.SavedPosts.AddAsync(savedPost);
             await _dbContext.SaveChangesAsync();
@@ -91,8 +91,29 @@ namespace FStudyForum.Infrastructure.Repositories
                 .Include(p => p.Votes)
                 .Include(p => p.Attachments)
                 .Include(p => p.Comments)
-                .Paginate(query.PageNumber, query.PageSize) //1 2 3 5 
+                .Paginate(query.PageNumber, query.PageSize)
                 .Sort(query.OrderBy)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Post>> GetFilterPostsAsync(QueryPostDTO query)
+        {
+            IQueryable<Post> queryable = _dbContext.Posts
+                .Include(p => p.Topic)
+                .Where(p => !p.IsDeleted && !p.Topic.IsDeleted)
+                .Include(p => p.Creater)
+                .Include(p => p.Votes)
+                .Include(p => p.Attachments)
+                .Include(p => p.Comments);
+
+            queryable = query.Filter switch
+            {
+                "Hot" => queryable.OrderByDescending(p => p.Votes.Sum(v => v.IsUp ? 1 : 0) + p.Comments.Count),
+                "New" => queryable.OrderByDescending(p => p.CreatedAt),
+                _ => queryable.OrderBy(p => p.Id),
+            };
+            return await queryable
+                .Paginate(query.PageNumber, query.PageSize)
                 .ToListAsync();
         }
 
@@ -139,17 +160,17 @@ namespace FStudyForum.Infrastructure.Repositories
                .Where(p => p.Topic.IsDeleted == false)
                .ToListAsync();
         }
-        public async Task<IEnumerable<Post>> GetListPostSaveByUser(string username)
+        public async Task<IEnumerable<Post>> GetSavedPostsByUser(string username)
         {
             var listPost = await _dbContext.SavedPosts
             .Where(sp => sp.User.UserName == username && !sp.Post.IsDeleted)
-            .Include(sp => sp.Post) 
-            .ThenInclude(p => p.Creater) 
-            .Include(sp => sp.Post) 
-            .ThenInclude(p => p.Topic) 
-            .Include(sp => sp.Post) 
-            .ThenInclude(p => p.Votes) 
-            .Include(sp => sp.Post) 
+            .Include(sp => sp.Post)
+            .ThenInclude(p => p.Creater)
+            .Include(sp => sp.Post)
+            .ThenInclude(p => p.Topic)
+            .Include(sp => sp.Post)
+            .ThenInclude(p => p.Votes)
+            .Include(sp => sp.Post)
             .ThenInclude(p => p.Comments)
             .Include(sp => sp.Post)
             .ThenInclude(p => p.Attachments)
@@ -158,5 +179,6 @@ namespace FStudyForum.Infrastructure.Repositories
             .ToListAsync();
             return listPost;
         }
+
     }
 }

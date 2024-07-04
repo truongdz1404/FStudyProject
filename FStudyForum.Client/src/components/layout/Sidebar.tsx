@@ -20,10 +20,13 @@ import {
   Home,
   Rocket,
   SquareGanttChart,
-  Tags
+  Tags,
+  Flag,
+  BarChartBig
 } from "lucide-react";
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { label } from "yet-another-react-lightbox";
 
 const sidebarListItems = [
   {
@@ -47,10 +50,16 @@ const sidebarListItems = [
         icon: Tags,
         path: "/topics",
         items: []
-      }, {
+      },
+      {
         label: "Donate",
-        icon:  CircleDollarSign ,
+        icon: CircleDollarSign,
         path: "/donate",
+        items: []
+      }, {
+        label: "Chart",
+        icon: BarChartBig,
+        path: "/chart",
         items: []
       }
     ]
@@ -83,6 +92,11 @@ const sidebarListItems = [
             label: "Categories",
             icon: Layers3,
             path: "/manager/categories"
+          },
+          {
+            label: "Report",
+            icon: Flag,
+            path: "/manager/report"
           }
         ]
       }
@@ -127,7 +141,7 @@ const Sidebar = React.memo(({ handleClose }: SidebarProps) => {
             <div key={group}>
               <List>
                 {items.map(({ label, icon, path, items }) =>
-                  items.length == 0 ? (
+                  items?.length == 0 ? (
                     <ListItem
                       onClick={() => handleView(path)}
                       selected={pathname === path}
@@ -163,23 +177,27 @@ const Sidebar = React.memo(({ handleClose }: SidebarProps) => {
                         </Typography>
                       </AccordionHeader>
                       <AccordionBody className="py-1">
-                        <List className="p-0 pl-2 text-sm">
-                          {items.map(({ label, icon, path }) => (
-                            <ListItem
-                              onClick={() => handleView(path)}
-                              selected={pathname === path}
-                              key={label}
-                              className="text-sm"
-                            >
-                              <ListItemPrefix>
-                                {React.createElement(icon, {
-                                  className: "h-5 w-5"
-                                })}
-                              </ListItemPrefix>
-                              {label}
-                            </ListItem>
-                          ))}
-                        </List>
+                        {items && items.length > 0 ? (
+                          <List className="p-0 pl-2 text-sm">
+                            {items.map(({ label, icon, path }) => (
+                              <ListItem
+                                onClick={() => handleView(path)}
+                                selected={pathname === path}
+                                key={label}
+                                className="text-sm"
+                              >
+                                <ListItemPrefix>
+                                  {React.createElement(icon, {
+                                    className: "h-5 w-5"
+                                  })}
+                                </ListItemPrefix>
+                                {label}
+                              </ListItem>
+                            ))}
+                          </List>
+                        ) : (
+                          ""
+                        )}
                       </AccordionBody>
                     </Accordion>
                   )

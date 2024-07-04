@@ -15,6 +15,8 @@ namespace FStudyForum.Core.Models.DTOs.Post
         public string Content { get; set; } = string.Empty;
         public string Author { get; set; } = string.Empty;
         public VoteType VoteType { get; set; } = VoteType.UNVOTE;
+        public int UpVoteCount { get; set; }
+        public int DownVoteCount { get; set; }
         public int VoteCount { get; set; }
         public int CommentCount { get; set; }
         public IEnumerable<AttachmentDTO> Attachments { get; set; } = [];

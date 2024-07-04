@@ -91,5 +91,15 @@ namespace FStudyForum.Infrastructure.Services
             }
             return false;
         }
+
+        public async Task DeleteUserDonation(string username)
+        {
+            var donation = await _donationRepository.GetDonationByUser(username)
+                ?? throw new Exception("Not found.");
+            if(donation.Tid == null)
+            {
+                await _donationRepository.DeleteUserDonation(donation);
+            }
+        }
     }
 }

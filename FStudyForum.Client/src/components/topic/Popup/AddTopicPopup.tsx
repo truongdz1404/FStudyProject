@@ -1,44 +1,40 @@
-import React, { useState, useEffect } from "react";
-import { Alert, Chip, Input, Step, Stepper } from "@material-tailwind/react";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { useForm } from "react-hook-form";
-import * as Yup from "yup";
-import { ChevronLeft, ChevronRight, CircleAlert, X } from "lucide-react";
-import { motion } from "framer-motion";
-import { Category } from "@/types/category"; 
-import TopicService from "@/services/TopicService";
-import CategoryService from "@/services/CategoryService";
+import React, { useState, useEffect } from 'react';
+import { Alert, Chip, Input } from '@material-tailwind/react';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useForm } from 'react-hook-form';
+import * as Yup from 'yup';
+import { ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { Category } from '@/types/category';
+import TopicService from '@/services/TopicService';
+import CategoryService from '@/services/CategoryService';
+import axios, { AxiosError } from 'axios';
 
 interface AddTopicPopupProps {
   onClose: () => void;
   onTopicCreated: () => void;
 }
 
-interface AddTopicFormInputs {
+interface FormInputs {
   topicName: string;
   description: string;
-  avatar: string; 
-  banner: string; 
+  avatar?: string;
+  banner?: string;
 }
 
-const validation = Yup.object().shape({
+const validationSchema = Yup.object().shape({
   topicName: Yup.string()
     .trim()
-    .required("Topic name is required")
-    .max(50, "Topic name must be no more than 50 characters"),
-  description: Yup.string().trim().required("Description is required"),
-  avatar: Yup.string().required("Avatar is required"), 
-  banner: Yup.string().required("Banner is required"), 
+    .required('Topic name is required')
+    .max(50, 'Topic name must be no more than 50 characters'),
+  description: Yup.string().trim().required('Description is required'),
+  avatar: Yup.string().optional(),
+  banner: Yup.string().optional(),
 });
 
-const AddTopicPopup: React.FC<AddTopicPopupProps> = ({
-  onClose,
-  onTopicCreated
-}) => {
+const AddTopicPopup: React.FC<AddTopicPopupProps> = ({ onClose, onTopicCreated }) => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
   const [activeStep, setActiveStep] = useState(0);
-  const [preStep, setPreStep] = useState(-1);
   const [isLastStep, setIsLastStep] = useState(false);
   const [isFirstStep, setIsFirstStep] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -51,10 +47,10 @@ const AddTopicPopup: React.FC<AddTopicPopupProps> = ({
     handleSubmit,
     trigger,
     setValue,
-    formState: { errors }
-  } = useForm<AddTopicFormInputs>({
-    mode: "onTouched",
-    resolver: yupResolver(validation)
+    formState: { errors },
+  } = useForm<FormInputs>({
+    mode: 'onTouched',
+    resolver: yupResolver(validationSchema),
   });
 
   useEffect(() => {
@@ -64,7 +60,8 @@ const AddTopicPopup: React.FC<AddTopicPopupProps> = ({
         const fetchedCategories = await CategoryService.getAllCategory();
         setCategories(fetchedCategories);
       } catch (error) {
-        console.error("Error fetching categories:", error);
+        console.error('Error fetching categories:', error);
+        setError('Failed to fetch categories. Please try again.');
       } finally {
         setLoading(false);
       }
@@ -73,14 +70,22 @@ const AddTopicPopup: React.FC<AddTopicPopupProps> = ({
     fetchCategories();
   }, []);
 
+  useEffect(() => {
+    setIsLastStep(activeStep === 2);
+    setIsFirstStep(activeStep === 0);
+  }, [activeStep]);
+
   const handleNext = async () => {
     let isValid = false;
     switch (activeStep) {
       case 0:
-        isValid = await trigger(["topicName", "description"]);
+        isValid = await trigger(['topicName', 'description']);
         break;
       case 1:
-        isValid = await trigger(["avatar", "banner"]);
+        isValid = await trigger(['avatar', 'banner']);
+        break;
+      case 2:
+        isValid = true;
         break;
       default:
         isValid = true;
@@ -91,22 +96,29 @@ const AddTopicPopup: React.FC<AddTopicPopupProps> = ({
     }
   };
 
-  const handleAddTopic = async (data: AddTopicFormInputs) => {
+  const handleAddTopic = async (data: FormInputs) => {
     try {
       setLoading(true);
       const newTopic = {
         name: data.topicName,
         description: data.description,
-        avatar: data.avatar,
-        banner: data.banner,
-        categories: selectedCategories
+        avatar: data.avatar || '',
+        banner: data.banner || '',
+        categories: selectedCategories,
       };
       await TopicService.create(newTopic);
       onClose();
       onTopicCreated();
-    } catch (error) {
-      console.error("Error creating topic:", error);
-      setError("Error creating topic. Please try again later.");
+    } catch (error: unknown) {
+      console.error('Error creating topic:', error);
+      if (axios.isAxiosError(error)) {
+        const apiError = error as AxiosError<{ message: string }>;
+        setError(apiError.response?.data?.message || 'Error creating topic. Please try again later.');
+      } else if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError('Unknown error occurred. Please try again later.');
+      }
     } finally {
       setLoading(false);
     }
@@ -122,7 +134,7 @@ const AddTopicPopup: React.FC<AddTopicPopupProps> = ({
 
   const handleFileChange = (
     event: React.ChangeEvent<HTMLInputElement>,
-    field: "avatar" | "banner"
+    field: 'avatar' | 'banner'
   ) => {
     const file = event.target.files?.[0] || null;
     if (!file) return;
@@ -130,168 +142,145 @@ const AddTopicPopup: React.FC<AddTopicPopupProps> = ({
     const reader = new FileReader();
     reader.onload = () => {
       const previewUrl = reader.result as string;
-      if (field === "avatar") {
+      if (field === 'avatar') {
         setAvatarPreview(previewUrl);
-        setValue("avatar", previewUrl); 
-      } else if (field === "banner") {
+        setValue('avatar', previewUrl);
+      } else if (field === 'banner') {
         setBannerPreview(previewUrl);
-        setValue("banner", previewUrl); 
+        setValue('banner', previewUrl);
       }
     };
     reader.readAsDataURL(file);
   };
 
   const nextStep = () => {
-    if (!isLastStep) {
-      setPreStep(activeStep);
-      setActiveStep((cur) => cur + 1);
-    }
+    setActiveStep((prevStep) => prevStep + 1);
   };
 
   const prevStep = () => {
-    if (!isFirstStep) {
-      setPreStep(activeStep);
-      setActiveStep((cur) => cur - 1);
-    }
+    setActiveStep((prevStep) => prevStep - 1);
   };
 
   const renderStep = (step: number) => {
-    return (
-      <>
-        <div className={`mb-6 ${step !== 0 ? "hidden" : ""}`}>
-          <p className="text-xl font-semibold">Topic Information</p>
-          <p className="text-xs text-gray-600 text-left">
-            Provide details about the topic you want to create
-          </p>
-          <div className="mb-4">
-            <label htmlFor="topicName" className="block font-bold mb-1">
-              Topic Name
-            </label>
-            <Input
-              crossOrigin={undefined} id="topicName"
-              type="text"
-              placeholder="Enter topic name"
-              className="border border-gray-300 rounded px-2 py-1 w-full"
-              {...register("topicName")}
-              error={Boolean(errors.topicName)}
-            />
-            {errors.topicName && (
-              <span className="text-red-500 text-xs mt-1">
-                {errors.topicName.message}
-              </span>
-            )}
-          </div>
-          <div className="mb-4">
-            <label htmlFor="description" className="block font-bold mb-1">
-              Description
-            </label>
-            <textarea
-              id="description"
-              placeholder="Enter description"
-              className="border border-gray-300 rounded px-2 py-1 w-full h-24 resize-none"
-              {...register("description")}
-            ></textarea>
-            {errors.description && (
-              <span className="text-red-500 text-xs mt-1">
-                {errors.description.message}
-              </span>
-            )}
-          </div>
-        </div>
-        <div className={`mb-6 ${step !== 1 ? "hidden" : ""}`}>
-          <p className="text-xl font-semibold">Add Images</p>
-          <p className="text-xs text-gray-600 text-left">
-            Upload avatar and banner images for your topic
-          </p>
-          <div className="mb-4">
-            <label htmlFor="avatar" className="block font-bold mb-1">
-              Avatar
-            </label>
-            <input
-              id="avatar"
-              type="file"
-              accept="image/*"
-              onChange={(e) => handleFileChange(e, "avatar")}
-              className="block w-full text-sm text-gray-500
-                file:mr-4 file:py-2 file:px-4
-                file:rounded-full file:border-0
-                file:text-sm file:font-semibold
-                file:bg-blue-50 file:text-blue-700
-                hover:file:bg-blue-100"
-            />
-            {avatarPreview && (
-              <img
-                src={avatarPreview}
-                alt="Avatar Preview"
-                className="mt-2 h-24 w-24 object-cover rounded-full"
-              />
-            )}
-            {errors.avatar && (
-              <span className="text-red-500 text-xs mt-1">
-                <CircleAlert className="w-3 h-3 inline" /> {errors.avatar.message}
-              </span>
-            )}
-          </div>
-          <div className="mb-4">
-            <label htmlFor="banner" className="block font-bold mb-1">
-              Banner
-            </label>
-            <input
-              id="banner"
-              type="file"
-              accept="image/*"
-              onChange={(e) => handleFileChange(e, "banner")}
-              className="block w-full text-sm text-gray-500
-              file:mr-4 file:py-2 file:px-4
-              file:rounded-full file:border-0
-              file:text-sm file:font-semibold
-              file:bg-blue-50 file:text-blue-700
-              hover:file:bg-blue-100"
-            />
-            {bannerPreview && (
-              <img
-                src={bannerPreview}
-                alt="Banner Preview"
-                className="mt-2 h-24 w-full object-cover rounded"
-              />
-            )}
-            {errors.banner && (
-              <span className="text-red-500 text-xs mt-1">
-                <CircleAlert className="w-3 h-3 inline" /> {errors.banner.message}
-              </span>
-            )}
-          </div>
-        </div>
-        <div className={`mb-6 ${step !== 2 ? "hidden" : ""}`}>
-          <p className="text-xl font-semibold">Select Categories</p>
-          <p className="text-xs text-gray-600 text-left">
-            Choose categories that fit your topic
-          </p>
-          <div className="overflow-x-auto max-h-[20rem]">
-            <div className="mt-6 w-full flex flex-wrap gap-2">
-              {categories.map((category) => (
-                <div
-                  key={category.id}
-                  onClick={() => handleCategoryChange(category.id)}
-                  className="hover:cursor-pointer"
-                >
-                  <Chip
-                    color="blue-gray"
-                    variant={
-                      selectedCategories.includes(category.id)
-                        ? "filled"
-                        : "ghost"
-                    }
-                    value={category.name}
-                    className="rounded-full capitalize"
-                  />
-                </div>
-              ))}
+    switch (step) {
+      case 0:
+        return (
+          <div>
+            <div className="mb-4">
+              <Input
+                crossOrigin={undefined} type="text"
+                label="Topic Name"
+                {...register('topicName')}
+                error={!!errors.topicName}              />
+              {errors.topicName && (
+                <span className="text-red-500 text-xs mt-1">
+                  {errors.topicName.message}
+                </span>
+              )}
+            </div>
+            <div className="mb-4">
+              <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+                Description
+              </label>
+              <textarea
+                id="description"
+                placeholder="Enter description"
+                className="border border-gray-300 rounded px-2 py-1 w-full h-36 resize-none"
+                {...register('description')}
+              ></textarea>
+              {errors.description && (
+                <span className="text-red-500 text-xs mt-1">
+                  {errors.description.message}
+                </span>
+              )}
             </div>
           </div>
-        </div>
-      </>
-    );
+        );
+      case 1:
+        return (
+          <div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700">
+                Avatar
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(event) => handleFileChange(event, 'avatar')}
+                className="mt-2"
+              />
+              {avatarPreview && (
+                <img
+                  src={avatarPreview}
+                  alt="Avatar preview"
+                  className="mt-2 h-16 w-16 object-cover rounded-full"
+                />
+              )}
+              {errors.avatar && (
+                <span className="text-red-500 text-xs mt-1">
+                  {errors.avatar.message}
+                </span>
+              )}
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700">
+                Banner
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(event) => handleFileChange(event, 'banner')}
+                className="mt-2"
+              />
+              {bannerPreview && (
+                <img
+                  src={bannerPreview}
+                  alt="Banner preview"
+                  className="mt-2 h-32 w-full object-cover"
+                />
+              )}
+              {errors.banner && (
+                <span className="text-red-500 text-xs mt-1">
+                  {errors.banner.message}
+                </span>
+              )}
+            </div>
+          </div>
+        );
+      case 2:
+        return (
+          <div className="mb-6">
+            <p className="text-xl font-semibold">Select Categories</p>
+            <p className="text-xs text-gray-600 text-left">
+              Choose categories that fit your topic
+            </p>
+            <div className="overflow-x-auto max-h-[20rem]">
+              <div className="mt-6 w-full flex flex-wrap gap-2">
+                {categories.map((category) => (
+                  <div
+                    key={category.id}
+                    onClick={() => handleCategoryChange(category.id)}
+                    className="hover:cursor-pointer"
+                  >
+                    <Chip
+                      color="blue-gray"
+                      variant={
+                        selectedCategories.includes(category.id)
+                          ? 'filled'
+                          : 'ghost'
+                      }
+                      value={category.name}
+                      className="rounded-full capitalize"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+      default:
+        return null;
+    }
   };
 
   return (
@@ -313,24 +302,7 @@ const AddTopicPopup: React.FC<AddTopicPopupProps> = ({
             {error}
           </Alert>
         )}
-        <Stepper
-          activeStep={activeStep}
-          isLastStep={(value) => setIsLastStep(value)}
-          isFirstStep={(value) => setIsFirstStep(value)}
-          className="mb-4"
-        >
-          <Step>1</Step>
-          <Step>2</Step>
-          <Step>3</Step>
-        </Stepper>
-        <motion.div
-          key={activeStep}
-          initial={{ x: preStep < activeStep ? -2 : 2, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ ease: "easeInOut", duration: 0.5 }}
-        >
-          {renderStep(activeStep)}
-        </motion.div>
+        <div className="mb-4">{renderStep(activeStep)}</div>
         <div className="flex justify-between mt-6">
           <button
             type="button"
@@ -338,19 +310,19 @@ const AddTopicPopup: React.FC<AddTopicPopupProps> = ({
               !loading && prevStep();
             }}
             className={`flex gap-x-2 text-deep-orange-400 hover:cursor-pointer select-none font-bold ${
-              isFirstStep ? "text-orange-100" : ""
+              isFirstStep ? 'text-orange-100' : ''
             }`}
           >
             <ChevronLeft /> Back
           </button>
           <button
-            type={isLastStep ? "submit" : "button"}
+            type={isLastStep ? 'submit' : 'button'}
             onClick={() => {
-              !loading && !isLastStep && handleNext();
+              !loading && (isLastStep ? handleSubmit(handleAddTopic)() : handleNext());
             }}
             className="flex gap-x-2 text-deep-orange-400 hover:cursor-pointer select-none font-bold"
           >
-            {!isLastStep ? "Next" : "Finish"}
+            {!isLastStep ? 'Next' : 'Finish'}
             <ChevronRight />
           </button>
         </div>
@@ -360,3 +332,4 @@ const AddTopicPopup: React.FC<AddTopicPopupProps> = ({
 };
 
 export default AddTopicPopup;
+

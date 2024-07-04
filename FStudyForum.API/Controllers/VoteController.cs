@@ -3,7 +3,6 @@ using FStudyForum.Core.Interfaces.IServices;
 using FStudyForum.Core.Models.DTOs;
 using FStudyForum.Core.Models.DTOs.Vote;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FStudyForum.API.Controllers
@@ -18,7 +17,7 @@ namespace FStudyForum.API.Controllers
             _voteService = voteService;
         }
 
-        [HttpPost("post"), Authorize]
+        [HttpPatch("post"), Authorize]
         public async Task<IActionResult> VotePost(VoteDTO voteDTO)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -29,6 +28,31 @@ namespace FStudyForum.API.Controllers
                 return Ok(new Response
                 {
                     Message = "Create post successfully",
+                    Status = ResponseStatus.SUCCESS,
+                    Data = voteCount
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = ex.Message
+                });
+            }
+
+        }
+        [HttpPatch("comment"), Authorize]
+        public async Task<IActionResult> VoteComment(VoteCommentDTO voteDTO)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            try
+            {
+                var userName = User.FindFirstValue(ClaimTypes.Name) ?? throw new Exception("User is not authenticated!");
+                var voteCount = await _voteService.VoteComment(userName, voteDTO);
+                return Ok(new Response
+                {
+                    Message = "Vote comment successfully",
                     Status = ResponseStatus.SUCCESS,
                     Data = voteCount
                 });

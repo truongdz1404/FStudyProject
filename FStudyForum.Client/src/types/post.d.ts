@@ -17,3 +17,6 @@ export interface CreatePost {
   content: string;
   attachments: Attachment[];
 }
+export interface SavePost {
+  postId: number;
+}

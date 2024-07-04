@@ -26,5 +26,11 @@ namespace FStudyForum.Infrastructure.Repositories
                 .OrderByDescending(d => d.Id).FirstOrDefaultAsync();
             return donationByUser;
         }
+        
+        public async Task DeleteUserDonation(Donation donation)
+        {
+            _dbContext.Donations.Remove(donation);
+            await _dbContext.SaveChangesAsync();
+        }
     }
 }

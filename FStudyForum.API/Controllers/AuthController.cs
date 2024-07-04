@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using FStudyForum.Core.Helpers;
 using Microsoft.AspNetCore.Authentication;
-using FStudyForum.Core.Models.DTOs.LockUser;
+using FStudyForum.Core.Models.DTOs.Topic;
 
 namespace FStudyForum.API.Controllers;
 
@@ -167,7 +167,6 @@ public class AuthController : ControllerBase
                 Secure = true,
                 SameSite = SameSiteMode.Strict
             });
-
         const string refreshTokenPath = "/api/auth/refresh-token";
         context.Response.Cookies.Append(_jwtConfig.RefreshTokenKey, tokenDTO.RefreshToken,
             new CookieOptions

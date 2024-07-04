@@ -1,7 +1,7 @@
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { cn } from "@/helpers/utils";
-import { FC} from "react";
+import { FC } from "react";
 import { useForm } from "react-hook-form";
 import TextareaAutosize from "react-textarea-autosize";
 import { CircleAlert } from "lucide-react";
@@ -23,7 +23,6 @@ import { useNavigate } from "react-router-dom";
 import { Attachment } from "@/types/attachment";
 import { AxiosError } from "axios";
 import { Response } from "@/types/response";
-
 
 const validation = Yup.object({
   title: Yup.string()
@@ -51,7 +50,6 @@ export const FileInputContext = React.createContext<FileInputContextType>({
 });
 
 const Editor: FC<EditorProps> = ({ topicName, banner }) => {
-  console.log(banner);
   const {
     register,
     handleSubmit,
@@ -127,7 +125,6 @@ const Editor: FC<EditorProps> = ({ topicName, banner }) => {
 
   const isFileLoaded = files.every(file => file.get);
   if (!editor) return null;
-  
 
   return (
     <>
@@ -171,7 +168,9 @@ const Editor: FC<EditorProps> = ({ topicName, banner }) => {
           type="submit"
           className="mt-6 w-full lg:w-fit normal-case text-sm"
           form="create-post-form"
-          disabled={topicName == undefined || loading || !isFileLoaded || banner !== ""}
+          disabled={
+            topicName == undefined || loading || !isFileLoaded || banner !== ""
+          }
         >
           Post
         </Button>

@@ -10,5 +10,6 @@ namespace FStudyForum.Core.Interfaces.IServices
         Task<DonationDTO> GetDonationByUser(string username);
         Task<DonationDTO> UpdateDonate(long id, UpdateDonationDTO updateDonationDTO);
         Task<bool> CheckDonation(string username, int id, string message, decimal amount);
+        Task DeleteUserDonation(string username);
     }
 }

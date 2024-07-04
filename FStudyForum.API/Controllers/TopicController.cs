@@ -4,7 +4,6 @@ using FStudyForum.Core.Models.DTOs.Topic;
 using FStudyForum.Core.Models.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using FStudyForum.Core.Constants;
-using FStudyForum.Core.Models.DTOs.TopicBan;
 
 
 namespace FStudyForum.API.Controllers
@@ -19,8 +18,6 @@ namespace FStudyForum.API.Controllers
         {
             _topicService = topicService;
         }
-
-
         [HttpGet("active-all")]
         public async Task<IActionResult> GetAllActiveTopics()
         {
@@ -66,11 +63,20 @@ namespace FStudyForum.API.Controllers
             try
             {
                 var topic = await _topicService.GetTopicByName(name);
-                return Ok(topic);
+                return Ok(new Response
+                {
+                    Message = "Get topic successfully",
+                    Status = ResponseStatus.SUCCESS,
+                    Data = topic
+                });
             }
             catch (Exception ex)
             {
-                return NotFound(ex.Message);
+                return NotFound(new Response
+                {
+                    Message = ex.Message,
+                    Status = ResponseStatus.ERROR,
+                });
             }
         }
         [HttpPut("update/{name}")]
@@ -98,34 +104,14 @@ namespace FStudyForum.API.Controllers
             }
             return Ok("Topic deleted successfully");
         }
-        [HttpPost("is-locked")]
-        public async Task<IActionResult> IsTopicLocked(TopicBanDTO topicBanDTO)
-        {
-            try
-            {
-                var isLocked = await _topicService.IsUserLocked(topicBanDTO);
-                return Ok(new Response
-                {
-                    Status = ResponseStatus.SUCCESS,
-                    Message = isLocked ? "Check user locked successfully" : "Check user not locked successfully",
-                    Data = isLocked
-                });
-            } catch(Exception ex)
-            {
-                return BadRequest(new Response
-                {
-                    Status = ResponseStatus.ERROR,
-                    Message = ex.Message
-                });
-            }
-        }
-        [HttpGet("getTopicByPost/{postId}")]
+
+        [HttpGet("post/{postId}")]
         public async Task<IActionResult> GetTopicByPost(int postId)
         {
             try
             {
                 var topic = await _topicService.GetTopicByPost(postId);
-                if(topic == null)
+                if (topic == null)
                 {
                     return NotFound(new Response
                     {
@@ -149,17 +135,17 @@ namespace FStudyForum.API.Controllers
                 });
             }
         }
-        [HttpPost("locked")]
-        public async Task<IActionResult> LockUser([FromBody] TopicBanDTO topicBanDTO)
+        [HttpGet("check-banned")]
+        public async Task<IActionResult> CheckBanned([FromQuery] string username, [FromQuery] string topicName)
         {
             try
             {
-                var lockedUser = await _topicService.LockUser(topicBanDTO);
+                var topicBan = await _topicService.CheckBannedUser(username, topicName);
                 return Ok(new Response
                 {
                     Status = ResponseStatus.SUCCESS,
-                    Message = "User locked successfully",
-                    Data = lockedUser
+                    Message = "Check user banned successfully",
+                    Data = topicBan
                 });
             }
             catch (Exception ex)
@@ -171,17 +157,17 @@ namespace FStudyForum.API.Controllers
                 });
             }
         }
-        [HttpPost("unlocked")]
-        public async Task<IActionResult> UnlockUser([FromBody] TopicBanDTO topicBanDTO)
+        [HttpPost("ban")]
+        public async Task<IActionResult> BanUser([FromBody] CreateTopicBanDTO topicBanDTO)
         {
             try
             {
-                var unlockedUser = await _topicService.UnlockUser(topicBanDTO);
+                var user = await _topicService.BanUser(topicBanDTO);
                 return Ok(new Response
                 {
                     Status = ResponseStatus.SUCCESS,
-                    Message = "User unlocked successfully",
-                    Data = unlockedUser
+                    Message = "User banned successfully",
+                    Data = user
                 });
             }
             catch (Exception ex)
@@ -193,17 +179,16 @@ namespace FStudyForum.API.Controllers
                 });
             }
         }
-        [HttpPost("unlock-time")]
-        public async Task<IActionResult> GetUnlockTime([FromBody] TopicBanDTO topicBanDTO)
+        [HttpPost("unban")]
+        public async Task<IActionResult> UnbanUser(string username, string topicName)
         {
             try
             {
-                var unlockTime = await _topicService.GetUnlockTime(topicBanDTO);
+                await _topicService.UnbanUser(username, topicName);
                 return Ok(new Response
                 {
                     Status = ResponseStatus.SUCCESS,
-                    Message = "Get unlock time successfully",
-                    Data = unlockTime
+                    Message = "User unban successfully",
                 });
             }
             catch (Exception ex)
@@ -215,5 +200,6 @@ namespace FStudyForum.API.Controllers
                 });
             }
         }
+
     }
 }

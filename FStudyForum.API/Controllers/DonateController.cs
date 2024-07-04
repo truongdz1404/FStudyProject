@@ -142,5 +142,28 @@ namespace FStudyForum.API.Controllers
                 });
             }
         }
+        [HttpDelete("deleteUserDonation/{username}")]
+        public async Task<IActionResult> DeleteUserDonation(string username)
+        {
+            try
+            {
+               await _donateService.DeleteUserDonation(username);
+               return Ok(new Response
+                {
+                    Status = ResponseStatus.SUCCESS,
+                    Message = "Delete user donation successfully"
+                });
+               
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = ex.Message
+                });
+            }
+        }
+
     }
 }

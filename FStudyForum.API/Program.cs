@@ -16,6 +16,8 @@ builder.Services.AddControllers();
 var jwtSection = builder.Configuration.GetSection("JWT");
 builder.Services.Configure<JwtConfig>(jwtSection);
 builder.Services.Configure<GoogleConfig>(builder.Configuration.GetSection("Google"));
+builder.Services.Configure<VNPayConfig>(builder.Configuration.GetSection("VnPay"));
+
 var jwtConfig = jwtSection.Get<JwtConfig>()
     ?? throw new Exception("Jwt options have not been set!");
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
@@ -37,7 +39,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddControllersWithViews()
             .AddNewtonsoftJson(options =>
             {
-                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore; 
+                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             });
 builder.Services.AddHttpClient();
 builder.Services.AddAutoMapper(typeof(MapperProfile));
@@ -88,8 +90,7 @@ builder.Services
         };
     });
 
-var vnpay = builder.Configuration.GetSection("VnPay");
-builder.Services.Configure<VNPayConfig>(vnpay);
+
 builder.Services.RegisterService();
 var app = builder.Build();
 app.UseWebSockets(new WebSocketOptions { KeepAliveInterval = TimeSpan.FromSeconds(2) });

@@ -1,7 +1,7 @@
 import ContentLayout from "@/components/layout/ContentLayout";
 import PostItem from "@/components/post/PostItem";
 import { useAuth } from "@/hooks/useAuth";
-import SavedPostService from "@/services/SavedPostService";
+import PostService from "@/services/PostService";
 import { Alert, Spinner } from "@material-tailwind/react";
 import { useQuery } from "@tanstack/react-query";
 
@@ -13,7 +13,7 @@ const SavePost: React.FC = () => {
     isLoading
   } = useQuery({
     queryKey: ["save-post"],
-    queryFn: () => SavedPostService.listSavedPosts(`${user?.username}`)
+    queryFn: () => PostService.getSavedPosts(`${user?.username}`)
   });
   if (error)
     return (

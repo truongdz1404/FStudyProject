@@ -9,9 +9,10 @@ import {
   MenuItem,
   Avatar,
   IconButton,
-  Input,
   Typography
 } from "@material-tailwind/react";
+import Default from "@/assets/images/defaultTopic.png";
+
 import {
   PowerIcon,
   Search,
@@ -19,12 +20,15 @@ import {
   AlignJustify,
   Plus,
   Bell,
-  ChevronUp
+  ChevronUp,
+  X
 } from "lucide-react";
 import { cn } from "@/helpers/utils";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { Icons } from "../Icons";
 import { useAuth } from "@/hooks/useAuth";
+import TopicService from "@/services/TopicService";
+import { Topic } from "@/types/topic";
 
 function ProfileMenu() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
@@ -40,7 +44,10 @@ function ProfileMenu() {
     {
       label: "Sign Out",
       icon: PowerIcon,
-      path: "/auth/signout"
+      path: "/auth/signout",
+      action: () => {
+        sessionStorage.clear();
+      }
     }
   ];
   const handleNavigate = (path: string) => {
@@ -66,12 +73,15 @@ function ProfileMenu() {
         </Button>
       </MenuHandler>
       <MenuList className="p-1">
-        {profileMenuItems.map(({ label, icon, path }, key) => {
+        {profileMenuItems.map(({ label, icon, path, action }, key) => {
           const isLastItem = key === profileMenuItems.length - 1;
           return (
             <MenuItem
               key={label}
-              onClick={() => handleNavigate(path)}
+              onClick={() => {
+                if (action) action();
+                handleNavigate(path);
+              }}
               className={`flex items-center gap-2 rounded ${
                 isLastItem &&
                 "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
@@ -157,16 +167,33 @@ type HeaderProps = {
 const Header = React.memo(({ openSidebar }: HeaderProps) => {
   const [isNavOpen, setIsNavOpen] = React.useState(false);
   const toggleIsNavOpen = () => setIsNavOpen(cur => !cur);
+  const { name } = useParams<{ name: string }>();
+  const [topic, setTopic] = React.useState<Topic | undefined>();
+  React.useEffect(() => {
+    setTopic(undefined);
+    if (!name) return;
+    const fetchTopic = async () => {
+      try {
+        const topic = await TopicService.getTopicByName(name);
+        setTopic(topic);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchTopic();
+  }, [name]);
 
   React.useEffect(() => {
-    window.addEventListener(
-      "resize",
-      () => window.innerWidth >= 960 && setIsNavOpen(false)
-    );
+    const checkResponsive = () =>
+      window.innerWidth >= 960 && setIsNavOpen(false);
+    window.addEventListener("resize", checkResponsive);
+    return () => {
+      window.removeEventListener("resize", checkResponsive);
+    };
   }, []);
 
   return (
-    <Navbar className="max-w-screen-3xl rounded-none p-1 shadow-sm ">
+    <Navbar className="max-w-screen-3xl rounded-none p-1 shadow-sm z-50">
       <div className="relative mx-auto flex items-center justify-between text-blue-gray-900">
         <div className="flex items-center w-1/4 lg:w-1/3">
           <IconButton
@@ -181,6 +208,9 @@ const Header = React.memo(({ openSidebar }: HeaderProps) => {
           <Link
             to="/"
             className="mx-2 xl:mx-4 cursor-pointer py-1.5 font-medium flex items-center select-none"
+            onClick={() => {
+              sessionStorage.clear();
+            }}
           >
             <Icons.logo className="h-8 w-8" />
             <span className="hidden text-zinc-700 text-md font-bold md:block">
@@ -188,20 +218,45 @@ const Header = React.memo(({ openSidebar }: HeaderProps) => {
             </span>
           </Link>
         </div>
-        <div className="w-1/2 lg:w-1/3 max-w-screen-md">
-          <Input
-            icon={<Search className="h-5 w-5" />}
-            labelProps={{
-              className: "hidden"
-            }}
-            containerProps={{ className: "min-w-full" }}
-            crossOrigin={undefined}
-            className={cn(
-              "placeholder:text-gray-500 placeholder:opacity-100 focus:!border-gray-900 focus:!border-t-gray-900 pl-6",
-              "rounded-full !border-2 !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 "
-            )}
-          />
+        <div
+          className={cn(
+            "w-1/2 lg:w-1/3 max-w-screen-md bg-blue-gray-50 h-10 rounded-full text-sm",
+            "flex gap-x-2"
+          )}
+        >
+          <span className="my-auto pl-3">
+            <Search className="h-[1.18rem] text-blue-gray-700" />
+          </span>
+          {topic && (
+            <span
+              className={cn(
+                "rounded-full bg-blue-gray-700/15 my-1 px-2 text-xs flex gap-x-2"
+              )}
+            >
+              <Avatar
+                src={topic.avatar || Default}
+                className="w-5 h-5 my-auto"
+              />
+              <span className="my-auto truncate">t/{topic.name}</span>
+              <button
+                type="button"
+                className=" bg-blue-gray-900/80 rounded-full p-1 my-auto"
+                onClick={() => setTopic(undefined)}
+              >
+                <X className="w-3 h-3 text-white" strokeWidth={3} />
+              </button>
+            </span>
+          )}
+          <span className="my-auto flex-1">
+            <input
+              type="text"
+              name="serch"
+              placeholder="Search"
+              className="focus:outline-none bg-transparent w-full pr-4"
+            />
+          </span>
         </div>
+
         <div className="flex items-center justify-end w-1/4 lg:w-1/3">
           <div className="hidden lg:block mr-2">
             <NavList />

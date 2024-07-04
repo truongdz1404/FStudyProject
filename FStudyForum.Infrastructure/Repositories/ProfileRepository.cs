@@ -17,7 +17,7 @@ namespace FStudyForum.Infrastructure.Repositories
         {
             var profile = await _dbContext.Profiles
                            .Include(u => u.User)
-                           .Where(u => (u.User.UserName ?? "NULL").Equals(username))
+                           .Where(u => u.User.UserName!.Equals(username))
                            .FirstOrDefaultAsync();
             return profile;
         }

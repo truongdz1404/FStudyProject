@@ -28,6 +28,7 @@ const Donate = () => {
   const [loading, setLoading] = React.useState(false);
   const [donation, setDonation] = React.useState<Donation | null>(null);
   const navigate = useNavigate();
+  const isDeleted = React.useRef(false);
   const {
     register,
     handleSubmit,
@@ -42,10 +43,18 @@ const Donate = () => {
       return;
     }
     setLoading(true);
-    try {
-      const response = await PaymentService.saveUserDonate({
+   
+    try {    
+      if (!isDeleted.current) {
+        try {
+          await PaymentService.deleteDonate(`${user?.username}`);
+        } catch (deleteError) {
+          isDeleted.current = true;
+        }
+      }
+        const response = await PaymentService.saveUserDonate({
         amount: form.amount,
-        message: `${user.username}${form.description}`,
+        message: `${user.username} ${form.description}`,
         username: user.username,
         tid: null
       });
@@ -58,11 +67,12 @@ const Donate = () => {
     }
   };
   React.useEffect(() => {
+    
     if (donation !== null) {
       navigate("/donate/qrcode", {
         state: {
           amountByUser: donation.amount,
-          addInfoByUser: `${donation.id}${donation.message}`,
+          addInfoByUser: `${donation.id} ${donation.message}`,
           amount: donation.amount,
           id: donation.id,
           message: donation.message
@@ -70,6 +80,7 @@ const Donate = () => {
       });
     }
   }, [donation, navigate]);
+
   return (
     <>
       <div className="mb-6">
@@ -83,7 +94,8 @@ const Donate = () => {
           Donation
         </p>
         <p className="text-xs text-gray-600 text-left">
-          Tell us a bit about yourself to get started on our forum
+          If you love this forum and want it to continue operating, please
+          donate to us
         </p>
       </div>
       <form onSubmit={handleSubmit(handleDonate)} className="mt-2">
@@ -144,7 +156,7 @@ const Donate = () => {
             className="mt-4 w-full lg:w-fit normal-case text-sm"
             disabled={loading}
           >
-            Paymant VNPAY
+            Donate
           </Button>
         </div>
       </form>

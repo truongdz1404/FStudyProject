@@ -23,7 +23,7 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"],
+  "include": ["src", "src/components/filter/PostFilter/.tsx"],
   "typeRoots": ["./node_modules/@types", "./types"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

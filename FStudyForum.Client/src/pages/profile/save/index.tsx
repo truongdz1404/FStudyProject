@@ -2,27 +2,18 @@ import ContentLayout from "@/components/layout/ContentLayout";
 import PostItem from "@/components/post/PostItem";
 import { cn } from "@/helpers/utils";
 import { useAuth } from "@/hooks/useAuth";
-import SavedPostService from "@/services/SavedPostService";
-import { Alert, Spinner, Typography } from "@material-tailwind/react";
+import PostService from "@/services/PostService";
+import { Spinner, Typography } from "@material-tailwind/react";
 import { useQuery } from "@tanstack/react-query";
 
 const SavePost: React.FC = () => {
   const { user } = useAuth();
-  const {
-    data: posts,
-    error,
-    isLoading
-  } = useQuery({
+  const { data: posts, isPending } = useQuery({
     queryKey: ["savePost"],
-    queryFn: () => SavedPostService.listSavedPosts(user?.username ?? "")
+    queryFn: () => PostService.getSavedPosts(user!.username),
+    enabled: !!user
   });
-  if (error)
-    return (
-      <Alert color="red" className="p-4">
-        Can't fetch posts
-      </Alert>
-    );
-  if (isLoading) return <Spinner className="mx-auto" />;
+  if (isPending) return <Spinner className="mx-auto" />;
   return (
     <ContentLayout>
       <div
