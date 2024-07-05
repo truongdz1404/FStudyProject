@@ -78,20 +78,22 @@ const getById = async (id: string) => {
 const addRecentPost = async (postId: number) => {
   const response = await api.post<ResponseWith<Post>>(`/post/recent/${postId}`);
   return response.data;
-}
+};
 
 const getRecentPost = async () => {
   const response = await api.get<ResponseWith<Post[]>>("/post/recent");
   return response.data.data;
-}
+};
 
-const ClearRecentPost = async () => {
-  const response = await api.delete<ResponseWith<boolean>>("/post/clear-recent");
+const clearRecentPost = async () => {
+  const response = await api.delete<ResponseWith<boolean>>(
+    "/post/clear-recent"
+  );
   return response.data.data;
-}
+};
 
 const PostService = {
-  ClearRecentPost,
+  clearRecentPost,
   addRecentPost,
   getRecentPost,
   save,

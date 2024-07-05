@@ -18,7 +18,7 @@ const RecentPost: React.FC = () => {
   });
 
   const clearRecentPosts = async () => {
-    await PostService.ClearRecentPost();
+    await PostService.clearRecentPost();
     queryClient.invalidateQueries({ queryKey: ["recent-post"] });
   };
 
@@ -26,11 +26,11 @@ const RecentPost: React.FC = () => {
     <>
       {data && data.length > 0 ? (
         <>
-          <div className="flex justify-between items-center bg-blue-gray-300 p-4 ">
-            <h4>Recent Post</h4>
+          <div className="flex justify-between items-center p-4 pb-0">
+            <h1 className="text-xs uppercase">Recent Post</h1>
             <button
               onClick={clearRecentPosts}
-              className="text-indigo-900 rounded"
+              className="text-blue-800 text-sm"
             >
               Clear
             </button>

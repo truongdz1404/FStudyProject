@@ -11,7 +11,6 @@ import { useSize } from "@/hooks/useSize";
 
 type Props = {
   files: Attachment[];
-  onClick: (id?: number) => void;
 };
 
 const getSizeFromPath = (path: string): { width: number; height: number } => {
@@ -42,7 +41,7 @@ const getContainerHeight = (
   );
 };
 
-const AttachmentContainer: FC<Props> = ({ files, onClick }) => {
+const AttachmentContainer: FC<Props> = ({ files }) => {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [open, setOpen] = React.useState(-1);
   const { width } = useSize(containerRef);
@@ -53,7 +52,7 @@ const AttachmentContainer: FC<Props> = ({ files, onClick }) => {
   }, [files, width]);
 
   const openLightBox = (index?: number, id?: number) => {
-    onClick(id);
+    console.log(id);
     setOpen(index ?? 0);
   };
 
@@ -65,7 +64,7 @@ const AttachmentContainer: FC<Props> = ({ files, onClick }) => {
         <div
           style={{ height: height }}
           className={cn(
-            "max-h-[20rem] lg:max-h-[28rem] w-full object-contain relative overflow-hidden rounded-md "
+            "max-h-[28rem] w-full object-contain relative overflow-hidden rounded-md "
           )}
           onClick={() => openLightBox()}
         >
@@ -134,7 +133,7 @@ const AttachmentContainer: FC<Props> = ({ files, onClick }) => {
             <div
               key={index}
               style={{ height: height }}
-              className="max-h-[16rem] md:max-h-[20rem] lg:max-h-[28rem] object-contain relative overflow-hidden "
+              className="max-h-[28rem] object-contain relative overflow-hidden "
               onClick={() => openLightBox(index, file.id)}
             >
               <img

@@ -110,6 +110,7 @@ const Welcome = () => {
         major: major,
         gender: form.gender,
         avatar: "/src/assets/images/user.png",
+        banner: "/src/assets/images/banner.png",
         phone: form.phone
       };
       await ProfileService.create(payload);

@@ -11,7 +11,7 @@ import {
   IconButton,
   Typography
 } from "@material-tailwind/react";
-import Default from "@/assets/images/defaultTopic.png";
+import Default from "@/assets/images/topic.png";
 
 import {
   PowerIcon,
@@ -208,7 +208,7 @@ const Header = React.memo(({ openSidebar }: HeaderProps) => {
         </div>
         <div
           className={cn(
-            "w-1/2 md:w-2/5 max-w-screen-md bg-blue-gray-50 h-10 rounded-full text-sm",
+            "w-1/2 md:w-2/3 lg:w-2/5 max-w-screen-md bg-blue-gray-50 h-10 rounded-full text-sm",
             "flex gap-x-2"
           )}
         >
@@ -228,7 +228,7 @@ const Header = React.memo(({ openSidebar }: HeaderProps) => {
               <span className="truncate">t/{topic.name}</span>
               <div
                 className="h-full aspect-square hover:bg-blue-gray-200/50 rounded-full flex items-center justify-center cursor-pointer"
-                onClick={() => setIsAll(false)}
+                onClick={() => setIsAll(true)}
               >
                 <div className=" bg-blue-gray-900/80 rounded-full p-1">
                   <X className="w-3 h-3 text-white" strokeWidth={3} />

@@ -41,6 +41,7 @@ const TopicDetail = Loadable(lazy(() => import("@/pages/topic")));
 const Topics = Loadable(lazy(() => import("@/pages/topics")));
 const SignOut = Loadable(lazy(() => import("@/pages/auth/signout")));
 const ListReport = Loadable(lazy(() => import("@/pages/manager/report/list")));
+const Test = Loadable(lazy(() => import("@/pages/test")));
 const Response = Loadable(
   lazy(() => import("@/pages/manager/report/response"))
 );
@@ -60,6 +61,10 @@ const Router: FC = () => {
         {
           index: true,
           element: <Navigate to="/home" replace />
+        },
+        {
+          path: "test",
+          element: <Test />
         },
         {
           path: "home",

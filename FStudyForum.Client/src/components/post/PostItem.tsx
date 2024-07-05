@@ -3,13 +3,14 @@ import MenuItemPost from "./MenuItem";
 import { MessageSquare, Share } from "lucide-react";
 import { Post } from "@/types/post";
 import { Avatar } from "@material-tailwind/react";
-import Default from "@/assets/images/defaultTopic.png";
+import DefaultTopic from "@/assets/images/topic.png";
 import { cn, formatElapsedTime } from "@/helpers/utils";
 import { Link, useNavigate } from "react-router-dom";
 import React from "react";
 import EditorOutput from "./EditorOutput";
 import AttachmentContainer from "./AttachmentContainer";
 import PostVote from "./PostVote";
+import PostService from "@/services/PostService";
 
 type PostProps = {
   data: Post;
@@ -19,7 +20,9 @@ const PostItem: FC<PostProps> = ({ data, hideLess = true }) => {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const actionRefs = React.useRef<HTMLElement[]>([]);
   const navigate = useNavigate();
-
+  const addRecentPost = (postId: number) => {
+    PostService.addRecentPost(postId);
+  };
   const handleOutsideClick = (event: React.MouseEvent<HTMLDivElement>) => {
     if (!hideLess || !containerRef.current) return;
     const actions = Array.from(
@@ -32,12 +35,9 @@ const PostItem: FC<PostProps> = ({ data, hideLess = true }) => {
       containerRef.current.contains(event.target as Node) &&
       !actionRefs.current.some(action => action.contains(event.target as Node))
     ) {
+      addRecentPost(data.id);
       navigate(`/topic/${data.topicName}/comments/${data.id}`);
     }
-  };
-
-  const handleAttachmentClick = (attachmentId?: number) => {
-    console.log(attachmentId);
   };
 
   const pRef = React.useRef<HTMLDivElement>(null);
@@ -53,7 +53,10 @@ const PostItem: FC<PostProps> = ({ data, hideLess = true }) => {
             to={`/topic/${data.topicName}`}
             className="action flex items-center gap-x-2 z-0"
           >
-            <Avatar src={Default} className="w-6 h-6" />
+            <Avatar
+              src={data.topicAvatar || DefaultTopic}
+              className="w-6 h-6"
+            />
             <span className="text-xs">{`t/${data.topicName}`}</span>
           </Link>
           <span className="text-xs font-light hidden lg:block">•</span>
@@ -72,10 +75,7 @@ const PostItem: FC<PostProps> = ({ data, hideLess = true }) => {
         <p className="font-semibold text-blue-gray-900">{data.title}</p>
         <EditorOutput content={data.content} hide={hideLess} className="mb-2" />
 
-        <AttachmentContainer
-          onClick={handleAttachmentClick}
-          files={data.attachments}
-        />
+        <AttachmentContainer files={data.attachments} />
       </div>
       <div className="flex space-x-4 text-gray-700">
         <PostVote

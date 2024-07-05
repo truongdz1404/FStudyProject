@@ -139,7 +139,7 @@ const SubmitPage = () => {
         )}
       </div>
       <div className="my-4" />
-      <Editor topicName={topic?.name} banner={topic?.banner} />
+      <Editor topicName={topic?.name} />
     </ContentLayout>
   );
 };

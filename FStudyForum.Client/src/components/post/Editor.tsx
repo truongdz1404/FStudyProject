@@ -36,7 +36,6 @@ interface PostCreationRequest {
 }
 interface EditorProps {
   topicName: string | undefined;
-  banner: string | undefined;
 }
 
 export interface FileInputContextType {
@@ -49,7 +48,7 @@ export const FileInputContext = React.createContext<FileInputContextType>({
   setFiles: () => null
 });
 
-const Editor: FC<EditorProps> = ({ topicName, banner }) => {
+const Editor: FC<EditorProps> = ({ topicName }) => {
   const {
     register,
     handleSubmit,
@@ -168,9 +167,7 @@ const Editor: FC<EditorProps> = ({ topicName, banner }) => {
           type="submit"
           className="mt-6 w-full lg:w-fit normal-case text-sm"
           form="create-post-form"
-          disabled={
-            topicName == undefined || loading || !isFileLoaded || banner !== ""
-          }
+          disabled={topicName == undefined || loading || !isFileLoaded}
         >
           Post
         </Button>

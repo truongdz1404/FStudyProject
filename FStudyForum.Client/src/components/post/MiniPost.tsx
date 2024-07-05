@@ -1,31 +1,69 @@
 import { Post } from "@/types/post";
+import { Avatar } from "@material-tailwind/react";
 import { Link } from "react-router-dom";
+import { Images } from "lucide-react";
+import DefaultTopic from "@/assets/images/topic.png";
+import ImageWithLoading from "../ui/ImageWithLoading";
+import LightBox from "./LightBox";
+import React from "react";
+
 interface MiniPostProps {
   data: Post;
 }
 const MiniPost: React.FC<MiniPostProps> = ({ data }) => {
+  const [open, setOpen] = React.useState(-1);
+
+  const openLightBox = (index?: number) => {
+    setOpen(index ?? 0);
+  };
+
   return (
-    <>
-      <div className="shadow-lg p-4 bg-blue-gray-100">
-        <div className="flex-nowrap items-center">
-          <Link
-            to={`/profile/${data.author}`}
-            className="action text-xs font-light hidden lg:block hover:underline"
-          >{`u/${data.author}`}</Link>
-          <Link
-            className="text-base text-gray-800 line-clamp-2 lg:block hover:underline"
-            to={`/topic/${data.topicName}/comments/${data.id}`}
-          >
-            {data.title}
-          </Link>
-          {/* image */}
-        </div>
-        <div className="text-xs text-gray-700">
-          {data.voteCount} &middot; {data.commentCount}
+    <div className="flex p-2 border-b-2">
+      <div className="flex flex-col gap-y-2 grow">
+        <Link
+          to={`/profile/${data.topicName}`}
+          className="text-xs font-light hover:underline flex items-center gap-x-2"
+        >
+          <Avatar src={data.topicAvatar || DefaultTopic} className="w-6 h-6" />
+          {`u/${data.topicName}`}
+        </Link>
+        <Link
+          className="text-sm text-gray-800 hover:underline"
+          to={`/topic/${data.topicName}/comments/${data.id}`}
+        >
+          {data.title}
+        </Link>
+        <div className="text-xs  font-light">
+          {data.voteCount + " voting"} &middot;{" "}
+          {data.commentCount +
+            ` ${data.commentCount > 1 ? "comments" : "comment"} `}
         </div>
       </div>
-      <hr className=" border-blue-gray-50" />
-    </>
+
+      {data.attachments[0] && (
+        <div
+          className="flex shrink-0 ml-3 w-20 aspect-square overflow-hidden rounded-lg relative"
+          onClick={() => openLightBox(0)}
+        >
+          <ImageWithLoading
+            src={data.attachments[0].url}
+            className="object-cover w-full h-full"
+          />
+          {data.attachments.length > 1 && (
+            <div className="absolute bg-black/60 bottom-0 px-1 py-0.5 m-1 rounded-full text-white flex items-center gap-x-1">
+              <Images className="w-3 h-3" />
+              <span className="text-[0.6rem]">{data.attachments.length}</span>
+            </div>
+          )}
+        </div>
+      )}
+      <LightBox
+        index={open}
+        hideArrow={data.attachments.length <= 1}
+        sliders={data.attachments.map(file => ({ src: file.url }))}
+        close={() => setOpen(-1)}
+      />
+    </div>
   );
 };
 

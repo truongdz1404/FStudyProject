@@ -45,17 +45,17 @@ const ImageUpload = forwardRef<HTMLTableRowElement, ImageUploadProps>(
         uploadTask.on(
           "state_changed",
           snapshot => {
-            setProgess(
-              Math.round(
-                (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-              )
+            const percent = Math.round(
+              (snapshot.bytesTransferred / snapshot.totalBytes) * 100
             );
+            setProgess(Math.min(90, percent));
           },
           error => {
             toast.error(error.message);
           },
           async () => {
             const url = await getDownloadURL(uploadTask.snapshot.ref);
+            setProgess(100);
             onLoaded(url);
           }
         );

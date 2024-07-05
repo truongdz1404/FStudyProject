@@ -17,6 +17,9 @@ import { Link, Outlet, useParams } from "react-router-dom";
 import { Alert } from "@material-tailwind/react";
 import { cn } from "@/helpers/utils";
 import { useAuth } from "@/hooks/useAuth";
+import BannerDefault from "@/assets/images/banner.png";
+import AvatarDefault from "@/assets/images/user.png";
+import ImageWithLoading from "@/components/ui/ImageWithLoading";
 
 const tabItems = [
   {
@@ -51,43 +54,45 @@ const Profile = () => {
   if (!profile) return <Spinner className="mx-auto" />;
   return (
     <ContentLayout pannel={<ProfileDescription profile={profile} />}>
-      <div className="flex flex-col items-center w-full mb-24">
+      <div className="flex flex-col items-center w-full mb-16">
         <div className="relative w-full max-w-screen-lg">
-          <img
-            src="https://i.ibb.co/FWggPq1/banner.png"
-            className="w-full object-center h-36 rounded-sm"
-          />
-          <div className="absolute -bottom-1/2 left-4">
+          <div className="w-full rounded-lg h-28 overflow-hidden">
+            <ImageWithLoading
+              src={profile?.banner || BannerDefault}
+              className="object-cover w-full h-full "
+            />
+          </div>
+          <div className="absolute -bottom-1/3 left-4">
             <Avatar
               variant="circular"
-              size="xxl"
+              size="xl"
               alt="avatar"
               className="bg-white  p-0.5"
-              src={profile?.avatar}
+              src={profile?.avatar || AvatarDefault}
             />
             <Link
               to="/settings/profile"
               className={cn(
-                "absolute bottom-0 right-0 bg-blue-gray-50 rounded-full",
+                "absolute bottom-0 right-0 bg-blue-gray-50 rounded-full p-1",
                 user?.username !== username && "hidden"
               )}
             >
-              <Camera className="h-4 w-4 m-1" strokeWidth={1.5} />
+              <Camera className="h-4 w-4" strokeWidth={1.5} />
             </Link>
           </div>
 
           <Link
             to="/settings/profile"
             className={cn(
-              "absolute bottom-0 right-0 bg-blue-gray-50 rounded-full m-2 font-normal",
+              "absolute bottom-0 right-0 bg-blue-gray-50 rounded-full m-1 p-1",
               user?.username !== username && "hidden"
             )}
           >
-            <Camera className="h-4 w-4 m-1 " strokeWidth={1.5} />
+            <Camera className="h-4 w-4" strokeWidth={1.5} />
           </Link>
 
-          <div className="absolute left-32 pl-2 ">
-            <p className="font-semibold text-md">
+          <div className="absolute left-24">
+            <p className="font-semibold text-sm">
               {profile.lastName + " " + profile.firstName}
             </p>
             <p className="text-xs font-light">
@@ -116,50 +121,51 @@ const Profile = () => {
           </Link>
         </div>
       </div>
-
-      <Accordion open={open === 1} className="xl:hidden mb-2">
-        <AccordionHeader
-          onClick={() => handleOpen(1)}
-          className="py-0 pb-2 text-sm text-blue-gray-800 font-semibold !justify-normal"
-        >
-          Introduction
-        </AccordionHeader>
-        <AccordionBody className="py-0 pt-2 ">
-          <ProfileDescription profile={profile} />
-          <hr className="mt-4 border-blue-gray-50" />
-        </AccordionBody>
-      </Accordion>
-      <div className="flex w-max gap-4">
-        {tabItems.map(({ label, path }) => (
-          <Link to={path} key={label}>
-            <Button
-              variant="text"
-              size="sm"
-              className="rounded-full bg-blue-gray-50"
-            >
-              <Typography className="text-sm capitalize font-normal text-black">
-                {label}
-              </Typography>
-            </Button>
-          </Link>
-        ))}
-      </div>
-      <Button
-        size="sm"
-        variant="outlined"
-        className={cn(
-          "rounded-full mt-2",
-          user?.username !== username && "hidden"
-        )}
-      >
-        <div className="flex items-center">
-          <Plus size={"16"} />
-          <Typography className="text-xs capitalize ml-1 font-normal">
-            Create a Post
-          </Typography>
+      <div className="px-4">
+        <Accordion open={open === 1} className="xl:hidden mb-2">
+          <AccordionHeader
+            onClick={() => handleOpen(1)}
+            className="py-0 pb-2 text-sm text-blue-gray-800 font-semibold !justify-normal"
+          >
+            Introduction
+          </AccordionHeader>
+          <AccordionBody className="py-0 pt-2 ">
+            <ProfileDescription profile={profile} />
+            <hr className="mt-4 border-blue-gray-50" />
+          </AccordionBody>
+        </Accordion>
+        <div className="flex w-max gap-4">
+          {tabItems.map(({ label, path }) => (
+            <Link to={path} key={label}>
+              <Button
+                variant="text"
+                size="sm"
+                className="rounded-full bg-blue-gray-50"
+              >
+                <Typography className="text-sm capitalize font-normal text-black">
+                  {label}
+                </Typography>
+              </Button>
+            </Link>
+          ))}
         </div>
-      </Button>
-      <hr className="my-2 border-blue-gray-50" />
+        <Button
+          size="sm"
+          variant="outlined"
+          className={cn(
+            "rounded-full mt-2",
+            user?.username !== username && "hidden"
+          )}
+        >
+          <div className="flex items-center">
+            <Plus size={"16"} />
+            <Typography className="text-xs capitalize ml-1 font-normal">
+              Create a Post
+            </Typography>
+          </div>
+        </Button>
+        <hr className="my-2 border-blue-gray-50" />
+      </div>
       <Outlet />
     </ContentLayout>
   );

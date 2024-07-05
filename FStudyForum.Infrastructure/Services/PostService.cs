@@ -141,33 +141,26 @@ namespace FStudyForum.Infrastructure.Services
             return postDTOs;
         }
 
-        public async Task<SavePostDTO?> SavePostByUser(SavePostDTO savedPostDTO)
+        public async Task<SavePostDTO?> SavePostByUser(SavePostDTO savePostDTO)
         {
-            if (savedPostDTO.UserName == null)
-            {
-                return null;
-            }
-            if (!await _postRepository.IsSaved(savedPostDTO))
-            {
+            if (savePostDTO.UserName == null) return null;
+            if (!await _postRepository.IsSaved(savePostDTO))
                 throw new Exception("Post is Exists.");
-            }
-            var user = await _userManager.FindByNameAsync(savedPostDTO.UserName)
+            var user = await _userManager.FindByNameAsync(savePostDTO.UserName)
                  ?? throw new Exception("User not found");
-            var post = await _postRepository.GetById(savedPostDTO.PostId)
-            ?? throw new Exception(nameof(savedPostDTO.PostId) + "is not valid");
-            var savedPost = _mapper.Map<SavedPost>(savedPostDTO);
+            var post = await _postRepository.GetById(savePostDTO.PostId)
+            ?? throw new Exception(nameof(savePostDTO.PostId) + "is not valid");
+            var savedPost = _mapper.Map<SavedPost>(savePostDTO);
             savedPost.User = user;
             savedPost.Post = post;
             await _postRepository.SavePost(savedPost);
-            return savedPostDTO;
+            return savePostDTO;
         }
 
         public async Task<RecentPostDTO?> AddRecentPostByUser(RecentPostDTO recentPostDTO)
         {
             if (!await _postRepository.IsExistInRecent(recentPostDTO))
-            {
                 throw new Exception("Post has already exist in Recent.");
-            }
             var user = await _userManager.FindByNameAsync(recentPostDTO.UserName)
                 ?? throw new Exception("User not found");
             var post = await _postRepository.GetById(recentPostDTO.PostId)

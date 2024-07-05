@@ -18,6 +18,7 @@ const RouterParamProvider: FC<PropsWithChildren> = ({ children }) => {
   const { name } = useParams<{ name: string }>();
   const [topic, setTopic] = React.useState<Topic | null>(null);
   const [error, setError] = React.useState("");
+
   React.useEffect(() => {
     setTopic(null);
     if (!name) return;
@@ -32,6 +33,7 @@ const RouterParamProvider: FC<PropsWithChildren> = ({ children }) => {
     };
     fetchTopic();
   }, [name]);
+
   if (error) return <Navigate to={"not-found"} />;
 
   return (

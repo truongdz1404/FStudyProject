@@ -32,13 +32,13 @@ const Comments = () => {
 
   const initializeExpandedComments = (
     comments: Comment[],
-    number: number = 3
+    amount: number = 3
   ) => {
     const expanded: { [key: number]: boolean } = {};
     const traverseComments = (commentList: Comment[]) => {
       commentList.forEach(comment => {
         expanded[comment.id] =
-          !comment.replies || comment.replies.length < number;
+          !comment.replies || comment.replies.length < amount;
         if (comment.replies) {
           traverseComments(comment.replies);
         }
@@ -188,6 +188,7 @@ const Comments = () => {
       );
       setComments(updatedComments);
       setReplyToCommentId(null);
+
       initializeExpandedComments(updatedComments, 100);
     } catch (e) {
       const error = e as AxiosError;
@@ -258,7 +259,7 @@ const Comments = () => {
         {loading && <p>Loading...</p>}
         <div
           onClick={handleBack}
-          className="rounded-full bg-blue-gray-50 hover:bg-blue-gray-100 p-2 absolute top-0 -left-10 hidden md:block"
+          className="rounded-full bg-blue-gray-50 hover:bg-blue-gray-100 p-2 absolute top-0 -left-10 hidden lg:block"
         >
           <ArrowLeft className="w-4 h-4" />
         </div>
@@ -268,22 +269,25 @@ const Comments = () => {
         </div>
         <div className="mt-4 px-4">
           {comments && comments.length > 0 ? (
-            comments.slice().reverse().map(comment => (
-              <CommentItem
-                key={comment.id}
-                comment={comment}
-                level={0}
-                expandedComments={expandedComments}
-                toggleExpand={toggleExpand}
-                handleReplyClick={handleReplyClick}
-                handleDeleteComment={handleDeleteComment}
-                handleCreateReply={handleCreateReply}
-                handleEditComment={handleEditComment}
-                handleSaveEditedComment={handleSaveEditedComment}
-                replyToCommentId={replyToCommentId}
-                editingCommentId={editingCommentId}
-              />
-            ))
+            comments
+              .slice()
+              .reverse()
+              .map(comment => (
+                <CommentItem
+                  key={comment.id}
+                  comment={comment}
+                  level={0}
+                  expandedComments={expandedComments}
+                  toggleExpand={toggleExpand}
+                  handleReplyClick={handleReplyClick}
+                  handleDeleteComment={handleDeleteComment}
+                  handleCreateReply={handleCreateReply}
+                  handleEditComment={handleEditComment}
+                  handleSaveEditedComment={handleSaveEditedComment}
+                  replyToCommentId={replyToCommentId}
+                  editingCommentId={editingCommentId}
+                />
+              ))
           ) : (
             <p className="text-sm text-center">No comments yet</p>
           )}

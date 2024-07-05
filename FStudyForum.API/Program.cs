@@ -90,13 +90,13 @@ builder.Services
             }
         };
     });
-builder.Services.RegisterService();
 builder.Services.AddSignalR();
+builder.Services.RegisterService();
 var app = builder.Build();
-app.UseWebSockets(new WebSocketOptions { KeepAliveInterval = TimeSpan.FromSeconds(2) });
+// app.UseWebSockets(new WebSocketOptions { KeepAliveInterval = TimeSpan.FromSeconds(2) });
 app.UseCors(Policy.SINGLE_PAGE_APP);
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-app.MapHub<ChatHub>("/hub");
+app.MapHub<PostHub>("/post-hub");
 app.Run();

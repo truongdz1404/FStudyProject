@@ -87,57 +87,56 @@ const MenuItemComment: React.FC<MenuItemCommentProps> = ({
 
   return (
     <>
-    {comment.author === user?.username || user?.roles.includes(ROLE.Admin) ? (
-      <Menu open={isMenuOpen} handler={setIsMenuOpen} placement="bottom-end">
-        <MenuHandler>
-          
+      {comment.author === user?.username || user?.roles.includes(ROLE.Admin) ? (
+        <Menu open={isMenuOpen} handler={setIsMenuOpen} placement="bottom-end">
+          <MenuHandler>
             <Button
               variant="text"
               color="blue-gray"
               className="flex items-center rounded-full p-2 text-black"
             >
-              <Ellipsis className="w-4 h-4" />
+              <Ellipsis className="w-4 h-4" strokeWidth={1.4} />
             </Button>
-          
-        </MenuHandler>
-        <MenuList className="p-1">
-          {CommentMenuItem().map(({ label, icon, path }, key) => {
-            const isLastItem = key === CommentMenuItem().length - 1;
-            return (
-              <MenuItem
-                key={label}
-                onClick={
-                  path === "edit"
-                    ? () => onEdit(comment.id, comment.content)
-                    : path === "delete"
+          </MenuHandler>
+          <MenuList className="p-1">
+            {CommentMenuItem().map(({ label, icon, path }, key) => {
+              const isLastItem = key === CommentMenuItem().length - 1;
+              return (
+                <MenuItem
+                  key={label}
+                  onClick={
+                    path === "edit"
+                      ? () => onEdit(comment.id, comment.content)
+                      : path === "delete"
                       ? () => onDelete(comment.id.toString())
                       : path === "ban"
-                        ? () => setIsModalOpen(true)
-                        : () => { }
-                }
-                className={`flex items-center gap-2 rounded ${isLastItem &&
-                  "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
+                      ? () => setIsModalOpen(true)
+                      : () => {}
+                  }
+                  className={`flex items-center gap-2 rounded ${
+                    isLastItem &&
+                    "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
                   }`}
-              >
-                {React.createElement(icon, {
-                  className: `h-4 w-4 ${isLastItem ? "text-red-500" : ""}`,
-                  strokeWidth: 2
-                })}
-                <Typography
-                  as={"span"}
-                  className={cn(
-                    "font-normal text-sm",
-                    isLastItem ? "text-red-500" : "inherit"
-                  )}
                 >
-                  {label}
-                </Typography>
-              </MenuItem>
-            );
-          })}
-        </MenuList>
-      </Menu>
-    ): null}
+                  {React.createElement(icon, {
+                    className: `h-4 w-4 ${isLastItem ? "text-red-500" : ""}`,
+                    strokeWidth: 2
+                  })}
+                  <Typography
+                    as={"span"}
+                    className={cn(
+                      "font-normal text-sm",
+                      isLastItem ? "text-red-500" : "inherit"
+                    )}
+                  >
+                    {label}
+                  </Typography>
+                </MenuItem>
+              );
+            })}
+          </MenuList>
+        </Menu>
+      ) : null}
       {isModalOpen && (
         <div
           data-dialog-backdrop="dialog"
@@ -158,7 +157,7 @@ const MenuItemComment: React.FC<MenuItemCommentProps> = ({
               "leading-relaxed text-blue-gray-500",
               "antialiased shadow-2xl"
             )}
-            onClick={(e) => e.stopPropagation()}
+            onClick={e => e.stopPropagation()}
           >
             <div
               className={cn(

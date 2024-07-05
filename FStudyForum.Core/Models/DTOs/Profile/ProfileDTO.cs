@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using FStudyForum.Core.Constants;
 
 namespace FStudyForum.Core.Models.DTOs.Profile
 {
