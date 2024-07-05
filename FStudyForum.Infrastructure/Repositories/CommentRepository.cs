@@ -116,7 +116,8 @@ namespace FStudyForum.Infrastructure.Repositories
               .Where(c => c.Content.Contains(query.Keyword.Trim()) && !c.IsDeleted);
             queryable = query.Filter switch
             {
-                "Hot" => queryable.OrderByDescending(c => c.Votes.Sum(v => v.IsUp ? 1 : 0)),
+                "Hot" => queryable.OrderByDescending(c => c.Votes.Sum(v => v.IsUp ? 1 : 0))
+                                  .ThenByDescending(c => c.CreatedAt),
                 "New" => queryable.OrderByDescending(c => c.CreatedAt),
                 _ => queryable.OrderBy(p => p.Id),
             };

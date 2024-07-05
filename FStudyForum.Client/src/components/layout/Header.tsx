@@ -29,6 +29,7 @@ import { Icons } from "../Icons";
 import { useAuth } from "@/hooks/useAuth";
 import TopicService from "@/services/TopicService";
 import { Topic } from "@/types/topic";
+import SearchInput from "@/components/search/SearchInput"
 
 function ProfileMenu() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
@@ -169,8 +170,6 @@ const Header = React.memo(({ openSidebar }: HeaderProps) => {
   const toggleIsNavOpen = () => setIsNavOpen(cur => !cur);
   const { name } = useParams<{ name: string }>();
   const [topic, setTopic] = React.useState<Topic | undefined>();
-  const [searchTerm, setSearchTerm] = React.useState("");
-  const navigate = useNavigate();
   React.useEffect(() => {
     setTopic(undefined);
     if (!name) return;
@@ -185,12 +184,6 @@ const Header = React.memo(({ openSidebar }: HeaderProps) => {
     fetchTopic();
   }, [name]);
 
-
-  const handleSearchSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && searchTerm.trim()) {
-      navigate(`/search/posts?keyword=${searchTerm.trim()}`);
-    }
-  };
 
   React.useEffect(() => {
     const checkResponsive = () =>
@@ -213,7 +206,6 @@ const Header = React.memo(({ openSidebar }: HeaderProps) => {
           >
             <AlignJustify className="h-5 w-5 text-blue-gray-600" />
           </IconButton>
-
           <Link
             to="/"
             className="mx-2 xl:mx-4 cursor-pointer py-1.5 font-medium flex items-center select-none"
@@ -229,7 +221,7 @@ const Header = React.memo(({ openSidebar }: HeaderProps) => {
         </div>
         <div
           className={cn(
-            "w-1/2 lg:w-1/3 max-w-screen-md bg-blue-gray-50 h-10 rounded-full text-sm",
+            "w-1/2 lg:w-1/3 max-w-screen-md bg-blue-gray-50 h-10 rounded-full text-sm z-50",
             "flex gap-x-2"
           )}
         >
@@ -256,17 +248,7 @@ const Header = React.memo(({ openSidebar }: HeaderProps) => {
               </button>
             </span>
           )}
-           <span className="my-auto flex-1">
-            <input
-              type="text"
-              name="search"
-              placeholder="Search"
-              className="focus:outline-none bg-transparent w-full pr-4"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              onKeyDown={handleSearchSubmit}
-            />
-          </span>
+           <SearchInput/>
         </div>
 
         <div className="flex items-center justify-end w-1/4 lg:w-1/3">

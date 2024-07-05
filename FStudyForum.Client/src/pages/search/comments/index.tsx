@@ -7,7 +7,7 @@ import { useInView } from "react-intersection-observer";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { LIMIT_SCROLLING_PAGNATION_RESULT, SessionStorageKey } from "@/helpers/constants";
 import CommentFilter from "@/components/filter/CommentFilter";
-import NullLayout from "@/components/layout/NullLayout";
+import NotFoundSearch from "@/components/layout/NotFoundSearch";
 import { Spinner } from "@material-tailwind/react";
 import { useLocation } from 'react-router-dom';
 import SearchButton from "@/components/search/SearchButton";
@@ -21,7 +21,7 @@ const SearchCommentPage: React.FC = () => {
     const { ref, inView } = useInView();
 
     const queryParams = useQueryParams();
-    const keyword = queryParams.get('keyword');
+    const keyword = queryParams.get('keyword') ?? '';
 
     React.useEffect(() => {
         const savedFilter = sessionStorage.getItem(SessionStorageKey.SelectedFilter);
@@ -84,7 +84,7 @@ const SearchCommentPage: React.FC = () => {
             <div className="relative flex text-left z-20">
                 <CommentFilter setFilter={setFilter} filter={filter} />
             </div>
-            {results.length === 0 && !isPending && <NullLayout />}
+            {results.length === 0 && !isPending && <NotFoundSearch keyword={keyword}/>}
             {results.map(({ post, comment }, index) => (
                 <div key={index} className="w-full ">
                     <div className="hover:bg-gray-100 rounded-lg w-full py-3">
@@ -98,7 +98,7 @@ const SearchCommentPage: React.FC = () => {
                     <Spinner className="mx-auto" />
                 ) : (
                     <span className="text-xs font-light">
-                        {results.length === 0 && !isPending ? "Nothing found" : "Nothing more"}
+                        {results.length !== 0 && !isPending && "Nothing more"}
                     </span>
                 )}
             </div>

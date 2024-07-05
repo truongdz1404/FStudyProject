@@ -45,7 +45,7 @@ const SearchButton = () => {
                         if(type != search.type)
                         return handleClick(search.type)} } 
                     className={`mb-2 font-bold relative flex gap-x-1 justify-center items-center  px-5 p-2 text-sm text-black-800
-                    ${type == search.type ? 'bg-blue-200' : 'bg-white'} rounded-full`}>
+                    ${type == search.type ? 'bg-blue-gray-100' : 'bg-white'} rounded-full`}>
                     {search.title}
                 </button>
             ))}
