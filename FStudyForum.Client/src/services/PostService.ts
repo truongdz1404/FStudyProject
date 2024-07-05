@@ -8,7 +8,7 @@ const save = async (postId: number) => {
   );
   return response.data;
 };
-const removeFromSave = async (postId: number) => {
+const removeFromSaved = async (postId: number) => {
   const response = await api.delete<ResponseWith<SavePost>>(
     `/post/remove-save/${postId}`
   );
@@ -27,41 +27,20 @@ const getSavedPosts = async (username: string) => {
   return response.data.data;
 };
 
-const get = async (
-  type: string,
+const getPosts = async (
   pageNumber: number,
   pageSize: number,
   filter: string
 ) => {
   const response = await api.get<ResponseWith<Post[]>>(
-    `/post/${type}?pageNumber=${pageNumber}&pageSize=${pageSize}&filter=${filter}`
+    `/post/all?pageNumber=${pageNumber}&pageSize=${pageSize}&filter=${filter}`
   );
 
   return response.data.data;
 };
 
-const getPostsByTopicName = async (topic: string) => {
-  const response = await api.get<ResponseWith<Post[]>>(`/post/topic=${topic}`);
-  return response.data.data;
-};
-
-const getPosts = async () => {
-  const response = await api.get<ResponseWith<Post[]>>(`/post/all`);
-  return response.data.data;
-};
-
-const getPostsByFeature = async (
-  topicName: string | null,
-  postType: string
-) => {
-  let response;
-  if (topicName) {
-    response = await api.get<ResponseWith<Post[]>>(
-      `/post/${postType}/topic=${topicName}`
-    );
-  } else {
-    response = await api.get<ResponseWith<Post[]>>(`/post/${postType}`);
-  }
+const getPostsByTopic = async (topic: string) => {
+  const response = await api.get<ResponseWith<Post[]>>(`/post/${topic}`);
   return response.data.data;
 };
 
@@ -75,17 +54,17 @@ const getById = async (id: string) => {
   return response.data.data;
 };
 
-const addRecentPost = async (postId: number) => {
+const addRecent = async (postId: number) => {
   const response = await api.post<ResponseWith<Post>>(`/post/recent/${postId}`);
   return response.data;
 };
 
-const getRecentPost = async () => {
+const getRecentPosts = async () => {
   const response = await api.get<ResponseWith<Post[]>>("/post/recent");
   return response.data.data;
 };
 
-const clearRecentPost = async () => {
+const clearRecent = async () => {
   const response = await api.delete<ResponseWith<boolean>>(
     "/post/clear-recent"
   );
@@ -93,19 +72,17 @@ const clearRecentPost = async () => {
 };
 
 const PostService = {
-  clearRecentPost,
-  addRecentPost,
-  getRecentPost,
+  clearRecent,
+  addRecent,
+  getRecentPosts,
   save,
-  removeFromSave,
+  removeFromSaved,
   isSaved,
   getSavedPosts,
-  getPostsByTopicName,
-  get,
-  create,
-  getById,
+  getPostsByTopic,
   getPosts,
-  getPostsByFeature
+  create,
+  getById
 };
 
 export default PostService;

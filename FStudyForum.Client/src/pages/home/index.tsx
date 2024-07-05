@@ -23,8 +23,7 @@ const HomePage: React.FC = () => {
       queryKey: [`home-${filter}-query`],
       queryFn: async ({ pageParam = 1 }) => {
         try {
-          const posts = await PostService.get(
-            "filter",
+          const posts = await PostService.getPosts(
             pageParam,
             LIMIT_SCROLLING_PAGNATION_RESULT,
             filter
@@ -48,7 +47,7 @@ const HomePage: React.FC = () => {
 
   return (
     <ContentLayout pannel={<RecentPost />}>
-      <div className="relative flex text-left z-20">
+      <div className="relative flex text-left z-20 border-b-2 pb-2 mx-2 mb-1">
         <PostFilter setFilter={setFilter} filter={filter} />
       </div>
       {posts.length === 0 && <NullLayout />}

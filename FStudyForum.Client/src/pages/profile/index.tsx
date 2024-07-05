@@ -56,7 +56,7 @@ const Profile = () => {
     <ContentLayout pannel={<ProfileDescription profile={profile} />}>
       <div className="flex flex-col items-center w-full mb-16">
         <div className="relative w-full max-w-screen-lg">
-          <div className="w-full rounded-lg h-28 overflow-hidden">
+          <div className="w-full rounded-none md:rounded-lg h-28 overflow-hidden">
             <ImageWithLoading
               src={profile?.banner || BannerDefault}
               className="object-cover w-full h-full "
@@ -121,13 +121,13 @@ const Profile = () => {
           </Link>
         </div>
       </div>
-      <div className="px-4">
+      <div>
         <Accordion open={open === 1} className="xl:hidden mb-2">
           <AccordionHeader
             onClick={() => handleOpen(1)}
             className="py-0 pb-2 text-sm text-blue-gray-800 font-semibold !justify-normal"
           >
-            Introduction
+            <span className="ml-4">About</span>
           </AccordionHeader>
           <AccordionBody className="py-0 pt-2 ">
             <ProfileDescription profile={profile} />

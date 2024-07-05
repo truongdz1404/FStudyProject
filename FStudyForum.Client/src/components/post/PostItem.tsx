@@ -21,7 +21,7 @@ const PostItem: FC<PostProps> = ({ data, hideLess = true }) => {
   const actionRefs = React.useRef<HTMLElement[]>([]);
   const navigate = useNavigate();
   const addRecentPost = (postId: number) => {
-    PostService.addRecentPost(postId);
+    PostService.addRecent(postId);
   };
   const handleOutsideClick = (event: React.MouseEvent<HTMLDivElement>) => {
     if (!hideLess || !containerRef.current) return;

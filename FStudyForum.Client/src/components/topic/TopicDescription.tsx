@@ -6,7 +6,7 @@ const TopicDescription = () => {
     <>
       <div className="p-4 border-b-2 ">
         <h1 className="font-semibold truncate text-sm text-black">
-          r/{topic?.name}
+          t/{topic?.name}
         </h1>
         <p className="text-xs font-light">{topic?.description}</p>
       </div>

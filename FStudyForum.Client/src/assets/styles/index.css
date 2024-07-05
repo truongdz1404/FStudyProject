@@ -17,18 +17,17 @@ body {
 
 @layer utilities {
     .scrollbar::-webkit-scrollbar {
-        display: block;
         width: 6px;
     }
     .scrollbar::-webkit-scrollbar-track {
-        background: #f1f1f1;
+        background: transparent;
     }
     .scrollbar::-webkit-scrollbar-thumb {
-        background: #adadad;
-        border-radius: 5px;
+        background: transparent;
+        border-radius: 0.5rem;
     }
-    .scrollbar::-webkit-scrollbar-thumb:hover {
-        background: #9d9d9d;
+    .scrollbar:hover::-webkit-scrollbar-thumb {
+        background: #cfd8dc;
     }
     .no-scrollbar::-webkit-scrollbar {
         display: none;

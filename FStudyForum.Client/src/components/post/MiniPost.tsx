@@ -18,7 +18,7 @@ const MiniPost: React.FC<MiniPostProps> = ({ data }) => {
   };
 
   return (
-    <div className="flex p-2 border-b-2">
+    <div className="flex p-2">
       <div className="flex flex-col gap-y-2 grow">
         <Link
           to={`/profile/${data.topicName}`}
@@ -33,7 +33,7 @@ const MiniPost: React.FC<MiniPostProps> = ({ data }) => {
         >
           {data.title}
         </Link>
-        <div className="text-xs  font-light">
+        <div className="text-[0.7rem]  font-light">
           {data.voteCount + " voting"} &middot;{" "}
           {data.commentCount +
             ` ${data.commentCount > 1 ? "comments" : "comment"} `}

@@ -52,7 +52,7 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
         response = await PostService.save(post.id);
         showSuccessToast(response.message);
       } else {
-        response = await PostService.removeFromSave(post.id);
+        response = await PostService.removeFromSaved(post.id);
         showSuccessToast(response.message);
       }
       setIsSaved(prev => !prev);
