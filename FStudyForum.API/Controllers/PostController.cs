@@ -29,7 +29,7 @@ namespace FStudyForum.API.Controllers
             {
                 var username = User.Identity?.Name
                     ?? throw new Exception("User is not authenticated!");
-                var posts = await _postService.GetFilterPosts(username, query);
+                var posts = await _postService.GetPosts(username, query);
                 if (posts.IsNullOrEmpty())
                 {
                     return NotFound(new Response
@@ -57,6 +57,8 @@ namespace FStudyForum.API.Controllers
                 });
             }
         }
+
+
 
         [HttpGet("{id}"), Authorize]
         public async Task<IActionResult> GetPost([FromRoute] long id)
@@ -408,25 +410,29 @@ namespace FStudyForum.API.Controllers
             }
         }
 
-
-        [HttpGet("topic={topicName}")]
-        public async Task<IActionResult> GetPostsByTopicName(string topicName)
+        [HttpGet("all/{topicName}"), Authorize]
+        public async Task<IActionResult> GetPostsByTopicName([FromRoute] string topicName, [FromQuery] QueryPostDTO query)
         {
-            var posts = await _postService.GetPostByTopicName(topicName);
-            if (posts.IsNullOrEmpty())
+            try
             {
-                return NotFound(new Response
+                var userName = User.Identity?.Name ?? throw new Exception("User is not authenticated!");
+                var posts = await _postService.GetPostsByTopicName(userName, topicName, query);
+
+                return Ok(new Response
                 {
-                    Status = ResponseStatus.ERROR,
-                    Message = "Posts not found",
+                    Message = "Get Posts successfully",
+                    Status = ResponseStatus.SUCCESS,
+                    Data = posts
                 });
             }
-            return Ok(new Response
+            catch (Exception ex)
             {
-                Message = "Get Posts successfully",
-                Status = ResponseStatus.SUCCESS,
-                Data = posts
-            });
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = ex.Message
+                });
+            }
         }
 
 

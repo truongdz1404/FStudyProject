@@ -6,8 +6,7 @@ namespace FStudyForum.Core.Interfaces.IServices
 {
         public interface IPostService
         {
-                public Task<IEnumerable<PostDTO>> GetAll(string username, QueryPostDTO query);
-                public Task<IEnumerable<PostDTO>> GetFilterPosts(string username, QueryPostDTO query);
+                public Task<IEnumerable<PostDTO>> GetPosts(string username, QueryPostDTO query);
                 public Task<PostDTO> GetPostById(long id, string username);
                 public Task<PostDTO> DeletePostById(long id, string username);
                 public Task<PostDTO> CreatePost(CreatePostDTO postDTO);
@@ -17,7 +16,7 @@ namespace FStudyForum.Core.Interfaces.IServices
                 public Task<SavePostDTO?> RemoveFromSavedByUser(SavePostDTO savedPostDTO);
                 public Task<bool> IsPostExists(SavePostDTO savedPostDTO);
                 public Task<IEnumerable<PostDTO>> GetSavedPostsByUser(string username);
-                public Task<List<PostDTO>> GetPostByTopicName(string topicName);
+                public Task<IEnumerable<PostDTO>> GetPostsByTopicName(string username, string topicName, QueryPostDTO query);
                 public Task<RecentPostDTO?> AddRecentPostByUser(RecentPostDTO recentPostDTO);
                 public Task<IEnumerable<PostDTO>> GetRecentPostsByUser(string username);
                 public Task ClearRecentPostsByUser(string username);

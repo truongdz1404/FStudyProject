@@ -39,8 +39,15 @@ const getPosts = async (
   return response.data.data;
 };
 
-const getPostsByTopic = async (topic: string) => {
-  const response = await api.get<ResponseWith<Post[]>>(`/post/${topic}`);
+const getPostsByTopicName = async (
+  topicName: string,
+  pageNumber: number,
+  pageSize: number,
+  filter: string
+) => {
+  const response = await api.get<ResponseWith<Post[]>>(
+    `/post/all/${topicName}?pageNumber=${pageNumber}&pageSize=${pageSize}&filter=${filter}`
+  );
   return response.data.data;
 };
 
@@ -79,7 +86,7 @@ const PostService = {
   removeFromSaved,
   isSaved,
   getSavedPosts,
-  getPostsByTopic,
+  getPostsByTopicName,
   getPosts,
   create,
   getById

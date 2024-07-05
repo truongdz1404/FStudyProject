@@ -71,7 +71,7 @@ const CommentItem: FC<CommentItemProps> = ({
         <div className="flex items-center h-full gap-x-2 relative">
           {level > 0 && (
             <div className="-z-10 absolute -top-4 -left-[1.05rem] ">
-              <div className="bottom-0 left-1/2 w-4 h-8 border-b-2 border-l-2 border-gray-400 rounded-bl-xl"></div>
+              <div className="bottom-0 left-1/2 w-4 h-8 border-b-2 border-l-2 border-gray-400 rounded-bl-xl" />
             </div>
           )}
           <img

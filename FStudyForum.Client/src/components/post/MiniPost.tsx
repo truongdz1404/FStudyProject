@@ -25,7 +25,7 @@ const MiniPost: React.FC<MiniPostProps> = ({ data }) => {
           className="text-xs font-light hover:underline flex items-center gap-x-2"
         >
           <Avatar src={data.topicAvatar || DefaultTopic} className="w-6 h-6" />
-          {`u/${data.topicName}`}
+          {`t/${data.topicName}`}
         </Link>
         <Link
           className="text-sm text-gray-800 hover:underline"

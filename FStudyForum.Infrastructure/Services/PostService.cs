@@ -35,10 +35,30 @@ namespace FStudyForum.Infrastructure.Services
             await _postRepository.RemoveFromSavedByUser(postByUser);
             return savedPost;
         }
-        public async Task<List<PostDTO>> GetPostByTopicName(string topicName)
+        public async Task<IEnumerable<PostDTO>> GetPostsByTopicName(string username, string topicName, QueryPostDTO query)
         {
-            var posts = await _postRepository.GetPostsByTopicNameAsync(topicName);
-            return _mapper.Map<List<PostDTO>>(posts);
+            var posts = await _postRepository.GetPostsByTopicNameAsync(topicName, query);
+            var postDTOs = new List<PostDTO>();
+            foreach (var p in posts)
+            {
+                postDTOs.Add(new PostDTO
+                {
+                    Id = p.Id,
+                    Title = p.Title,
+                    Author = p.Creater.UserName!,
+                    TopicName = p.Topic.Name,
+                    TopicAvatar = p.Topic.Avatar,
+                    VoteType = await _voteRepository.GetVotedType(username, p.Id),
+                    UpVoteCount = p.Votes.Count(v => v.IsUp),
+                    DownVoteCount = p.Votes.Count(v => !v.IsUp),
+                    Content = p.Content,
+                    VoteCount = await _postRepository.GetVoteCount(p.Id),
+                    CommentCount = p.Comments.Count,
+                    Attachments = p.Attachments.Select(a => new AttachmentDTO { Id = a.Id, Type = a.Type, Url = a.FileUrl }),
+                    Elapsed = DateTime.Now - p.CreatedAt
+                });
+            }
+            return postDTOs;
         }
 
         public async Task<PostDTO> CreatePost(CreatePostDTO postDTO)
@@ -70,33 +90,7 @@ namespace FStudyForum.Infrastructure.Services
             };
         }
 
-        public async Task<IEnumerable<PostDTO>> GetAll(string username, QueryPostDTO query)
-        {
-
-            var posts = await _postRepository.GetQuery(query);
-            var postDTOs = new List<PostDTO>();
-            foreach (var p in posts)
-            {
-                postDTOs.Add(new PostDTO
-                {
-                    Id = p.Id,
-                    Title = p.Title,
-                    Author = p.Creater.UserName!,
-                    TopicName = p.Topic.Name,
-                    TopicAvatar = p.Topic.Avatar,
-                    VoteType = await _voteRepository.GetVotedType(username, p.Id),
-                    Content = p.Content,
-                    VoteCount = await _postRepository.GetVoteCount(p.Id),
-                    CommentCount = p.Comments.Count(c => !c.IsDeleted),
-                    Attachments = p.Attachments.Select(a => new AttachmentDTO { Id = a.Id, Type = a.Type, Url = a.FileUrl }),
-                    Elapsed = DateTime.Now - p.CreatedAt
-                });
-            }
-
-            return postDTOs;
-        }
-
-        public async Task<IEnumerable<PostDTO>> GetFilterPosts(string username, QueryPostDTO query)
+        public async Task<IEnumerable<PostDTO>> GetPosts(string username, QueryPostDTO query)
         {
             var posts = await _postRepository.GetFilterPostsAsync(query);
             var postDTOs = new List<PostDTO>();
@@ -121,6 +115,8 @@ namespace FStudyForum.Infrastructure.Services
             }
             return postDTOs;
         }
+
+
 
         public async Task<IEnumerable<PostDTO>> SearchPostAsync(string keyword)
         {

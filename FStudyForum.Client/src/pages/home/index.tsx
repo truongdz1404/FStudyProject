@@ -42,8 +42,8 @@ const HomePage: React.FC = () => {
     }
   }, [inView, fetchNextPage]);
 
-  const posts = data?.pages.flatMap(p => p) ?? [];
   if (isPending) return <Spinner className="mx-auto" />;
+  const posts = data?.pages.flatMap(p => p) ?? [];
 
   return (
     <ContentLayout pannel={<RecentPost />}>
