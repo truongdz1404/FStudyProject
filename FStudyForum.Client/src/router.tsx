@@ -198,6 +198,11 @@ const Router: FC = () => {
         },
         {
           path: "search",
+          element: (
+            <TopicGuard>
+              <Outlet />
+            </TopicGuard>
+          ),
           children: [
             {
               path: "posts",
