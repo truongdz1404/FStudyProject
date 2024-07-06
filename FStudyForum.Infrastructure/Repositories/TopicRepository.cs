@@ -1,8 +1,11 @@
 using FStudyForum.Core.Interfaces.IRepositories;
 using FStudyForum.Core.Models.DTOs.Topic;
+using FStudyForum.Core.Models.DTOs.Search;
 using FStudyForum.Core.Models.Entities;
 using FStudyForum.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using FStudyForum.Core.Helpers;
+
 
 namespace FStudyForum.Infrastructure.Repositories
 {
@@ -66,13 +69,18 @@ namespace FStudyForum.Infrastructure.Repositories
             return topics;
         }
 
-        public async Task<IEnumerable<Topic>> SearchTopicContainKeywordAsync(string keyword)
+        public async Task<IEnumerable<Topic>> SearchTopicContainKeywordAsync(QuerySearchTopicDTO query)
         {
-            return await _dbContext.Topics
-               .Where(t => !t.IsDeleted && (t.Name.Contains(keyword.Trim()) || t.Description.Contains(keyword.Trim())))
+            IQueryable<Topic> queryable = _dbContext.Topics
                .Include(t => t.Posts)
                .Include(t => t.Categories)
-               .ToListAsync();
+               .AsSplitQuery()
+               .Where(t => !t.IsDeleted && (t.Name.Contains(query.Keyword.Trim())
+                || t.Description.Contains(query.Keyword.Trim())))
+               .OrderByDescending(t => t.CreatedAt);
+            return await queryable
+             .Paginate(query.PageNumber, query.PageSize)
+             .ToListAsync();
         }
         public async Task<TopicBan> BanUser(TopicBan topicBan)
         {

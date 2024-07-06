@@ -6,6 +6,7 @@ using FStudyForum.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using FStudyForum.Core.Helpers;
 using FStudyForum.Core.Models.DTOs.Topic;
+using FStudyForum.Core.Models.DTOs.Search;
 
 
 namespace FStudyForum.Infrastructure.Repositories
@@ -182,17 +183,25 @@ namespace FStudyForum.Infrastructure.Repositories
         }
 
 
-        public async Task<IEnumerable<Post>> SearchPostAsync(string keyword)
+        public async Task<IEnumerable<Post>> SearchPostAsync(QuerySearchPostDTO query)
         {
-            return await _dbContext.Posts
-               .Where(p => p.IsDeleted == false && p.Title.Contains(keyword.Trim()) || p.Content.Contains(keyword.Trim()))
-               .Include(p => p.Creater)
-               .Include(p => p.Topic)
-               .Include(p => p.Votes)
-               .Include(p => p.Attachments)
-               .Include(p => p.Comments)
-               .Where(p => p.Topic.IsDeleted == false)
-               .ToListAsync();
+            IQueryable<Post> queryable = _dbContext.Posts
+             .Include(p => p.Topic)
+             .Include(p => p.Creater)
+             .Include(p => p.Votes)
+             .Include(p => p.Attachments)
+             .Include(p => p.Comments)
+             .AsSplitQuery()
+             .Where(p => (p.IsDeleted == false && p.Title.Contains(query.Keyword.Trim()) && !p.Topic.IsDeleted) || p.Content.Contains(query.Keyword.Trim()));
+            queryable = query.Filter switch
+            {
+                "Hot" => queryable.OrderByDescending(p => p.Votes.Sum(v => v.IsUp ? 1 : 0) + p.Comments.Count),
+                "New" => queryable.OrderByDescending(p => p.CreatedAt),
+                _ => queryable.OrderBy(p => p.Id),
+            };
+            return await queryable
+                .Paginate(query.PageNumber, query.PageSize)
+                .ToListAsync();
         }
         public async Task<IEnumerable<Post>> GetSavedPostsByUser(string username)
         {

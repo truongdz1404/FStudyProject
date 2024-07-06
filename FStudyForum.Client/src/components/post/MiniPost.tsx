@@ -50,7 +50,7 @@ const MiniPost: React.FC<MiniPostProps> = ({ data }) => {
             className="object-cover w-full h-full"
           />
           {data.attachments.length > 1 && (
-            <div className="absolute bg-black/60 bottom-0 px-1 py-0.5 m-1 rounded-full text-white flex items-center gap-x-1">
+            <div className="absolute bg-black/60 bottom-0 px-1 py-0.5 m-1 rounded-full text-white/80 flex items-center gap-x-1">
               <Images className="w-3 h-3" />
               <span className="text-[0.6rem]">{data.attachments.length}</span>
             </div>

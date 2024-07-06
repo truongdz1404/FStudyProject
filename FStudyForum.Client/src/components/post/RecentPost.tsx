@@ -39,7 +39,7 @@ const RecentPost: React.FC = () => {
           {[...data]?.reverse().map((post, index) => (
             <div
               key={post.id}
-              className={cn(index + 1 != data.length && "border-b-2")}
+              className={cn(index + 1 != data.length && "border-b-2", "px-2")}
             >
               <MiniPost data={post} />
             </div>

@@ -4,6 +4,7 @@ using FStudyForum.Core.Models.DTOs.Token;
 using FStudyForum.Core.Models.DTOs.User;
 using Microsoft.AspNetCore.Identity;
 using FStudyForum.Core.Models.DTOs.Topic;
+using FStudyForum.Core.Models.DTOs.Search;
 namespace FStudyForum.Core.Interfaces.IServices;
 
 public interface IUserService
@@ -20,7 +21,7 @@ public interface IUserService
     Task RemoveRefreshTokenAsync(string refreshToken);
     Task<string?> GetRefreshTokenAsync(string userName);
 
-    Task<IEnumerable<UserDTO>> SearchUserByName(string keyword);
+    Task<IEnumerable<UserDTO>> SearchUserByName(QuerySearchUserDTO query);
 
     Task<UserDTO> LockUser(LockUserDTO lockUserDTO);
     Task<UserDTO> UnlockUser(LockUserDTO lockUserDTO);

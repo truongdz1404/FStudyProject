@@ -2,6 +2,9 @@ using FStudyForum.Core.Models.Entities;
 using FStudyForum.Core.Interfaces.IRepositories;
 using FStudyForum.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using FStudyForum.Core.Models.DTOs.Search;
+using FStudyForum.Core.Helpers;
+
 
 namespace FStudyForum.Infrastructure.Repositories;
 
@@ -14,9 +17,15 @@ public class UserRepository(ApplicationDBContext dbContext)
         return await _dbContext.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
     }
 
-    public async Task<IEnumerable<ApplicationUser>> SearchUserByName(string keyword)
+    public async Task<IEnumerable<ApplicationUser>> SearchUserByName(QuerySearchUserDTO query)
     {
-        return await _dbContext.Users.Where(u => u.UserName!.Contains(keyword.Trim())).ToListAsync();
+        IQueryable<ApplicationUser> queryable = _dbContext.Users
+        .AsSplitQuery()
+        .Where(u => u.UserName!.Contains(query.Keyword.Trim()))
+               .OrderBy(u => u.Id);
+        return await queryable
+               .Paginate(query.PageNumber, query.PageSize)
+               .ToListAsync();
     }
 
     public async Task<IEnumerable<Topic>> GetModeratedTopics(string username)

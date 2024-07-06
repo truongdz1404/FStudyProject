@@ -36,7 +36,6 @@ export function formatElapsedTime(elapsed: string): string {
     return `${totalHours} hr${totalHours > 1 ? "s" : ""} ago`;
   return `${totalMinutes} min${totalMinutes > 1 ? "s" : ""} ago`;
 }
-
 export function validateFileType(file: File) {
   return ALLOWED_FILE_TYPES.includes(file.type);
 }

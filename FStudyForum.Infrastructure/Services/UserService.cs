@@ -12,6 +12,7 @@ using FStudyForum.Core.Helpers;
 using FStudyForum.Infrastructure.Repositories;
 using FStudyForum.Core.Models.DTOs;
 using FStudyForum.Core.Models.DTOs.Topic;
+using FStudyForum.Core.Models.DTOs.Search;
 namespace FStudyForum.Infrastructure.Services;
 
 public class UserService : IUserService
@@ -211,9 +212,9 @@ public class UserService : IUserService
         return new(userDTOs, totalCount);
     }
 
-    public async Task<IEnumerable<UserDTO>> SearchUserByName(string keyword)
+    public async Task<IEnumerable<UserDTO>> SearchUserByName(QuerySearchUserDTO query)
     {
-        var users = await _userRepository.SearchUserByName(keyword);
+        var users = await _userRepository.SearchUserByName(query);
         var userDTOs = new List<UserDTO>();
         if (users != null)
         {

@@ -11,23 +11,20 @@ import {
   IconButton,
   Typography
 } from "@material-tailwind/react";
-import Default from "@/assets/images/topic.png";
 
 import {
   PowerIcon,
-  Search,
   UserCircleIcon,
   AlignJustify,
   Plus,
   Bell,
-  ChevronUp,
-  X
+  ChevronUp
 } from "lucide-react";
 import { cn } from "@/helpers/utils";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Icons } from "../Icons";
 import { useAuth } from "@/hooks/useAuth";
-import { useRouterParam } from "@/hooks/useRouterParam";
+import SearchInput from "../search/SearchInput";
 
 function ProfileMenu() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
@@ -166,11 +163,7 @@ type HeaderProps = {
 const Header = React.memo(({ openSidebar }: HeaderProps) => {
   const [isNavOpen, setIsNavOpen] = React.useState(false);
   const toggleIsNavOpen = () => setIsNavOpen(cur => !cur);
-  const { topic } = useRouterParam();
-  const [isAll, setIsAll] = React.useState(false);
-  React.useEffect(() => {
-    setIsAll(false);
-  }, [topic]);
+
   React.useEffect(() => {
     const checkResponsive = () =>
       window.innerWidth >= 960 && setIsNavOpen(false);
@@ -192,7 +185,6 @@ const Header = React.memo(({ openSidebar }: HeaderProps) => {
           >
             <AlignJustify className="h-5 w-5 text-blue-gray-600" />
           </IconButton>
-
           <Link
             to="/"
             className="mx-2 xl:mx-4 cursor-pointer py-1.5 font-medium flex items-center select-none"
@@ -206,44 +198,8 @@ const Header = React.memo(({ openSidebar }: HeaderProps) => {
             </span>
           </Link>
         </div>
-        <div
-          className={cn(
-            "w-1/2 md:w-2/3 lg:w-2/5 max-w-screen-md bg-blue-gray-50 h-10 rounded-full text-sm",
-            "flex gap-x-2"
-          )}
-        >
-          <span className="my-auto ps-3">
-            <Search className="h-[1.18rem] text-blue-gray-700" />
-          </span>
-          {!isAll && topic && (
-            <span
-              className={cn(
-                "rounded-full bg-blue-gray-700/15 my-1 text-xs flex gap-x-2 items-center"
-              )}
-            >
-              <div className="h-full aspect-square  rounded-full flex items-center justify-center">
-                <Avatar src={topic.avatar || Default} className="w-5 h-5" />
-              </div>
-
-              <span className="truncate">t/{topic.name}</span>
-              <div
-                className="h-full aspect-square hover:bg-blue-gray-200/50 rounded-full flex items-center justify-center cursor-pointer"
-                onClick={() => setIsAll(true)}
-              >
-                <div className=" bg-blue-gray-900/80 rounded-full p-1">
-                  <X className="w-3 h-3 text-white" strokeWidth={3} />
-                </div>
-              </div>
-            </span>
-          )}
-          <span className="my-auto flex-1">
-            <input
-              type="text"
-              name="serch"
-              placeholder="Search"
-              className="focus:outline-none bg-transparent w-full pr-4"
-            />
-          </span>
+        <div className="w-1/2 md:w-2/3 lg:w-2/5 max-w-screen-md">
+          <SearchInput />
         </div>
 
         <div className="flex items-center justify-end w-1/4 lg:w-1/3">
