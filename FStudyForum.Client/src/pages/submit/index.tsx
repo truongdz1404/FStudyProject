@@ -3,15 +3,14 @@ import { Topic } from "@/types/topic";
 import { Avatar, Button, Input } from "@material-tailwind/react";
 import { ChevronDown, Search } from "lucide-react";
 import React, { ChangeEvent } from "react";
-import Demo from "@/assets/images/user.png";
+import DefaultTopic from "@/assets/images/topic.png";
 import useOutsideClick from "@/hooks/useOutsideClick";
 import TopicService from "@/services/TopicService";
-import { AxiosError } from "axios";
-import { Response } from "@/types/response";
 import ContentLayout from "@/components/layout/ContentLayout";
 import Editor from "@/components/post/Editor";
 import { useRouterParam } from "@/hooks/useRouterParam";
 import { useNavigate } from "react-router-dom";
+import { debounce } from "lodash";
 const SubmitPage = () => {
   const navigate = useNavigate();
 
@@ -26,21 +25,24 @@ const SubmitPage = () => {
     setSelectedIndex(-1);
   };
 
+  const debouncedSearch = React.useRef(
+    debounce(async (searchValue: string) => {
+      if (searchValue === "") {
+        setFoundTopics([]);
+        return;
+      }
+      try {
+        const founds = await TopicService.search(searchValue);
+        setFoundTopics(founds);
+      } catch (e) {
+        setFoundTopics([]);
+      }
+    }, 200)
+  ).current;
+
   const handleSearch = async (event: ChangeEvent<HTMLInputElement>) => {
-    const searchValue = event.target.value.trim().replace(/^t\//, "");
-    if (searchValue == "") {
-      setFoundTopics([]);
-      return false;
-    }
-    try {
-      const founds = await TopicService.search(searchValue);
-      setFoundTopics(founds);
-    } catch (e) {
-      const error = e as AxiosError;
-      console.error(
-        (error?.response?.data as Response)?.message || error.message
-      );
-    }
+    const value = event.target.value.trim().replace(/^t\//, "");
+    debouncedSearch(value);
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -85,7 +87,7 @@ const SubmitPage = () => {
             variant="text"
             onClick={() => setOpenSearch(true)}
           >
-            <Avatar src={Demo} className="w-6 h-6" />
+            <Avatar src={DefaultTopic} className="w-6 h-6" />
             <span className="text-sm font-normal">
               {topic ? `t/${topic?.name}` : "Select a topic"}
             </span>
@@ -123,7 +125,7 @@ const SubmitPage = () => {
                     )}
                     onClick={() => handleSelect(topic)}
                   >
-                    <Avatar src={Demo} className="w-8 h-8" />
+                    <Avatar src={DefaultTopic} className="w-8 h-8" />
                     <div className="flex-col flex">
                       <span className="text-xs font-normal">{`t/${topic.name}`}</span>
                       <span className="text-[0.7rem] font-light self-start">

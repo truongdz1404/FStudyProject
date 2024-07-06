@@ -25,7 +25,7 @@ const SearchPostPage: React.FC = () => {
   const [hasMore, setHasMore] = React.useState(true); // Thêm state này
 
   const query = useQuery();
-  const keyword = query.get("keyword") || "";
+  const keyword = query.get("keyword") ?? "";
 
   const { data, fetchNextPage, isPending, isFetchingNextPage, refetch } =
     useInfiniteQuery({

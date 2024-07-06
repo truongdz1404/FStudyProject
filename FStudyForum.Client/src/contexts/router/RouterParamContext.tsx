@@ -27,6 +27,7 @@ const RouterParamProvider: FC<PropsWithChildren> = ({ children }) => {
         const topic = await TopicService.getTopicByName(name);
         setTopic(topic);
       } catch (e) {
+        setTopic(null);
         const error = e as AxiosError;
         setError((error?.response?.data as Response)?.message || error.message);
       }
