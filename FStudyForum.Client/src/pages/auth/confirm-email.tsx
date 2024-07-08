@@ -1,48 +1,48 @@
-import { FC, useEffect, useState } from "react"
-import { useNavigate, useLocation, Link } from "react-router-dom"
-import AuthService from "@/services/AuthService"
-import { Icons } from "@/components/Icons"
+import { FC, useEffect, useState } from "react";
+import { useNavigate, useLocation, Link } from "react-router-dom";
+import AuthService from "@/services/AuthService";
+import { Icons } from "@/components/Icons";
 
 const ConfirmEmail: FC = () => {
-  const navigate = useNavigate()
-  const location = useLocation()
-  const [countdown, setCountdown] = useState(20)
-  const [showResendButton, setShowResendButton] = useState(false)
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [countdown, setCountdown] = useState(20);
+  const [showResendButton, setShowResendButton] = useState(false);
 
-  const searchParams = new URLSearchParams(location.search)
-  const email = searchParams.get("email") || ""
+  const searchParams = new URLSearchParams(location.search);
+  const email = searchParams.get("email") || "";
 
   useEffect(() => {
     if (!email) {
-      navigate("/auth/signin")
-      return
+      navigate("/auth/signin");
+      return;
     }
     const interval = setInterval(() => {
       setCountdown(prev => {
         if (prev === 1) {
-          clearInterval(interval)
-          setShowResendButton(true)
+          clearInterval(interval);
+          setShowResendButton(true);
         }
-        return prev - 1
-      })
-    }, 1000)
+        return prev - 1;
+      });
+    }, 1000);
 
-    return () => clearInterval(interval)
-  }, [email, navigate])
+    return () => clearInterval(interval);
+  }, [email, navigate]);
 
   const handleResendEmail = async () => {
-    navigate(`/auth/confirm-email?email=${email}`, { replace: true })
+    navigate(`/auth/confirm-email?email=${email}`, { replace: true });
     setTimeout(() => {
-      window.location.reload()
-    }, 0)
+      window.location.reload();
+    }, 0);
     try {
-      await AuthService.resendEmail(email)
-      setCountdown(20)
-      setShowResendButton(false)
+      await AuthService.resendEmail(email);
+      setCountdown(20);
+      setShowResendButton(false);
     } catch (error) {
-      console.error("Failed to resend confirmation email.")
+      console.error("Failed to resend confirmation email.");
     }
-  }
+  };
 
   return (
     <>
@@ -55,7 +55,7 @@ const ConfirmEmail: FC = () => {
           {countdown > 0 && (
             <span className="text-xs">
               If you don't receive email, you can resend it in{" "}
-              <span className="text-deep-orange-600 font-bold">
+              <span className="text-deep-orange-600 font-semibold">
                 {countdown}
               </span>{" "}
               seconds.
@@ -78,14 +78,14 @@ const ConfirmEmail: FC = () => {
           Go back to{" "}
           <Link
             to="/auth/signin"
-            className="text-deep-orange-600 font-bold hover:underline"
+            className="text-deep-orange-600 font-semibold hover:underline"
           >
             Sign in
           </Link>
         </p>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default ConfirmEmail
+export default ConfirmEmail;

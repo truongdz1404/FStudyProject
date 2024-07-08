@@ -96,34 +96,34 @@ const QRCodeLink = () => {
     <div>
       <div className="flex gap-[10%]">
         <div className={cn("w-[60%]")}>
-          <h2 className={cn("font-bold mt-[5%]", "mx-auto")}>
+          <h2 className={cn("font-semibold mt-[5%]", "mx-auto")}>
             HOẶC QUÉT MÃ QR SAU ĐỂ TỰ ĐỘNG ĐIỀN THÔNG TIN
           </h2>
           <img className="mt-[5%]" src={data?.data.qrDataURL} alt="not found" />
         </div>
         <div className="max-w-sm mx-auto bg-gray-50 p-4 rounded shadow">
-          <h2 className="text-xl font-bold mb-4">
+          <h2 className="text-xl font-semibold mb-4">
             Tài khoản tiếp nhận nạp FSTUDY
           </h2>
           <div className="mb-2">
             <span className="text-gray-600">Chủ tài khoản</span>
-            <div className="text-2xl text-red-600 font-bold">
+            <div className="text-2xl text-red-600 font-semibold">
               LE NHAT MINH KHOI
             </div>
           </div>
           <div className="mb-2">
             <span className="text-gray-600">Số tài khoản</span>
-            <div className="text-2xl text-red-600 font-bold">
+            <div className="text-2xl text-red-600 font-semibold">
               50041234567890
             </div>
           </div>
           <div className="mb-2">
             <span className="text-gray-600">Ngân hàng</span>
-            <div className="text-2xl text-blue-500 font-bold">MB Bank</div>
+            <div className="text-2xl text-blue-500 font-semibold">MB Bank</div>
           </div>
           <div className="mb-2">
             <span className="text-gray-600">Nội dung</span>
-            <div className="text-2xl text-blue-500 font-bold">
+            <div className="text-2xl text-blue-500 font-semibold">
               {state.addInfoByUser}
             </div>
           </div>

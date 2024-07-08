@@ -32,7 +32,7 @@ const ProfileDescription: FC<ProfileDescriptionProps> = ({ profile }) => {
       </div>
 
       <div className="mt-2">
-        <h1 className="text-xs uppercase">About me: </h1>
+        <h1 className="text-xs uppercase">About me</h1>
         <p className="text-xs">
           {profile.bio ||
             `User did not talk about ${convertGender(profile.gender)}`}

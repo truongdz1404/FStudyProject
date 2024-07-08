@@ -193,7 +193,7 @@ const Header = React.memo(({ openSidebar }: HeaderProps) => {
             }}
           >
             <Icons.logo className="h-8 w-8" />
-            <span className="hidden text-zinc-700 text-md font-bold md:block">
+            <span className="hidden text-zinc-700 text-md font-semibold md:block">
               Study
             </span>
           </Link>

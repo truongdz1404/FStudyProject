@@ -41,6 +41,7 @@ const RouterParamProvider: FC<PropsWithChildren> = ({ children }) => {
   }, [name]);
 
   React.useEffect(() => {
+    setUser(null);
     if (!username) return;
     const fetchUser = async () => {
       try {

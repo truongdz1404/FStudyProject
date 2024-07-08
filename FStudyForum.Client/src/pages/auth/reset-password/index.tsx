@@ -1,54 +1,54 @@
-import { FC } from "react"
-import { useForm } from "react-hook-form"
-import { yupResolver } from "@hookform/resolvers/yup"
-import { checkEmail, cn } from "@/helpers/utils"
-import * as Yup from "yup"
-import { Link } from "react-router-dom"
-import { Button, Input } from "@material-tailwind/react"
-import { Icons } from "@/components/Icons"
-import { AxiosError } from "axios"
-import { Response } from "@/types/response"
-import React from "react"
-import AuthService from "@/services/AuthService"
-import { CircleAlert } from "lucide-react"
+import { FC } from "react";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { checkEmail, cn } from "@/helpers/utils";
+import * as Yup from "yup";
+import { Link } from "react-router-dom";
+import { Button, Input } from "@material-tailwind/react";
+import { Icons } from "@/components/Icons";
+import { AxiosError } from "axios";
+import { Response } from "@/types/response";
+import React from "react";
+import AuthService from "@/services/AuthService";
+import { CircleAlert } from "lucide-react";
 
 type ForgotPasswordFormInputs = {
-  email: string
-}
+  email: string;
+};
 
 const validation = Yup.object().shape({
   email: Yup.string()
     .required("Email is required")
     .test("is-mailFPT", "Email must have @fpt.edu.vn", value => {
-      return checkEmail(value)
+      return checkEmail(value);
     })
-})
+});
 
-const resendTime = 20
+const resendTime = 20;
 
 const ForgotPassword: FC = () => {
-  const [error, setError] = React.useState("")
-  const [loading, setLoading] = React.useState(false)
-  const [countdown, setCountdown] = React.useState(resendTime)
-  const [canSend, setCanSend] = React.useState(true)
+  const [error, setError] = React.useState("");
+  const [loading, setLoading] = React.useState(false);
+  const [countdown, setCountdown] = React.useState(resendTime);
+  const [canSend, setCanSend] = React.useState(true);
 
   React.useEffect(() => {
-    if (canSend) return
+    if (canSend) return;
     const interval = setInterval(() => {
       setCountdown(prev => {
         if (prev === 1) {
-          clearInterval(interval)
-          setCanSend(true)
-          return resendTime
+          clearInterval(interval);
+          setCanSend(true);
+          return resendTime;
         }
-        return prev - 1
-      })
-    }, 1000)
+        return prev - 1;
+      });
+    }, 1000);
 
     return () => {
-      clearInterval(interval)
-    }
-  }, [canSend])
+      clearInterval(interval);
+    };
+  }, [canSend]);
 
   const {
     register,
@@ -57,22 +57,22 @@ const ForgotPassword: FC = () => {
   } = useForm<ForgotPasswordFormInputs>({
     mode: "onTouched",
     resolver: yupResolver(validation)
-  })
+  });
 
   const handleSend = async (form: ForgotPasswordFormInputs) => {
     try {
-      setError("")
-      setLoading(true)
-      setCanSend(false)
-      await AuthService.forgotPassword(form.email)
+      setError("");
+      setLoading(true);
+      setCanSend(false);
+      await AuthService.forgotPassword(form.email);
     } catch (e) {
-      setCanSend(true)
-      const error = e as AxiosError
-      setError((error?.response?.data as Response)?.message || error.message)
+      setCanSend(true);
+      const error = e as AxiosError;
+      setError((error?.response?.data as Response)?.message || error.message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <>
@@ -140,14 +140,14 @@ const ForgotPassword: FC = () => {
           Go back to{" "}
           <Link
             to="/auth/signin"
-            className="hover:underline text-deep-orange-600 font-bold"
+            className="hover:underline text-deep-orange-600 font-semibold"
           >
             Sign in
           </Link>
         </p>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default ForgotPassword
+export default ForgotPassword;

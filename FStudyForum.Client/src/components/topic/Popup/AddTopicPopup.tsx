@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { Alert, Chip, Input } from '@material-tailwind/react';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { useForm } from 'react-hook-form';
-import * as Yup from 'yup';
-import { ChevronLeft, ChevronRight, X } from 'lucide-react';
-import { Category } from '@/types/category';
-import TopicService from '@/services/TopicService';
-import CategoryService from '@/services/CategoryService';
-import axios, { AxiosError } from 'axios';
+import React, { useState, useEffect } from "react";
+import { Alert, Chip, Input } from "@material-tailwind/react";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useForm } from "react-hook-form";
+import * as Yup from "yup";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { Category } from "@/types/category";
+import TopicService from "@/services/TopicService";
+import CategoryService from "@/services/CategoryService";
+import axios, { AxiosError } from "axios";
 
 interface AddTopicPopupProps {
   onClose: () => void;
@@ -24,14 +24,17 @@ interface FormInputs {
 const validationSchema = Yup.object().shape({
   topicName: Yup.string()
     .trim()
-    .required('Topic name is required')
-    .max(50, 'Topic name must be no more than 50 characters'),
-  description: Yup.string().trim().required('Description is required'),
+    .required("Topic name is required")
+    .max(50, "Topic name must be no more than 50 characters"),
+  description: Yup.string().trim().required("Description is required"),
   avatar: Yup.string().optional(),
-  banner: Yup.string().optional(),
+  banner: Yup.string().optional()
 });
 
-const AddTopicPopup: React.FC<AddTopicPopupProps> = ({ onClose, onTopicCreated }) => {
+const AddTopicPopup: React.FC<AddTopicPopupProps> = ({
+  onClose,
+  onTopicCreated
+}) => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
   const [activeStep, setActiveStep] = useState(0);
@@ -47,10 +50,10 @@ const AddTopicPopup: React.FC<AddTopicPopupProps> = ({ onClose, onTopicCreated }
     handleSubmit,
     trigger,
     setValue,
-    formState: { errors },
+    formState: { errors }
   } = useForm<FormInputs>({
-    mode: 'onTouched',
-    resolver: yupResolver(validationSchema),
+    mode: "onTouched",
+    resolver: yupResolver(validationSchema)
   });
 
   useEffect(() => {
@@ -60,8 +63,8 @@ const AddTopicPopup: React.FC<AddTopicPopupProps> = ({ onClose, onTopicCreated }
         const fetchedCategories = await CategoryService.getAllCategory();
         setCategories(fetchedCategories);
       } catch (error) {
-        console.error('Error fetching categories:', error);
-        setError('Failed to fetch categories. Please try again.');
+        console.error("Error fetching categories:", error);
+        setError("Failed to fetch categories. Please try again.");
       } finally {
         setLoading(false);
       }
@@ -79,10 +82,10 @@ const AddTopicPopup: React.FC<AddTopicPopupProps> = ({ onClose, onTopicCreated }
     let isValid = false;
     switch (activeStep) {
       case 0:
-        isValid = await trigger(['topicName', 'description']);
+        isValid = await trigger(["topicName", "description"]);
         break;
       case 1:
-        isValid = await trigger(['avatar', 'banner']);
+        isValid = await trigger(["avatar", "banner"]);
         break;
       case 2:
         isValid = true;
@@ -102,22 +105,25 @@ const AddTopicPopup: React.FC<AddTopicPopupProps> = ({ onClose, onTopicCreated }
       const newTopic = {
         name: data.topicName,
         description: data.description,
-        avatar: data.avatar || '',
-        banner: data.banner || '',
-        categories: selectedCategories,
+        avatar: data.avatar || "",
+        banner: data.banner || "",
+        categories: selectedCategories
       };
       await TopicService.create(newTopic);
       onClose();
       onTopicCreated();
     } catch (error: unknown) {
-      console.error('Error creating topic:', error);
+      console.error("Error creating topic:", error);
       if (axios.isAxiosError(error)) {
         const apiError = error as AxiosError<{ message: string }>;
-        setError(apiError.response?.data?.message || 'Error creating topic. Please try again later.');
+        setError(
+          apiError.response?.data?.message ||
+            "Error creating topic. Please try again later."
+        );
       } else if (error instanceof Error) {
         setError(error.message);
       } else {
-        setError('Unknown error occurred. Please try again later.');
+        setError("Unknown error occurred. Please try again later.");
       }
     } finally {
       setLoading(false);
@@ -125,16 +131,16 @@ const AddTopicPopup: React.FC<AddTopicPopupProps> = ({ onClose, onTopicCreated }
   };
 
   const handleCategoryChange = (categoryId: number) => {
-    setSelectedCategories((prevCategories) =>
+    setSelectedCategories(prevCategories =>
       prevCategories.includes(categoryId)
-        ? prevCategories.filter((id) => id !== categoryId)
+        ? prevCategories.filter(id => id !== categoryId)
         : [...prevCategories, categoryId]
     );
   };
 
   const handleFileChange = (
     event: React.ChangeEvent<HTMLInputElement>,
-    field: 'avatar' | 'banner'
+    field: "avatar" | "banner"
   ) => {
     const file = event.target.files?.[0] || null;
     if (!file) return;
@@ -142,23 +148,23 @@ const AddTopicPopup: React.FC<AddTopicPopupProps> = ({ onClose, onTopicCreated }
     const reader = new FileReader();
     reader.onload = () => {
       const previewUrl = reader.result as string;
-      if (field === 'avatar') {
+      if (field === "avatar") {
         setAvatarPreview(previewUrl);
-        setValue('avatar', previewUrl);
-      } else if (field === 'banner') {
+        setValue("avatar", previewUrl);
+      } else if (field === "banner") {
         setBannerPreview(previewUrl);
-        setValue('banner', previewUrl);
+        setValue("banner", previewUrl);
       }
     };
     reader.readAsDataURL(file);
   };
 
   const nextStep = () => {
-    setActiveStep((prevStep) => prevStep + 1);
+    setActiveStep(prevStep => prevStep + 1);
   };
 
   const prevStep = () => {
-    setActiveStep((prevStep) => prevStep - 1);
+    setActiveStep(prevStep => prevStep - 1);
   };
 
   const renderStep = (step: number) => {
@@ -168,10 +174,12 @@ const AddTopicPopup: React.FC<AddTopicPopupProps> = ({ onClose, onTopicCreated }
           <div>
             <div className="mb-4">
               <Input
-                crossOrigin={undefined} type="text"
+                crossOrigin={undefined}
+                type="text"
                 label="Topic Name"
-                {...register('topicName')}
-                error={!!errors.topicName}              />
+                {...register("topicName")}
+                error={!!errors.topicName}
+              />
               {errors.topicName && (
                 <span className="text-red-500 text-xs mt-1">
                   {errors.topicName.message}
@@ -179,14 +187,17 @@ const AddTopicPopup: React.FC<AddTopicPopupProps> = ({ onClose, onTopicCreated }
               )}
             </div>
             <div className="mb-4">
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="description"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Description
               </label>
               <textarea
                 id="description"
                 placeholder="Enter description"
                 className="border border-gray-300 rounded px-2 py-1 w-full h-36 resize-none"
-                {...register('description')}
+                {...register("description")}
               ></textarea>
               {errors.description && (
                 <span className="text-red-500 text-xs mt-1">
@@ -206,7 +217,7 @@ const AddTopicPopup: React.FC<AddTopicPopupProps> = ({ onClose, onTopicCreated }
               <input
                 type="file"
                 accept="image/*"
-                onChange={(event) => handleFileChange(event, 'avatar')}
+                onChange={event => handleFileChange(event, "avatar")}
                 className="mt-2"
               />
               {avatarPreview && (
@@ -229,7 +240,7 @@ const AddTopicPopup: React.FC<AddTopicPopupProps> = ({ onClose, onTopicCreated }
               <input
                 type="file"
                 accept="image/*"
-                onChange={(event) => handleFileChange(event, 'banner')}
+                onChange={event => handleFileChange(event, "banner")}
                 className="mt-2"
               />
               {bannerPreview && (
@@ -256,7 +267,7 @@ const AddTopicPopup: React.FC<AddTopicPopupProps> = ({ onClose, onTopicCreated }
             </p>
             <div className="overflow-x-auto max-h-[20rem]">
               <div className="mt-6 w-full flex flex-wrap gap-2">
-                {categories.map((category) => (
+                {categories.map(category => (
                   <div
                     key={category.id}
                     onClick={() => handleCategoryChange(category.id)}
@@ -266,8 +277,8 @@ const AddTopicPopup: React.FC<AddTopicPopupProps> = ({ onClose, onTopicCreated }
                       color="blue-gray"
                       variant={
                         selectedCategories.includes(category.id)
-                          ? 'filled'
-                          : 'ghost'
+                          ? "filled"
+                          : "ghost"
                       }
                       value={category.name}
                       className="rounded-full capitalize"
@@ -296,7 +307,7 @@ const AddTopicPopup: React.FC<AddTopicPopupProps> = ({ onClose, onTopicCreated }
         >
           <X className="w-6 h-6 text-gray-600" />
         </button>
-        <h2 className="text-xl font-bold mb-4">Add Topic</h2>
+        <h2 className="text-xl font-semibold mb-4">Add Topic</h2>
         {error && (
           <Alert color="red" className="mb-4">
             {error}
@@ -309,20 +320,21 @@ const AddTopicPopup: React.FC<AddTopicPopupProps> = ({ onClose, onTopicCreated }
             onClick={() => {
               !loading && prevStep();
             }}
-            className={`flex gap-x-2 text-deep-orange-400 hover:cursor-pointer select-none font-bold ${
-              isFirstStep ? 'text-orange-100' : ''
+            className={`flex gap-x-2 text-deep-orange-400 hover:cursor-pointer select-none font-semibold ${
+              isFirstStep ? "text-orange-100" : ""
             }`}
           >
             <ChevronLeft /> Back
           </button>
           <button
-            type={isLastStep ? 'submit' : 'button'}
+            type={isLastStep ? "submit" : "button"}
             onClick={() => {
-              !loading && (isLastStep ? handleSubmit(handleAddTopic)() : handleNext());
+              !loading &&
+                (isLastStep ? handleSubmit(handleAddTopic)() : handleNext());
             }}
-            className="flex gap-x-2 text-deep-orange-400 hover:cursor-pointer select-none font-bold"
+            className="flex gap-x-2 text-deep-orange-400 hover:cursor-pointer select-none font-semibold"
           >
-            {!isLastStep ? 'Next' : 'Finish'}
+            {!isLastStep ? "Next" : "Finish"}
             <ChevronRight />
           </button>
         </div>
@@ -332,4 +344,3 @@ const AddTopicPopup: React.FC<AddTopicPopupProps> = ({ onClose, onTopicCreated }
 };
 
 export default AddTopicPopup;
-

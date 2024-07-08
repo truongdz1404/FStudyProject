@@ -82,7 +82,7 @@ const SignIn: FC = () => {
     <>
       <div className="flex flex-col mb-4 items-center">
         <Icons.logo className="w-10 h-10" />
-        <span className="font-bold text-lg">Login</span>
+        <span className="font-semibold text-lg">Login</span>
       </div>
 
       <form
@@ -151,7 +151,7 @@ const SignIn: FC = () => {
         )}
         <div className="flex justify-end">
           <Link
-            className="text-xs text-deep-orange-600 font-bold hover:underline"
+            className="text-xs text-deep-orange-600 font-semibold hover:underline"
             to={"/auth/reset-password"}
           >
             Forgot password?
@@ -174,7 +174,7 @@ const SignIn: FC = () => {
           You don't have an account?{" "}
           <Link
             to="/auth/register"
-            className="text-deep-orange-600 font-bold hover:underline"
+            className="text-deep-orange-600 font-semibold hover:underline"
           >
             Register
           </Link>

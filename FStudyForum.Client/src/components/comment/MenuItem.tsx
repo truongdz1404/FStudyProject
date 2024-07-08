@@ -177,21 +177,25 @@ const MenuItemComment: React.FC<MenuItemCommentProps> = ({
             >
               <div>
                 <div className={cn("flex gap-[2%]")}>
-                  <div className={cn("font-bold text-black")}>Username:</div>
-                  <div className={cn("font-bold text-black")}>
+                  <div className={cn("font-semibold text-black")}>
+                    Username:
+                  </div>
+                  <div className={cn("font-semibold text-black")}>
                     {comment.author}
                   </div>
                 </div>
                 <div className={cn("flex gap-[2%] mt-[2%]")}>
-                  <div className={cn("font-bold text-black")}>Topic:</div>
-                  <div className={cn("font-bold text-black")}>
+                  <div className={cn("font-semibold text-black")}>Topic:</div>
+                  <div className={cn("font-semibold text-black")}>
                     {comment.topicName}
                   </div>
                 </div>
                 <div>
                   <div>
                     <div className="flex mt-[2%]">
-                      <div className={cn("font-bold text-black")}>Time:</div>
+                      <div className={cn("font-semibold text-black")}>
+                        Time:
+                      </div>
                       <div className={cn("mt-[-1.4%]")}>
                         {TimeBanMenu.map(({ value, label }, key) => (
                           <Radio
@@ -200,7 +204,7 @@ const MenuItemComment: React.FC<MenuItemCommentProps> = ({
                             value={value}
                             label={label}
                             crossOrigin={undefined}
-                            className="time font-bold text-black"
+                            className="time font-semibold text-black"
                             onChange={handleTimeChange}
                             checked={selectedTime === value}
                           />
@@ -221,7 +225,7 @@ const MenuItemComment: React.FC<MenuItemCommentProps> = ({
                 data-ripple-dark="true"
                 data-dialog-close="true"
                 className={cn(
-                  "px-6 py-3 mr-1 font-sans text-xs font-bold",
+                  "px-6 py-3 mr-1 font-sans text-xs font-semibold",
                   "text-red-500 uppercase transition-all rounded-lg middle none",
                   "center hover:bg-red-500/10 active:bg-red-500/30",
                   "disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
@@ -236,7 +240,7 @@ const MenuItemComment: React.FC<MenuItemCommentProps> = ({
                 className={cn(
                   "middle none center rounded-lg bg-gradient-to-tr",
                   "from-orange-600 to-orange-400 py-3 px-6 font-sans",
-                  "text-xs font-bold uppercase text-white shadow-md",
+                  "text-xs font-semibold uppercase text-white shadow-md",
                   "shadow-orange-500/20 transition-all hover:shadow-lg",
                   "hover:shadow-orange-500/40 active:opacity-[0.85]",
                   "disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"

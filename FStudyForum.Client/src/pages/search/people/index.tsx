@@ -79,7 +79,7 @@ const SearchUserPage: React.FC = () => {
                   className="ml-3 w-12 h-12 rounded-full mr-4"
                 />
                 <div>
-                  <h3 className="font-bold mb-1">{user?.username}</h3>
+                  <h3 className="font-semibold mb-1">{user?.username}</h3>
                 </div>
               </div>
               <hr className="my-1 border-blue-gray-50 w-full" />

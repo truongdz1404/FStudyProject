@@ -1,25 +1,32 @@
 import { useRouterParam } from "@/hooks/useRouterParam";
 import { CircleX, Clock, Search, X } from "lucide-react";
 import React, { FC } from "react";
-import Default from "@/assets/images/topic.png";
+import DefaultTopic from "@/assets/images/topic.png";
+import DefaultAvatar from "@/assets/images/user.png";
+
 import { Avatar } from "@material-tailwind/react";
 import { cn } from "@/helpers/utils";
 import useOutsideClick from "@/hooks/useOutsideClick";
 import { useNavigate } from "react-router-dom";
-import DefaultTopic from "@/assets/images/topic.png";
 import { Topic } from "@/types/topic";
 import TopicService from "@/services/TopicService";
 import { debounce } from "lodash";
 import useQueryParams from "@/hooks/useQueryParams";
 
 type History = {
-  topic: { name?: string; avatar?: string };
+  context: Context;
   keyword?: string;
+};
+
+type Context = {
+  prefix?: string;
+  name?: string;
+  avatar?: string;
 };
 
 const SearchInput: FC = () => {
   const [keyword, setKeyword] = React.useState("");
-  const { topic } = useRouterParam();
+  const { topic, user } = useRouterParam();
   const [isAll, setIsAll] = React.useState(false);
   const [openBox, setOpenBox] = React.useState(false);
   const [history, setHistory] = React.useState<History[]>([]);
@@ -31,6 +38,22 @@ const SearchInput: FC = () => {
 
   const navigate = useNavigate();
 
+  const context: Context | undefined = React.useMemo(() => {
+    if (topic)
+      return {
+        prefix: "t",
+        name: topic.name,
+        avatar: topic.avatar || DefaultTopic
+      };
+    if (user)
+      return {
+        prefix: "u",
+        name: user.username,
+        avatar: user.avatar || DefaultAvatar
+      };
+    return undefined;
+  }, [topic, user]);
+
   const closeBox = () => {
     inputRef.current?.blur();
     setSelectIndex(-1);
@@ -39,7 +62,7 @@ const SearchInput: FC = () => {
 
   React.useEffect(() => {
     setIsAll(false);
-  }, [topic]);
+  }, [context]);
 
   React.useEffect(() => {
     setKeyword(keywordParam ?? "");
@@ -67,12 +90,13 @@ const SearchInput: FC = () => {
       }, 200),
     []
   );
+  console.log(history);
 
   const canViewHistory = React.useCallback(
-    () => !!keyword == false && !topic,
-    [keyword, topic]
+    () => !!keyword == false && !context,
+    [keyword, context]
   );
-  const canSearch = React.useCallback(() => !topic, [topic]);
+  const canSearch = React.useCallback(() => !context, [context]);
 
   React.useEffect(() => {
     if (!canSearch()) return;
@@ -104,10 +128,7 @@ const SearchInput: FC = () => {
     } else if (e.key === "Enter" && keyword.trim()) {
       handleSearch({
         keyword: keyword.trim(),
-        topic: {
-          name: topic?.name,
-          avatar: topic?.avatar
-        }
+        context: context || {}
       });
     }
   };
@@ -116,16 +137,18 @@ const SearchInput: FC = () => {
     addHistory(value);
     closeBox();
 
-    if (value.topic.name) {
+    if (value.context.name) {
       navigate(
-        `/topic/${value.topic.name}` +
+        `/topic/${value.context.name}` +
           (value.keyword ? `/search/posts?keyword=${value.keyword}` : "")
       );
     } else navigate(`/search/posts?keyword=${value.keyword}`);
   };
 
   const handleSelect = (topic: Topic) => {
-    addHistory({ topic: { name: topic.name, avatar: topic.avatar } });
+    addHistory({
+      context: { prefix: "t", name: topic.name, avatar: topic.avatar }
+    });
     closeBox();
     navigate(`/topic/${topic.name}`);
     setKeyword("");
@@ -142,7 +165,8 @@ const SearchInput: FC = () => {
       value,
       ...history.filter(
         item =>
-          item.keyword !== value.keyword || item.topic.name !== value.topic.name
+          item.keyword !== value.keyword ||
+          item.context.name !== value.context.name
       )
     ].slice(0, max_history_size);
     setHistory(newHistory);
@@ -151,7 +175,8 @@ const SearchInput: FC = () => {
   const removeHistory = (value: History) => {
     const updatedHistory = history.filter(
       item =>
-        item.keyword !== value.keyword || item.topic.name !== value.topic.name
+        item.keyword !== value.keyword ||
+        item.context.name !== value.context.name
     );
     localStorage.setItem("search_history", JSON.stringify(updatedHistory));
     setHistory(updatedHistory);
@@ -175,17 +200,19 @@ const SearchInput: FC = () => {
         <span className="ps-3">
           <Search className="h-[1.18rem]" />
         </span>
-        {!isAll && topic && (
+        {!isAll && context && (
           <span
             className={cn(
-              "rounded-full bg-blue-gray-700/15 text-xs flex gap-x-2 items-center"
+              "rounded-full bg-blue-gray-700/15 text-xs flex items-center"
             )}
           >
             <div className="h-full aspect-square rounded-full flex items-center justify-center m-1.5">
-              <Avatar src={topic.avatar || Default} className="w-5 h-5" />
+              <Avatar src={context.avatar} className="w-5 h-5" />
             </div>
 
-            <span className="truncate">t/{topic.name}</span>
+            <span className="truncate">
+              {context.prefix}/{context.name}
+            </span>
             <div
               className="h-full aspect-square hover:bg-blue-gray-200/50 rounded-full p-1.5 flex items-center justify-center cursor-pointer"
               onClick={() => setIsAll(true)}
@@ -241,13 +268,15 @@ const SearchInput: FC = () => {
                   onClick={() => handleSearch(value)}
                 >
                   <div className="flex items-center gap-x-2 overflow-hidden">
-                    {value.topic.avatar ? (
+                    {value.context.avatar ? (
                       <>
                         <Avatar
-                          src={value.topic.avatar || DefaultTopic}
+                          src={value.context.avatar || DefaultTopic}
                           className="w-4 h-4"
                         />
-                        <span className="truncate">t/{value.topic.name}</span>
+                        <span className="truncate">
+                          {value.context.prefix}/{value.context.name}
+                        </span>
                       </>
                     ) : (
                       <div>

@@ -112,12 +112,12 @@ const UpdateTopicPopup: React.FC<UpdateTopicPopupProps> = ({
             />
           </svg>
         </button>
-        <h2 className="text-xl font-bold mb-4">Edit Topic</h2>
+        <h2 className="text-xl font-semibold mb-4">Edit Topic</h2>
         <form onSubmit={handleSubmit(onSubmit)}>
           {activeStep === 1 && (
             <>
               <div className="mb-4">
-                <label htmlFor="topicName" className="block font-bold mb-1">
+                <label htmlFor="topicName" className="block font-semibold mb-1">
                   Topic Name:
                 </label>
                 <input
@@ -134,7 +134,10 @@ const UpdateTopicPopup: React.FC<UpdateTopicPopupProps> = ({
                 />
               </div>
               <div className="mb-4">
-                <label htmlFor="description" className="block font-bold mb-1">
+                <label
+                  htmlFor="description"
+                  className="block font-semibold mb-1"
+                >
                   Description:
                 </label>
                 <textarea
@@ -156,7 +159,7 @@ const UpdateTopicPopup: React.FC<UpdateTopicPopupProps> = ({
           {activeStep === 2 && (
             <>
               <div className="mb-4">
-                <label htmlFor="avatar" className="block font-bold mb-1">
+                <label htmlFor="avatar" className="block font-semibold mb-1">
                   Avatar URL:
                 </label>
                 <input
@@ -167,7 +170,7 @@ const UpdateTopicPopup: React.FC<UpdateTopicPopupProps> = ({
                 />
               </div>
               <div className="mb-4">
-                <label htmlFor="banner" className="block font-bold mb-1">
+                <label htmlFor="banner" className="block font-semibold mb-1">
                   Banner URL:
                 </label>
                 <input
@@ -191,7 +194,10 @@ const UpdateTopicPopup: React.FC<UpdateTopicPopupProps> = ({
           {activeStep === 3 && (
             <>
               <div className="mb-4">
-                <label htmlFor="categories" className="block font-bold mb-1">
+                <label
+                  htmlFor="categories"
+                  className="block font-semibold mb-1"
+                >
                   Categories:
                 </label>
                 <div className="grid grid-cols-3 gap-4">

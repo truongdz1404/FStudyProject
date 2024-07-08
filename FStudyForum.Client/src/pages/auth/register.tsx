@@ -3,7 +3,7 @@ import { FC } from "react";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
-import {checkEmail, cn } from "@/helpers/utils";
+import { checkEmail, cn } from "@/helpers/utils";
 import { Button, Input } from "@material-tailwind/react";
 import { Link, useNavigate } from "react-router-dom";
 import { Icons } from "@/components/Icons";
@@ -12,7 +12,7 @@ import { AxiosError } from "axios";
 import { Response } from "@/types/response";
 import { CircleAlert } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 type RegisterFormInputs = {
   email: string;
@@ -20,19 +20,16 @@ type RegisterFormInputs = {
   confirmPassword: string;
 };
 
-
-
 const validation = Yup.object().shape({
   email: Yup.string()
     .required("Email is required")
     .trim()
     .test("is-mailFPT", "Email can't contain only @fpt.edu.vn", value => {
-      return value !== "@fpt.edu.vn"
+      return value !== "@fpt.edu.vn";
     })
     .test("is-mailFPT", "Email must have @fpt.edu.vn", value => {
       return checkEmail(value);
-    })
-  ,
+    }),
   password: Yup.string()
     .required("Password is required")
     .trim()
@@ -80,7 +77,7 @@ const SignUp: FC = () => {
     <>
       <div className="flex flex-col mb-4 items-center">
         <Icons.logo className="w-10 h-10" />
-        <span className="font-bold text-lg">Register</span>
+        <span className="font-semibold text-lg">Register</span>
       </div>
       <form
         onSubmit={handleSubmit(form => handleRegister(form))}
@@ -98,14 +95,14 @@ const SignUp: FC = () => {
               "!border !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent placeholder:opacity-100",
               " focus:!border-gray-900 focus:!border-t-gray-900 focus:ring-gray-900/10  placeholder:text-gray-500",
               Boolean(errors?.email?.message) &&
-              "focus:!border-red-600 focus:!border-t-red-600 focus:ring-red-600/10 !border-red-500  placeholder:text-red-500"
+                "focus:!border-red-600 focus:!border-t-red-600 focus:ring-red-600/10 !border-red-500  placeholder:text-red-500"
             )}
             labelProps={{ className: "hidden" }}
             disabled={isPending}
             crossOrigin={undefined}
             {...register("email")}
-            onKeyDown={(e) => {
-              if (e.key === ' ') {
+            onKeyDown={e => {
+              if (e.key === " ") {
                 e.preventDefault();
               }
             }}
@@ -134,14 +131,14 @@ const SignUp: FC = () => {
                 "!border !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent placeholder:opacity-100",
                 "focus:!border-gray-900 focus:!border-t-gray-900 focus:ring-gray-900/10 placeholder:text-gray-500",
                 Boolean(errors?.password?.message) &&
-                "focus:!border-red-600 focus:!border-t-red-600 focus:ring-red-600/10 !border-red-500 placeholder:text-red-500"
+                  "focus:!border-red-600 focus:!border-t-red-600 focus:ring-red-600/10 !border-red-500 placeholder:text-red-500"
               )}
               labelProps={{ className: "hidden" }}
               disabled={isPending}
               crossOrigin={undefined}
               {...register("password")}
-              onKeyDown={(e) => {
-                if (e.key === ' ') {
+              onKeyDown={e => {
+                if (e.key === " ") {
                   e.preventDefault();
                 }
               }}
@@ -162,7 +159,10 @@ const SignUp: FC = () => {
         </div>
 
         <div className="relative">
-          <label htmlFor="confirmPassword" className="block text-sm text-gray-700 m-1">
+          <label
+            htmlFor="confirmPassword"
+            className="block text-sm text-gray-700 m-1"
+          >
             Confirm password
           </label>
           <div className="relative">
@@ -174,14 +174,14 @@ const SignUp: FC = () => {
                 "!border !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent placeholder:opacity-100",
                 "focus:!border-gray-900 focus:!border-t-gray-900 focus:ring-gray-900/10 placeholder:text-gray-500",
                 Boolean(errors?.confirmPassword?.message) &&
-                "focus:!border-red-600 focus:!border-t-red-600 focus:ring-red-600/10 !border-red-500 placeholder:text-red-500"
+                  "focus:!border-red-600 focus:!border-t-red-600 focus:ring-red-600/10 !border-red-500 placeholder:text-red-500"
               )}
               labelProps={{ className: "hidden" }}
               disabled={isPending}
               crossOrigin={undefined}
               {...register("confirmPassword")}
-              onKeyDown={(e) => {
-                if (e.key === ' ') {
+              onKeyDown={e => {
+                if (e.key === " ") {
                   e.preventDefault();
                 }
               }}
@@ -196,14 +196,11 @@ const SignUp: FC = () => {
           </div>
           {errors.confirmPassword && (
             <span className="text-red-500 text-xs mt-1 ml-1 flex gap-x-1 items-center">
-              <CircleAlert className="w-3 h-3" /> {errors.confirmPassword.message}
+              <CircleAlert className="w-3 h-3" />{" "}
+              {errors.confirmPassword.message}
             </span>
           )}
         </div>
-
-
-
-
 
         {error && !isPending && (
           <span className="flex items-center tracking-wide text-xs text-red-500 mt-1 ml-1 gap-x-1 ">
@@ -229,7 +226,7 @@ const SignUp: FC = () => {
           Already have an account?{" "}
           <Link
             to="/auth/signin"
-            className="text-deep-orange-600 font-bold hover:underline "
+            className="text-deep-orange-600 font-semibold hover:underline "
           >
             Sign in
           </Link>

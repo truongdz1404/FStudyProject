@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Alert, DialogBody, DialogFooter, Button } from "@material-tailwind/react";
+import {
+  Alert,
+  DialogBody,
+  DialogFooter,
+  Button
+} from "@material-tailwind/react";
 import { UpdateCategoryDTO, Category } from "@/types/category";
 import CategoryService from "@/services/CategoryService";
-import CategoryTypeService from "@/services/CategoryTypeService"; 
+import CategoryTypeService from "@/services/CategoryTypeService";
 
 interface UpdateCategoryPopupProps {
   open: boolean;
@@ -15,14 +20,14 @@ const UpdateCategoryPopup: React.FC<UpdateCategoryPopupProps> = ({
   open,
   category,
   onClose,
-  onUpdate,
+  onUpdate
 }) => {
   const [categoryName, setCategoryName] = useState(category.name);
   const [description, setDescription] = useState(category.description);
   const [type, setType] = useState(category.type);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [categoryTypes, setCategoryTypes] = useState<string[]>([]); 
+  const [categoryTypes, setCategoryTypes] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -42,7 +47,7 @@ const UpdateCategoryPopup: React.FC<UpdateCategoryPopupProps> = ({
       const updatedCategory: UpdateCategoryDTO = {
         name: categoryName,
         description,
-        type,
+        type
       };
       await CategoryService.update(category.name, updatedCategory);
       setSuccessMessage("Category updated successfully!");
@@ -59,15 +64,21 @@ const UpdateCategoryPopup: React.FC<UpdateCategoryPopupProps> = ({
       setCategoryName(category.name);
       setDescription(category.description);
       setType(category.type);
-      setError(null); 
+      setError(null);
     }
   }, [open, category]);
 
   return (
-    <div className={`fixed inset-0 flex items-center justify-center bg-gray-700 bg-opacity-50 z-50 ${open ? "block" : "hidden"}`}>
+    <div
+      className={`fixed inset-0 flex items-center justify-center bg-gray-700 bg-opacity-50 z-50 ${
+        open ? "block" : "hidden"
+      }`}
+    >
       <div className="bg-white rounded-md p-4 shadow-lg w-80">
         <DialogBody>
-          <h2 className="text-xl text-black font-bold mb-4">Update Category</h2>
+          <h2 className="text-xl text-black font-semibold mb-4">
+            Update Category
+          </h2>
           {error && (
             <Alert color="red" className="mb-4">
               {error}
@@ -79,40 +90,49 @@ const UpdateCategoryPopup: React.FC<UpdateCategoryPopupProps> = ({
             </Alert>
           )}
           <div className="mb-4">
-            <label htmlFor="categoryName" className="block font-bold mb-1 text-black">
+            <label
+              htmlFor="categoryName"
+              className="block font-semibold mb-1 text-black"
+            >
               Category Name:
             </label>
             <input
               type="text"
               id="categoryName"
               value={categoryName}
-              onChange={(e) => setCategoryName(e.target.value)}
-              className="border border-gray-300 rounded px-2 py-1 w-full text-black" 
+              onChange={e => setCategoryName(e.target.value)}
+              className="border border-gray-300 rounded px-2 py-1 w-full text-black"
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="description" className="block font-bold mb-1 text-black">
+            <label
+              htmlFor="description"
+              className="block font-semibold mb-1 text-black"
+            >
               Description:
             </label>
             <textarea
               id="description"
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="border border-gray-300 rounded px-2 py-1 w-full h-24 resize-none text-black" 
+              onChange={e => setDescription(e.target.value)}
+              className="border border-gray-300 rounded px-2 py-1 w-full h-24 resize-none text-black"
             ></textarea>
           </div>
           <div className="mb-4">
-            <label htmlFor="type" className="block font-bold mb-1 text-black">
+            <label
+              htmlFor="type"
+              className="block font-semibold mb-1 text-black"
+            >
               Type:
             </label>
             <select
               id="type"
               value={type}
-              onChange={(e) => setType(e.target.value)}
-              className="border border-gray-300 rounded px-2 py-1 w-full text-black" 
+              onChange={e => setType(e.target.value)}
+              className="border border-gray-300 rounded px-2 py-1 w-full text-black"
             >
               <option value={type}>{type}</option>
-              {categoryTypes.map((type) => (
+              {categoryTypes.map(type => (
                 <option key={type} value={type}>
                   {type}
                 </option>
