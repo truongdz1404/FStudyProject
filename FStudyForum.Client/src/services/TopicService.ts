@@ -66,6 +66,11 @@ const search = async (value: string) => {
   );
   return response.data.data;
 };
+const filterByCategories = async (categoryIds: number[]): Promise<Topic[]> => {
+  const query = categoryIds.map(id => `categoryIds=${id}`).join("&");
+  const response = await api.get<ResponseWith<Topic[]>>(`/topic/filter?${query}`);
+  return response.data.data;
+};
 
 const TopicService = {
   getTopics,
@@ -77,7 +82,8 @@ const TopicService = {
   deleteTopic,
   checkBannedUser,
   unbanUser,
-  banUser
+  banUser,
+  filterByCategories
 };
 
 export default TopicService;

@@ -14,7 +14,7 @@ public interface ITopicService
     public Task<TopicDTO> UpdateTopic(string name, UpdateTopicDTO topicDto);
     public Task<bool> DeleteTopic(string name);
     public Task<IEnumerable<TopicDTO>> SearchTopicContainKeywordAsync(string keyword);
-
+    //Task<IEnumerable<TopicDTO>> GetTopicsByCategories(List<int> categoryIds);
     Task<TopicBanDTO> BanUser(CreateTopicBanDTO topicBan);
     Task UnbanUser(string username, string topic);
     Task<TopicBanDTO> CheckBannedUser(string username, string topicName);

@@ -16,4 +16,5 @@ public interface ITopicRepository : IBaseRepository<Topic>
     public Task<DateTimeOffset?> GetUnlockTime(CreateTopicBanDTO lockUser);
     public Task UpdateTopicBan(TopicBan topicBan);
     public Task<Topic?> GetTopicByPost(int postId);
+    
 }

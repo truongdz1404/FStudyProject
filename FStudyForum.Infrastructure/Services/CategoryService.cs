@@ -96,5 +96,18 @@ public class CategoryService : ICategoryService
         await _categoryRepository.Delete(existedCategory);
         return true;
     }
+     public async Task<IEnumerable<CategoryDTO>> FilterCategoriesByType(string type) 
+        {
+            var categories = await _categoryRepository.GetCategoriesByType(type);
+            var categoryDTOs = categories.Select(c => new CategoryDTO
+            {
+                Id = c.Id,
+                Name = c.Name,
+                Description = c.Description,
+                Type = c.Type
+            });
+
+            return categoryDTOs;
+        }
 }
 

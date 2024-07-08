@@ -78,5 +78,11 @@ namespace FStudyForum.API.Controllers
             return StatusCode(500, new { message = $"Internal server error: {ex.Message}" });
         }
     }
+    [HttpGet("filter")]
+    public async Task<IActionResult> GetFilteredCategories([FromQuery] string type)
+    {
+        var categories = await _categoryService.FilterCategoriesByType(type);
+        return Ok(categories);
+    }
     }
 }
