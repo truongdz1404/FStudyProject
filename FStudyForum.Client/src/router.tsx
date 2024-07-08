@@ -9,7 +9,7 @@ import AuthLayout from "@/components/layout/AuthLayout";
 import RoleBasedGuard from "@/helpers/guards/RoleBasedGuard";
 import Donate from "./pages/donate";
 import Notification from "./pages/donate/notification";
-import SavePost from "./pages/profile/save";
+import SavePost from "./pages/user/save";
 import { ROLE } from "@/helpers/constants";
 import Loadable from "./helpers/loading/Loadable";
 
@@ -31,7 +31,7 @@ const CategoryManager = Loadable(
 const ResetPassword = Loadable(
   lazy(() => import("@/pages/auth/reset-password"))
 );
-const Profile = Loadable(lazy(() => import("@/pages/profile")));
+const Profile = Loadable(lazy(() => import("@/pages/user")));
 const ProfileSettings = Loadable(
   lazy(() => import("@/pages/settings/profile"))
 );
@@ -178,7 +178,7 @@ const Router: FC = () => {
           ]
         },
         {
-          path: "profile/:username",
+          path: "user/:username",
           element: <Profile />,
           children: [
             {

@@ -176,7 +176,7 @@ const ProfileSettings = () => {
         });
         const newUser = await UserService.getProfile();
         dispatch(signIn({ user: newUser }));
-        navigate("/profile/" + user.username);
+        navigate("/user/" + user.username);
       } catch (e) {
         const error = e as AxiosError;
         setError((error?.response?.data as Response)?.message || error.message);
@@ -191,7 +191,7 @@ const ProfileSettings = () => {
       <div className="mb-6">
         <p className="text-md font-semibold flex gap-x-2 items-center">
           <Link
-            to={`/profile/${user?.username}`}
+            to={`/user/${user?.username}`}
             className="rounded-full bg-blue-gray-50 hover:bg-blue-gray-100 p-2 -ml-10 hidden lg:block"
           >
             <ArrowLeft className="w-4 h-4" />

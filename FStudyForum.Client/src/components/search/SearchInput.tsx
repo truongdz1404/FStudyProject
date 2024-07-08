@@ -1,6 +1,6 @@
 import { useRouterParam } from "@/hooks/useRouterParam";
 import { CircleX, Clock, Search, X } from "lucide-react";
-import React, { FC } from "react";
+import React from "react";
 import DefaultTopic from "@/assets/images/topic.png";
 import DefaultAvatar from "@/assets/images/user.png";
 
@@ -24,7 +24,7 @@ type Context = {
   avatar?: string;
 };
 
-const SearchInput: FC = () => {
+const SearchInput = () => {
   const [keyword, setKeyword] = React.useState("");
   const { topic, user } = useRouterParam();
   const [isAll, setIsAll] = React.useState(false);
@@ -90,7 +90,6 @@ const SearchInput: FC = () => {
       }, 200),
     []
   );
-  console.log(history);
 
   const canViewHistory = React.useCallback(
     () => !!keyword == false && !context,
@@ -139,8 +138,9 @@ const SearchInput: FC = () => {
 
     if (value.context.name) {
       navigate(
-        `/topic/${value.context.name}` +
-          (value.keyword ? `/search/posts?keyword=${value.keyword}` : "")
+        `/${value.context.prefix == "t" ? "topic" : "user"}/${
+          value.context.name
+        }${value.keyword ? `/search/posts?keyword=${value.keyword}` : ""}`
       );
     } else navigate(`/search/posts?keyword=${value.keyword}`);
   };

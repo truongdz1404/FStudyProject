@@ -35,7 +35,7 @@ function ProfileMenu() {
     {
       label: "My Profile",
       icon: UserCircleIcon,
-      path: `/profile/${user?.username.toLowerCase()}`
+      path: `/user/${user?.username.toLowerCase()}`
     },
     {
       label: "Sign Out",
