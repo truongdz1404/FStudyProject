@@ -69,11 +69,8 @@ public class TopicService : ITopicService
     }
     public async Task<TopicDTO> GetTopicByName(string name)
     {
-        var topic = await _topicRepository.GetByName(name);
-        if (topic == null)
-        {
-            throw new Exception("Topic not found");
-        }
+        var topic = await _topicRepository.GetByName(name)
+            ?? throw new Exception("Topic not found");
         var categoryIds = topic.Categories.Select(c => c.Id).ToList();
         var topicDto = new TopicDTO
         {

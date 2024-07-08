@@ -1,6 +1,5 @@
 import ContentLayout from "@/components/layout/ContentLayout";
 import ProfileDescription from "@/components/profile/ProfileDescription";
-import ProfileService from "@/services/ProfileService";
 import {
   Accordion,
   AccordionBody,
@@ -10,16 +9,15 @@ import {
   Spinner,
   Typography
 } from "@material-tailwind/react";
-import { useQuery } from "@tanstack/react-query";
 import { Camera, PencilLine, Plus } from "lucide-react";
 import React from "react";
 import { Link, Outlet, useParams } from "react-router-dom";
-import { Alert } from "@material-tailwind/react";
 import { cn } from "@/helpers/utils";
 import { useAuth } from "@/hooks/useAuth";
 import BannerDefault from "@/assets/images/banner.png";
 import AvatarDefault from "@/assets/images/user.png";
 import ImageWithLoading from "@/components/ui/ImageWithLoading";
+import { useRouterParam } from "@/hooks/useRouterParam";
 
 const tabItems = [
   {
@@ -34,23 +32,12 @@ const tabItems = [
 const Profile = () => {
   const { user } = useAuth();
   const { username } = useParams<{ username: string }>();
-  const { data: profile, error } = useQuery({
-    queryKey: [`profile-${username}`],
-    queryFn: () => ProfileService.getByUsername(username!),
-    enabled: !!username
-  });
+  const { user: profile } = useRouterParam();
 
   const [open, setOpen] = React.useState(0);
 
   const handleOpen = (value: number) => setOpen(open === value ? 0 : value);
 
-  if (error) {
-    return (
-      <div className="p-4">
-        <Alert color="red">Profile no found</Alert>
-      </div>
-    );
-  }
   if (!profile) return <Spinner className="mx-auto" />;
   return (
     <ContentLayout pannel={<ProfileDescription profile={profile} />}>

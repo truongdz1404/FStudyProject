@@ -12,17 +12,30 @@ import TopicService from "@/services/TopicService";
 import { debounce } from "lodash";
 import useQueryParams from "@/hooks/useQueryParams";
 
+type History = {
+  topic: { name?: string; avatar?: string };
+  keyword?: string;
+};
+
 const SearchInput: FC = () => {
   const [keyword, setKeyword] = React.useState("");
   const { topic } = useRouterParam();
   const [isAll, setIsAll] = React.useState(false);
   const [openBox, setOpenBox] = React.useState(false);
-  const [history, setHistory] = React.useState<string[]>([]);
-  const inputRef = useOutsideClick(() => setOpenBox(false));
+  const [history, setHistory] = React.useState<History[]>([]);
+  const containerInputRef = useOutsideClick(() => closeBox());
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  const [selectIndex, setSelectIndex] = React.useState(-1);
   const [foundTopics, setFoundTopics] = React.useState<Topic[]>([]);
   const keywordParam = useQueryParams().get("keyword");
 
   const navigate = useNavigate();
+
+  const closeBox = () => {
+    inputRef.current?.blur();
+    setSelectIndex(-1);
+    setOpenBox(false);
+  };
 
   React.useEffect(() => {
     setIsAll(false);
@@ -34,8 +47,8 @@ const SearchInput: FC = () => {
 
   React.useEffect(() => {
     const savedHistory = JSON.parse(
-      localStorage.getItem("searchHistory") || "[]"
-    );
+      localStorage.getItem("search_history") || "[]"
+    ) as History[];
     setHistory(savedHistory);
   }, []);
   const debouncedSearch = React.useMemo(
@@ -55,58 +68,109 @@ const SearchInput: FC = () => {
     []
   );
 
+  const canViewHistory = React.useCallback(
+    () => !!keyword == false && !topic,
+    [keyword, topic]
+  );
+  const canSearch = React.useCallback(() => !topic, [topic]);
+
   React.useEffect(() => {
+    if (!canSearch()) return;
     const trimmedKeyword = keyword.trim().replace(/^t\//, "");
     debouncedSearch(trimmedKeyword);
     return () => {
       debouncedSearch.cancel();
     };
-  }, [keyword, debouncedSearch]);
+  }, [keyword, debouncedSearch, canSearch]);
 
-  const handleSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && keyword.trim()) {
-      handleSearch(keyword.trim());
+  const handleKeydown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    switch (e.key) {
+      case "ArrowUp":
+        e.preventDefault();
+        setSelectIndex(prevIndex =>
+          prevIndex > 0 ? prevIndex - 1 : boxSize - 1
+        );
+        break;
+      case "ArrowDown":
+        e.preventDefault();
+        setSelectIndex(prevIndex =>
+          prevIndex < boxSize - 1 ? prevIndex + 1 : 0
+        );
+        break;
+    }
+    if (e.key === "Enter" && selectIndex != -1) {
+      if (canViewHistory()) handleSearch(history[selectIndex]);
+      else if (canSearch()) handleSelect(foundTopics[selectIndex]);
+    } else if (e.key === "Enter" && keyword.trim()) {
+      handleSearch({
+        keyword: keyword.trim(),
+        topic: {
+          name: topic?.name,
+          avatar: topic?.avatar
+        }
+      });
     }
   };
 
-  const handleSearch = (value: string) => {
+  const handleSearch = (value: History) => {
     addHistory(value);
-    navigate(`/search/posts?keyword=${value}`);
-    setOpenBox(false);
+    closeBox();
+
+    if (value.topic.name) {
+      navigate(
+        `/topic/${value.topic.name}` +
+          (value.keyword ? `/search/posts?keyword=${value.keyword}` : "")
+      );
+    } else navigate(`/search/posts?keyword=${value.keyword}`);
   };
 
   const handleSelect = (topic: Topic) => {
+    addHistory({ topic: { name: topic.name, avatar: topic.avatar } });
+    closeBox();
     navigate(`/topic/${topic.name}`);
     setKeyword("");
-    setOpenBox(false);
   };
 
   const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectIndex(-1);
     setKeyword(e.target.value);
   };
 
-  const addHistory = (value: string) => {
+  const addHistory = (value: History) => {
     const max_history_size = 6;
-    const newHistory = [value, ...history.filter(term => term !== value)].slice(
-      0,
-      max_history_size
-    );
+    const newHistory = [
+      value,
+      ...history.filter(
+        item =>
+          item.keyword !== value.keyword || item.topic.name !== value.topic.name
+      )
+    ].slice(0, max_history_size);
     setHistory(newHistory);
-    localStorage.setItem("searchHistory", JSON.stringify(newHistory));
+    localStorage.setItem("search_history", JSON.stringify(newHistory));
   };
-  const removeHistory = (value: string) => {
-    const updatedHistory = history.filter(item => item !== value);
-    localStorage.setItem("searchHistory", JSON.stringify(updatedHistory));
+  const removeHistory = (value: History) => {
+    const updatedHistory = history.filter(
+      item =>
+        item.keyword !== value.keyword || item.topic.name !== value.topic.name
+    );
+    localStorage.setItem("search_history", JSON.stringify(updatedHistory));
     setHistory(updatedHistory);
   };
 
+  const boxSize = React.useMemo(
+    () =>
+      canViewHistory() ? history.length : canSearch() ? foundTopics.length : 0,
+    [canSearch, canViewHistory, foundTopics.length, history.length]
+  );
+
   return (
-    <div className="relative" ref={inputRef}>
+    <div className="relative" ref={containerInputRef}>
       <div
         className={cn(
           "flex gap-x-2 bg-blue-gray-50 h-10 rounded-[1.25rem] z-20 items-center text-blue-gray-700",
           openBox && "hover:bg-blue-gray-50 bg-transparent"
         )}
+        onClick={() => inputRef.current?.focus()}
       >
         <span className="ps-3">
           <Search className="h-[1.18rem]" />
@@ -140,8 +204,9 @@ const SearchInput: FC = () => {
             className="focus:outline-none bg-transparent w-full placeholder:font-light"
             value={keyword}
             onChange={handleChange}
-            onKeyDown={handleSubmit}
+            onKeyDown={handleKeydown}
             onFocus={() => setOpenBox(true)}
+            ref={inputRef}
             autoComplete="off"
           />
         </div>
@@ -161,21 +226,38 @@ const SearchInput: FC = () => {
           <div
             className={cn(
               "min-h-10 text-blue-gray-700 text-sm",
-              history.length != 0 && "mt-[calc(3rem-0.1rem)]"
+              ((canViewHistory() && history.length != 0) || !!keyword) &&
+                "mt-[calc(3rem-0.1rem)]"
             )}
           >
-            {!!keyword == false &&
+            {canViewHistory() &&
               history.map((value, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-between hover:bg-blue-gray-50/40 py-2 px-4 cursor-pointer"
+                  className={cn(
+                    "flex items-center justify-between hover:bg-blue-gray-50/40 py-2 px-4 cursor-pointer",
+                    selectIndex == index && "bg-blue-gray-50/40"
+                  )}
                   onClick={() => handleSearch(value)}
                 >
                   <div className="flex items-center gap-x-2 overflow-hidden">
-                    <div>
-                      <Clock className="w-4 h-4" />
-                    </div>
-                    <span className="truncate">{value}</span>
+                    {value.topic.avatar ? (
+                      <>
+                        <Avatar
+                          src={value.topic.avatar || DefaultTopic}
+                          className="w-4 h-4"
+                        />
+                        <span className="truncate">t/{value.topic.name}</span>
+                      </>
+                    ) : (
+                      <div>
+                        <Clock className="w-4 h-4" />
+                      </div>
+                    )}
+
+                    {value.keyword && (
+                      <span className="truncate">{value.keyword}</span>
+                    )}
                   </div>
 
                   <button
@@ -192,25 +274,29 @@ const SearchInput: FC = () => {
               ))}
             {!!keyword && (
               <>
-                {foundTopics.map((topic, index) => (
-                  <div
-                    key={index}
-                    className="flex gap-x-2 items-center py-2 px-4 hover:bg-blue-gray-50/40 cursor-pointer"
-                    onClick={() => handleSelect(topic)}
-                  >
-                    <Avatar
-                      src={topic.avatar || DefaultTopic}
-                      className="w-6 h-6"
-                    />
-                    <div className="flex-col flex">
-                      <span className="text-xs font-normal">{`t/${topic.name}`}</span>
-                      <span className="text-[0.7rem] font-light">
-                        {`${topic.postCount} `}
-                        {topic.postCount ? "posts" : "post"}
-                      </span>
+                {canSearch() &&
+                  foundTopics.map((topic, index) => (
+                    <div
+                      key={index}
+                      className={cn(
+                        "flex gap-x-2 items-center py-2 px-4 hover:bg-blue-gray-50/40 cursor-pointer",
+                        selectIndex == index && "bg-blue-gray-50/40"
+                      )}
+                      onClick={() => handleSelect(topic)}
+                    >
+                      <Avatar
+                        src={topic.avatar || DefaultTopic}
+                        className="w-6 h-6"
+                      />
+                      <div className="flex-col flex">
+                        <span className="text-xs font-normal">{`t/${topic.name}`}</span>
+                        <span className="text-[0.7rem] font-light">
+                          {`${topic.postCount} `}
+                          {topic.postCount ? "posts" : "post"}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
                 <div className="box-border flex items-center gap-x-2 px-3 py-4 overflow-hidden border-t">
                   <div>
                     <Search className="h-[1.18rem]" />

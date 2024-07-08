@@ -62,11 +62,7 @@ const HomePage: React.FC = () => {
         );
       })}
       <div ref={ref} className="text-center">
-        {isFetchingNextPage ? (
-          <Spinner className="mx-auto" />
-        ) : (
-          <span className="text-xs font-light">Nothing more</span>
-        )}
+        {isFetchingNextPage && <Spinner className="mx-auto" />}
       </div>
     </ContentLayout>
   );

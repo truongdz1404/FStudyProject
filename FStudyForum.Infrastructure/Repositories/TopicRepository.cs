@@ -20,20 +20,18 @@ namespace FStudyForum.Infrastructure.Repositories
 
         public new async Task<Topic> Create(Topic model)
         {
-            using (var transaction = await _dbContext.Database.BeginTransactionAsync())
+            using var transaction = await _dbContext.Database.BeginTransactionAsync();
+            try
             {
-                try
-                {
-                    await _dbContext.Set<Topic>().AddAsync(model);
-                    await _dbContext.SaveChangesAsync();
-                    await transaction.CommitAsync();
-                    return model;
-                }
-                catch (Exception)
-                {
-                    await transaction.RollbackAsync();
-                    throw;
-                }
+                await _dbContext.Set<Topic>().AddAsync(model);
+                await _dbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return model;
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                throw;
             }
         }
 

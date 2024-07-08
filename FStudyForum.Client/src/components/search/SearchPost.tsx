@@ -1,28 +1,49 @@
 import { Post } from "@/types/post";
 import { Avatar } from "@material-tailwind/react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Images } from "lucide-react";
 import DefaultTopic from "@/assets/images/topic.png";
 import ImageWithLoading from "../ui/ImageWithLoading";
-import LightBox from "./LightBox";
 import React from "react";
+import LightBox from "../post/LightBox";
 
-interface MiniPostProps {
+interface Props {
   data: Post;
+  keyword: string;
 }
-const MiniPost: React.FC<MiniPostProps> = ({ data }) => {
+const SearchPost: React.FC<Props> = ({ data, keyword }) => {
   const [open, setOpen] = React.useState(-1);
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const actionRefs = React.useRef<HTMLElement[]>([]);
+  const navigate = useNavigate();
 
   const openLightBox = (index?: number) => {
     setOpen(index ?? 0);
   };
+  const handleRemainClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (!containerRef.current) return;
+    const actions = Array.from(
+      containerRef.current.querySelectorAll(".action")
+    ) as HTMLElement[];
+    actionRefs.current = actions;
+
+    if (
+      containerRef.current &&
+      containerRef.current.contains(event.target as Node) &&
+      !actionRefs.current.some(action => action.contains(event.target as Node))
+    ) {
+      navigate(`/topic/${data.topicName}/comments/${data.id}`);
+    }
+  };
+
+  const regex = new RegExp(`(${keyword})`, "gi");
 
   return (
-    <div className="flex p-2">
-      <div className="flex flex-col justify-between grow flex-1 w-2/5">
-        <div>
+    <div className="flex p-2" ref={containerRef} onClick={handleRemainClick}>
+      <div className="flex flex-col gap-y-2 grow justify-between w-3/5">
+        <div className="action">
           <Link
-            to={`/profile/${data.topicName}`}
+            to={`/topic/${data.topicName}`}
             className="text-xs font-light hover:underline flex items-center gap-x-2"
           >
             <Avatar
@@ -31,14 +52,15 @@ const MiniPost: React.FC<MiniPostProps> = ({ data }) => {
             />
             {`t/${data.topicName}`}
           </Link>
-          <Link
-            className="text-sm text-gray-800 hover:underline break-words"
-            to={`/topic/${data.topicName}/comments/${data.id}`}
-          >
-            {data.title}
-          </Link>
+          <span className="text-md w-full text-blue-gray-800 break-words">
+            {data.title
+              .split(regex)
+              .map((part, index) =>
+                regex.test(part) ? <strong key={index}>{part}</strong> : part
+              )}
+          </span>
         </div>
-        <div className="text-[0.7rem]  font-light">
+        <div className="text-xs  font-light">
           {data.voteCount + ` ${data.commentCount > 1 ? "votes" : "vote"}`}{" "}
           &middot;{" "}
           {data.commentCount +
@@ -48,7 +70,7 @@ const MiniPost: React.FC<MiniPostProps> = ({ data }) => {
 
       {data.attachments[0] && (
         <div
-          className="ml-3 aspect-square h-24 overflow-hidden rounded-lg relative"
+          className="flex ml-3  overflow-hidden rounded-lg relative aspect-[4/3] h-24 action"
           onClick={() => openLightBox(0)}
         >
           <ImageWithLoading
@@ -73,4 +95,4 @@ const MiniPost: React.FC<MiniPostProps> = ({ data }) => {
   );
 };
 
-export default MiniPost;
+export default SearchPost;

@@ -1,13 +1,11 @@
 import React from "react";
 import SearchService from "@/services/SearchService";
-import ContentLayout from "@/components/layout/ContentLayout";
 import { useInView } from "react-intersection-observer";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { LIMIT_SCROLLING_PAGNATION_RESULT } from "@/helpers/constants";
 import NotFoundSearch from "@/components/layout/NotFoundSearch";
 import { Spinner } from "@material-tailwind/react";
 import { Link, useLocation } from "react-router-dom";
-import SearchTabs from "@/components/search/SearchTabs";
 
 const useQuery = () => {
   return new URLSearchParams(useLocation().search);
@@ -21,7 +19,7 @@ const SearchUserPage: React.FC = () => {
 
   const { data, fetchNextPage, isPending, isFetchingNextPage, refetch } =
     useInfiniteQuery({
-      queryKey: [`search-query`, keyword],
+      queryKey: [`search-people-query`, keyword],
       queryFn: async ({ pageParam = 1 }) => {
         try {
           const result = await SearchService.searchUsers(
@@ -68,10 +66,7 @@ const SearchUserPage: React.FC = () => {
   if (isPending) return <Spinner className="mx-auto" />;
 
   return (
-    <ContentLayout>
-      <div className="relative flex text-left z-20 mt-3">
-        <SearchTabs />
-      </div>
+    <>
       {uniqueTopics.length === 0 && <NotFoundSearch keyword={keyword} />}
       {uniqueTopics.map((user, index) => {
         return (
@@ -101,7 +96,7 @@ const SearchUserPage: React.FC = () => {
           </span>
         )}
       </div>
-    </ContentLayout>
+    </>
   );
 };
 

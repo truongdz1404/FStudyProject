@@ -26,7 +26,7 @@ const TopicDetail: React.FC = () => {
 
   const { data, fetchNextPage, isPending, isFetchingNextPage } =
     useInfiniteQuery({
-      queryKey: [`home-${filter}-query`],
+      queryKey: [`topic-${filter}-query`],
       queryFn: async ({ pageParam = 1 }) => {
         try {
           const posts = await PostService.getPostsByTopicName(
@@ -75,7 +75,7 @@ const TopicDetail: React.FC = () => {
           </div>
 
           <div className="absolute left-24 flex items-center gap-x-2">
-            <p className="text-md font-semibold">{"t/" + topic.name}</p>
+            <p className="text-md font-semibold">t/{topic.name}</p>
             <Link to="/settings/profile">
               <PencilLine className="w-4 h-4 text-blue-gray-600" />
             </Link>
@@ -99,11 +99,7 @@ const TopicDetail: React.FC = () => {
           );
         })}
         <div ref={ref} className="text-center">
-          {isFetchingNextPage ? (
-            <Spinner className="mx-auto" />
-          ) : (
-            <span className="text-xs font-light">Nothing more</span>
-          )}
+          {isFetchingNextPage && <Spinner className="mx-auto" />}
         </div>
       </div>
     </ContentLayout>

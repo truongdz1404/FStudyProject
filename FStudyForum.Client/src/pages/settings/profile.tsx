@@ -62,20 +62,15 @@ const ProfileSettings = () => {
   const navigate = useNavigate();
 
   const { data: profile } = useQuery({
-    queryKey: [`profile-${user?.username}`],
+    queryKey: [`edit-profile-${user?.username}`],
     queryFn: () => ProfileService.getByUsername(user!.username),
     enabled: !!user
   });
 
-  React.useEffect(() => {
-    if (!profile) return;
-    setBanner(profile.banner ?? "");
-    setAvatar(profile.avatar ?? "");
-  }, [profile]);
-
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors }
   } = useForm<EditProfileInputs>({
     mode: "onTouched",
@@ -91,6 +86,20 @@ const ProfileSettings = () => {
     }, [profile]),
     resolver: yupResolver(validation)
   });
+
+  React.useEffect(() => {
+    if (!profile) return;
+    reset({
+      firstName: profile?.firstName,
+      lastName: profile?.lastName,
+      gender: profile?.gender,
+      avatar: profile?.avatar,
+      phone: profile?.phone,
+      bio: profile?.bio
+    });
+    setBanner(profile.banner ?? "");
+    setAvatar(profile.avatar ?? "");
+  }, [profile, reset]);
 
   React.useEffect(() => {
     return () => {
@@ -154,7 +163,8 @@ const ProfileSettings = () => {
           upload(avatarFile, `images/avatar${user.username}`),
           upload(bannerFile, `images/banner${user.username}`)
         ]);
-        await ProfileService.update(user.username, {
+        await ProfileService.update({
+          username: user.username,
           firstName: form.firstName,
           lastName: form.lastName,
           gender: form.gender,

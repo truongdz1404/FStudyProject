@@ -45,6 +45,8 @@ const SearchComments = Loadable(lazy(() => import("@/pages/search/comments")));
 const SearchPeople = Loadable(lazy(() => import("@/pages/search/people")));
 const SignOut = Loadable(lazy(() => import("@/pages/auth/signout")));
 const ListReport = Loadable(lazy(() => import("@/pages/manager/report/list")));
+const Search = Loadable(lazy(() => import("@/pages/search")));
+
 const Test = Loadable(lazy(() => import("@/pages/test")));
 const Response = Loadable(
   lazy(() => import("@/pages/manager/report/response"))
@@ -200,11 +202,7 @@ const Router: FC = () => {
         },
         {
           path: "search",
-          element: (
-            <TopicGuard>
-              <Outlet />
-            </TopicGuard>
-          ),
+          element: <Search />,
           children: [
             {
               path: "posts",
@@ -221,7 +219,7 @@ const Router: FC = () => {
             {
               path: "people",
               element: <SearchPeople />
-            },
+            }
           ]
         }
       ]

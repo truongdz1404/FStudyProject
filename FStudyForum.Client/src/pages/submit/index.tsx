@@ -5,44 +5,46 @@ import { ChevronDown, Search } from "lucide-react";
 import React, { ChangeEvent } from "react";
 import DefaultTopic from "@/assets/images/topic.png";
 import useOutsideClick from "@/hooks/useOutsideClick";
-import TopicService from "@/services/TopicService";
 import ContentLayout from "@/components/layout/ContentLayout";
 import Editor from "@/components/post/Editor";
 import { useRouterParam } from "@/hooks/useRouterParam";
 import { useNavigate } from "react-router-dom";
 import { debounce } from "lodash";
+import TopicService from "@/services/TopicService";
 const SubmitPage = () => {
   const navigate = useNavigate();
-
   const [selectedIndex, setSelectedIndex] = React.useState(-1);
+  const [keyword, setKeyword] = React.useState("");
   const [foundTopics, setFoundTopics] = React.useState<Topic[]>([]);
   const { topic } = useRouterParam();
   const searchRef = useOutsideClick(() => closeOpenSearch());
   const [openSearch, setOpenSearch] = React.useState(false);
+
+  const debouncedSearch = React.useMemo(
+    () =>
+      debounce(async (searchTerm: string) => {
+        if (!searchTerm) {
+          setFoundTopics([]);
+          return;
+        }
+        try {
+          const founds = await TopicService.search(searchTerm);
+          setFoundTopics(founds);
+        } catch (e) {
+          setFoundTopics([]);
+        }
+      }, 200),
+    []
+  );
+
   const closeOpenSearch = () => {
     setOpenSearch(false);
     setFoundTopics([]);
     setSelectedIndex(-1);
   };
 
-  const debouncedSearch = React.useRef(
-    debounce(async (searchValue: string) => {
-      if (searchValue === "") {
-        setFoundTopics([]);
-        return;
-      }
-      try {
-        const founds = await TopicService.search(searchValue);
-        setFoundTopics(founds);
-      } catch (e) {
-        setFoundTopics([]);
-      }
-    }, 200)
-  ).current;
-
   const handleSearch = async (event: ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value.trim().replace(/^t\//, "");
-    debouncedSearch(value);
+    setKeyword(event.target.value.trim());
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -69,6 +71,14 @@ const SubmitPage = () => {
     navigate(`/topic/${select.name}/submit`);
     closeOpenSearch();
   };
+
+  React.useEffect(() => {
+    const trimmedKeyword = keyword.replace(/^t\//, "");
+    debouncedSearch(trimmedKeyword);
+    return () => {
+      debouncedSearch.cancel();
+    };
+  }, [keyword, debouncedSearch]);
 
   return (
     <ContentLayout>
@@ -111,6 +121,7 @@ const SubmitPage = () => {
                 "placeholder:text-gray-500 placeholder:opacity-100 pl-6 ",
                 "rounded-full !border-0 !bg-gray-200 text-gray-900"
               )}
+              value={keyword}
               onKeyDown={handleKeyDown}
             />
             {foundTopics.length > 0 && (

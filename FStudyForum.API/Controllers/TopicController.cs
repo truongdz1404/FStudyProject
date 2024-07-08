@@ -57,6 +57,7 @@ namespace FStudyForum.API.Controllers
             var createdTopic = await _topicService.CreateTopic(topicDto);
             return CreatedAtAction(nameof(GetTopicByName), new { name = createdTopic.Name }, createdTopic);
         }
+
         [HttpGet("{name}")]
         public async Task<IActionResult> GetTopicByName(string name)
         {

@@ -4,6 +4,7 @@ namespace FStudyForum.Core.Models.DTOs.Profile
 {
     public class ProfileDTO
     {
+        public string? Username { get; set; }
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
         [Required]

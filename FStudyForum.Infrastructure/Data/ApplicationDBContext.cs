@@ -1,3 +1,4 @@
+using FStudyForum.Core.Helpers;
 using FStudyForum.Core.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -111,18 +112,7 @@ public class ApplicationDBContext(DbContextOptions options)
             .HasMany(c => c.Votes)
             .WithOne(v => v.Comment);
 
-
-        var roles = new List<IdentityRole>();
-        foreach (var role in Core.Constants.UserRole.All)
-        {
-            roles.Add(new()
-            {
-                Name = role,
-                NormalizedName = role.ToUpper()
-            });
-        }
-
-        builder.Entity<IdentityRole>().HasData(roles);
+        builder.SeedDatabase();
     }
 
     public DbSet<Profile> Profiles { get; set; }

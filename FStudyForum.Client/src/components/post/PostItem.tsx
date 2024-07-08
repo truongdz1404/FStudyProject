@@ -23,7 +23,7 @@ const PostItem: FC<PostProps> = ({ data, hideLess = true }) => {
   const addRecentPost = (postId: number) => {
     PostService.addRecent(postId);
   };
-  const handleOutsideClick = (event: React.MouseEvent<HTMLDivElement>) => {
+  const handleRemainClick = (event: React.MouseEvent<HTMLDivElement>) => {
     if (!hideLess || !containerRef.current) return;
     const actions = Array.from(
       containerRef.current.querySelectorAll(".action")
@@ -40,11 +40,10 @@ const PostItem: FC<PostProps> = ({ data, hideLess = true }) => {
     }
   };
 
-  const pRef = React.useRef<HTMLDivElement>(null);
   return (
     <div
       ref={containerRef}
-      onClick={handleOutsideClick}
+      onClick={handleRemainClick}
       className="py-1 px-4 w-full "
     >
       <div className="flex justify-between">
@@ -71,8 +70,10 @@ const PostItem: FC<PostProps> = ({ data, hideLess = true }) => {
         </div>
         <MenuItemPost post={data} />
       </div>
-      <div className={cn("my-2 flex flex-col gap-y-2 w-full")} ref={pRef}>
-        <p className="font-semibold text-blue-gray-900">{data.title}</p>
+      <div
+        className={cn("my-2 flex flex-col gap-y-2 w-full text-blue-gray-900")}
+      >
+        <p className="font-semibold ">{data.title}</p>
         <EditorOutput content={data.content} hide={hideLess} className="mb-2" />
 
         <AttachmentContainer files={data.attachments} />
