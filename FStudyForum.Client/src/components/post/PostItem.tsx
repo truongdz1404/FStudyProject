@@ -10,7 +10,6 @@ import React from "react";
 import EditorOutput from "./EditorOutput";
 import AttachmentContainer from "./AttachmentContainer";
 import PostVote from "./PostVote";
-import PostService from "@/services/PostService";
 
 type PostProps = {
   data: Post;
@@ -20,9 +19,7 @@ const PostItem: FC<PostProps> = ({ data, hideLess = true }) => {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const actionRefs = React.useRef<HTMLElement[]>([]);
   const navigate = useNavigate();
-  const addRecentPost = (postId: number) => {
-    PostService.addRecent(postId);
-  };
+  
   const handleRemainClick = (event: React.MouseEvent<HTMLDivElement>) => {
     if (!hideLess || !containerRef.current) return;
     const actions = Array.from(
@@ -35,7 +32,7 @@ const PostItem: FC<PostProps> = ({ data, hideLess = true }) => {
       containerRef.current.contains(event.target as Node) &&
       !actionRefs.current.some(action => action.contains(event.target as Node))
     ) {
-      addRecentPost(data.id);
+
       navigate(`/topic/${data.topicName}/comments/${data.id}`);
     }
   };

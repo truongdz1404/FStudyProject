@@ -161,8 +161,6 @@ namespace FStudyForum.Infrastructure.Services
 
         public async Task<RecentPostDTO?> AddRecentPostByUser(RecentPostDTO recentPostDTO)
         {
-            if (!await _postRepository.IsExistInRecent(recentPostDTO))
-                throw new Exception("Post has already exist in Recent.");
             var user = await _userManager.FindByNameAsync(recentPostDTO.UserName)
                 ?? throw new Exception("User not found");
             var post = await _postRepository.GetById(recentPostDTO.PostId)
@@ -170,7 +168,7 @@ namespace FStudyForum.Infrastructure.Services
             var recentPost = _mapper.Map<RecentPost>(recentPostDTO);
             recentPost.User = user;
             recentPost.Post = post;
-            await _postRepository.AddRecentPost(recentPost);
+            await _postRepository.AddOrUpdateRecentPost(recentPost);
             return recentPostDTO;
         }
 
