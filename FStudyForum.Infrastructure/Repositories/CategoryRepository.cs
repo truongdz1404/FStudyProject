@@ -26,5 +26,10 @@ namespace FStudyForum.Infrastructure.Repositories
         {
             return await _dbContext.Categories.Where(c => categoryIds.Contains(c.Id)).ToListAsync();
         }
+
+        public async Task<List<Category>> GetCategoriesByType(string type)
+        {
+            return await _dbContext.Categories.Where(c => c.Type == type).ToListAsync();
+        } 
     }
 }

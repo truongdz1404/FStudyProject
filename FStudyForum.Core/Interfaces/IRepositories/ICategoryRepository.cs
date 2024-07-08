@@ -9,5 +9,6 @@ namespace FStudyForum.Core.Interfaces.IRepositories
         public Task<List<Category>> GetCategoriesByIds(List<long> categoryIds);
         public Task<bool> CateExists(string categoryName);
         public Task<Category?> GetCateByName(string name);
+        public Task<List<Category>> GetCategoriesByType(string type);
     }
 }

@@ -219,5 +219,22 @@ public class TopicService : ITopicService
             ?? throw new Exception("Topic not found.");
         return _mapper.Map<TopicDTO>(topic);
     }
+    public async Task<IEnumerable<TopicDTO>> GetTopicsByCategories(List<long> categoryIds)
+{
+    var topics = await _topicRepository.GetTopicsByCategories(categoryIds);
+
+    var topicDTOs = topics.Select(topic => new TopicDTO
+    {
+        Id = topic.Id,
+        Name = topic.Name,
+        Description = topic.Description,
+        Avatar = topic.Avatar,
+        Banner = topic.Panner,
+        IsDeleted = topic.IsDeleted,
+        Categories = topic.Categories.Select(c => c.Id).ToList()
+    });
+
+    return topicDTOs;
+}
 }
 
