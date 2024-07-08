@@ -3,11 +3,13 @@ import { Alert, Chip, Input } from '@material-tailwind/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
-import { ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X, XCircle } from 'lucide-react';
 import { Category } from '@/types/category';
 import TopicService from '@/services/TopicService';
 import CategoryService from '@/services/CategoryService';
 import axios, { AxiosError } from 'axios';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { storage } from '@/helpers/storage'; 
 
 interface AddTopicPopupProps {
   onClose: () => void;
@@ -113,7 +115,7 @@ const AddTopicPopup: React.FC<AddTopicPopupProps> = ({ onClose, onTopicCreated }
       console.error('Error creating topic:', error);
       if (axios.isAxiosError(error)) {
         const apiError = error as AxiosError<{ message: string }>;
-        setError(apiError.response?.data?.message || 'Error creating topic. Please try again later.');
+        setError(apiError.response?.data?.message || 'Topic name already exist');
       } else if (error instanceof Error) {
         setError(error.message);
       } else {
@@ -132,25 +134,44 @@ const AddTopicPopup: React.FC<AddTopicPopupProps> = ({ onClose, onTopicCreated }
     );
   };
 
-  const handleFileChange = (
+  const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>,
     field: 'avatar' | 'banner'
   ) => {
     const file = event.target.files?.[0] || null;
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      const previewUrl = reader.result as string;
-      if (field === 'avatar') {
-        setAvatarPreview(previewUrl);
-        setValue('avatar', previewUrl);
-      } else if (field === 'banner') {
-        setBannerPreview(previewUrl);
-        setValue('banner', previewUrl);
+    const storageRef = ref(storage, `uploads/${field}/${file.name}`);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+
+    uploadTask.on(
+      'state_changed',
+      () => {},
+      (error) => {
+        console.error('Upload error:', error);
+        setError('Failed to upload image. Please try again.');
+      },
+      async () => {
+        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+        if (field === 'avatar') {
+          setAvatarPreview(downloadURL);
+          setValue('avatar', downloadURL);
+        } else if (field === 'banner') {
+          setBannerPreview(downloadURL);
+          setValue('banner', downloadURL);
+        }
       }
-    };
-    reader.readAsDataURL(file);
+    );
+  };
+
+  const handleRemoveImage = (field: 'avatar' | 'banner') => {
+    if (field === 'avatar') {
+      setAvatarPreview(null);
+      setValue('avatar', '');
+    } else if (field === 'banner') {
+      setBannerPreview(null);
+      setValue('banner', '');
+    }
   };
 
   const nextStep = () => {
@@ -171,7 +192,8 @@ const AddTopicPopup: React.FC<AddTopicPopupProps> = ({ onClose, onTopicCreated }
                 crossOrigin={undefined} type="text"
                 label="Topic Name"
                 {...register('topicName')}
-                error={!!errors.topicName}              />
+                error={!!errors.topicName}
+              />
               {errors.topicName && (
                 <span className="text-red-500 text-xs mt-1">
                   {errors.topicName.message}
@@ -210,11 +232,20 @@ const AddTopicPopup: React.FC<AddTopicPopupProps> = ({ onClose, onTopicCreated }
                 className="mt-2"
               />
               {avatarPreview && (
-                <img
-                  src={avatarPreview}
-                  alt="Avatar preview"
-                  className="mt-2 h-16 w-16 object-cover rounded-full"
-                />
+                <div className="mt-2 flex items-center">
+                  <img
+                    src={avatarPreview}
+                    alt="Avatar preview"
+                    className="h-16 w-16 object-cover rounded-full"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveImage('avatar')}
+                    className="ml-2 text-red-500 hover:text-red-700"
+                  >
+                    <XCircle className="w-6 h-6" />
+                  </button>
+                </div>
               )}
               {errors.avatar && (
                 <span className="text-red-500 text-xs mt-1">
@@ -233,11 +264,20 @@ const AddTopicPopup: React.FC<AddTopicPopupProps> = ({ onClose, onTopicCreated }
                 className="mt-2"
               />
               {bannerPreview && (
-                <img
-                  src={bannerPreview}
-                  alt="Banner preview"
-                  className="mt-2 h-32 w-full object-cover"
-                />
+                <div className="mt-2 flex items-center">
+                  <img
+                    src={bannerPreview}
+                    alt="Banner preview"
+                    className="h-32 w-full object-cover"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveImage('banner')}
+                    className="ml-2 text-red-500 hover:text-red-700"
+                  >
+                    <XCircle className="w-6 h-6" />
+                  </button>
+                </div>
               )}
               {errors.banner && (
                 <span className="text-red-500 text-xs mt-1">
@@ -332,4 +372,3 @@ const AddTopicPopup: React.FC<AddTopicPopupProps> = ({ onClose, onTopicCreated }
 };
 
 export default AddTopicPopup;
-
