@@ -105,7 +105,6 @@ const AddCategoryPopup: React.FC<AddCategoryPopupProps> = ({ open, onClose, onCa
               onChange={(e) => setSelectedCategoryType(e.target.value)}
               className="border border-gray-300 rounded px-2 py-1 w-full text-black"
             >
-              <option value="">Select Category Type</option>
               {categoryTypes.map((type) => (
                 <option key={type} value={type}>
                   {type}

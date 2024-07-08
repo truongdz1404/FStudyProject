@@ -200,26 +200,26 @@ namespace FStudyForum.API.Controllers
                 });
             }
         }
-        // [HttpGet("filter")]
-        // public async Task<IActionResult> GetTopicsByCategories([FromQuery] List<int> categoryIds)
-        // {
-        //     if (categoryIds == null || !categoryIds.Any())
-        //     {
-        //         return BadRequest(new Response
-        //         {
-        //             Message = "Category IDs must be provided.",
-        //             Status = ResponseStatus.ERROR
-        //         });
-        //     }
+[HttpGet("filter")]
+public async Task<IActionResult> GetTopicsByCategories([FromQuery] List<long> categoryIds)
+{
+    if (categoryIds == null || !categoryIds.Any())
+    {
+        return BadRequest(new Response
+        {
+            Message = "Category IDs must be provided.",
+            Status = ResponseStatus.ERROR
+        });
+    }
 
-        //     var topics = await _topicService.GetTopicsByCategories(categoryIds);
-        //     return Ok(new Response
-        //     {
-        //         Message = "Filtered topics successfully",
-        //         Status = ResponseStatus.SUCCESS,
-        //         Data = topics
-        //     });
-        // }
+    var topics = await _topicService.GetTopicsByCategories(categoryIds);
+    return Ok(new Response
+    {
+        Message = "Filtered topics successfully",
+        Status = ResponseStatus.SUCCESS,
+        Data = topics
+    });
+}
 
     }
 }

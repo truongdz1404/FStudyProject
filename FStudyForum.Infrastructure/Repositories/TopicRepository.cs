@@ -122,7 +122,13 @@ namespace FStudyForum.Infrastructure.Repositories
                 .FirstOrDefaultAsync();
             return topic;
         }
-        
+
+        public async Task<IEnumerable<Topic>> GetTopicsByCategories(List<long> categoryIds)
+        {
+             return await _dbContext.Topics
+                .Where(t => t.Categories.Any(c => categoryIds.Contains(c.Id)))
+                .ToListAsync();
+        }
     }
 
 }

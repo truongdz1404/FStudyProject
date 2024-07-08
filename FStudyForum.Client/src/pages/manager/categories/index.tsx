@@ -43,6 +43,7 @@ const CategoriesPage = () => {
     fetchCategoryTypes();
   }, []);
 
+
   const { data, isLoading, refetch } = useQuery<Category[], Error>({
     queryKey: ["categories"],
     queryFn: async () => {
@@ -58,9 +59,8 @@ const CategoriesPage = () => {
     .sort((a, b) => {
       const aValue = a[sortColumn as keyof Category] as string;
       const bValue = b[sortColumn as keyof Category] as string;
-      if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
-      if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
-      return 0;
+
+      return aValue.localeCompare(bValue, undefined, { numeric: true, sensitivity: 'base' }) * (sortDirection === "asc" ? 1 : -1);
     });
 
   const totalPages = Math.ceil(sortedData.length / PAGE_SIZE);

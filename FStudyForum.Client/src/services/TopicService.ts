@@ -67,11 +67,9 @@ const search = async (value: string) => {
   return response.data.data;
 };
 const filterByCategories = async (categoryIds: number[]): Promise<Topic[]> => {
-  const query = categoryIds.map(id => `categoryIds=${id}`).join("&");
-  const response = await api.get<ResponseWith<Topic[]>>(`/topic/filter?${query}`);
+  const response = await api.get<ResponseWith<Topic[]>>(`/topic/filter?categoryIds=${categoryIds.join(',')}`);
   return response.data.data;
 };
-
 const TopicService = {
   getTopics,
   getActiveTopics,
