@@ -29,7 +29,9 @@ const Comments = () => {
   const [expandedComments, setExpandedComments] = useState<{
     [key: number]: boolean;
   }>({});
-
+  const addRecentPost = (postId: number) => {
+    PostService.addRecent(postId);
+  };
   const initializeExpandedComments = (
     comments: Comment[],
     amount: number = 3
@@ -59,6 +61,7 @@ const Comments = () => {
       try {
         const data = await PostService.getById(postId);
         setPost(data);
+        addRecentPost(data.id);
       } catch (e) {
         const error = e as AxiosError;
         setError((error?.response?.data as Response)?.message || error.message);

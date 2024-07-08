@@ -71,7 +71,7 @@ namespace FStudyForum.Infrastructure.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task AddRecentPost(RecentPost recentPost)
+        public async Task AddOrUpdateRecentPost(RecentPost recentPost)
         {
             var existedPost = await _dbContext.RecentPosts
                 .Where(rp => rp.User.UserName == recentPost.User.UserName)
@@ -82,6 +82,12 @@ namespace FStudyForum.Infrastructure.Repositories
             {
                 _dbContext.RecentPosts.Remove(existedPost.First());
                 existedPost.RemoveAt(0);
+            }
+
+            var rPost = await _dbContext.RecentPosts.FirstOrDefaultAsync(rp => rp.Post.Id == recentPost.Post.Id && rp.User.UserName == recentPost.User.UserName);
+            if (rPost != null)
+            {
+                _dbContext.RecentPosts.Remove(rPost);
             }
 
             await _dbContext.RecentPosts.AddAsync(recentPost);
