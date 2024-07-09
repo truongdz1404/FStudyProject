@@ -22,16 +22,12 @@ const HomePage: React.FC = () => {
     useInfiniteQuery({
       queryKey: ["POST_LIST", "HOME", { filter }],
       queryFn: async ({ pageParam = 1 }) => {
-        try {
-          const posts = await PostService.getPosts(
-            pageParam,
-            LIMIT_SCROLLING_PAGNATION_RESULT,
-            filter
-          );
-          return posts;
-        } catch (e) {
-          return [];
-        }
+        const posts = await PostService.getPosts(
+          pageParam,
+          LIMIT_SCROLLING_PAGNATION_RESULT,
+          filter
+        );
+        return posts;
       },
       getNextPageParam: (_, pages) => pages.length + 1,
       initialPageParam: 1
@@ -62,7 +58,11 @@ const HomePage: React.FC = () => {
         );
       })}
       <div ref={ref} className="text-center">
-        {isFetchingNextPage && <Spinner className="mx-auto" />}
+        {isFetchingNextPage ? (
+          <Spinner className="mx-auto" />
+        ) : (
+          !isPending && <span className="text-xs font-light">Nothing more</span>
+        )}
       </div>
     </ContentLayout>
   );

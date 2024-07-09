@@ -10,7 +10,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import React from "react";
 import { useInView } from "react-intersection-observer";
 
-const Overview: React.FC = () => {
+const Trash: React.FC = () => {
   const { user } = useAuth();
   const { ref, inView } = useInView();
   const filter = useQueryParams().get("filter") ?? "New";
@@ -19,22 +19,17 @@ const Overview: React.FC = () => {
     useInfiniteQuery({
       queryKey: [
         "POST_LIST",
-        "IN_PROFILE",
+        "IN_TRASH",
         "BY_USER",
         { username: user?.username, filter }
       ],
       queryFn: async ({ pageParam = 1 }) => {
-        try {
-          const posts = await PostService.getPostsInProfile(
-            user!.username,
-            pageParam,
-            LIMIT_SCROLLING_PAGNATION_RESULT,
-            filter
-          );
-          return posts;
-        } catch (e) {
-          return [];
-        }
+        return await PostService.getPostsInTrash(
+          user!.username,
+          pageParam,
+          LIMIT_SCROLLING_PAGNATION_RESULT,
+          filter
+        );
       },
       getNextPageParam: (_, pages) => pages.length + 1,
       initialPageParam: 1,
@@ -82,4 +77,4 @@ const Overview: React.FC = () => {
     </ContentLayout>
   );
 };
-export default Overview;
+export default Trash;

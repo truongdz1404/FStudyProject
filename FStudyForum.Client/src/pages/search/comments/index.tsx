@@ -28,7 +28,7 @@ const SearchCommentPage: React.FC = () => {
     data: comments,
     fetchNextPage,
     isPending,
-    isFetching,
+    isFetchingNextPage,
     refetch
   } = useInfiniteQuery({
     queryKey: ["COMMENT_LIST", "SEARCH", { filter, keyword }],
@@ -77,10 +77,10 @@ const SearchCommentPage: React.FC = () => {
   const results = comments?.pages.flatMap(page => page.data) || [];
 
   React.useEffect(() => {
-    if (inView && !isFetching) {
+    if (inView) {
       fetchNextPage();
     }
-  }, [inView, isFetching, fetchNextPage]);
+  }, [inView, fetchNextPage]);
 
   React.useEffect(() => {
     refetch();
@@ -106,7 +106,11 @@ const SearchCommentPage: React.FC = () => {
         </div>
       ))}
       <div ref={ref} className="text-center">
-        {isFetching && <Spinner className="mx-auto" />}
+        {isFetchingNextPage ? (
+          <Spinner className="mx-auto" />
+        ) : (
+          !isPending && <span className="text-xs font-light">Nothing more</span>
+        )}
       </div>
     </>
   );

@@ -13,35 +13,20 @@ const useQuery = () => {
 
 const SearchUserPage: React.FC = () => {
   const { ref, inView } = useInView();
-  const [hasMore, setHasMore] = React.useState(true);
   const query = useQuery();
   const keyword = query.get("keyword") ?? "";
 
-  const { data, fetchNextPage, isPending, isFetchingNextPage, refetch } =
+  const { data, fetchNextPage, isPending, isFetchingNextPage } =
     useInfiniteQuery({
       queryKey: ["PEOPLE_LIST", "SEARCH", { keyword }],
       queryFn: async ({ pageParam = 1 }) => {
-        try {
-          const result = await SearchService.searchUsers(
-            keyword || "",
-            pageParam,
-            LIMIT_SCROLLING_PAGNATION_RESULT
-          );
-          if (result.length < LIMIT_SCROLLING_PAGNATION_RESULT) {
-            setHasMore(false);
-          }
-          return result;
-        } catch (error) {
-          if (
-            error instanceof Error &&
-            error.message === "Request failed with status code 404"
-          ) {
-            setHasMore(false);
-            return [];
-          } else {
-            throw error;
-          }
-        }
+        const result = await SearchService.searchUsers(
+          keyword || "",
+          pageParam,
+          LIMIT_SCROLLING_PAGNATION_RESULT
+        );
+
+        return result;
       },
       getNextPageParam: (_, pages) => pages.length + 1,
       initialPageParam: 1
@@ -49,15 +34,10 @@ const SearchUserPage: React.FC = () => {
   const users = data?.pages.flatMap(page => page) ?? [];
 
   React.useEffect(() => {
-    if (inView && hasMore) {
+    if (inView) {
       fetchNextPage();
     }
-  }, [inView, fetchNextPage, hasMore]);
-
-  React.useEffect(() => {
-    setHasMore(true);
-    refetch();
-  }, [keyword, refetch]);
+  }, [inView, fetchNextPage]);
 
   const uniqueTopics = Array.from(new Set(users.map(t => t.username))).map(
     name => users.find(t => t.username === name)
@@ -91,9 +71,7 @@ const SearchUserPage: React.FC = () => {
         {isFetchingNextPage ? (
           <Spinner className="mx-auto" />
         ) : (
-          <span className="text-xs font-light">
-            {uniqueTopics.length !== 0 && !isPending && "Nothing more"}
-          </span>
+          !isPending && <span className="text-xs font-light">Nothing more</span>
         )}
       </div>
     </>

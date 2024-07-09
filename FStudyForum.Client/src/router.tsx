@@ -41,6 +41,7 @@ const TopicDetail = Loadable(lazy(() => import("@/pages/topic")));
 const Topics = Loadable(lazy(() => import("@/pages/topics")));
 const UserPosts = Loadable(lazy(() => import("@/pages/user/posts")));
 const UserOverview = Loadable(lazy(() => import("@/pages/user/overview")));
+const UserTrash = Loadable(lazy(() => import("@/pages/user/trash")));
 
 const SearchPage = Loadable(lazy(() => import("@/pages/search/posts")));
 const SearchTopics = Loadable(lazy(() => import("@/pages/search/topics")));
@@ -195,6 +196,10 @@ const Router: FC = () => {
             {
               path: "saved",
               element: <SavePost />
+            },
+            {
+              path: "trash",
+              element: <UserTrash />
             }
           ]
         },

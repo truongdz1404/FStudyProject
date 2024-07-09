@@ -18,23 +18,14 @@ import PostService from "@/services/PostService";
 import ReportForm from "../report/ReportForm";
 import { showErrorToast, showSuccessToast } from "@/helpers/toast";
 import BanForm from "./BanForm";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 type Props = {
   post: Post;
-  onSave?: () => void;
-  onRemoveSaved?: () => void;
-  onMoveTrash?: () => void;
 };
 
-const MenuItemPost: React.FC<Props> = ({
-  post,
-  onSave,
-  onRemoveSaved,
-  onMoveTrash
-}) => {
+const MenuItemPost: React.FC<Props> = ({ post }) => {
   const [openBan, setOpenBan] = React.useState(false);
   const [openReport, setOpenReport] = React.useState(false);
-  const [isSaved, setIsSaved] = React.useState(false);
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const queryClient = useQueryClient();
   const { user } = useAuth();
@@ -45,48 +36,44 @@ const MenuItemPost: React.FC<Props> = ({
   );
   const switchOpenBan = () => setOpenBan(!openBan);
 
-  React.useEffect(() => {
-    const checkSavedByUser = async () => {
-      const isPostExists = await PostService.isSaved(
-        `${user?.username}`,
-        post.id
-      );
-      if (isPostExists.data) {
-        setIsSaved(true);
-      }
-    };
-    checkSavedByUser();
-  }, [post.id, user?.username]);
+  const { data: isSaved } = useQuery({
+    queryKey: ["IS_SAVED", post.id, user!.username],
+    queryFn: async () => await PostService.isSaved(user!.username, post.id),
+    enabled: !!user
+  });
 
-  const handleSave = React.useCallback(
-    async (post: Post) => {
-      try {
-        let response;
-        if (!isSaved) {
-          response = await PostService.save(post.id);
-          onSave && onSave();
-          showSuccessToast(response.message);
-        } else {
-          response = await PostService.removeFromSaved(post.id);
-          onRemoveSaved && onRemoveSaved();
-          showSuccessToast(response.message);
-        }
-        setIsSaved(prev => !prev);
-      } catch (e) {
-        const error = e as AxiosError<Response>;
-        showErrorToast(
-          (error?.response?.data as Response)?.message || error.message
-        );
-      }
+  const { mutate: handleSave } = useMutation({
+    mutationFn: PostService.save,
+    onSuccess: message => {
+      showSuccessToast(message);
+      queryClient.invalidateQueries({ queryKey: ["POST_LIST"] });
     },
-    [isSaved, onRemoveSaved, onSave]
-  );
+    onError: e => {
+      const error = e as AxiosError<Response>;
+      showErrorToast(
+        (error?.response?.data as Response)?.message || error.message
+      );
+    }
+  });
+
+  const { mutate: handleRemoveFromSaved } = useMutation({
+    mutationFn: PostService.removeFromSaved,
+    onSuccess: message => {
+      showSuccessToast(message);
+      queryClient.invalidateQueries({ queryKey: ["POST_LIST"] });
+    },
+    onError: e => {
+      const error = e as AxiosError<Response>;
+      showErrorToast(
+        (error?.response?.data as Response)?.message || error.message
+      );
+    }
+  });
 
   const { mutate: handleMoveToTrash } = useMutation({
     mutationFn: PostService.moveToTrash,
     onSuccess: message => {
       showSuccessToast(message);
-      onMoveTrash && onMoveTrash();
       queryClient.invalidateQueries({ queryKey: ["POST_LIST"] });
     },
     onError: e => {
@@ -102,7 +89,8 @@ const MenuItemPost: React.FC<Props> = ({
       {
         icon: Bookmark,
         label: isSaved ? "Remove from saved" : "Save",
-        handle: () => handleSave(post)
+        handle: () =>
+          !isSaved ? handleSave(post.id) : handleRemoveFromSaved(post.id)
       },
       {
         icon: Flag,
@@ -112,7 +100,7 @@ const MenuItemPost: React.FC<Props> = ({
         }
       }
     ],
-    [handleSave, isSaved, post, switchOpenReport]
+    [handleRemoveFromSaved, handleSave, isSaved, post.id, switchOpenReport]
   );
 
   // const advanceMenuItem = React.useMemo(
@@ -143,7 +131,8 @@ const MenuItemPost: React.FC<Props> = ({
       {
         icon: Bookmark,
         label: isSaved ? "Remove from saved" : "Save",
-        handle: () => handleSave(post)
+        handle: () =>
+          !isSaved ? handleSave(post.id) : handleRemoveFromSaved(post.id)
       },
       {
         icon: Flag,
@@ -158,7 +147,14 @@ const MenuItemPost: React.FC<Props> = ({
         handle: () => handleMoveToTrash(post.id)
       }
     ],
-    [handleMoveToTrash, handleSave, isSaved, post, switchOpenReport]
+    [
+      handleMoveToTrash,
+      handleRemoveFromSaved,
+      handleSave,
+      isSaved,
+      post.id,
+      switchOpenReport
+    ]
   );
 
   const getMenuItem = () => {

@@ -146,16 +146,21 @@ namespace FStudyForum.Infrastructure.Repositories
         {
             IQueryable<Post> queryable = _dbContext.Posts
                 .Include(p => p.Topic)
-                .Where(p => !p.IsDeleted && (p.Topic == null || !p.Topic.IsDeleted))
+                .Where(p => p.Topic == null || !p.Topic.IsDeleted)
                 .Include(p => p.Creater)
                 .Include(p => p.Votes)
                 .Include(p => p.Attachments)
                 .Include(p => p.Comments);
-            if (query.Type == PostType.IN_PROFILE)
-                queryable = queryable.Where(p => p.Topic == null);
-            else if (!string.IsNullOrEmpty(query.Topic))
+
+            queryable = query.Type switch
+            {
+                PostType.IN_PROFILE => queryable.Where(p => p.Topic == null && !p.IsDeleted),
+                PostType.IN_TRASH => queryable.Where(p => p.IsDeleted),
+                _ => queryable.Where(p => p.Topic != null && !p.IsDeleted)
+            };
+
+            if (!string.IsNullOrEmpty(query.Topic))
                 queryable = queryable.Where(p => p.Topic != null && p.Topic.Name == query.Topic);
-            else queryable = queryable.Where(p => p.Topic != null);
 
             if (!string.IsNullOrEmpty(query.User))
                 queryable = queryable.Where(p => p.Creater.UserName == query.User);

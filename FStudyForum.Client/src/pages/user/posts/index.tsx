@@ -73,7 +73,11 @@ const Posts: React.FC = () => {
         ))}
       </div>
       <div ref={ref} className="text-center">
-        {isFetchingNextPage && <Spinner className="mx-auto" />}
+        {isFetchingNextPage ? (
+          <Spinner className="mx-auto" />
+        ) : (
+          !isPending && <span className="text-xs font-light">Nothing more</span>
+        )}
       </div>
     </ContentLayout>
   );

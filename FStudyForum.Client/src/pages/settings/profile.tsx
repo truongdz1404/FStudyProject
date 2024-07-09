@@ -62,7 +62,7 @@ const ProfileSettings = () => {
   const navigate = useNavigate();
 
   const { data: profile } = useQuery({
-    queryKey: ["PROFILE_EDIT"],
+    queryKey: ["PROFILE", user?.username],
     queryFn: () => ProfileService.getByUsername(user!.username),
     enabled: !!user
   });
