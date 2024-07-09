@@ -60,6 +60,20 @@ namespace FStudyForum.API.Controllers
                 });
             }
         }
+
+        [HttpGet("search")]
+        public async Task<IActionResult> Search([FromQuery] string? keyword, [FromQuery] int size = 5)
+        {
+            if (keyword == null) return BadRequest();
+
+            var users = await _userService.Search(keyword, size);
+            return Ok(new Response
+            {
+                Message = "Search Users successfully",
+                Status = ResponseStatus.SUCCESS,
+                Data = users
+            });
+        }
         [HttpPost("create")]
         public async Task<IActionResult> CreateUser([FromBody] CreateUserDTO createUserDTO)
         {

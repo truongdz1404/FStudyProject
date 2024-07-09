@@ -150,7 +150,8 @@ namespace FStudyForum.Infrastructure.Repositories
 
             if (!string.IsNullOrEmpty(query.User))
                 queryable = queryable.Where(p => p.Creater.UserName == query.User);
-
+            if (!string.IsNullOrEmpty(query.Keyword))
+                queryable = queryable.Where(p => p.Title.Contains(query.Keyword) || p.Content.Contains(query.Keyword));
             if (!string.IsNullOrEmpty(query.Filter))
                 queryable = query.Filter switch
                 {

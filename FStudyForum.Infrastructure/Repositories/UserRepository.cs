@@ -28,6 +28,8 @@ public class UserRepository(ApplicationDBContext dbContext)
                .ToListAsync();
     }
 
+    
+
     public async Task<IEnumerable<Topic>> GetModeratedTopics(string username)
     {
         var user = await _dbContext.Users.Include(u => u.ModeratedTopics).FirstOrDefaultAsync(u => u.UserName == username)
@@ -41,5 +43,12 @@ public class UserRepository(ApplicationDBContext dbContext)
                     .FirstOrDefaultAsync(u => u.UserName == username)
                     ?? throw new Exception("User not found");
         return user.BannedByTopics;
+    }
+
+    public async Task<IEnumerable<ApplicationUser>> Search(string keyword, int size)
+    {
+        return await _dbContext.Users
+        .Where(u => u.UserName!.Contains(keyword))
+        .Take(size).ToListAsync();
     }
 }

@@ -24,7 +24,7 @@ import { cn } from "@/helpers/utils";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Icons } from "../Icons";
 import { useAuth } from "@/hooks/useAuth";
-import SearchInput from "../search/SearchInput";
+import SearchInput from "../search/SearchInput1";
 
 function ProfileMenu() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);

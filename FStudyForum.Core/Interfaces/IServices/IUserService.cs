@@ -22,6 +22,7 @@ public interface IUserService
     Task<string?> GetRefreshTokenAsync(string userName);
 
     Task<IEnumerable<UserDTO>> SearchUserByName(QuerySearchUserDTO query);
+    Task<IEnumerable<UserDTO>> Search(string keyword, int size);
 
     Task<UserDTO> LockUser(LockUserDTO lockUserDTO);
     Task<UserDTO> UnlockUser(LockUserDTO lockUserDTO);
