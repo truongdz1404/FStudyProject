@@ -1,11 +1,9 @@
 using FStudyForum.Core.Interfaces.IRepositories;
 using FStudyForum.Core.Interfaces.IServices;
 using FStudyForum.Core.Models.DTOs.Comment;
+using FStudyForum.Core.Models.DTOs.Search;
 using FStudyForum.Core.Models.Entities;
 using Microsoft.AspNetCore.Identity;
-using System.Collections.Generic;
-using System.Net;
-using System.Threading.Tasks;
 
 namespace FStudyForum.Infrastructure.Services
 {
@@ -90,7 +88,7 @@ namespace FStudyForum.Infrastructure.Services
                 IsDeleted = comment.IsDeleted,
                 Author = comment.Creater.UserName,
                 Avatar = comment.Creater.Profile?.Avatar,
-                TopicName = comment.Post.Topic.Name,
+                TopicName = comment.Post.Topic?.Name ?? "",
                 PostId = comment.Post.Id,
                 AttachmentId = comment.Attachment?.Id,
                 ReplyId = comment.ReplyTo?.Id,
@@ -100,9 +98,9 @@ namespace FStudyForum.Infrastructure.Services
             };
         }
 
-        public async Task<IEnumerable<CommentDTO>> SearchCommentAsync(string keyword)
+        public async Task<IEnumerable<CommentDTO>> SearchCommentAsync(QuerySearchCommentDTO query)
         {
-            var comments = await _commentRepository.SearchCommentAsync(keyword);
+            var comments = await _commentRepository.SearchCommentAsync(query);
             var commentDTOs = new List<CommentDTO>();
             if (comments != null)
                 foreach (var comment in comments)

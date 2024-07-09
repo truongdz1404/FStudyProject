@@ -87,57 +87,56 @@ const MenuItemComment: React.FC<MenuItemCommentProps> = ({
 
   return (
     <>
-    {comment.author === user?.username || user?.roles.includes(ROLE.Admin) ? (
-      <Menu open={isMenuOpen} handler={setIsMenuOpen} placement="bottom-end">
-        <MenuHandler>
-          
+      {comment.author === user?.username || user?.roles.includes(ROLE.Admin) ? (
+        <Menu open={isMenuOpen} handler={setIsMenuOpen} placement="bottom-end">
+          <MenuHandler>
             <Button
               variant="text"
               color="blue-gray"
               className="flex items-center rounded-full p-2 text-black"
             >
-              <Ellipsis className="w-4 h-4" />
+              <Ellipsis className="w-4 h-4" strokeWidth={1.4} />
             </Button>
-          
-        </MenuHandler>
-        <MenuList className="p-1">
-          {CommentMenuItem().map(({ label, icon, path }, key) => {
-            const isLastItem = key === CommentMenuItem().length - 1;
-            return (
-              <MenuItem
-                key={label}
-                onClick={
-                  path === "edit"
-                    ? () => onEdit(comment.id, comment.content)
-                    : path === "delete"
+          </MenuHandler>
+          <MenuList className="p-1">
+            {CommentMenuItem().map(({ label, icon, path }, key) => {
+              const isLastItem = key === CommentMenuItem().length - 1;
+              return (
+                <MenuItem
+                  key={label}
+                  onClick={
+                    path === "edit"
+                      ? () => onEdit(comment.id, comment.content)
+                      : path === "delete"
                       ? () => onDelete(comment.id.toString())
                       : path === "ban"
-                        ? () => setIsModalOpen(true)
-                        : () => { }
-                }
-                className={`flex items-center gap-2 rounded ${isLastItem &&
-                  "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
+                      ? () => setIsModalOpen(true)
+                      : () => {}
+                  }
+                  className={`flex items-center gap-2 rounded ${
+                    isLastItem &&
+                    "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
                   }`}
-              >
-                {React.createElement(icon, {
-                  className: `h-4 w-4 ${isLastItem ? "text-red-500" : ""}`,
-                  strokeWidth: 2
-                })}
-                <Typography
-                  as={"span"}
-                  className={cn(
-                    "font-normal text-sm",
-                    isLastItem ? "text-red-500" : "inherit"
-                  )}
                 >
-                  {label}
-                </Typography>
-              </MenuItem>
-            );
-          })}
-        </MenuList>
-      </Menu>
-    ): null}
+                  {React.createElement(icon, {
+                    className: `h-4 w-4 ${isLastItem ? "text-red-500" : ""}`,
+                    strokeWidth: 2
+                  })}
+                  <Typography
+                    as={"span"}
+                    className={cn(
+                      "font-normal text-sm",
+                      isLastItem ? "text-red-500" : "inherit"
+                    )}
+                  >
+                    {label}
+                  </Typography>
+                </MenuItem>
+              );
+            })}
+          </MenuList>
+        </Menu>
+      ) : null}
       {isModalOpen && (
         <div
           data-dialog-backdrop="dialog"
@@ -158,7 +157,7 @@ const MenuItemComment: React.FC<MenuItemCommentProps> = ({
               "leading-relaxed text-blue-gray-500",
               "antialiased shadow-2xl"
             )}
-            onClick={(e) => e.stopPropagation()}
+            onClick={e => e.stopPropagation()}
           >
             <div
               className={cn(
@@ -178,21 +177,25 @@ const MenuItemComment: React.FC<MenuItemCommentProps> = ({
             >
               <div>
                 <div className={cn("flex gap-[2%]")}>
-                  <div className={cn("font-bold text-black")}>Username:</div>
-                  <div className={cn("font-bold text-black")}>
+                  <div className={cn("font-semibold text-black")}>
+                    Username:
+                  </div>
+                  <div className={cn("font-semibold text-black")}>
                     {comment.author}
                   </div>
                 </div>
                 <div className={cn("flex gap-[2%] mt-[2%]")}>
-                  <div className={cn("font-bold text-black")}>Topic:</div>
-                  <div className={cn("font-bold text-black")}>
+                  <div className={cn("font-semibold text-black")}>Topic:</div>
+                  <div className={cn("font-semibold text-black")}>
                     {comment.topicName}
                   </div>
                 </div>
                 <div>
                   <div>
                     <div className="flex mt-[2%]">
-                      <div className={cn("font-bold text-black")}>Time:</div>
+                      <div className={cn("font-semibold text-black")}>
+                        Time:
+                      </div>
                       <div className={cn("mt-[-1.4%]")}>
                         {TimeBanMenu.map(({ value, label }, key) => (
                           <Radio
@@ -201,7 +204,7 @@ const MenuItemComment: React.FC<MenuItemCommentProps> = ({
                             value={value}
                             label={label}
                             crossOrigin={undefined}
-                            className="time font-bold text-black"
+                            className="time font-semibold text-black"
                             onChange={handleTimeChange}
                             checked={selectedTime === value}
                           />
@@ -222,7 +225,7 @@ const MenuItemComment: React.FC<MenuItemCommentProps> = ({
                 data-ripple-dark="true"
                 data-dialog-close="true"
                 className={cn(
-                  "px-6 py-3 mr-1 font-sans text-xs font-bold",
+                  "px-6 py-3 mr-1 font-sans text-xs font-semibold",
                   "text-red-500 uppercase transition-all rounded-lg middle none",
                   "center hover:bg-red-500/10 active:bg-red-500/30",
                   "disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
@@ -237,7 +240,7 @@ const MenuItemComment: React.FC<MenuItemCommentProps> = ({
                 className={cn(
                   "middle none center rounded-lg bg-gradient-to-tr",
                   "from-orange-600 to-orange-400 py-3 px-6 font-sans",
-                  "text-xs font-bold uppercase text-white shadow-md",
+                  "text-xs font-semibold uppercase text-white shadow-md",
                   "shadow-orange-500/20 transition-all hover:shadow-lg",
                   "hover:shadow-orange-500/40 active:opacity-[0.85]",
                   "disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"

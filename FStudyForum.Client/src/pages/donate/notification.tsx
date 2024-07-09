@@ -19,7 +19,7 @@ const Notification = () => {
         {donate !== null && donate !== undefined ? (
           <div className="flex flex-col">
             <img src={Success} alt="payment" className="w-20 mx-auto" />
-            <div className={cn("font-bold", "mx-auto", "mt-5")}>
+            <div className={cn("font-semibold", "mx-auto", "mt-5")}>
               Thank You Very Much!
             </div>
             <div className={cn("mx-auto text-sm")}>
@@ -29,7 +29,7 @@ const Notification = () => {
         ) : (
           <div>
             <img src={Error} alt="payment" className="w-[20%] ml-[54%]" />
-            <div className={cn("font-bold", "ml-[54%]", "mt-[5%]")}>
+            <div className={cn("font-semibold", "ml-[54%]", "mt-[5%]")}>
               Payment error!
             </div>
             <div className={cn("ml-[43%]")}>

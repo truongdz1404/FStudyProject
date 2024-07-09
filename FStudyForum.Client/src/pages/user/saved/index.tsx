@@ -28,7 +28,9 @@ const SavePost: React.FC = () => {
       </div>
       {posts?.map((post, index) => (
         <div key={index}>
-          <PostItem key={index} data={post} />
+          <div className="hover:bg-gray-50 rounded-lg w-full">
+            <PostItem key={index} data={post} />
+          </div>
           <hr className="my-1 border-blue-gray-50" />
         </div>
       ))}

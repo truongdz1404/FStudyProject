@@ -18,50 +18,17 @@ namespace FStudyForum.API.Controllers
         private readonly IPostService _postService;
         public PostController(IPostService postService)
         {
-
             _postService = postService;
         }
 
         [HttpGet("all"), Authorize]
-        public async Task<IActionResult> GetAll([FromQuery] QueryPostDTO query)
-        {
-            try
-            {
-                var userName = User.Identity?.Name ?? throw new Exception("User is not authenticated!");
-                var posts = await _postService.GetAll(userName, query);
-                if (posts.IsNullOrEmpty())
-                {
-                    return NotFound(new Response
-                    {
-                        Status = ResponseStatus.ERROR,
-                        Message = "Posts not found",
-                    });
-                }
-                return Ok(new Response
-                {
-                    Message = "Get Posts successfully",
-                    Status = ResponseStatus.SUCCESS,
-                    Data = posts
-                });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new Response
-                {
-                    Status = ResponseStatus.ERROR,
-                    Message = ex.Message
-                });
-            }
-        }
-
-        [HttpGet("filter"), Authorize]
-        public async Task<IActionResult> GetFiltedPosts([FromQuery] QueryPostDTO query)
+        public async Task<IActionResult> GetPosts([FromQuery] QueryPostDTO query)
         {
             try
             {
                 var username = User.Identity?.Name
                     ?? throw new Exception("User is not authenticated!");
-                var posts = await _postService.GetFilterPosts(username, query);
+                var posts = await _postService.GetPosts(username, query);
                 if (posts.IsNullOrEmpty())
                 {
                     return NotFound(new Response
@@ -89,6 +56,8 @@ namespace FStudyForum.API.Controllers
                 });
             }
         }
+
+
 
         [HttpGet("{id}"), Authorize]
         public async Task<IActionResult> GetPost([FromRoute] long id)
@@ -122,7 +91,7 @@ namespace FStudyForum.API.Controllers
             }
         }
 
-        [HttpGet, Authorize]
+        [HttpDelete, Authorize]
         public async Task<IActionResult> RemovePost([FromQuery] long id)
         {
             try
@@ -182,11 +151,11 @@ namespace FStudyForum.API.Controllers
         }
 
         [HttpPost("recent/{postID}"), Authorize]
-        public async Task<IActionResult> AddRecentPost([FromRoute]int postID)
+        public async Task<IActionResult> AddRecentPost([FromRoute] int postID)
         {
             try
             {
-                var userName = User.FindFirstValue(ClaimTypes.Name) 
+                var userName = User.FindFirstValue(ClaimTypes.Name)
                     ?? throw new Exception("User is not authenticated!");
                 if (!ModelState.IsValid)
                 {
@@ -232,7 +201,7 @@ namespace FStudyForum.API.Controllers
         {
             try
             {
-                var userName = User.FindFirstValue(ClaimTypes.Name) 
+                var userName = User.FindFirstValue(ClaimTypes.Name)
                     ?? throw new Exception("User is not authenticated!");
                 var posts = await _postService.GetRecentPostsByUser(userName);
                 if (posts.IsNullOrEmpty())
@@ -249,7 +218,8 @@ namespace FStudyForum.API.Controllers
                     Status = ResponseStatus.SUCCESS,
                     Data = posts
                 });
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 return BadRequest(new Response
                 {
@@ -257,14 +227,14 @@ namespace FStudyForum.API.Controllers
                     Message = ex.Message
                 });
             }
-        }   
+        }
 
         [HttpDelete("clear-recent"), Authorize]
         public async Task<IActionResult> ClearRecentPosts()
         {
             try
             {
-                var userName = User.FindFirstValue(ClaimTypes.Name) 
+                var userName = User.FindFirstValue(ClaimTypes.Name)
                     ?? throw new Exception("User is not authenticated!");
                 await _postService.ClearRecentPostsByUser(userName);
                 return Ok(new Response
@@ -272,7 +242,8 @@ namespace FStudyForum.API.Controllers
                     Message = "Get Posts successfully",
                     Status = ResponseStatus.SUCCESS,
                 });
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 return BadRequest(new Response
                 {
@@ -437,30 +408,5 @@ namespace FStudyForum.API.Controllers
                 });
             }
         }
-
-
-        [HttpGet("topic={topicName}")]
-        public async Task<IActionResult> GetPostsByTopicName(string topicName)
-        {
-            var posts = await _postService.GetPostByTopicName(topicName);
-            if (posts.IsNullOrEmpty())
-            {
-                return NotFound(new Response
-                {
-                    Status = ResponseStatus.ERROR,
-                    Message = "Posts not found",
-                });
-            }
-            return Ok(new Response
-            {
-                Message = "Get Posts successfully",
-                Status = ResponseStatus.SUCCESS,
-                Data = posts
-            });
-        }
-
-
-
-
     }
 }

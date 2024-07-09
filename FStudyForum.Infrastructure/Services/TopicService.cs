@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FStudyForum.Core.Interfaces.IRepositories;
 using FStudyForum.Core.Interfaces.IServices;
+using FStudyForum.Core.Models.DTOs.Search;
 using FStudyForum.Core.Models.DTOs.Topic;
 using FStudyForum.Core.Models.Entities;
 using Microsoft.AspNetCore.Identity;
@@ -68,11 +69,8 @@ public class TopicService : ITopicService
     }
     public async Task<TopicDTO> GetTopicByName(string name)
     {
-        var topic = await _topicRepository.GetByName(name);
-        if (topic == null)
-        {
-            throw new Exception("Topic not found");
-        }
+        var topic = await _topicRepository.GetByName(name)
+            ?? throw new Exception("Topic not found");
         var categoryIds = topic.Categories.Select(c => c.Id).ToList();
         var topicDto = new TopicDTO
         {
@@ -198,9 +196,9 @@ public class TopicService : ITopicService
         });
     }
 
-    public async Task<IEnumerable<TopicDTO>> SearchTopicContainKeywordAsync(string keyword)
+    public async Task<IEnumerable<TopicDTO>> SearchTopicContainKeywordAsync(QuerySearchTopicDTO query)
     {
-        var topics = await _topicRepository.SearchTopicContainKeywordAsync(keyword);
+        var topics = await _topicRepository.SearchTopicContainKeywordAsync(query);
         var topicDTOs = new List<TopicDTO>();
         foreach (var topic in topics)
         {
@@ -215,11 +213,22 @@ public class TopicService : ITopicService
         }
         return topicDTOs;
     }
-    public async Task<TopicDTO> GetTopicByPost(int postId)
+    public async Task<IEnumerable<TopicDTO>> GetTopicsByCategories(List<long> categoryIds)
     {
-        var topic = await _topicRepository.GetTopicByPost(postId)
-            ?? throw new Exception("Topic not found.");
-        return _mapper.Map<TopicDTO>(topic);
+        var topics = await _topicRepository.GetTopicsByCategories(categoryIds);
+
+        var topicDTOs = topics.Select(topic => new TopicDTO
+        {
+            Id = topic.Id,
+            Name = topic.Name,
+            Description = topic.Description,
+            Avatar = topic.Avatar,
+            Banner = topic.Panner,
+            IsDeleted = topic.IsDeleted,
+            Categories = topic.Categories.Select(c => c.Id).ToList()
+        });
+
+        return topicDTOs;
     }
 }
 

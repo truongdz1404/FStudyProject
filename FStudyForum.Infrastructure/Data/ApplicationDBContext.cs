@@ -1,3 +1,4 @@
+using FStudyForum.Core.Helpers;
 using FStudyForum.Core.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -72,8 +73,7 @@ public class ApplicationDBContext(DbContextOptions options)
 
         builder.Entity<Topic>()
             .HasMany(t => t.Posts)
-            .WithOne(p => p.Topic)
-            .IsRequired();
+            .WithOne(p => p.Topic);
 
         builder.Entity<Topic>()
         .HasMany(t => t.BannedUser)
@@ -111,18 +111,7 @@ public class ApplicationDBContext(DbContextOptions options)
             .HasMany(c => c.Votes)
             .WithOne(v => v.Comment);
 
-
-        var roles = new List<IdentityRole>();
-        foreach (var role in Core.Constants.UserRole.All)
-        {
-            roles.Add(new()
-            {
-                Name = role,
-                NormalizedName = role.ToUpper()
-            });
-        }
-
-        builder.Entity<IdentityRole>().HasData(roles);
+        builder.SeedDatabase();
     }
 
     public DbSet<Profile> Profiles { get; set; }

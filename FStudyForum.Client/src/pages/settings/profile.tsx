@@ -22,6 +22,9 @@ import { signIn } from "@/contexts/auth/reduce";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { storage } from "@/helpers/storage";
 import { useQuery } from "@tanstack/react-query";
+import BannerDefault from "@/assets/images/banner.png";
+import AvatarDefault from "@/assets/images/user.png";
+
 const validation = Yup.object({
   firstName: Yup.string().required("First name is required"),
   lastName: Yup.string().required("Last name is required"),
@@ -48,13 +51,18 @@ const ProfileSettings = () => {
   const { user, dispatch } = useAuth();
   const [error, setError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
-  const [avatar, setAvatar] = React.useState(user!.avatar);
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
-  const [file, setFile] = React.useState<File>();
+  const [avatar, setAvatar] = React.useState("");
+  const [banner, setBanner] = React.useState("");
+
+  const avatarInputRef = React.useRef<HTMLInputElement>(null);
+  const bannerInputRef = React.useRef<HTMLInputElement>(null);
+
+  const [avatarFile, setAvatarFile] = React.useState<File>();
+  const [bannerFile, setBannerFile] = React.useState<File>();
   const navigate = useNavigate();
 
   const { data: profile } = useQuery({
-    queryKey: [`profile-${user?.username}`],
+    queryKey: [`edit-profile-${user?.username}`],
     queryFn: () => ProfileService.getByUsername(user!.username),
     enabled: !!user
   });
@@ -62,6 +70,7 @@ const ProfileSettings = () => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors }
   } = useForm<EditProfileInputs>({
     mode: "onTouched",
@@ -79,6 +88,20 @@ const ProfileSettings = () => {
   });
 
   React.useEffect(() => {
+    if (!profile) return;
+    reset({
+      firstName: profile?.firstName,
+      lastName: profile?.lastName,
+      gender: profile?.gender,
+      avatar: profile?.avatar,
+      phone: profile?.phone,
+      bio: profile?.bio
+    });
+    setBanner(profile.banner ?? "");
+    setAvatar(profile.avatar ?? "");
+  }, [profile, reset]);
+
+  React.useEffect(() => {
     return () => {
       URL.revokeObjectURL(avatar);
     };
@@ -89,31 +112,71 @@ const ProfileSettings = () => {
     const file = event.target.files[0];
     if (!file) return;
 
-    setFile(file);
+    setAvatarFile(file);
     setAvatar(URL.createObjectURL(file));
   };
 
-  const handleEditProfile = async (form: EditProfileInputs) => {
+  const handlePreviewBanner = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.files) return;
+    const file = event.target.files[0];
+    if (!file) return;
+
+    setBannerFile(file);
+    setBanner(URL.createObjectURL(file));
+  };
+
+  const handleSave = async (form: EditProfileInputs) => {
     if (user == null) {
       setError("User is not authenticated");
       return;
     }
     setLoading(true);
+    const upload = (
+      file: File | undefined,
+      path: string
+    ): Promise<string | undefined> => {
+      return new Promise((resolve, reject) => {
+        if (!file) {
+          resolve(undefined);
+          return;
+        }
 
-    const save = async () => {
+        const storageRef = ref(storage, path);
+        const uploadTask = uploadBytesResumable(storageRef, file, metadata);
+
+        uploadTask.on(
+          "state_changed",
+          () => {},
+          () => {
+            reject(error);
+          },
+          async () => {
+            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+            resolve(downloadURL);
+          }
+        );
+      });
+    };
+    const updateProfile = async () => {
       try {
-        await ProfileService.update(user.username, {
+        const [avatarUrl, bannerUrl] = await Promise.all([
+          upload(avatarFile, `images/avatar${user.username}`),
+          upload(bannerFile, `images/banner${user.username}`)
+        ]);
+        await ProfileService.update({
+          username: user.username,
           firstName: form.firstName,
           lastName: form.lastName,
           gender: form.gender,
-          avatar: url,
+          banner: bannerUrl || profile?.banner,
+          avatar: avatarUrl || profile?.avatar,
           major: form.marjor,
           phone: form.phone,
           bio: form.bio
         });
         const newUser = await UserService.getProfile();
         dispatch(signIn({ user: newUser }));
-        navigate("/profile/" + user.username);
+        navigate("/user/" + user.username);
       } catch (e) {
         const error = e as AxiosError;
         setError((error?.response?.data as Response)?.message || error.message);
@@ -121,35 +184,15 @@ const ProfileSettings = () => {
         setLoading(false);
       }
     };
-    let url = avatar;
-    if (file) {
-      const storageRef = ref(storage, `images/avatar${user.username}`);
-      const uploadTask = uploadBytesResumable(storageRef, file, metadata);
-      uploadTask.on(
-        "state_changed",
-        () => {},
-        error => {
-          console.error(error);
-        },
-        () => {
-          getDownloadURL(uploadTask.snapshot.ref).then(async downloadURL => {
-            setFile(undefined);
-            url = downloadURL;
-            save();
-          });
-        }
-      );
-    } else {
-      save();
-    }
+    updateProfile();
   };
   return (
-    <>
+    <div className="p-4">
       <div className="mb-6">
         <p className="text-md font-semibold flex gap-x-2 items-center">
           <Link
-            to={`/profile/${user?.username}`}
-            className="rounded-full bg-blue-gray-50 hover:bg-blue-gray-100 p-2 -ml-10 hidden md:block"
+            to={`/user/${user?.username}`}
+            className="rounded-full bg-blue-gray-50 hover:bg-blue-gray-100 p-2 -ml-10 hidden lg:block"
           >
             <ArrowLeft className="w-4 h-4" />
           </Link>
@@ -159,30 +202,54 @@ const ProfileSettings = () => {
           Tell us a bit about yourself to get started on our forum
         </p>
       </div>
-      <div className="relative">
-        <Avatar
-          variant="circular"
-          size="xxl"
-          alt="avatar"
-          className="bg-white  p-0.5"
-          src={avatar}
-        />
-        <input
-          onChange={handlePreviewAvatar}
-          multiple={false}
-          ref={fileInputRef}
-          type="file"
-          accept="image/png, image/jpeg"
-          hidden
-        />
+
+      <div className="flex gap-x-2">
         <div
-          className="absolute bottom-0 left-20 bg-blue-gray-50 rounded-full hover:cursor-pointer "
-          onClick={() => fileInputRef.current?.click()}
+          className="relative"
+          onClick={() => avatarInputRef.current?.click()}
         >
-          <Camera className="h-4 w-4 m-1" strokeWidth={1.5} />
+          <Avatar
+            variant="circular"
+            size="xl"
+            alt="avatar"
+            className="bg-white  p-0.5"
+            src={avatar || AvatarDefault}
+          />
+          <input
+            onChange={handlePreviewAvatar}
+            multiple={false}
+            ref={avatarInputRef}
+            type="file"
+            accept="image/png, image/jpeg"
+            hidden
+          />
+          <div className="absolute bottom-0 right-0 bg-blue-gray-50 rounded-full hover:cursor-pointer p-1">
+            <Camera className="h-4 w-4" strokeWidth={1.5} />
+          </div>
+        </div>
+
+        <div
+          className="relative flex-1"
+          onClick={() => bannerInputRef.current?.click()}
+        >
+          <img
+            src={banner || BannerDefault}
+            className="w-full object-cover h-[4.6rem] rounded-lg"
+          />
+          <input
+            onChange={handlePreviewBanner}
+            multiple={false}
+            ref={bannerInputRef}
+            type="file"
+            accept="image/png, image/jpeg"
+            hidden
+          />
+          <div className="absolute bottom-0 right-0 bg-blue-gray-50 rounded-full hover:cursor-pointer p-1">
+            <Camera className="h-4 w-4" strokeWidth={1.5} />
+          </div>
         </div>
       </div>
-      <form onSubmit={handleSubmit(handleEditProfile)} className="mt-2">
+      <form onSubmit={handleSubmit(handleSave)} className="mt-2">
         <div className="flex xl:justify-between xl:flex-row flex-col gap-y-4 xl:gap-x-4">
           <div className="w-full xl:w-1/2">
             <label
@@ -252,7 +319,7 @@ const ProfileSettings = () => {
             )}
           </div>
         </div>
-        <div className="w-full mt-6">
+        <div className="w-full mt-4">
           <label htmlFor="phone" className="block text-gray-700 text-sm m-1">
             Phone (optional)
           </label>
@@ -281,7 +348,7 @@ const ProfileSettings = () => {
             </span>
           )}
         </div>
-        <div className="w-full mt-6 gap-x-2">
+        <div className="w-full mt-4 gap-x-2">
           <label className="block text-gray-700 text-sm m-1">Gender</label>
           <div className="flex gap-x-4">
             <Radio
@@ -315,7 +382,7 @@ const ProfileSettings = () => {
               disabled={loading}
             />
           </div>
-          <div className="w-full mt-6 gap-x-2">
+          <div className="w-full mt-4 gap-x-2">
             <label className="block text-gray-700 text-sm m-1">
               About (optional)
             </label>
@@ -348,7 +415,7 @@ const ProfileSettings = () => {
           </Button>
         </div>
       </form>
-    </>
+    </div>
   );
 };
 

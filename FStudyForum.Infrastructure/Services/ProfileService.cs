@@ -30,6 +30,7 @@ public class ProfileService : IProfileService
     {
         var profile = await _profileRepository.GetByName(username);
         ProfileDTO result = _mapper.Map<ProfileDTO>(profile);
+        result.Username = username;
         return result;
     }
 

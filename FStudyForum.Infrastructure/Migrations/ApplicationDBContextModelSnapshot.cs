@@ -278,7 +278,7 @@ namespace FStudyForum.Infrastructure.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<long>("TopicId")
+                    b.Property<long?>("TopicId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
@@ -592,19 +592,19 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "7f64d9ec-76b5-40b8-8392-77c04ff948ce",
+                            Id = "b8fbcf21-01d9-4c56-bed6-8997c5863209",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "01d2a80c-eb93-48eb-a10a-4f055f4d62c4",
+                            Id = "75bc9ad5-4b4f-4ef6-96a3-0a04e36ea623",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "5ad9f1ba-35e3-4645-b22f-14f2820b768a",
+                            Id = "06015c83-93f3-4fd5-b714-71040d477659",
                             Name = "Moderator",
                             NormalizedName = "MODERATOR"
                         });
@@ -809,9 +809,7 @@ namespace FStudyForum.Infrastructure.Migrations
 
                     b.HasOne("FStudyForum.Core.Models.Entities.Topic", "Topic")
                         .WithMany("Posts")
-                        .HasForeignKey("TopicId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("TopicId");
 
                     b.Navigation("Creater");
 

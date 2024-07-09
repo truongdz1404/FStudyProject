@@ -1,25 +1,69 @@
 import { cn } from "@/helpers/utils";
 import { Topic } from "@/types/topic";
-import { Avatar, Button, Input } from "@material-tailwind/react";
+import { Avatar, Button, Input, Spinner } from "@material-tailwind/react";
 import { ChevronDown, Search } from "lucide-react";
 import React, { ChangeEvent } from "react";
-import Demo from "@/assets/images/user.png";
+import DefaultTopic from "@/assets/images/topic.png";
+import DefaultUser from "@/assets/images/user.png";
+
 import useOutsideClick from "@/hooks/useOutsideClick";
-import TopicService from "@/services/TopicService";
-import { AxiosError } from "axios";
-import { Response } from "@/types/response";
 import ContentLayout from "@/components/layout/ContentLayout";
 import Editor from "@/components/post/Editor";
 import { useRouterParam } from "@/hooks/useRouterParam";
 import { useNavigate } from "react-router-dom";
+import { debounce } from "lodash";
+import TopicService from "@/services/TopicService";
+import { useAuth } from "@/hooks/useAuth";
+
+export type Context = {
+  prefix: string;
+  name: string;
+  avatar: string;
+};
+
 const SubmitPage = () => {
   const navigate = useNavigate();
-
+  const { user } = useAuth();
   const [selectedIndex, setSelectedIndex] = React.useState(-1);
+  const [keyword, setKeyword] = React.useState("");
   const [foundTopics, setFoundTopics] = React.useState<Topic[]>([]);
-  const { topic } = useRouterParam();
+  const { topic, user: profile } = useRouterParam();
   const searchRef = useOutsideClick(() => closeOpenSearch());
   const [openSearch, setOpenSearch] = React.useState(false);
+
+  const context: Context | undefined = React.useMemo(() => {
+    if (topic)
+      return {
+        prefix: "t",
+        name: topic.name,
+        avatar: topic.avatar || DefaultTopic
+      };
+    if (profile)
+      return {
+        prefix: "u",
+        name: profile.username,
+        avatar: profile.avatar || DefaultUser
+      };
+    return undefined;
+  }, [topic, profile]);
+
+  const debouncedSearch = React.useMemo(
+    () =>
+      debounce(async (searchTerm: string) => {
+        if (!searchTerm) {
+          setFoundTopics([]);
+          return;
+        }
+        try {
+          const founds = await TopicService.search(searchTerm);
+          setFoundTopics(founds);
+        } catch (e) {
+          setFoundTopics([]);
+        }
+      }, 200),
+    []
+  );
+
   const closeOpenSearch = () => {
     setOpenSearch(false);
     setFoundTopics([]);
@@ -27,20 +71,8 @@ const SubmitPage = () => {
   };
 
   const handleSearch = async (event: ChangeEvent<HTMLInputElement>) => {
-    const searchValue = event.target.value.trim().replace(/^t\//, "");
-    if (searchValue == "") {
-      setFoundTopics([]);
-      return false;
-    }
-    try {
-      const founds = await TopicService.search(searchValue);
-      setFoundTopics(founds);
-    } catch (e) {
-      const error = e as AxiosError;
-      console.error(
-        (error?.response?.data as Response)?.message || error.message
-      );
-    }
+    setSelectedIndex(-1);
+    setKeyword(event.target.value.trim());
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -58,15 +90,29 @@ const SubmitPage = () => {
         );
         break;
       case "Enter":
-        if (selectedIndex !== -1) handleSelect(foundTopics[selectedIndex]);
+        if (selectedIndex !== -1) {
+          if (foundTopics.length != 0)
+            handleSelect("t", foundTopics[selectedIndex].name);
+          else handleSelect("u", user!.username);
+        }
         break;
     }
   };
 
-  const handleSelect = async (select: Topic) => {
-    navigate(`/topic/${select.name}/submit`);
+  const handleSelect = async (prefix: string, target: string) => {
+    navigate(`/${prefix == "t" ? "topic" : "user"}/${target}/submit`);
     closeOpenSearch();
   };
+
+  React.useEffect(() => {
+    const trimmedKeyword = keyword.replace(/^t\//, "");
+    debouncedSearch(trimmedKeyword);
+    return () => {
+      debouncedSearch.cancel();
+    };
+  }, [keyword, debouncedSearch]);
+
+  if (!user) return <Spinner className="mx-auto" />;
 
   return (
     <ContentLayout>
@@ -85,9 +131,9 @@ const SubmitPage = () => {
             variant="text"
             onClick={() => setOpenSearch(true)}
           >
-            <Avatar src={Demo} className="w-6 h-6" />
+            <Avatar src={context?.avatar || DefaultTopic} className="w-6 h-6" />
             <span className="text-sm font-normal">
-              {topic ? `t/${topic?.name}` : "Select a topic"}
+              {context ? `${context.prefix}/${context.name}` : "Select a topic"}
             </span>
             <div className="px-2">
               <ChevronDown className="w-4 h-4" strokeWidth={2.2} />
@@ -109,37 +155,71 @@ const SubmitPage = () => {
                 "placeholder:text-gray-500 placeholder:opacity-100 pl-6 ",
                 "rounded-full !border-0 !bg-gray-200 text-gray-900"
               )}
+              value={keyword}
               onKeyDown={handleKeyDown}
             />
-            {foundTopics.length > 0 && (
-              <div className="absolute top-12 w-full bg-white rounded-md border shadow-lg shadow-gray-900/5 max-h-80 overflow-y-auto z-30">
-                {foundTopics.map((topic, index) => (
-                  <Button
-                    key={topic.name}
-                    variant="text"
+            <div className="absolute top-12 w-full bg-white rounded-md border shadow-lg shadow-gray-900/5 max-h-80 overflow-y-auto z-30">
+              {!keyword && (
+                <>
+                  <div className="text-xs font-semibold px-2 py-4 text-gray-600 uppercase">
+                    Your profile
+                  </div>
+                  <div
                     className={cn(
-                      "hover:bg-gray-200 rounded-none normal-case flex items-center gap-x-2 !p-2 w-full",
-                      index === selectedIndex ? "bg-gray-200" : ""
+                      "hover:bg-gray-200 rounded-none normal-case flex items-center gap-x-2 p-2 w-full text-gray-900",
+                      selectedIndex == 0 ? "bg-gray-200" : ""
                     )}
-                    onClick={() => handleSelect(topic)}
+                    onClick={() => handleSelect("u", user.username)}
                   >
-                    <Avatar src={Demo} className="w-8 h-8" />
+                    <Avatar
+                      src={user.avatar || DefaultUser}
+                      className="w-8 h-8"
+                    />
                     <div className="flex-col flex">
-                      <span className="text-xs font-normal">{`t/${topic.name}`}</span>
-                      <span className="text-[0.7rem] font-light self-start">
-                        {`${topic.postCount}`}
-                        {topic.postCount > 1 ? " posts" : " post"}
-                      </span>
+                      <span className="text-xs font-normal">{`u/${user.username}`}</span>
                     </div>
-                  </Button>
+                  </div>
+                </>
+              )}
+              {keyword &&
+                (foundTopics.length != 0 ? (
+                  <div className="text-xs font-semibold px-2 py-4 text-gray-600 uppercase">
+                    Others
+                  </div>
+                ) : (
+                  <div className="text-sm p-4 text-gray-600">
+                    No topics found
+                  </div>
                 ))}
-              </div>
-            )}
+
+              {foundTopics.map((topic, index) => (
+                <div
+                  key={topic.name}
+                  className={cn(
+                    "hover:bg-gray-200 rounded-none normal-case flex items-center gap-x-2 !p-2 w-full",
+                    index === selectedIndex ? "bg-gray-200" : ""
+                  )}
+                  onClick={() => handleSelect("t", topic.name)}
+                >
+                  <Avatar
+                    src={topic.avatar || DefaultTopic}
+                    className="w-8 h-8"
+                  />
+                  <div className="flex-col flex">
+                    <span className="text-xs font-normal">{`t/${topic.name}`}</span>
+                    <span className="text-[0.7rem] font-light self-start">
+                      {`${topic.postCount}`}
+                      {topic.postCount > 1 ? " posts" : " post"}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
           </>
         )}
       </div>
       <div className="my-4" />
-      <Editor topicName={topic?.name} banner={topic?.banner} />
+      <Editor context={context} />
     </ContentLayout>
   );
 };

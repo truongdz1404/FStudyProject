@@ -1,5 +1,6 @@
 import React, { FC } from "react";
 import { Icons } from "../Icons";
+import { cn } from "@/helpers/utils";
 
 interface Props {
   src: string;
@@ -8,13 +9,13 @@ interface Props {
 }
 
 const ImageWithLoading: FC<Props> = ({ src, alt, className }) => {
-  const [loaded, setLoaded] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   React.useEffect(() => {
     const img = new Image();
     img.src = src;
     img.onload = () => {
-      setLoaded(true);
+      setIsLoading(true);
     };
   }, [src]);
 
@@ -23,13 +24,14 @@ const ImageWithLoading: FC<Props> = ({ src, alt, className }) => {
       <img
         src={src}
         alt={alt}
-        className={`${className}`}
+        className={cn(className, isLoading ? "block" : "hidden")}
         loading="lazy"
-        style={{ display: !loaded ? "none" : "block" }}
       />
       <div
-        className="w-full h-full animate-pulse bg-blue-gray-50"
-        style={{ display: loaded ? "none" : "flex" }}
+        className={cn(
+          "w-full h-full animate-pulse bg-blue-gray-50",
+          !isLoading ? "flex" : "hidden"
+        )}
       >
         <Icons.picture className="h-10 w-10 text-gray-500 mx-auto my-auto" />
       </div>

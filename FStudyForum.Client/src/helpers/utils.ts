@@ -1,6 +1,6 @@
 import { twMerge } from "tailwind-merge";
 import { type ClassValue, clsx } from "clsx";
-import { ALLOWED_FILE_TYPES } from "./constants";
+import { ALLOWED_FILE_TYPES, MAX_FILE_SIZE } from "./constants";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -37,8 +37,27 @@ export function formatElapsedTime(elapsed: string): string {
   return `${totalMinutes} min${totalMinutes > 1 ? "s" : ""} ago`;
 }
 
-export function validateFileType(file: File) {
-  return ALLOWED_FILE_TYPES.includes(file.type);
+export function validateFile(file: File): {
+  isValid: boolean;
+  errorMessage?: string;
+} {
+  if (!ALLOWED_FILE_TYPES.includes(file.type)) {
+    return {
+      isValid: false,
+      errorMessage: "File type not supported."
+    };
+  }
+
+  if (file.size > MAX_FILE_SIZE) {
+    return {
+      isValid: false,
+      errorMessage: `File size exceeds allowed limit (${
+        MAX_FILE_SIZE / (1024 * 1024)
+      }MB).`
+    };
+  }
+
+  return { isValid: true };
 }
 
 export function getImageParams(file: File): Promise<{

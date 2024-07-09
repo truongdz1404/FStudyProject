@@ -9,5 +9,6 @@ public interface ICategoryService
     public Task<CategoryDTO> GetCateByName(string name);
     public Task<CategoryDTO> UpdateCategory(string name, UpdateCategoryDTO categoryDto);
     public Task<bool> DeleteCategory(string name);
+     public Task<IEnumerable<CategoryDTO>> FilterCategoriesByType(string type);
 }
 

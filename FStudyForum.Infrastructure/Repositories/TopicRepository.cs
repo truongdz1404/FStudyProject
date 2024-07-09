@@ -1,8 +1,11 @@
 using FStudyForum.Core.Interfaces.IRepositories;
 using FStudyForum.Core.Models.DTOs.Topic;
+using FStudyForum.Core.Models.DTOs.Search;
 using FStudyForum.Core.Models.Entities;
 using FStudyForum.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using FStudyForum.Core.Helpers;
+
 
 namespace FStudyForum.Infrastructure.Repositories
 {
@@ -17,20 +20,18 @@ namespace FStudyForum.Infrastructure.Repositories
 
         public new async Task<Topic> Create(Topic model)
         {
-            using (var transaction = await _dbContext.Database.BeginTransactionAsync())
+            using var transaction = await _dbContext.Database.BeginTransactionAsync();
+            try
             {
-                try
-                {
-                    await _dbContext.Set<Topic>().AddAsync(model);
-                    await _dbContext.SaveChangesAsync();
-                    await transaction.CommitAsync();
-                    return model;
-                }
-                catch (Exception)
-                {
-                    await transaction.RollbackAsync();
-                    throw;
-                }
+                await _dbContext.Set<Topic>().AddAsync(model);
+                await _dbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return model;
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                throw;
             }
         }
 
@@ -66,13 +67,18 @@ namespace FStudyForum.Infrastructure.Repositories
             return topics;
         }
 
-        public async Task<IEnumerable<Topic>> SearchTopicContainKeywordAsync(string keyword)
+        public async Task<IEnumerable<Topic>> SearchTopicContainKeywordAsync(QuerySearchTopicDTO query)
         {
-            return await _dbContext.Topics
-               .Where(t => !t.IsDeleted && (t.Name.Contains(keyword.Trim()) || t.Description.Contains(keyword.Trim())))
+            IQueryable<Topic> queryable = _dbContext.Topics
                .Include(t => t.Posts)
                .Include(t => t.Categories)
-               .ToListAsync();
+               .AsSplitQuery()
+               .Where(t => !t.IsDeleted && (t.Name.Contains(query.Keyword.Trim())
+                || t.Description.Contains(query.Keyword.Trim())))
+               .OrderByDescending(t => t.CreatedAt);
+            return await queryable
+             .Paginate(query.PageNumber, query.PageSize)
+             .ToListAsync();
         }
         public async Task<TopicBan> BanUser(TopicBan topicBan)
         {
@@ -110,17 +116,11 @@ namespace FStudyForum.Infrastructure.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<Topic?> GetTopicByPost(int postId)
+        public async Task<IEnumerable<Topic>> GetTopicsByCategories(List<long> categoryIds)
         {
-            var topic = await _dbContext.Topics.Join(
-                _dbContext.Posts,
-                t => t.Id,
-                p => p.Topic.Id,
-                (t, p) => new { Topic = t, Post = p })
-                .Where(tp => tp.Post.Id.Equals(postId))
-                .Select(tp => tp.Topic)
-                .FirstOrDefaultAsync();
-            return topic;
+            return await _dbContext.Topics
+               .Where(t => t.Categories.Any(c => categoryIds.Contains(c.Id)))
+               .ToListAsync();
         }
     }
 

@@ -1,11 +1,12 @@
 import { MAX_FILE_SIZE } from "@/helpers/constants";
-import { cn, validateFileType } from "@/helpers/utils";
+import { cn, validateFile } from "@/helpers/utils";
 import { Plus } from "lucide-react";
 import { forwardRef, type ChangeEvent, type DragEvent } from "react";
 import ImageUpload from "./ImageUpload";
 
 import React from "react";
 import { FileInputContext } from "./Editor";
+import { showErrorToast } from "@/helpers/toast";
 
 export interface InputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "type"> {}
@@ -52,14 +53,17 @@ const FileInput = forwardRef<HTMLInputElement, InputProps>(
     const handleChange = async (e: ChangeEvent<HTMLInputElement>) => {
       e.preventDefault();
       if (e.target.files && e.target.files[0]) {
-        const validFiles = Array.from(e.target.files).filter(file =>
-          validateFileType(file)
+        const validFiles = Array.from(e.target.files).filter(
+          file => validateFile(file).isValid
         );
 
         if (validFiles.length !== e.target.files.length) {
-          console.error("Invalid file type");
+          showErrorToast(
+            "File type not supported or size exceeds allowed limit"
+          );
           return;
         }
+
         addFiles(validFiles);
       }
     };
@@ -67,14 +71,15 @@ const FileInput = forwardRef<HTMLInputElement, InputProps>(
     const handleDrop = async (e: DragEvent<HTMLDivElement>) => {
       e.preventDefault();
       e.stopPropagation();
-      console.log("alo");
 
       if (e.dataTransfer.files && e.dataTransfer.files[0]) {
         const files = Array.from(e.dataTransfer.files);
-        const acceptedFiles = files.filter(file => validateFileType(file));
+        const acceptedFiles = files.filter(file => validateFile(file).isValid);
 
         if (files.length !== acceptedFiles.length) {
-          console.error("Invalid file type");
+          showErrorToast(
+            "File type not supported or size exceeds allowed limit"
+          );
         }
         addFiles(files);
         setDragActive(false);
@@ -131,8 +136,8 @@ const FileInput = forwardRef<HTMLInputElement, InputProps>(
                   and drop
                 </p>
                 <p className="text-xs text-gray-500 ">
-                  up to 5 images, {(MAX_FILE_SIZE / 1000000).toFixed(0)}MB per
-                  file
+                  up to <strong>infinite</strong> images,{" "}
+                  {(MAX_FILE_SIZE / 1000000).toFixed(0)}MB per file
                 </p>
 
                 <input

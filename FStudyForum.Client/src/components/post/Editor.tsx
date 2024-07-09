@@ -23,6 +23,7 @@ import { useNavigate } from "react-router-dom";
 import { Attachment } from "@/types/attachment";
 import { AxiosError } from "axios";
 import { Response } from "@/types/response";
+import { Context } from "@/pages/submit";
 
 const validation = Yup.object({
   title: Yup.string()
@@ -35,8 +36,7 @@ interface PostCreationRequest {
   content?: string;
 }
 interface EditorProps {
-  topicName: string | undefined;
-  banner: string | undefined;
+  context?: Context;
 }
 
 export interface FileInputContextType {
@@ -49,7 +49,7 @@ export const FileInputContext = React.createContext<FileInputContextType>({
   setFiles: () => null
 });
 
-const Editor: FC<EditorProps> = ({ topicName, banner }) => {
+const Editor: FC<EditorProps> = ({ context }) => {
   const {
     register,
     handleSubmit,
@@ -87,7 +87,7 @@ const Editor: FC<EditorProps> = ({ topicName, banner }) => {
   const [loading, setLoading] = React.useState(false);
   const navigate = useNavigate();
   const handleCreate = async (data: PostCreationRequest) => {
-    if (!topicName) {
+    if (!context) {
       setError("Topic name is required");
       return;
     }
@@ -102,7 +102,7 @@ const Editor: FC<EditorProps> = ({ topicName, banner }) => {
     const payload: CreatePost = {
       title: data.title,
       content: JSON.stringify(json),
-      topicName: topicName,
+      topicName: context.prefix == "t" ? context.name : "",
       attachments: files.map<Attachment>(file => {
         return {
           type: file.data.type,
@@ -113,7 +113,12 @@ const Editor: FC<EditorProps> = ({ topicName, banner }) => {
     try {
       const createPost = await PostService.create(payload);
       files.map(file => URL.revokeObjectURL(file.preview));
-      navigate(`/topic/${topicName}/comments/${createPost.id}`);
+
+      if (context.prefix == "t")
+        navigate(`/topic/${context.name}/comments/${createPost.id}`);
+      else {
+        navigate(`/user/${context.name}/comments/${createPost.id}`);
+      }
     } catch (e) {
       const error = e as AxiosError;
       setError((error?.response?.data as Response)?.message || error.message);
@@ -168,9 +173,7 @@ const Editor: FC<EditorProps> = ({ topicName, banner }) => {
           type="submit"
           className="mt-6 w-full lg:w-fit normal-case text-sm"
           form="create-post-form"
-          disabled={
-            topicName == undefined || loading || !isFileLoaded || banner !== ""
-          }
+          disabled={context == undefined || loading || !isFileLoaded}
         >
           Post
         </Button>

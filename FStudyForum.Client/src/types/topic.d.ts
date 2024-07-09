@@ -8,6 +8,13 @@ export interface Topic {
   isDeleted: boolean;
   categories: number[];
 }
+export type TopicType = {
+  name: string;
+  description: string;
+  avatar: string;
+  banner: string;
+  categories: number[];
+};
 
 export interface CreateTopic {
   name: string;

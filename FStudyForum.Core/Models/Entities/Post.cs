@@ -10,7 +10,7 @@ public class Post : BaseEntity
     public string Title { get; set; } = string.Empty;
     public string Content { get; set; } = string.Empty;
     public bool IsDeleted { get; set; } = false;
-    public required virtual Topic Topic { get; set; }
+    public virtual Topic? Topic { get; set; }
     public required virtual ApplicationUser Creater { get; set; }
     public virtual ICollection<Vote> Votes { get; set; } = new List<Vote>();
     public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();

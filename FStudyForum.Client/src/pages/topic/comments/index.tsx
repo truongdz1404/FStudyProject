@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { AxiosError } from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import { Alert } from "@material-tailwind/react";
+import { Alert, Spinner } from "@material-tailwind/react";
 import PostService from "@/services/PostService";
 import CommentService from "@/services/CommentService";
 import PostItem from "@/components/post/PostItem";
@@ -29,16 +29,18 @@ const Comments = () => {
   const [expandedComments, setExpandedComments] = useState<{
     [key: number]: boolean;
   }>({});
-
+  const addRecentPost = (postId: number) => {
+    PostService.addRecent(postId);
+  };
   const initializeExpandedComments = (
     comments: Comment[],
-    number: number = 3
+    amount: number = 3
   ) => {
     const expanded: { [key: number]: boolean } = {};
     const traverseComments = (commentList: Comment[]) => {
       commentList.forEach(comment => {
         expanded[comment.id] =
-          !comment.replies || comment.replies.length < number;
+          !comment.replies || comment.replies.length < amount;
         if (comment.replies) {
           traverseComments(comment.replies);
         }
@@ -49,7 +51,7 @@ const Comments = () => {
   };
 
   useEffect(() => {
-    if (!postId || !topicName) {
+    if (!postId) {
       setError("Invalid post id or topic name");
       return;
     }
@@ -59,6 +61,7 @@ const Comments = () => {
       try {
         const data = await PostService.getById(postId);
         setPost(data);
+        addRecentPost(data.id);
       } catch (e) {
         const error = e as AxiosError;
         setError((error?.response?.data as Response)?.message || error.message);
@@ -67,7 +70,7 @@ const Comments = () => {
       }
     };
     fetchPost();
-  }, [post, postId, topicName]);
+  }, [post, postId]);
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -188,6 +191,7 @@ const Comments = () => {
       );
       setComments(updatedComments);
       setReplyToCommentId(null);
+
       initializeExpandedComments(updatedComments, 100);
     } catch (e) {
       const error = e as AxiosError;
@@ -245,10 +249,10 @@ const Comments = () => {
     }));
   };
 
-  if (loading || !post) return null;
+  if (loading || !post) return <Spinner className="mx-auto" />;
 
   return (
-    <ContentLayout pannel={<TopicDescription />}>
+    <ContentLayout pannel={topicName ? <TopicDescription /> : undefined}>
       <div className="relative">
         {error && (
           <Alert color="red" className="mb-4">
@@ -258,7 +262,7 @@ const Comments = () => {
         {loading && <p>Loading...</p>}
         <div
           onClick={handleBack}
-          className="rounded-full bg-blue-gray-50 hover:bg-blue-gray-100 p-2 absolute top-0 -left-10 hidden md:block"
+          className="rounded-full bg-blue-gray-50 hover:bg-blue-gray-100 p-2 absolute top-0 -left-10 hidden lg:block"
         >
           <ArrowLeft className="w-4 h-4" />
         </div>
@@ -268,22 +272,25 @@ const Comments = () => {
         </div>
         <div className="mt-4 px-4">
           {comments && comments.length > 0 ? (
-            comments.slice().reverse().map(comment => (
-              <CommentItem
-                key={comment.id}
-                comment={comment}
-                level={0}
-                expandedComments={expandedComments}
-                toggleExpand={toggleExpand}
-                handleReplyClick={handleReplyClick}
-                handleDeleteComment={handleDeleteComment}
-                handleCreateReply={handleCreateReply}
-                handleEditComment={handleEditComment}
-                handleSaveEditedComment={handleSaveEditedComment}
-                replyToCommentId={replyToCommentId}
-                editingCommentId={editingCommentId}
-              />
-            ))
+            comments
+              .slice()
+              .reverse()
+              .map(comment => (
+                <CommentItem
+                  key={comment.id}
+                  comment={comment}
+                  level={0}
+                  expandedComments={expandedComments}
+                  toggleExpand={toggleExpand}
+                  handleReplyClick={handleReplyClick}
+                  handleDeleteComment={handleDeleteComment}
+                  handleCreateReply={handleCreateReply}
+                  handleEditComment={handleEditComment}
+                  handleSaveEditedComment={handleSaveEditedComment}
+                  replyToCommentId={replyToCommentId}
+                  editingCommentId={editingCommentId}
+                />
+              ))
           ) : (
             <p className="text-sm text-center">No comments yet</p>
           )}

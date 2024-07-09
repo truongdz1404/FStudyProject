@@ -6,6 +6,8 @@ using FStudyForum.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using FStudyForum.Core.Helpers;
 using FStudyForum.Core.Models.DTOs.Topic;
+using FStudyForum.Core.Models.DTOs.Search;
+using FStudyForum.Core.Constants;
 
 
 namespace FStudyForum.Infrastructure.Repositories
@@ -15,10 +17,15 @@ namespace FStudyForum.Infrastructure.Repositories
     {
         public async Task<Post> CreatePostAsync(CreatePostDTO postDTO)
         {
-            var topic = await _dbContext.Topics.FirstAsync(t => t.Name == postDTO.TopicName)
-                ?? throw new Exception("Topic not found");
+            Topic? topic = null;
+
+            if (!string.IsNullOrEmpty(postDTO.TopicName))
+                topic = await _dbContext.Topics.FirstAsync(t => t.Name == postDTO.TopicName)
+                    ?? throw new Exception("Topic not found");
+
             var creater = await _dbContext.Users.FirstAsync(u => u.UserName == postDTO.Author)
                 ?? throw new Exception("User not found");
+
             var post = new Post
             {
                 Title = postDTO.Title,
@@ -70,7 +77,7 @@ namespace FStudyForum.Infrastructure.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task AddRecentPost(RecentPost recentPost)
+        public async Task AddOrUpdateRecentPost(RecentPost recentPost)
         {
             var existedPost = await _dbContext.RecentPosts
                 .Where(rp => rp.User.UserName == recentPost.User.UserName)
@@ -81,6 +88,12 @@ namespace FStudyForum.Infrastructure.Repositories
             {
                 _dbContext.RecentPosts.Remove(existedPost.First());
                 existedPost.RemoveAt(0);
+            }
+
+            var rPost = await _dbContext.RecentPosts.FirstOrDefaultAsync(rp => rp.Post.Id == recentPost.Post.Id && rp.User.UserName == recentPost.User.UserName);
+            if (rPost != null)
+            {
+                _dbContext.RecentPosts.Remove(rPost);
             }
 
             await _dbContext.RecentPosts.AddAsync(recentPost);
@@ -110,7 +123,7 @@ namespace FStudyForum.Infrastructure.Repositories
         {
             return await _dbContext.Posts
                 .Include(p => p.Topic)
-                .Where(p => !p.IsDeleted && !p.Topic.IsDeleted)
+                .Where(p => !p.IsDeleted && p.Topic != null && !p.Topic.IsDeleted)
                 .Include(p => p.Creater)
                 .Include(p => p.Votes)
                 .Include(p => p.Attachments)
@@ -120,35 +133,33 @@ namespace FStudyForum.Infrastructure.Repositories
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Post>> GetFilterPostsAsync(QueryPostDTO query)
+        public async Task<IEnumerable<Post>> GetPostsAsync(QueryPostDTO query)
         {
             IQueryable<Post> queryable = _dbContext.Posts
                 .Include(p => p.Topic)
-                .Where(p => !p.IsDeleted && !p.Topic.IsDeleted)
+                .Where(p => !p.IsDeleted && (p.Topic == null || !p.Topic.IsDeleted))
                 .Include(p => p.Creater)
                 .Include(p => p.Votes)
                 .Include(p => p.Attachments)
                 .Include(p => p.Comments);
+            if (query.Type == PostType.IN_PROFILE)
+                queryable = queryable.Where(p => p.Topic == null);
+            else if (!string.IsNullOrEmpty(query.Topic))
+                queryable = queryable.Where(p => p.Topic != null && p.Topic.Name == query.Topic);
+            else queryable = queryable.Where(p => p.Topic != null);
 
-            queryable = query.Filter switch
-            {
-                "Hot" => queryable.OrderByDescending(p => p.Votes.Sum(v => v.IsUp ? 1 : 0) + p.Comments.Count),
-                "New" => queryable.OrderByDescending(p => p.CreatedAt),
-                _ => queryable.OrderBy(p => p.Id),
-            };
+            if (!string.IsNullOrEmpty(query.User))
+                queryable = queryable.Where(p => p.Creater.UserName == query.User);
+
+            if (!string.IsNullOrEmpty(query.Filter))
+                queryable = query.Filter switch
+                {
+                    "Hot" => queryable.OrderByDescending(p => p.Votes.Sum(v => v.IsUp ? 1 : 0) + p.Comments.Count),
+                    "New" => queryable.OrderByDescending(p => p.CreatedAt),
+                    _ => queryable.OrderBy(p => p.Id),
+                };
             return await queryable
                 .Paginate(query.PageNumber, query.PageSize)
-                .ToListAsync();
-        }
-
-        public async Task<IEnumerable<Post>> GetPostsByTopicNameAsync(string name)
-        {
-            return await _dbContext.Posts
-                .Where(p => p.IsDeleted == false)
-                .Include(p => p.Topic)
-                .Include(p => p.Votes)
-                .Include(p => p.Comments)
-                .Where(p => p.Topic.IsDeleted == false && p.Topic.Name == name)
                 .ToListAsync();
         }
 
@@ -172,21 +183,31 @@ namespace FStudyForum.Infrastructure.Repositories
         }
 
 
-        public async Task<IEnumerable<Post>> SearchPostAsync(string keyword)
+        public async Task<IEnumerable<Post>> SearchPostAsync(QuerySearchPostDTO query)
         {
-            return await _dbContext.Posts
-               .Where(p => p.IsDeleted == false && p.Title.Contains(keyword.Trim()) || p.Content.Contains(keyword.Trim()))
-               .Include(p => p.Creater)
-               .Include(p => p.Topic)
-               .Include(p => p.Votes)
-               .Include(p => p.Attachments)
-               .Include(p => p.Comments)
-               .Where(p => p.Topic.IsDeleted == false)
-               .ToListAsync();
+            IQueryable<Post> queryable = _dbContext.Posts
+             .Include(p => p.Topic)
+             .Include(p => p.Creater)
+             .Include(p => p.Votes)
+             .Include(p => p.Attachments)
+             .Include(p => p.Comments)
+             .AsSplitQuery()
+             .Where(p => !p.IsDeleted && p.Topic != null && !p.Topic.IsDeleted
+                 && p.Title.ToLower().Contains(query.Keyword.Trim().ToLower()));
+
+            queryable = query.Filter switch
+            {
+                "Hot" => queryable.OrderByDescending(p => p.Votes.Sum(v => v.IsUp ? 1 : 0) + p.Comments.Count),
+                "New" => queryable.OrderByDescending(p => p.CreatedAt),
+                _ => queryable.OrderBy(p => p.Id),
+            };
+            return await queryable
+                .Paginate(query.PageNumber, query.PageSize)
+                .ToListAsync();
         }
         public async Task<IEnumerable<Post>> GetSavedPostsByUser(string username)
         {
-            var listPost = await _dbContext.SavedPosts
+            var posts = await _dbContext.SavedPosts
             .Where(sp => sp.User.UserName == username && !sp.Post.IsDeleted)
             .Include(sp => sp.Post)
             .ThenInclude(p => p.Creater)
@@ -198,15 +219,15 @@ namespace FStudyForum.Infrastructure.Repositories
             .ThenInclude(p => p.Comments)
             .Include(sp => sp.Post)
             .ThenInclude(p => p.Attachments)
-            .Where(sp => !sp.Post.Topic.IsDeleted)
+            .Where(sp => sp.Post.Topic != null && !sp.Post.Topic.IsDeleted)
             .Select(sp => sp.Post)
             .ToListAsync();
-            return listPost;
+            return posts;
         }
 
         public async Task<IEnumerable<Post>> GetRecentPosts(string username)
         {
-            var listPost = await _dbContext.RecentPosts
+            var posts = await _dbContext.RecentPosts
                 .Where(rp => rp.User.UserName == username && !rp.Post.IsDeleted)
                 .Include(rp => rp.Post)
                 .ThenInclude(p => p.Creater)
@@ -218,10 +239,10 @@ namespace FStudyForum.Infrastructure.Repositories
                 .ThenInclude(p => p.Comments)
                 .Include(rp => rp.Post)
                 .ThenInclude(p => p.Attachments)
-                .Where(rp => !rp.Post.Topic.IsDeleted)
+                .Where(rp => rp.Post.Topic != null && !rp.Post.Topic.IsDeleted)
                 .Select(rp => rp.Post)
                 .ToListAsync();
-            return listPost;
+            return posts;
         }
 
         public async Task ClearRecentPosts(string username)

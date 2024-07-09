@@ -2,6 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import MiniPost from "./MiniPost";
 import PostService from "@/services/PostService";
 import { Post } from "@/types/post";
+import { cn } from "@/helpers/utils";
 
 const RecentPost: React.FC = () => {
   const queryClient = useQueryClient();
@@ -9,7 +10,7 @@ const RecentPost: React.FC = () => {
     queryKey: ["recent-post"],
     queryFn: async () => {
       try {
-        const resp = await PostService.getRecentPost();
+        const resp = await PostService.getRecentPosts();
         return resp;
       } catch (e) {
         return [];
@@ -18,7 +19,7 @@ const RecentPost: React.FC = () => {
   });
 
   const clearRecentPosts = async () => {
-    await PostService.ClearRecentPost();
+    await PostService.clearRecent();
     queryClient.invalidateQueries({ queryKey: ["recent-post"] });
   };
 
@@ -26,17 +27,20 @@ const RecentPost: React.FC = () => {
     <>
       {data && data.length > 0 ? (
         <>
-          <div className="flex justify-between items-center bg-blue-gray-300 p-4 ">
-            <h4>Recent Post</h4>
+          <div className="flex justify-between items-center p-4 pb-2">
+            <h1 className="text-xs uppercase">Recent Post</h1>
             <button
               onClick={clearRecentPosts}
-              className="text-indigo-900 rounded"
+              className="text-blue-800 text-sm"
             >
               Clear
             </button>
           </div>
-          {[...data]?.reverse().map(post => (
-            <div key={post.id}>
+          {[...data]?.reverse().map((post, index) => (
+            <div
+              key={post.id}
+              className={cn(index + 1 != data.length && "border-b-2", "px-2")}
+            >
               <MiniPost data={post} />
             </div>
           ))}

@@ -110,6 +110,7 @@ const Welcome = () => {
         major: major,
         gender: form.gender,
         avatar: "/src/assets/images/user.png",
+        banner: "/src/assets/images/banner.png",
         phone: form.phone
       };
       await ProfileService.create(payload);
@@ -309,7 +310,7 @@ const Welcome = () => {
       >
         <div className="text-center mb-4">
           <Icons.logo className="w-10 h-10 mx-auto" />
-          <span className="font-bold text-lg">Welcome to FStudy</span>
+          <span className="font-semibold text-lg">Welcome to FStudy</span>
         </div>
         <Stepper
           activeStep={activeStep}

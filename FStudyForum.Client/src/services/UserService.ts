@@ -17,4 +17,3 @@ const UserService = {
   getAll
 };
 export default UserService;
-

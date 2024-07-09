@@ -9,7 +9,7 @@ import AuthLayout from "@/components/layout/AuthLayout";
 import RoleBasedGuard from "@/helpers/guards/RoleBasedGuard";
 import Donate from "./pages/donate";
 import Notification from "./pages/donate/notification";
-import SavePost from "./pages/profile/save";
+import SavePost from "./pages/user/saved";
 import { ROLE } from "@/helpers/constants";
 import Loadable from "./helpers/loading/Loadable";
 
@@ -31,7 +31,7 @@ const CategoryManager = Loadable(
 const ResetPassword = Loadable(
   lazy(() => import("@/pages/auth/reset-password"))
 );
-const Profile = Loadable(lazy(() => import("@/pages/profile")));
+const Profile = Loadable(lazy(() => import("@/pages/user")));
 const ProfileSettings = Loadable(
   lazy(() => import("@/pages/settings/profile"))
 );
@@ -39,8 +39,18 @@ const SignIn = Loadable(lazy(() => import("@/pages/auth/signin")));
 const Home = Loadable(lazy(() => import("@/pages/home")));
 const TopicDetail = Loadable(lazy(() => import("@/pages/topic")));
 const Topics = Loadable(lazy(() => import("@/pages/topics")));
+const UserPosts = Loadable(lazy(() => import("@/pages/user/posts")));
+const UserOverview = Loadable(lazy(() => import("@/pages/user/overview")));
+
+const SearchPage = Loadable(lazy(() => import("@/pages/search/posts")));
+const SearchTopics = Loadable(lazy(() => import("@/pages/search/topics")));
+const SearchComments = Loadable(lazy(() => import("@/pages/search/comments")));
+const SearchPeople = Loadable(lazy(() => import("@/pages/search/people")));
 const SignOut = Loadable(lazy(() => import("@/pages/auth/signout")));
 const ListReport = Loadable(lazy(() => import("@/pages/manager/report/list")));
+const Search = Loadable(lazy(() => import("@/pages/search")));
+
+const Test = Loadable(lazy(() => import("@/pages/test")));
 const Response = Loadable(
   lazy(() => import("@/pages/manager/report/response"))
 );
@@ -60,6 +70,10 @@ const Router: FC = () => {
         {
           index: true,
           element: <Navigate to="/home" replace />
+        },
+        {
+          path: "test",
+          element: <Test />
         },
         {
           path: "home",
@@ -167,12 +181,38 @@ const Router: FC = () => {
           ]
         },
         {
-          path: "profile/:username",
+          path: "user/:username",
           element: <Profile />,
           children: [
             {
-              path: "save",
+              index: true,
+              element: <UserOverview />
+            },
+            {
+              path: "posts",
+              element: <UserPosts />
+            },
+            {
+              path: "saved",
               element: <SavePost />
+            }
+          ]
+        },
+        {
+          path: "user/:username",
+          children: [
+            {
+              path: "submit",
+              element: <SubmitPage />
+            },
+            {
+              path: "comments/:id",
+              children: [
+                {
+                  index: true,
+                  element: <Comments />
+                }
+              ]
             }
           ]
         },
@@ -188,6 +228,28 @@ const Router: FC = () => {
         {
           path: "submit",
           element: <SubmitPage />
+        },
+        {
+          path: "search",
+          element: <Search />,
+          children: [
+            {
+              path: "posts",
+              element: <SearchPage />
+            },
+            {
+              path: "topics",
+              element: <SearchTopics />
+            },
+            {
+              path: "comments",
+              element: <SearchComments />
+            },
+            {
+              path: "people",
+              element: <SearchPeople />
+            }
+          ]
         }
       ]
     },

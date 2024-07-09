@@ -13,7 +13,7 @@ const PostFilter: React.FC<Props> = ({ setFilter, filter }) => {
   const filterMenu = [{ name: "New" }, { name: "Hot" }];
   const ref = useOutsideClick(() => setIsOpen(false));
   return (
-    <div ref={ref} className="border-b w-full pb-2 pl-2 mb-1">
+    <div ref={ref} className="w-full">
       <button
         onClick={() => {
           setIsOpen(!isOpen);
@@ -28,10 +28,10 @@ const PostFilter: React.FC<Props> = ({ setFilter, filter }) => {
         />
       </button>
       {isOpen && (
-        <div className="origin-top-left absolute top-9 shadow-lg bg-white rounded-md overflow-hidden border">
+        <div className="origin-top-left absolute top-9 shadow-sm bg-white rounded-md overflow-hidden border">
           <div
             className={cn(
-              "block px-4 py-2 text-sm text-gray-700 font-semibold"
+              "block px-4 py-2 text-sm text-gray-700 font-semibold truncate"
             )}
           >
             Sort by

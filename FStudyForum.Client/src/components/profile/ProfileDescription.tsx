@@ -1,45 +1,43 @@
 import { Profile } from "@/types/profile";
-import { Typography } from "@material-tailwind/react";
 import { FC } from "react";
 type ProfileDescriptionProps = {
   profile: Profile;
 };
-const convertGenderToString = (gender: number) => {
+const convertGender = (gender: number) => {
   switch (gender) {
     case 0:
-      return "Male";
+      return "himself";
     case 1:
-      return "Female";
+      return "herself";
     default:
-      return "Other";
+      return "themselves";
   }
 };
+
 const ProfileDescription: FC<ProfileDescriptionProps> = ({ profile }) => {
   return (
-    <div className="text-blue-gray-800">
-      <Typography className="text-xs font-semibold">Achievements:</Typography>
-      <div className="flex justify-around">
-        <div className="flex flex-col items-center text-xs">
-          <Typography className="text-sm font-medium">0</Typography>
-          <Typography className="text-xs font-light">Posts</Typography>
-        </div>
-        <div className="flex flex-col items-center text-xs">
-          <Typography className="text-sm font-medium">0</Typography>
-          <Typography className="text-xs font-light">Comments</Typography>
+    <div className="p-4">
+      <div className="pb-2 border-b-2">
+        <h1 className="text-xs uppercase">Achievements</h1>
+        <div className="flex justify-around">
+          <div className="flex flex-col items-center text-xs">
+            <p className="text-sm font-semibold">0</p>
+            <p>Posts</p>
+          </div>
+          <div className="flex flex-col items-center text-xs">
+            <p className="text-sm font-semibold">0</p>
+            <p>Comments</p>
+          </div>
         </div>
       </div>
-      <Typography className="text-xs font-semibold mt-2">
-        Major: <span className="font-light">{profile.major}</span>
-      </Typography>
 
-      <Typography className="text-xs font-semibold mt-2">
-        Gender:{" "}
-        <span className=" font-light">
-          {convertGenderToString(profile.gender)}
-        </span>
-      </Typography>
-      <Typography className="text-xs font-semibold mt-2">About me: </Typography>
-      <Typography className="text-xs ">{profile.bio}</Typography>
+      <div className="mt-2">
+        <h1 className="text-xs uppercase">About me</h1>
+        <p className="text-xs">
+          {profile.bio ||
+            `User did not talk about ${convertGender(profile.gender)}`}
+        </p>
+      </div>
     </div>
   );
 };
