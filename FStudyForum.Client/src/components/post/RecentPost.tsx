@@ -10,8 +10,7 @@ const RecentPost: React.FC = () => {
     queryKey: ["POST_LIST", "RECENT"],
     queryFn: async () => {
       try {
-        const resp = await PostService.getRecentPosts();
-        return resp;
+        return await PostService.getRecentPosts();
       } catch (e) {
         return [];
       }

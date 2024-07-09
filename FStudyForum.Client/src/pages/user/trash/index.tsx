@@ -1,5 +1,5 @@
 import ContentLayout from "@/components/layout/ContentLayout";
-import PostItem from "@/components/post/PostItem";
+import TrashPost from "@/components/post/TrashPost";
 import { LIMIT_SCROLLING_PAGNATION_RESULT } from "@/helpers/constants";
 import { cn } from "@/helpers/utils";
 import { useAuth } from "@/hooks/useAuth";
@@ -24,12 +24,16 @@ const Trash: React.FC = () => {
         { username: user?.username, filter }
       ],
       queryFn: async ({ pageParam = 1 }) => {
-        return await PostService.getPostsInTrash(
-          user!.username,
-          pageParam,
-          LIMIT_SCROLLING_PAGNATION_RESULT,
-          filter
-        );
+        try {
+          return await PostService.getPostsInTrash(
+            user!.username,
+            pageParam,
+            LIMIT_SCROLLING_PAGNATION_RESULT,
+            filter
+          );
+        } catch (e) {
+          return [];
+        }
       },
       getNextPageParam: (_, pages) => pages.length + 1,
       initialPageParam: 1,
@@ -61,7 +65,7 @@ const Trash: React.FC = () => {
         {posts?.map((post, index) => (
           <div key={index}>
             <div className="hover:bg-gray-50 rounded-lg w-full">
-              <PostItem key={index} data={post} />
+              <TrashPost data={post} />
             </div>
             <hr className="my-1 border-blue-gray-50" />
           </div>

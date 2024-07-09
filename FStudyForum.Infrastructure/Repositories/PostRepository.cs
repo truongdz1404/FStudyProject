@@ -99,11 +99,10 @@ namespace FStudyForum.Infrastructure.Repositories
                 existedPost.RemoveAt(0);
             }
 
-            var rPost = await _dbContext.RecentPosts.FirstOrDefaultAsync(rp => rp.Post.Id == recentPost.Post.Id && rp.User.UserName == recentPost.User.UserName);
+            var rPost = await _dbContext.RecentPosts.FirstOrDefaultAsync(rp => rp.Post.Id == recentPost.Post.Id
+                && rp.User.UserName == recentPost.User.UserName);
             if (rPost != null)
-            {
                 _dbContext.RecentPosts.Remove(rPost);
-            }
 
             await _dbContext.RecentPosts.AddAsync(recentPost);
             await _dbContext.SaveChangesAsync();
@@ -121,25 +120,12 @@ namespace FStudyForum.Infrastructure.Repositories
             return await _dbContext.Posts
                 .Where(p => p.IsDeleted == false && p.Id == id)
                 .Include(p => p.Creater)
+                .Include(p => p.Creater.Profile)
                 .Include(p => p.Topic)
                 .Include(p => p.Votes)
                 .Include(p => p.Attachments)
                 .Include(p => p.Comments)
                 .FirstOrDefaultAsync();
-        }
-
-        public override async Task<IEnumerable<Post>> GetQuery(QueryParameters query)
-        {
-            return await _dbContext.Posts
-                .Include(p => p.Topic)
-                .Where(p => !p.IsDeleted && p.Topic != null && !p.Topic.IsDeleted)
-                .Include(p => p.Creater)
-                .Include(p => p.Votes)
-                .Include(p => p.Attachments)
-                .Include(p => p.Comments)
-                .Paginate(query.PageNumber, query.PageSize)
-                .Sort(query.OrderBy)
-                .ToListAsync();
         }
 
         public async Task<IEnumerable<Post>> GetPostsAsync(QueryPostDTO query)
@@ -148,6 +134,7 @@ namespace FStudyForum.Infrastructure.Repositories
                 .Include(p => p.Topic)
                 .Where(p => p.Topic == null || !p.Topic.IsDeleted)
                 .Include(p => p.Creater)
+                .Include(p => p.Creater.Profile)
                 .Include(p => p.Votes)
                 .Include(p => p.Attachments)
                 .Include(p => p.Comments);

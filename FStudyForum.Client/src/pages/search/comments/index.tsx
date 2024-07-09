@@ -57,15 +57,8 @@ const SearchCommentPage: React.FC = () => {
               : undefined,
           hasMore: comments.length === LIMIT_SCROLLING_PAGNATION_RESULT
         };
-      } catch (error: unknown) {
-        if (
-          error instanceof Error &&
-          error.message === "Request failed with status code 404"
-        ) {
-          return { data: [], nextPage: undefined, hasMore: false };
-        } else {
-          throw error;
-        }
+      } catch (error) {
+        return { data: [], nextPage: undefined, hasMore: false };
       }
     },
     getNextPageParam: lastPage =>

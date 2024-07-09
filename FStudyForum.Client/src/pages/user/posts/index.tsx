@@ -25,13 +25,12 @@ const Posts: React.FC = () => {
       ],
       queryFn: async ({ pageParam = 1 }) => {
         try {
-          const posts = await PostService.getPostsByUser(
+          return await PostService.getPostsByUser(
             user!.username,
             pageParam,
             LIMIT_SCROLLING_PAGNATION_RESULT,
             filter
           );
-          return posts;
         } catch (e) {
           return [];
         }

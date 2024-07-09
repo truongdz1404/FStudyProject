@@ -58,7 +58,6 @@ namespace FStudyForum.API.Controllers
         }
 
 
-
         [HttpGet("{id}"), Authorize]
         public async Task<IActionResult> GetPost([FromRoute] long id)
         {

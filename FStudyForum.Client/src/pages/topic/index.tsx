@@ -29,13 +29,12 @@ const TopicDetail: React.FC = () => {
       queryKey: ["POST_LIST", "BY_TOPIC", { filter, topicId: topic?.id }],
       queryFn: async ({ pageParam = 1 }) => {
         try {
-          const posts = await PostService.getPostsByTopicName(
+          return await PostService.getPostsByTopicName(
             topic!.name,
             pageParam,
             LIMIT_SCROLLING_PAGNATION_RESULT,
             filter
           );
-          return posts;
         } catch (e) {
           return [];
         }

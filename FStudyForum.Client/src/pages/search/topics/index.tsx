@@ -21,13 +21,15 @@ const SearchTopicPage: React.FC = () => {
     useInfiniteQuery({
       queryKey: ["TOPIC_LIST", "SEARCH", { keyword }],
       queryFn: async ({ pageParam = 1 }) => {
-        const result = await SearchService.searchTopics(
-          keyword || "",
-          pageParam,
-          LIMIT_SCROLLING_PAGNATION_RESULT
-        );
-
-        return result;
+        try {
+          return await SearchService.searchTopics(
+            keyword || "",
+            pageParam,
+            LIMIT_SCROLLING_PAGNATION_RESULT
+          );
+        } catch {
+          return [];
+        }
       },
       getNextPageParam: (_, pages) => pages.length + 1,
       initialPageParam: 1

@@ -20,13 +20,15 @@ const SearchUserPage: React.FC = () => {
     useInfiniteQuery({
       queryKey: ["PEOPLE_LIST", "SEARCH", { keyword }],
       queryFn: async ({ pageParam = 1 }) => {
-        const result = await SearchService.searchUsers(
-          keyword || "",
-          pageParam,
-          LIMIT_SCROLLING_PAGNATION_RESULT
-        );
-
-        return result;
+        try {
+          return await SearchService.searchUsers(
+            keyword || "",
+            pageParam,
+            LIMIT_SCROLLING_PAGNATION_RESULT
+          );
+        } catch (e) {
+          return [];
+        }
       },
       getNextPageParam: (_, pages) => pages.length + 1,
       initialPageParam: 1

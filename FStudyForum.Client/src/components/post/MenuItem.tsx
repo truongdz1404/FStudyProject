@@ -1,4 +1,4 @@
-import { Bookmark, Ellipsis, Flag, Trash2 } from "lucide-react";
+import { Bookmark, Ellipsis, Flag, RotateCcw, Trash2 } from "lucide-react";
 import { Response } from "@/types/response";
 import React from "react";
 import {
@@ -84,6 +84,20 @@ const MenuItemPost: React.FC<Props> = ({ post }) => {
     }
   });
 
+  const { mutate: handleRestoreFromTrash } = useMutation({
+    mutationFn: PostService.restoreFromTrash,
+    onSuccess: message => {
+      showSuccessToast(message);
+      queryClient.invalidateQueries({ queryKey: ["POST_LIST"] });
+    },
+    onError: e => {
+      const error = e as AxiosError<Response>;
+      showErrorToast(
+        (error?.response?.data as Response)?.message || error.message
+      );
+    }
+  });
+
   const defaultMenuItem = React.useMemo(
     () => [
       {
@@ -145,14 +159,20 @@ const MenuItemPost: React.FC<Props> = ({ post }) => {
         icon: Trash2,
         label: "Move to trash",
         handle: () => handleMoveToTrash(post.id)
+      },
+      {
+        icon: RotateCcw,
+        label: "Restore from trash",
+        handle: () => handleRestoreFromTrash(post.id)
       }
     ],
     [
+      post.id,
+      isSaved,
       handleMoveToTrash,
       handleRemoveFromSaved,
+      handleRestoreFromTrash,
       handleSave,
-      isSaved,
-      post.id,
       switchOpenReport
     ]
   );

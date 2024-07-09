@@ -1,5 +1,5 @@
 
-﻿
+
 using FStudyForum.Core.Constants;
 using FStudyForum.Core.Models.DTOs.Attachment;
 
@@ -14,6 +14,7 @@ namespace FStudyForum.Core.Models.DTOs.Post
         public string Title { get; set; } = string.Empty;
         public string Content { get; set; } = string.Empty;
         public string Author { get; set; } = string.Empty;
+        public string AuthorAvatar { get; set; } = string.Empty;
         public VoteType VoteType { get; set; } = VoteType.UNVOTE;
         public int UpVoteCount { get; set; }
         public int DownVoteCount { get; set; }

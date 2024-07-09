@@ -63,7 +63,10 @@ const PostItem: FC<PostProps> = ({ data, hideLess = true }) => {
               to={`/user/${data.author}`}
               className="action flex items-center gap-x-2 z-0"
             >
-              <Avatar src={DefaultUser} className="w-6 h-6" />
+              <Avatar
+                src={data.authorAvatar || DefaultUser}
+                className="w-6 h-6"
+              />
             </Link>
           )}
           <div className="flex flex-col">

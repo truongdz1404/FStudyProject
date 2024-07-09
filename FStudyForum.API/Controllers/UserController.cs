@@ -71,7 +71,7 @@ namespace FStudyForum.API.Controllers
                     Email = createUserDTO.Username,
                     Password = createUserDTO.Password
                 }, createUserDTO.Roles, true);
-                
+
                 if (!isSucceed) throw new Exception("Username is existed");
                 return Ok(new Response
                 {

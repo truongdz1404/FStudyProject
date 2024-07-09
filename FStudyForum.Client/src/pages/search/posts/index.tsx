@@ -24,14 +24,16 @@ const SearchPostPage: React.FC = () => {
     useInfiniteQuery({
       queryKey: ["POST_LIST", "SEARCH", { keyword, filter }],
       queryFn: async ({ pageParam = 1 }) => {
-        const result = await SearchService.searchPosts(
-          keyword || "",
-          pageParam,
-          LIMIT_SCROLLING_PAGNATION_RESULT,
-          filter
-        );
-
-        return result;
+        try {
+          return await SearchService.searchPosts(
+            keyword || "",
+            pageParam,
+            LIMIT_SCROLLING_PAGNATION_RESULT,
+            filter
+          );
+        } catch (e) {
+          return [];
+        }
       },
       getNextPageParam: (_, pages) => pages.length + 1,
       initialPageParam: 1
