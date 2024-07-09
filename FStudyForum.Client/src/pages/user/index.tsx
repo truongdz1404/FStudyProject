@@ -18,6 +18,8 @@ import BannerDefault from "@/assets/images/banner.png";
 import AvatarDefault from "@/assets/images/user.png";
 import ImageWithLoading from "@/components/ui/ImageWithLoading";
 import { useRouterParam } from "@/hooks/useRouterParam";
+import useSearchParam from "@/hooks/useSearchParam";
+import PostFilter from "@/components/post/PostFilter";
 
 const tabItems = [
   {
@@ -25,17 +27,29 @@ const tabItems = [
     path: ""
   },
   {
+    label: "Posts",
+    path: "posts"
+  },
+  {
     label: "Saved",
-    path: "save"
+    path: "saved"
   }
 ];
 const Profile = () => {
   const { user } = useAuth();
   const { username } = useParams<{ username: string }>();
   const { user: profile } = useRouterParam();
-
   const [open, setOpen] = React.useState(0);
-
+  const [filter, setFilter] = useSearchParam<string>({
+    key: "filter",
+    defaultValue: "New"
+  });
+  const getTab = () => {
+    const segments = location.pathname
+      .split("/")
+      .filter(segment => segment !== "");
+    return segments.length >= 3 ? segments[segments.length - 1] : "";
+  };
   const handleOpen = (value: number) => setOpen(open === value ? 0 : value);
 
   if (!profile) return <Spinner className="mx-auto" />;
@@ -100,9 +114,9 @@ const Profile = () => {
             >
               <div className="flex items-center gap-x-1">
                 <PencilLine className="w-4 h-4" />
-                <Typography className="text-xs capitalize font-normal hidden xl:block">
+                <span className="text-xs capitalize font-normal hidden xl:block">
                   Edit Profile
-                </Typography>
+                </span>
               </div>
             </Button>
           </Link>
@@ -121,36 +135,49 @@ const Profile = () => {
             <hr className="mt-4 border-blue-gray-50" />
           </AccordionBody>
         </Accordion>
-        <div className="flex w-max gap-4">
+        <div className="flex w-max">
           {tabItems.map(({ label, path }) => (
             <Link to={path} key={label}>
-              <Button
-                variant="text"
-                size="sm"
-                className="rounded-full bg-blue-gray-50"
+              <div
+                className={cn(
+                  "rounded-full py-2 px-4",
+                  getTab() === path && "bg-blue-gray-50"
+                )}
               >
-                <Typography className="text-sm capitalize font-normal text-black">
+                <span className="text-sm capitalize font-normal text-black">
                   {label}
-                </Typography>
-              </Button>
+                </span>
+              </div>
             </Link>
           ))}
         </div>
-        <Button
-          size="sm"
-          variant="outlined"
-          className={cn(
-            "rounded-full mt-2",
-            user?.username !== username && "hidden"
-          )}
-        >
-          <div className="flex items-center">
-            <Plus size={"16"} />
-            <Typography className="text-xs capitalize ml-1 font-normal">
-              Create a Post
-            </Typography>
+        <div className="mt-2 flex items-center gap-x-2">
+          <Link
+            className={cn(getTab() !== "" && "hidden")}
+            to={`/user/${profile.username}/submit`}
+          >
+            <Button
+              size="sm"
+              variant="outlined"
+              className={cn(
+                "rounded-full",
+                user?.username !== username && "hidden"
+              )}
+            >
+              <div className={cn("flex items-center")}>
+                <Plus size={"16"} />
+                <Typography className="text-xs capitalize ml-1 font-normal">
+                  Create a Post
+                </Typography>
+              </div>
+            </Button>
+          </Link>
+
+          <div className="relative flex text-left z-20">
+            <PostFilter setFilter={setFilter} filter={filter} />
           </div>
-        </Button>
+        </div>
+
         <hr className="my-2 border-blue-gray-50" />
       </div>
       <Outlet />

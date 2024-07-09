@@ -88,6 +88,7 @@ const SearchCommentPage: React.FC = () => {
   }, [keyword, refetch]);
 
   if (isPending) return <Spinner className="mx-auto" />;
+  console.table(results);
 
   return (
     <>

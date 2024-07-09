@@ -1,15 +1,11 @@
 import { cn } from "@/helpers/utils";
-import { useLocation, useNavigate } from "react-router-dom";
-
-const useQuery = () => {
-  return new URLSearchParams(useLocation().search);
-};
+import useQueryParams from "@/hooks/useQueryParams";
+import { useNavigate } from "react-router-dom";
 
 const SearchTabs = () => {
-  const query = useQuery();
   const pathSegments = location.pathname.split("/");
-  const type = pathSegments[pathSegments.length - 1];
-  const keyword = query.get("keyword");
+  const tabs = pathSegments[pathSegments.length - 1];
+  const keyword = useQueryParams().get("keyword");
   const navigate = useNavigate();
 
   const handleClick = (type: string) => {
@@ -17,37 +13,37 @@ const SearchTabs = () => {
   };
   const SearchMenu = [
     {
-      type: "posts",
+      path: "posts",
       title: "Posts"
     },
     {
-      type: "topics",
+      path: "topics",
       title: "Topics"
     },
     {
-      type: "comments",
+      path: "comments",
       title: "Comments"
     },
     {
-      type: "people",
+      path: "people",
       title: "People"
     }
   ];
 
   return (
     <>
-      {SearchMenu.map(search => (
+      {SearchMenu.map(({ title, path }) => (
         <button
-          key={search.type}
+          key={path}
           onClick={() => {
-            if (type != search.type) return handleClick(search.type);
+            if (tabs != path) return handleClick(path);
           }}
           className={cn(
             "mb-2 relative flex gap-x-1 justify-center items-center py-2 px-4  text-sm text-black-800 rounded-full",
-            type == search.type && "bg-blue-gray-50"
+            tabs == path && "bg-blue-gray-50"
           )}
         >
-          {search.title}
+          {title}
         </button>
       ))}
     </>

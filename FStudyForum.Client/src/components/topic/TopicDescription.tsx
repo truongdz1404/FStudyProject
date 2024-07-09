@@ -2,6 +2,7 @@ import { useRouterParam } from "@/hooks/useRouterParam";
 
 const TopicDescription = () => {
   const { topic } = useRouterParam();
+
   return (
     <>
       <div className="p-4 border-b-2 ">

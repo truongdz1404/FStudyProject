@@ -18,11 +18,13 @@ import PostService from "@/services/PostService";
 import ReportForm from "../report/ReportForm";
 import { showErrorToast, showSuccessToast } from "@/helpers/toast";
 import BanForm from "./BanForm";
-type MenuItemPostProps = {
+type Props = {
   post: Post;
+  onSave?: () => void;
+  onRemoveSaved?: () => void;
 };
 
-const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
+const MenuItemPost: React.FC<Props> = ({ post, onSave, onRemoveSaved }) => {
   const [openBan, setOpenBan] = React.useState(false);
   const [openReport, setOpenReport] = React.useState(false);
   const [isSaved, setIsSaved] = React.useState(false);
@@ -50,9 +52,11 @@ const MenuItemPost: React.FC<MenuItemPostProps> = ({ post }) => {
       let response;
       if (!isSaved) {
         response = await PostService.save(post.id);
+        onSave && onSave();
         showSuccessToast(response.message);
       } else {
         response = await PostService.removeFromSaved(post.id);
+        onRemoveSaved && onRemoveSaved();
         showSuccessToast(response.message);
       }
       setIsSaved(prev => !prev);

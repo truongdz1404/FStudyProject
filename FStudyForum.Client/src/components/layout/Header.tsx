@@ -198,7 +198,7 @@ const Header = React.memo(({ openSidebar }: HeaderProps) => {
             </span>
           </Link>
         </div>
-        <div className="w-1/2 md:w-2/3 lg:w-2/5 max-w-screen-md">
+        <div className="w-2/3 xl:w-2/5 max-w-screen-md hidden md:block">
           <SearchInput />
         </div>
 

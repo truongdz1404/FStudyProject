@@ -115,7 +115,7 @@ namespace FStudyForum.Infrastructure.Repositories
               .Include(c => c.Replies)
               .Include(c => c.Votes)
               .AsSplitQuery()
-              .Where(c => c.Content.Contains(query.Keyword.Trim()) && !c.IsDeleted);
+              .Where(c => !c.IsDeleted && c.Content.Contains(query.Keyword.Trim()));
             queryable = query.Filter switch
             {
                 "Hot" => queryable.OrderByDescending(c => c.Votes.Sum(v => v.IsUp ? 1 : 0))

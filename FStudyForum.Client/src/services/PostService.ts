@@ -46,7 +46,30 @@ const getPostsByTopicName = async (
   filter: string
 ) => {
   const response = await api.get<ResponseWith<Post[]>>(
-    `/post/all/${topicName}?pageNumber=${pageNumber}&pageSize=${pageSize}&filter=${filter}`
+    `/post/all?topic=${topicName}&pageNumber=${pageNumber}&pageSize=${pageSize}&filter=${filter}`
+  );
+  return response.data.data;
+};
+
+const getPostsByUser = async (
+  userName: string,
+  pageNumber: number,
+  pageSize: number,
+  filter: string
+) => {
+  const response = await api.get<ResponseWith<Post[]>>(
+    `/post/all?user=${userName}&pageNumber=${pageNumber}&pageSize=${pageSize}&filter=${filter}`
+  );
+  return response.data.data;
+};
+const getPostsInUserProfile = async (
+  userName: string,
+  pageNumber: number,
+  pageSize: number,
+  filter: string
+) => {
+  const response = await api.get<ResponseWith<Post[]>>(
+    `/post/all?user=${userName}&pageNumber=${pageNumber}&pageSize=${pageSize}&filter=${filter}&type=0`
   );
   return response.data.data;
 };
@@ -87,6 +110,8 @@ const PostService = {
   isSaved,
   getSavedPosts,
   getPostsByTopicName,
+  getPostsInUserProfile,
+  getPostsByUser,
   getPosts,
   create,
   getById

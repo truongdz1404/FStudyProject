@@ -106,36 +106,6 @@ namespace FStudyForum.API.Controllers
             return Ok("Topic deleted successfully");
         }
 
-        [HttpGet("post/{postId}")]
-        public async Task<IActionResult> GetTopicByPost(int postId)
-        {
-            try
-            {
-                var topic = await _topicService.GetTopicByPost(postId);
-                if (topic == null)
-                {
-                    return NotFound(new Response
-                    {
-                        Status = ResponseStatus.ERROR,
-                        Message = "Topic not found"
-                    });
-                }
-                return Ok(new Response
-                {
-                    Status = ResponseStatus.SUCCESS,
-                    Message = "Get topic by post successfully",
-                    Data = topic
-                });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new Response
-                {
-                    Status = ResponseStatus.ERROR,
-                    Message = ex.Message
-                });
-            }
-        }
         [HttpGet("check-banned")]
         public async Task<IActionResult> CheckBanned([FromQuery] string username, [FromQuery] string topicName)
         {
@@ -201,26 +171,26 @@ namespace FStudyForum.API.Controllers
                 });
             }
         }
-[HttpGet("filter")]
-public async Task<IActionResult> GetTopicsByCategories([FromQuery] List<long> categoryIds)
-{
-    if (categoryIds == null || !categoryIds.Any())
-    {
-        return BadRequest(new Response
+        [HttpGet("filter")]
+        public async Task<IActionResult> GetTopicsByCategories([FromQuery] List<long> categoryIds)
         {
-            Message = "Category IDs must be provided.",
-            Status = ResponseStatus.ERROR
-        });
-    }
+            if (categoryIds == null || !categoryIds.Any())
+            {
+                return BadRequest(new Response
+                {
+                    Message = "Category IDs must be provided.",
+                    Status = ResponseStatus.ERROR
+                });
+            }
 
-    var topics = await _topicService.GetTopicsByCategories(categoryIds);
-    return Ok(new Response
-    {
-        Message = "Filtered topics successfully",
-        Status = ResponseStatus.SUCCESS,
-        Data = topics
-    });
-}
+            var topics = await _topicService.GetTopicsByCategories(categoryIds);
+            return Ok(new Response
+            {
+                Message = "Filtered topics successfully",
+                Status = ResponseStatus.SUCCESS,
+                Data = topics
+            });
+        }
 
     }
 }

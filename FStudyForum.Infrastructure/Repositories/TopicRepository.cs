@@ -116,24 +116,11 @@ namespace FStudyForum.Infrastructure.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<Topic?> GetTopicByPost(int postId)
-        {
-            var topic = await _dbContext.Topics.Join(
-                _dbContext.Posts,
-                t => t.Id,
-                p => p.Topic.Id,
-                (t, p) => new { Topic = t, Post = p })
-                .Where(tp => tp.Post.Id.Equals(postId))
-                .Select(tp => tp.Topic)
-                .FirstOrDefaultAsync();
-            return topic;
-        }
-
         public async Task<IEnumerable<Topic>> GetTopicsByCategories(List<long> categoryIds)
         {
-             return await _dbContext.Topics
-                .Where(t => t.Categories.Any(c => categoryIds.Contains(c.Id)))
-                .ToListAsync();
+            return await _dbContext.Topics
+               .Where(t => t.Categories.Any(c => categoryIds.Contains(c.Id)))
+               .ToListAsync();
         }
     }
 

@@ -4,6 +4,8 @@ import { MessageSquare, Share } from "lucide-react";
 import { Post } from "@/types/post";
 import { Avatar } from "@material-tailwind/react";
 import DefaultTopic from "@/assets/images/topic.png";
+import DefaultUser from "@/assets/images/user.png";
+
 import { cn, formatElapsedTime } from "@/helpers/utils";
 import { Link, useNavigate } from "react-router-dom";
 import React from "react";
@@ -19,7 +21,7 @@ const PostItem: FC<PostProps> = ({ data, hideLess = true }) => {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const actionRefs = React.useRef<HTMLElement[]>([]);
   const navigate = useNavigate();
-  
+
   const handleRemainClick = (event: React.MouseEvent<HTMLDivElement>) => {
     if (!hideLess || !containerRef.current) return;
     const actions = Array.from(
@@ -32,8 +34,9 @@ const PostItem: FC<PostProps> = ({ data, hideLess = true }) => {
       containerRef.current.contains(event.target as Node) &&
       !actionRefs.current.some(action => action.contains(event.target as Node))
     ) {
-
-      navigate(`/topic/${data.topicName}/comments/${data.id}`);
+      if (data.topicName)
+        navigate(`/topic/${data.topicName}/comments/${data.id}`);
+      else navigate(`/user/${data.author}/comments/${data.id}`);
     }
   };
 
@@ -45,25 +48,61 @@ const PostItem: FC<PostProps> = ({ data, hideLess = true }) => {
     >
       <div className="flex justify-between">
         <div className="flex items-center gap-x-2">
-          <Link
-            to={`/topic/${data.topicName}`}
-            className="action flex items-center gap-x-2 z-0"
-          >
-            <Avatar
-              src={data.topicAvatar || DefaultTopic}
-              className="w-6 h-6"
-            />
-            <span className="text-xs">{`t/${data.topicName}`}</span>
-          </Link>
-          <span className="text-xs font-light hidden lg:block">•</span>
-          <Link
-            to={`/profile/${data.author}`}
-            className="action text-xs font-light hidden lg:block"
-          >{`Posted by u/${data.author}`}</Link>
-          <span className="text-xs font-light">•</span>
-          <span className="text-xs font-light">
-            {formatElapsedTime(data.elapsed)}
-          </span>
+          {data.topicName ? (
+            <Link
+              to={`/topic/${data.topicName}`}
+              className="action flex items-center gap-x-2 z-0"
+            >
+              <Avatar
+                src={data.topicAvatar || DefaultTopic}
+                className="w-6 h-6"
+              />
+            </Link>
+          ) : (
+            <Link
+              to={`/user/${data.author}`}
+              className="action flex items-center gap-x-2 z-0"
+            >
+              <Avatar src={DefaultUser} className="w-6 h-6" />
+            </Link>
+          )}
+          <div className="flex flex-col">
+            <div className="flex gap-x-1">
+              {data.topicName ? (
+                <Link
+                  to={`/topic/${data.topicName}`}
+                  className="text-xs action"
+                >{`t/${data.topicName}`}</Link>
+              ) : (
+                <Link
+                  to={`/user/${data.author}`}
+                  className="text-xs action"
+                >{`u/${data.author}`}</Link>
+              )}
+
+              {hideLess && data.topicName && (
+                <>
+                  <span className="text-xs font-light hidden lg:block">•</span>
+                  <Link
+                    to={`/user/${data.author}`}
+                    className="action text-xs font-light hidden lg:block"
+                  >{`Posted by u/${data.author}`}</Link>
+                </>
+              )}
+              <span className="text-xs font-light">•</span>
+              <span className="text-xs font-light">
+                {formatElapsedTime(data.elapsed)}
+              </span>
+            </div>
+            {!hideLess && (
+              <Link
+                to={`/user/${data.author}`}
+                className="action text-xs font-light hidden lg:block"
+              >
+                {data.author}
+              </Link>
+            )}
+          </div>
         </div>
         <MenuItemPost post={data} />
       </div>

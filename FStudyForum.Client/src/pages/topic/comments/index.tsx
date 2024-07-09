@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { AxiosError } from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import { Alert } from "@material-tailwind/react";
+import { Alert, Spinner } from "@material-tailwind/react";
 import PostService from "@/services/PostService";
 import CommentService from "@/services/CommentService";
 import PostItem from "@/components/post/PostItem";
@@ -51,7 +51,7 @@ const Comments = () => {
   };
 
   useEffect(() => {
-    if (!postId || !topicName) {
+    if (!postId) {
       setError("Invalid post id or topic name");
       return;
     }
@@ -70,7 +70,7 @@ const Comments = () => {
       }
     };
     fetchPost();
-  }, [post, postId, topicName]);
+  }, [post, postId]);
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -249,10 +249,10 @@ const Comments = () => {
     }));
   };
 
-  if (loading || !post) return null;
+  if (loading || !post) return <Spinner className="mx-auto" />;
 
   return (
-    <ContentLayout pannel={<TopicDescription />}>
+    <ContentLayout pannel={topicName ? <TopicDescription /> : undefined}>
       <div className="relative">
         {error && (
           <Alert color="red" className="mb-4">

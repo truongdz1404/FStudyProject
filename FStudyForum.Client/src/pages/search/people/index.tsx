@@ -70,7 +70,7 @@ const SearchUserPage: React.FC = () => {
       {uniqueTopics.length === 0 && <NotFoundSearch keyword={keyword} />}
       {uniqueTopics.map((user, index) => {
         return (
-          <Link to={`/profile/${user?.username}`} key={user?.username}>
+          <Link to={`/user/${user?.username}`} key={user?.username}>
             <div key={index} className="w-full flex flex-col item-center">
               <div className="hover:bg-gray-100 rounded-lg w-full py-6 flex items-center">
                 <img

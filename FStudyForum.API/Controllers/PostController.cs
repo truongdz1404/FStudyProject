@@ -18,7 +18,6 @@ namespace FStudyForum.API.Controllers
         private readonly IPostService _postService;
         public PostController(IPostService postService)
         {
-
             _postService = postService;
         }
 
@@ -409,34 +408,5 @@ namespace FStudyForum.API.Controllers
                 });
             }
         }
-
-        [HttpGet("all/{topicName}"), Authorize]
-        public async Task<IActionResult> GetPostsByTopicName([FromRoute] string topicName, [FromQuery] QueryPostDTO query)
-        {
-            try
-            {
-                var userName = User.Identity?.Name ?? throw new Exception("User is not authenticated!");
-                var posts = await _postService.GetPostsByTopicName(userName, topicName, query);
-
-                return Ok(new Response
-                {
-                    Message = "Get Posts successfully",
-                    Status = ResponseStatus.SUCCESS,
-                    Data = posts
-                });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new Response
-                {
-                    Status = ResponseStatus.ERROR,
-                    Message = ex.Message
-                });
-            }
-        }
-
-
-
-
     }
 }

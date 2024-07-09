@@ -9,7 +9,7 @@ import AuthLayout from "@/components/layout/AuthLayout";
 import RoleBasedGuard from "@/helpers/guards/RoleBasedGuard";
 import Donate from "./pages/donate";
 import Notification from "./pages/donate/notification";
-import SavePost from "./pages/user/save";
+import SavePost from "./pages/user/saved";
 import { ROLE } from "@/helpers/constants";
 import Loadable from "./helpers/loading/Loadable";
 
@@ -39,6 +39,9 @@ const SignIn = Loadable(lazy(() => import("@/pages/auth/signin")));
 const Home = Loadable(lazy(() => import("@/pages/home")));
 const TopicDetail = Loadable(lazy(() => import("@/pages/topic")));
 const Topics = Loadable(lazy(() => import("@/pages/topics")));
+const UserPosts = Loadable(lazy(() => import("@/pages/user/posts")));
+const UserOverview = Loadable(lazy(() => import("@/pages/user/overview")));
+
 const SearchPage = Loadable(lazy(() => import("@/pages/search/posts")));
 const SearchTopics = Loadable(lazy(() => import("@/pages/search/topics")));
 const SearchComments = Loadable(lazy(() => import("@/pages/search/comments")));
@@ -182,8 +185,34 @@ const Router: FC = () => {
           element: <Profile />,
           children: [
             {
-              path: "save",
+              index: true,
+              element: <UserOverview />
+            },
+            {
+              path: "posts",
+              element: <UserPosts />
+            },
+            {
+              path: "saved",
               element: <SavePost />
+            }
+          ]
+        },
+        {
+          path: "user/:username",
+          children: [
+            {
+              path: "submit",
+              element: <SubmitPage />
+            },
+            {
+              path: "comments/:id",
+              children: [
+                {
+                  index: true,
+                  element: <Comments />
+                }
+              ]
             }
           ]
         },

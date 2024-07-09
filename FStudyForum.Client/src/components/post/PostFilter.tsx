@@ -31,7 +31,7 @@ const PostFilter: React.FC<Props> = ({ setFilter, filter }) => {
         <div className="origin-top-left absolute top-9 shadow-sm bg-white rounded-md overflow-hidden border">
           <div
             className={cn(
-              "block px-4 py-2 text-sm text-gray-700 font-semibold"
+              "block px-4 py-2 text-sm text-gray-700 font-semibold truncate"
             )}
           >
             Sort by

@@ -19,5 +19,4 @@ public interface ITopicService
     Task<TopicBanDTO> BanUser(CreateTopicBanDTO topicBan);
     Task UnbanUser(string username, string topic);
     Task<TopicBanDTO> CheckBannedUser(string username, string topicName);
-    Task<TopicDTO> GetTopicByPost(int postId);
 }

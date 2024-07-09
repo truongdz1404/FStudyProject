@@ -22,7 +22,7 @@ const MiniPost: React.FC<MiniPostProps> = ({ data }) => {
       <div className="flex flex-col justify-between grow flex-1 w-2/5">
         <div>
           <Link
-            to={`/profile/${data.topicName}`}
+            to={`/user/${data.topicName}`}
             className="text-xs font-light hover:underline flex items-center gap-x-2"
           >
             <Avatar

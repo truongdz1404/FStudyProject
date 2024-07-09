@@ -73,8 +73,7 @@ public class ApplicationDBContext(DbContextOptions options)
 
         builder.Entity<Topic>()
             .HasMany(t => t.Posts)
-            .WithOne(p => p.Topic)
-            .IsRequired();
+            .WithOne(p => p.Topic);
 
         builder.Entity<Topic>()
         .HasMany(t => t.BannedUser)

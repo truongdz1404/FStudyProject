@@ -81,7 +81,7 @@ const CommentItem: FC<CommentItemProps> = ({
           />
           <div className="flex items-center">
             <Link
-              to={`/profile/${comment.author}`}
+              to={`/user/${comment.author}`}
               className="action text-xs font-medium"
             >
               {comment.author}

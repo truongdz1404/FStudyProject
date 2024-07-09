@@ -16,7 +16,6 @@ public interface ITopicRepository : IBaseRepository<Topic>
     public Task<DateTimeOffset?> GetUnlockTime(CreateTopicBanDTO lockUser);
     public Task<IEnumerable<Topic>> SearchTopicContainKeywordAsync(QuerySearchTopicDTO query);
     public Task UpdateTopicBan(TopicBan topicBan);
-    public Task<Topic?> GetTopicByPost(int postId);
     Task<IEnumerable<Topic>> GetTopicsByCategories(List<long> categoryIds);
-    
+
 }
