@@ -1,4 +1,4 @@
-import { ResponseWith } from "@/types/response";
+import { ResponseWith, Response } from "@/types/response";
 import api from "./api";
 import { CreatePost, Post, SavePost } from "@/types/post";
 
@@ -79,6 +79,19 @@ const create = async (post: CreatePost) => {
   return response.data.data;
 };
 
+const moveToTrash = async (postId: number) => {
+  const response = await api.post<Response>(`/post/move-trash/${postId}`);
+  return response.data.message;
+};
+const restoreFromTrash = async (postId: number) => {
+  const response = await api.post<Response>(`/post/restore-trash/${postId}`);
+  return response.data.message;
+};
+const deleteForever = async (postId: number) => {
+  const response = await api.delete<Response>(`/post/delete/${postId}`);
+  return response.data.message;
+};
+
 const getById = async (id: string) => {
   const response = await api.get<ResponseWith<Post>>(`/post/${id}`);
   return response.data.data;
@@ -111,9 +124,12 @@ const PostService = {
   getSavedPosts,
   getPostsByTopicName,
   getPostsInUserProfile,
+  restoreFromTrash,
   getPostsByUser,
+  deleteForever,
   getPosts,
   create,
+  moveToTrash,
   getById
 };
 

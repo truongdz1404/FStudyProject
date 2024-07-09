@@ -10,7 +10,7 @@ import RoleBasedGuard from "@/helpers/guards/RoleBasedGuard";
 import Donate from "./pages/donate";
 import Notification from "./pages/donate/notification";
 import SavePost from "./pages/user/saved";
-import { ROLE } from "@/helpers/constants";
+import { Roles } from "@/helpers/constants";
 import Loadable from "./helpers/loading/Loadable";
 
 const QRCode = Loadable(lazy(() => import("./pages/donate/qrcode")));
@@ -112,7 +112,7 @@ const Router: FC = () => {
         {
           path: "manager",
           element: (
-            <RoleBasedGuard accessibleRoles={[ROLE.Admin]}>
+            <RoleBasedGuard accessibleRoles={[Roles.ADMIN]}>
               <Outlet />
             </RoleBasedGuard>
           ),

@@ -11,7 +11,7 @@ const ReportList: React.FC = () => {
     error,
     isLoading
   } = useQuery<Report[]>({
-    queryKey: ["reports"],
+    queryKey: ["REPORT_LIST"],
     queryFn: () => ReportService.getUserReports(),
     refetchOnWindowFocus: false
   });

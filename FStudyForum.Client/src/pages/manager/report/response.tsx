@@ -37,7 +37,7 @@ const ResponseForm = () => {
     error,
     isLoading
   } = useQuery({
-    queryKey: ["reportDetail", reportId],
+    queryKey: ["REPORT_DETAIL", reportId],
     queryFn: () => ReportService.getReportById(reportId ?? "")
   });
   const [responseContent, setResponseContent] = React.useState(

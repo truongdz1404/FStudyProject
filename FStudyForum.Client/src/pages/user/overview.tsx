@@ -17,7 +17,12 @@ const Overview: React.FC = () => {
 
   const { data, fetchNextPage, error, isPending, isFetchingNextPage } =
     useInfiniteQuery({
-      queryKey: [`user-overview-${filter}-query`],
+      queryKey: [
+        "POST_LIST",
+        "IN_PROFILE",
+        "BY_USER",
+        { username: user?.username, filter }
+      ],
       queryFn: async ({ pageParam = 1 }) => {
         try {
           const posts = await PostService.getPostsInUserProfile(
@@ -57,7 +62,7 @@ const Overview: React.FC = () => {
         </Typography>
       </div>
 
-      <div className="pt-1">
+      <div>
         {posts?.map((post, index) => (
           <div key={index}>
             <div className="hover:bg-gray-50 rounded-lg w-full">

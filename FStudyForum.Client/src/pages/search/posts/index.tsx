@@ -22,7 +22,7 @@ const SearchPostPage: React.FC = () => {
 
   const { data, fetchNextPage, isPending, isFetchingNextPage, error } =
     useInfiniteQuery({
-      queryKey: [`post-${keyword}-search-${filter}-query`, keyword],
+      queryKey: ["POST_LIST", "SEARCH", { keyword, filter }],
       queryFn: async ({ pageParam = 1 }) => {
         try {
           const result = await SearchService.searchPosts(

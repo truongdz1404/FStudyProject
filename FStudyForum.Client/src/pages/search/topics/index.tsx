@@ -20,7 +20,7 @@ const SearchTopicPage: React.FC = () => {
 
   const { data, fetchNextPage, isPending, isFetchingNextPage, refetch } =
     useInfiniteQuery({
-      queryKey: [`search-topic-query`, keyword],
+      queryKey: ["TOPIC_LIST", "SEARCH", { keyword }],
       queryFn: async ({ pageParam = 1 }) => {
         try {
           const result = await SearchService.searchTopics(

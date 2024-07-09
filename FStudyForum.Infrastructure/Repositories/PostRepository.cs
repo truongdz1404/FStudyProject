@@ -46,11 +46,20 @@ namespace FStudyForum.Infrastructure.Repositories
                 });
             }
             post.Attachments = attachments;
-            _dbContext.Posts.Add(post);
-            await _dbContext.SaveChangesAsync();
+            await Create(post);
             return post;
         }
 
+        public async Task MovePostToTrashAsync(Post post)
+        {
+            post.IsDeleted = true;
+            await Update(post);
+        }
+        public async Task RestorePostFromTrashAsync(Post post)
+        {
+            post.IsDeleted = false;
+            await Update(post);
+        }
 
         public async Task RemoveFromSavedByUser(SavedPost postByUser)
         {
@@ -110,13 +119,13 @@ namespace FStudyForum.Infrastructure.Repositories
         public async Task<Post?> GetPostByIdAsync(long id)
         {
             return await _dbContext.Posts
-                .Where(p => p.IsDeleted == false)
+                .Where(p => p.IsDeleted == false && p.Id == id)
                 .Include(p => p.Creater)
                 .Include(p => p.Topic)
                 .Include(p => p.Votes)
                 .Include(p => p.Attachments)
                 .Include(p => p.Comments)
-                .FirstOrDefaultAsync(p => p.Id == id);
+                .FirstOrDefaultAsync();
         }
 
         public override async Task<IEnumerable<Post>> GetQuery(QueryParameters query)

@@ -19,7 +19,7 @@ const SearchUserPage: React.FC = () => {
 
   const { data, fetchNextPage, isPending, isFetchingNextPage, refetch } =
     useInfiniteQuery({
-      queryKey: [`search-people-query`, keyword],
+      queryKey: ["PEOPLE_LIST", "SEARCH", { keyword }],
       queryFn: async ({ pageParam = 1 }) => {
         try {
           const result = await SearchService.searchUsers(

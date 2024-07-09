@@ -26,7 +26,7 @@ const TopicDetail: React.FC = () => {
 
   const { data, fetchNextPage, isPending, isFetchingNextPage } =
     useInfiniteQuery({
-      queryKey: [`topic-${filter}-query`],
+      queryKey: ["POST_LIST", "BY_TOPIC", { filter, topicId: topic?.id }],
       queryFn: async ({ pageParam = 1 }) => {
         try {
           const posts = await PostService.getPostsByTopicName(

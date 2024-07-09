@@ -20,7 +20,7 @@ const HomePage: React.FC = () => {
 
   const { data, fetchNextPage, isPending, isFetchingNextPage } =
     useInfiniteQuery({
-      queryKey: [`home-${filter}-query`],
+      queryKey: ["POST_LIST", "HOME", { filter }],
       queryFn: async ({ pageParam = 1 }) => {
         try {
           const posts = await PostService.getPosts(

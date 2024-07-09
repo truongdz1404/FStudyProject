@@ -9,7 +9,6 @@ import { Spinner } from "@material-tailwind/react";
 import { useLocation } from "react-router-dom";
 import useSearchParam from "@/hooks/useSearchParam";
 import CommentFilter from "@/components/comment/CommentFilter";
-import SearchPost from "@/components/search/SearchPost";
 
 const useQueryParams = () => {
   return new URLSearchParams(useLocation().search);
@@ -32,7 +31,7 @@ const SearchCommentPage: React.FC = () => {
     isFetching,
     refetch
   } = useInfiniteQuery({
-    queryKey: [`search-comments-${filter}-query`, keyword],
+    queryKey: ["COMMENT_LIST", "SEARCH", { filter, keyword }],
     queryFn: async ({ pageParam = 1 }) => {
       if (!keyword) return { data: [], nextPage: undefined, hasMore: false };
       try {
