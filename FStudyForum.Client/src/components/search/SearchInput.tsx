@@ -12,6 +12,8 @@ import { Topic } from "@/types/topic";
 import TopicService from "@/services/TopicService";
 import { debounce } from "lodash";
 import useQueryParams from "@/hooks/useQueryParams";
+import { User } from "@/types/user";
+import UserService from "@/services/UserService";
 
 type History = {
   context: Context;
@@ -34,6 +36,7 @@ const SearchInput = () => {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [selectIndex, setSelectIndex] = React.useState(-1);
   const [foundTopics, setFoundTopics] = React.useState<Topic[]>([]);
+  const [foundUsers, setFoundUsers] = React.useState<User[]>([]);
   const keywordParam = useQueryParams().get("keyword");
 
   const navigate = useNavigate();
@@ -74,18 +77,23 @@ const SearchInput = () => {
     ) as History[];
     setHistory(savedHistory);
   }, []);
+
   const debouncedSearch = React.useMemo(
     () =>
       debounce(async (searchTerm: string) => {
         if (!searchTerm) {
           setFoundTopics([]);
+          setFoundUsers([]);
           return;
         }
         try {
-          const founds = await TopicService.search(searchTerm);
-          setFoundTopics(founds);
+          const foundTopics = await TopicService.search(searchTerm);
+          const foundUsers = await UserService.search(searchTerm);
+          setFoundTopics(foundTopics);
+          setFoundUsers(foundUsers);
         } catch (e) {
           setFoundTopics([]);
+          setFoundUsers([]);
         }
       }, 200),
     []
@@ -123,7 +131,10 @@ const SearchInput = () => {
     }
     if (e.key === "Enter" && selectIndex != -1) {
       if (canViewHistory()) handleSearch(history[selectIndex]);
-      else if (canSearch()) handleSelect(foundTopics[selectIndex]);
+      else if (canSearch()) {
+        const allResults = [...foundTopics, ...foundUsers];
+        handleSelect(allResults[selectIndex]);
+      }
     } else if (e.key === "Enter" && keyword.trim()) {
       handleSearch({
         keyword: keyword.trim(),
@@ -145,12 +156,20 @@ const SearchInput = () => {
     } else navigate(`/search/posts?keyword=${value.keyword}`);
   };
 
-  const handleSelect = (topic: Topic) => {
-    addHistory({
-      context: { prefix: "t", name: topic.name, avatar: topic.avatar }
-    });
-    closeBox();
-    navigate(`/topic/${topic.name}`);
+  const handleSelect = (item: Topic | User) => {
+    if ("username" in item) {
+      addHistory({
+        context: { prefix: "u", name: item.username, avatar: item.avatar }
+      });
+      closeBox();
+      navigate(`/user/${item.username}`);
+    } else {
+      addHistory({
+        context: { prefix: "t", name: item.name, avatar: item.avatar }
+      });
+      closeBox();
+      navigate(`/topic/${item.name}`);
+    }
     setKeyword("");
   };
 
@@ -184,8 +203,8 @@ const SearchInput = () => {
 
   const boxSize = React.useMemo(
     () =>
-      canViewHistory() ? history.length : canSearch() ? foundTopics.length : 0,
-    [canSearch, canViewHistory, foundTopics.length, history.length]
+      canViewHistory() ? history.length : canSearch() ? foundTopics.length + foundUsers.length : 0,
+    [canSearch, canViewHistory, foundTopics.length, foundUsers.length, history.length]
   );
 
   return (
@@ -323,6 +342,25 @@ const SearchInput = () => {
                           {`${topic.postCount} `}
                           {topic.postCount ? "posts" : "post"}
                         </span>
+                      </div>
+                    </div>
+                  ))}
+                {canSearch() &&
+                  foundUsers.map((user, index) => (
+                    <div
+                      key={index + foundTopics.length}
+                      className={cn(
+                        "flex gap-x-2 items-center py-2 px-4 hover:bg-blue-gray-50/40 cursor-pointer",
+                        selectIndex == index + foundTopics.length && "bg-blue-gray-50/40"
+                      )}
+                      onClick={() => handleSelect(user)}
+                    >
+                      <Avatar
+                        src={user.avatar || DefaultAvatar}
+                        className="w-6 h-6"
+                      />
+                      <div className="flex-col flex">
+                        <span className="text-xs font-normal">{`u/${user.username}`}</span>
                       </div>
                     </div>
                   ))}

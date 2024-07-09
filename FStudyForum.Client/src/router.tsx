@@ -12,6 +12,7 @@ import Notification from "./pages/donate/notification";
 import SavePost from "./pages/user/saved";
 import { ROLE } from "@/helpers/constants";
 import Loadable from "./helpers/loading/Loadable";
+import SearchUserCommentPage from "./pages/search/people/comments";
 
 const QRCode = Loadable(lazy(() => import("./pages/donate/qrcode")));
 const Popular = Loadable(lazy(() => import("@/pages/popular")));
@@ -44,11 +45,14 @@ const UserOverview = Loadable(lazy(() => import("@/pages/user/overview")));
 
 const SearchPage = Loadable(lazy(() => import("@/pages/search/posts")));
 const SearchTopics = Loadable(lazy(() => import("@/pages/search/topics")));
+const SearchPostInTopic = Loadable(lazy(() => import("@/pages/search/topics/posts")));
 const SearchComments = Loadable(lazy(() => import("@/pages/search/comments")));
 const SearchPeople = Loadable(lazy(() => import("@/pages/search/people")));
+const SearchPost = Loadable(lazy(() => import("@/pages/search/people/posts/SearchPostPage")));
 const SignOut = Loadable(lazy(() => import("@/pages/auth/signout")));
 const ListReport = Loadable(lazy(() => import("@/pages/manager/report/list")));
 const Search = Loadable(lazy(() => import("@/pages/search")));
+const People = Loadable(lazy(() => import("@/pages/search/people/posts")));
 
 const Test = Loadable(lazy(() => import("@/pages/test")));
 const Response = Loadable(
@@ -177,24 +181,47 @@ const Router: FC = () => {
                   element: <Comments />
                 }
               ]
+            },
+            {
+              path: "search/posts",
+              element: <SearchPostInTopic />
             }
           ]
         },
         {
           path: "user/:username",
-          element: <Profile />,
           children: [
             {
-              index: true,
-              element: <UserOverview />
+              element: <Profile />,
+              children: [
+                {
+                  index: true,
+                  element: <UserOverview />
+                },
+                {
+                  path: "posts",
+                  element: <UserPosts />
+                },
+                {
+                  path: "saved",
+                  element: <SavePost />
+                },
+                
+              ]
             },
             {
-              path: "posts",
-              element: <UserPosts />
-            },
-            {
-              path: "saved",
-              element: <SavePost />
+              path: "search",
+              element: <People />,
+              children: [
+                {
+                  path: "posts",
+                  element: <SearchPost />
+                },
+                {
+                  path: "comments",
+                  element: <SearchUserCommentPage />
+                }
+              ]
             }
           ]
         },

@@ -1,10 +1,8 @@
 import { Post } from "@/types/post";
 import { Avatar } from "@material-tailwind/react";
 import { Link, useNavigate } from "react-router-dom";
-import { Images } from "lucide-react";
 import { Comment } from "@/types/comment";
 import DefaultTopic from "@/assets/images/topic.png";
-import ImageWithLoading from "../ui/ImageWithLoading";
 import React from "react";
 import LightBox from "../post/LightBox";
 import { formatElapsedTime } from "@/helpers/utils";
@@ -20,9 +18,7 @@ const SearchPost: React.FC<Props> = ({ data, comment, keyword }) => {
   const actionRefs = React.useRef<HTMLElement[]>([]);
   const navigate = useNavigate();
 
-  const openLightBox = (index?: number) => {
-    setOpen(index ?? 0);
-  };
+
   const handleRemainClick = (event: React.MouseEvent<HTMLDivElement>) => {
     if (!containerRef.current) return;
     const actions = Array.from(
@@ -55,12 +51,8 @@ const SearchPost: React.FC<Props> = ({ data, comment, keyword }) => {
             />
             {`t/${data.topicName}`}
           </Link>
-          <span className="text-md w-full text-blue-gray-800 break-words">
-            {data.title
-              .split(regex)
-              .map((part, index) =>
-                regex.test(part) ? <strong key={index}>{part}</strong> : part
-              )}
+          <span className="text-md flex w-full text-blue-gray-800 break-words mt-2 mb-2">
+            {data.title}
           </span>
           <div className="bg-gray-100 w-full flex flex-col py-3 rounded-lg">
           <Link
@@ -79,7 +71,10 @@ const SearchPost: React.FC<Props> = ({ data, comment, keyword }) => {
             </div>
           </Link>
           <div className="ml-3 text-sm">
-            <span>{comment.content}</span>
+            <span>{comment.content.split(regex)
+              .map((part, index) =>
+                regex.test(part) ? <strong key={index}>{part}</strong> : part
+              )}</span>
           </div>
           <div className="my-5 ml-3 text-gray-600 text-sm">
             <span>{comment.voteCount} {Math.abs(comment.voteCount) <= 1 ? 'vote' : 'votes'}</span>
@@ -95,7 +90,7 @@ const SearchPost: React.FC<Props> = ({ data, comment, keyword }) => {
         </div>
       </div>
 
-      {data.attachments[0] && (
+      {/* {data.attachments[0] && (
         <div
           className="flex ml-3  overflow-hidden rounded-lg relative aspect-[4/3] h-24 action"
           onClick={() => openLightBox(0)}
@@ -111,7 +106,7 @@ const SearchPost: React.FC<Props> = ({ data, comment, keyword }) => {
             </div>
           )}
         </div>
-      )}
+      )} */}
       <LightBox
         index={open}
         hideArrow={data.attachments.length <= 1}
