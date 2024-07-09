@@ -9,7 +9,7 @@ import { Spinner } from "@material-tailwind/react";
 import { useLocation } from "react-router-dom";
 import useSearchParam from "@/hooks/useSearchParam";
 import CommentFilter from "@/components/comment/CommentFilter";
-import SearchPost from "@/components/search/SearchPost";
+import SearchComment from "@/components/search/SearchComment";
 
 const useQueryParams = () => {
   return new URLSearchParams(useLocation().search);
@@ -101,7 +101,7 @@ const SearchCommentPage: React.FC = () => {
       {results.map(({ post, comment }, index) => (
         <div key={index} className="w-full ">
           <div className="hover:bg-gray-100 rounded-lg w-full py-3">
-            {/* <SearchPost key={index} data={post} comment={comment} />. */}
+            <SearchComment keyword={keyword} data={post} comment={comment} />
           </div>
           <hr className="my-1 border-blue-gray-50" />
         </div>
