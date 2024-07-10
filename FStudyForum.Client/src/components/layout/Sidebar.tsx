@@ -1,4 +1,4 @@
-import { ROLE } from "@/helpers/constants";
+import { Roles } from "@/helpers/constants";
 import { cn } from "@/helpers/utils";
 import { useAuth } from "@/hooks/useAuth";
 import {
@@ -30,7 +30,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 const sidebarListItems = [
   {
     group: "user",
-    access: [ROLE.User, ROLE.Admin],
+    access: [Roles.USER, Roles.ADMIN],
     items: [
       {
         label: "Home",
@@ -60,7 +60,7 @@ const sidebarListItems = [
   },
   {
     group: "admin",
-    access: [ROLE.Admin],
+    access: [Roles.ADMIN],
     items: [
       {
         label: "Manager",

@@ -15,18 +15,22 @@ const Overview: React.FC = () => {
   const { ref, inView } = useInView();
   const filter = useQueryParams().get("filter") ?? "New";
 
-  const { data, fetchNextPage, error, isPending, isFetchingNextPage } =
+  const { data, fetchNextPage, isPending, isFetchingNextPage } =
     useInfiniteQuery({
-      queryKey: [`user-overview-${filter}-query`],
+      queryKey: [
+        "POST_LIST",
+        "IN_PROFILE",
+        "BY_USER",
+        { username: user?.username, filter }
+      ],
       queryFn: async ({ pageParam = 1 }) => {
         try {
-          const posts = await PostService.getPostsInUserProfile(
+          return await PostService.getPostsInProfile(
             user!.username,
             pageParam,
             LIMIT_SCROLLING_PAGNATION_RESULT,
             filter
           );
-          return posts;
         } catch (e) {
           return [];
         }
@@ -36,10 +40,10 @@ const Overview: React.FC = () => {
       enabled: !!user
     });
   React.useEffect(() => {
-    if (inView && !error) {
+    if (inView) {
       fetchNextPage();
     }
-  }, [inView, fetchNextPage, error]);
+  }, [inView, fetchNextPage]);
   if (!user || isPending) {
     return <Spinner className="mx-auto" />;
   }
@@ -57,7 +61,7 @@ const Overview: React.FC = () => {
         </Typography>
       </div>
 
-      <div className="pt-1">
+      <div>
         {posts?.map((post, index) => (
           <div key={index}>
             <div className="hover:bg-gray-50 rounded-lg w-full">
@@ -68,7 +72,11 @@ const Overview: React.FC = () => {
         ))}
       </div>
       <div ref={ref} className="text-center">
-        {isFetchingNextPage && <Spinner className="mx-auto" />}
+        {isFetchingNextPage ? (
+          <Spinner className="mx-auto" />
+        ) : (
+          !isPending && <span className="text-xs font-light">Nothing more</span>
+        )}
       </div>
     </ContentLayout>
   );

@@ -1,4 +1,4 @@
-import{ useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import AddTopicPopup from "@/components/topic/popup/AddTopicPopup";
 import DeleteTopicPopup from "@/components/topic/popup/DeleteTopicPopup";
 import UpdateTopicPopup from "@/components/topic/popup/UpdateTopicPopup";
@@ -10,7 +10,7 @@ import { Category } from "@/types/category";
 import {
   useQuery,
   QueryClient,
-  QueryClientProvider,
+  QueryClientProvider
 } from "@tanstack/react-query";
 import {
   Card,
@@ -21,24 +21,34 @@ import {
   IconButton,
   Tooltip
 } from "@material-tailwind/react";
-import { ChevronsUpDown, Pencil, Plus, Trash, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  ChevronsUpDown,
+  Pencil,
+  Plus,
+  Trash,
+  ChevronLeft,
+  ChevronRight
+} from "lucide-react";
 
 const titles = ["Name", "Description", "Action"];
 const PAGE_SIZE = 5;
 
-const queryClient = new QueryClient(); 
+const queryClient = new QueryClient();
 
 const TopicsPage = () => {
   const [popupOpen, setPopupOpen] = useState(0);
   const [selectTopic, setSelectTopic] = useState<Topic | undefined>(undefined);
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
+  const [selectedCategory, setSelectedCategory] = useState<string | undefined>(
+    undefined
+  );
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const categoryObjects: Category[] = await CategoryService.getAllCategory();
+        const categoryObjects: Category[] =
+          await CategoryService.getAllCategory();
         setCategories(categoryObjects);
       } catch (error) {
         console.error("Error fetching categories:", error);
@@ -48,7 +58,7 @@ const TopicsPage = () => {
   }, []);
 
   const { data, isLoading, refetch } = useQuery<Topic[], Error>({
-    queryKey: ["active-topics", selectedCategory], 
+    queryKey: ["TOPIC_LIST", { selectedCategory }],
     queryFn: () => {
       if (selectedCategory) {
         return TopicService.filterByCategories([Number(selectedCategory)]);
@@ -116,7 +126,6 @@ const TopicsPage = () => {
                 </Typography>
               </div>
               <div className="flex items-center gap-4">
-                
                 <Button
                   variant="gradient"
                   className="flex items-center gap-2 capitalize text-sm"
@@ -129,18 +138,18 @@ const TopicsPage = () => {
             </div>
           </CardHeader>
           <CardBody className="overflow-y-hidden px-0">
-          <select
-                  value={selectedCategory ?? ""}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="px-3 py-1 text-sm rounded bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">All</option>
-                  {categories.map((category) => (
-                    <option key={category.id} value={String(category.id)}>
-                      {category.name}
-                    </option>
-                  ))}
-                </select>
+            <select
+              value={selectedCategory ?? ""}
+              onChange={e => setSelectedCategory(e.target.value)}
+              className="px-3 py-1 text-sm rounded bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="">All</option>
+              {categories.map(category => (
+                <option key={category.id} value={String(category.id)}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
             <table className="mt-4 w-full min-w-max table-auto text-left">
               <thead>
                 <tr>
@@ -229,7 +238,11 @@ const TopicsPage = () => {
                 <button
                   key={index}
                   onClick={() => handlePageChange(index + 1)}
-                  className={`px-3 py-1 mx-1 text-sm rounded ${currentPage === index + 1 ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+                  className={`px-3 py-1 mx-1 text-sm rounded ${
+                    currentPage === index + 1
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-200"
+                  }`}
                 >
                   {index + 1}
                 </button>

@@ -9,7 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 const SavePost: React.FC = () => {
   const { user } = useAuth();
   const { data: posts, isPending } = useQuery({
-    queryKey: ["savePost"],
+    queryKey: ["POST_LIST", "SAVE"],
     queryFn: () => PostService.getSavedPosts(user!.username),
     enabled: !!user
   });

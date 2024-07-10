@@ -14,7 +14,14 @@ import {
   IconButton,
   Tooltip
 } from "@material-tailwind/react";
-import { ChevronsUpDown, Pencil, Plus, Trash, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  ChevronsUpDown,
+  Pencil,
+  Plus,
+  Trash,
+  ChevronLeft,
+  ChevronRight
+} from "lucide-react";
 import CategoryService from "@/services/CategoryService";
 import CategoryTypeService from "@/services/CategoryTypeService";
 
@@ -23,9 +30,13 @@ const PAGE_SIZE = 5;
 
 const CategoriesPage = () => {
   const [popupOpen, setPopupOpen] = useState(0);
-  const [selectCategory, setSelectCategory] = useState<Category | undefined>(undefined);
+  const [selectCategory, setSelectCategory] = useState<Category | undefined>(
+    undefined
+  );
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedType, setSelectedType] = useState<string | undefined>(undefined);
+  const [selectedType, setSelectedType] = useState<string | undefined>(
+    undefined
+  );
   const [categoryTypes, setCategoryTypes] = useState<Array<string>>([]);
   const [sortColumn, setSortColumn] = useState<string>("name");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
@@ -43,9 +54,8 @@ const CategoriesPage = () => {
     fetchCategoryTypes();
   }, []);
 
-
   const { data, isLoading, refetch } = useQuery<Category[], Error>({
-    queryKey: ["categories"],
+    queryKey: ["CATEGORY_LIST"],
     queryFn: async () => {
       const categories = await CategoryService.getAllCategory();
       return categories;
@@ -54,13 +64,20 @@ const CategoriesPage = () => {
 
   const sortedData = [...(data ?? [])]
     .filter(category =>
-      selectedType ? category.type.toLowerCase().startsWith(selectedType.toLowerCase()) : true
+      selectedType
+        ? category.type.toLowerCase().startsWith(selectedType.toLowerCase())
+        : true
     )
     .sort((a, b) => {
       const aValue = a[sortColumn as keyof Category] as string;
       const bValue = b[sortColumn as keyof Category] as string;
 
-      return aValue.localeCompare(bValue, undefined, { numeric: true, sensitivity: 'base' }) * (sortDirection === "asc" ? 1 : -1);
+      return (
+        aValue.localeCompare(bValue, undefined, {
+          numeric: true,
+          sensitivity: "base"
+        }) * (sortDirection === "asc" ? 1 : -1)
+      );
     });
 
   const totalPages = Math.ceil(sortedData.length / PAGE_SIZE);
@@ -102,7 +119,10 @@ const CategoriesPage = () => {
       const newPageIndex = newPage - 1;
       const startIndex = newPageIndex * PAGE_SIZE;
 
-      if (sortedData.length > 0 && startIndex + PAGE_SIZE <= sortedData.length) {
+      if (
+        sortedData.length > 0 &&
+        startIndex + PAGE_SIZE <= sortedData.length
+      ) {
         setCurrentPage(newPage);
       } else {
         const lastPage = Math.ceil(sortedData.length / PAGE_SIZE);
@@ -149,7 +169,7 @@ const CategoriesPage = () => {
           <div className="flex items-center gap-4 mt-4">
             <select
               value={selectedType ?? ""}
-              onChange={(e) => setSelectedType(e.target.value || undefined)}
+              onChange={e => setSelectedType(e.target.value || undefined)}
               className="px-3 py-1 text-sm rounded bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="">All Types</option>
@@ -186,7 +206,9 @@ const CategoriesPage = () => {
             <tbody className={cn(isLoading && "hidden")}>
               {paginatedData.map((category, index) => {
                 const isLast = index === paginatedData.length - 1;
-                const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
+                const classes = isLast
+                  ? "p-4"
+                  : "p-4 border-b border-blue-gray-50";
 
                 return (
                   <tr key={category.name}>
@@ -259,7 +281,11 @@ const CategoriesPage = () => {
           <button
             key={index}
             onClick={() => handlePageChange(index + 1)}
-            className={`px-3 py-1 mx-1 text-sm rounded ${currentPage === index + 1 ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+            className={`px-3 py-1 mx-1 text-sm rounded ${
+              currentPage === index + 1
+                ? "bg-blue-500 text-white"
+                : "bg-gray-200"
+            }`}
           >
             {index + 1}
           </button>

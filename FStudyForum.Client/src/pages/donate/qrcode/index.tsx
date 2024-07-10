@@ -24,7 +24,7 @@ const QRCodeLink = () => {
   const { user } = useAuth();
 
   const { data, isLoading } = useQuery({
-    queryKey: ["qr-code-url"],
+    queryKey: ["QR_CODE"],
     queryFn: async () => {
       const response = await PaymentService.generateQRUrl(
         state.amountByUser,

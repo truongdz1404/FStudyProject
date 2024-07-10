@@ -13,7 +13,7 @@ import CommentEditor from "@/components/comment/CommentEditor";
 import Default from "@/assets/images/user.png";
 import { cn, formatElapsedTime } from "@/helpers/utils";
 import { Link } from "react-router-dom";
-import { VOTE_TYPE } from "@/helpers/constants";
+import { VoteTypes } from "@/helpers/constants";
 import VoteService from "@/services/VoteService";
 import { useSize } from "@/hooks/useSize";
 
@@ -53,7 +53,7 @@ const CommentItem: FC<CommentItemProps> = ({
     [comment.id, expandedComments]
   );
   const handleVote = async (type: number) => {
-    const realType = voteType === type ? VOTE_TYPE.UNVOTE : type;
+    const realType = voteType === type ? VoteTypes.UNVOTE : type;
     setVoteType(realType);
     setVoteCount(comment.voteCount - comment.voteType + realType);
     try {
@@ -147,32 +147,32 @@ const CommentItem: FC<CommentItemProps> = ({
                 <div className={cn("action flex items-center min-w-0")}>
                   <div
                     className="hover:bg-blue-gray-900/15 rounded-full p-[0.25rem] cursor-pointer"
-                    onClick={() => handleVote(VOTE_TYPE.UP)}
+                    onClick={() => handleVote(VoteTypes.UP)}
                   >
                     <ArrowBigUp
                       strokeWidth={1.2}
                       fill={
-                        voteType === VOTE_TYPE.UP ? "#ef5350" : "transparent"
+                        voteType === VoteTypes.UP ? "#ef5350" : "transparent"
                       }
                       className={cn(
                         "w-6 h-6 hover:text-red-400",
-                        voteType === VOTE_TYPE.UP && "text-red-400"
+                        voteType === VoteTypes.UP && "text-red-400"
                       )}
                     />
                   </div>
                   <span className={cn("text-xs font-medium")}>{voteCount}</span>
                   <div
                     className="hover:bg-blue-gray-900/15 rounded-full p-[0.25rem] cursor-pointer"
-                    onClick={() => handleVote(VOTE_TYPE.DOWN)}
+                    onClick={() => handleVote(VoteTypes.DOWN)}
                   >
                     <ArrowBigDown
                       strokeWidth={1.2}
                       fill={
-                        voteType === VOTE_TYPE.DOWN ? "#42a5f5" : "transparent"
+                        voteType === VoteTypes.DOWN ? "#42a5f5" : "transparent"
                       }
                       className={cn(
                         "w-6 h-6 hover:text-blue-400",
-                        voteType === VOTE_TYPE.DOWN && "text-blue-400"
+                        voteType === VoteTypes.DOWN && "text-blue-400"
                       )}
                     />
                   </div>

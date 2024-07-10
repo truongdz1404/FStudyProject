@@ -33,6 +33,10 @@ const tabItems = [
   {
     label: "Saved",
     path: "saved"
+  },
+  {
+    label: "Trash",
+    path: "trash"
   }
 ];
 const Profile = () => {

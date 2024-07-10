@@ -26,16 +26,15 @@ const TopicDetail: React.FC = () => {
 
   const { data, fetchNextPage, isPending, isFetchingNextPage } =
     useInfiniteQuery({
-      queryKey: [`topic-${filter}-query`],
+      queryKey: ["POST_LIST", "BY_TOPIC", { filter, topicId: topic?.id }],
       queryFn: async ({ pageParam = 1 }) => {
         try {
-          const posts = await PostService.getPostsByTopicName(
+          return await PostService.getPostsByTopicName(
             topic!.name,
             pageParam,
             LIMIT_SCROLLING_PAGNATION_RESULT,
             filter
           );
-          return posts;
         } catch (e) {
           return [];
         }
@@ -99,7 +98,13 @@ const TopicDetail: React.FC = () => {
           );
         })}
         <div ref={ref} className="text-center">
-          {isFetchingNextPage && <Spinner className="mx-auto" />}
+          {isFetchingNextPage ? (
+            <Spinner className="mx-auto" />
+          ) : (
+            !isPending && (
+              <span className="text-xs font-light">Nothing more</span>
+            )
+          )}
         </div>
       </div>
     </ContentLayout>

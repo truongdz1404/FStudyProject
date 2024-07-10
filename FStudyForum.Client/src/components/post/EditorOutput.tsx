@@ -31,7 +31,7 @@ const options: HTMLReactParserOptions = {
 
     if (attribs && name === "p") {
       return (
-        <span {...attributesToProps(attribs)}>
+        <span {...attributesToProps(attribs)} className="break-words w-full">
           {" "}
           {children && domToReact(children as DOMNode[], options)}
         </span>

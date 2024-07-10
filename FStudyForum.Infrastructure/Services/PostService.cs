@@ -5,7 +5,6 @@ using FStudyForum.Core.Interfaces.IServices;
 using FStudyForum.Core.Models.DTOs.Attachment;
 using FStudyForum.Core.Models.DTOs.Post;
 using FStudyForum.Core.Models.Entities;
-using FStudyForum.Core.Models.DTOs;
 using Microsoft.AspNetCore.Identity;
 using FStudyForum.Core.Models.DTOs.Topic;
 using FStudyForum.Core.Models.DTOs.Search;
@@ -55,6 +54,7 @@ namespace FStudyForum.Infrastructure.Services
                 Id = post.Id,
                 Title = post.Title,
                 Author = post.Creater.UserName!,
+                AuthorAvatar = post.Creater.Profile?.Avatar ?? string.Empty,
                 TopicName = post.Topic?.Name ?? string.Empty,
                 TopicAvatar = post.Topic?.Avatar ?? string.Empty,
                 Content = post.Content,
@@ -77,6 +77,7 @@ namespace FStudyForum.Infrastructure.Services
                     Id = p.Id,
                     Title = p.Title,
                     Author = p.Creater.UserName!,
+                    AuthorAvatar = p.Creater.Profile?.Avatar ?? string.Empty,
                     TopicName = p.Topic?.Name ?? string.Empty,
                     TopicAvatar = p.Topic?.Avatar ?? string.Empty,
                     VoteType = await _voteRepository.GetVotedType(username, p.Id),
@@ -182,14 +183,8 @@ namespace FStudyForum.Infrastructure.Services
             return await _postRepository.IsSaved(savedPostDTO);
         }
 
-        public Task<PaginatedData<PostDTO>> GetPaginatedData(int pageNumber, int pageSize)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<IEnumerable<PostDTO>> GetSavedPostsByUser(string username)
         {
-
             var posts = await _postRepository.GetSavedPostsByUser(username
                 ?? throw new Exception("Not found."));
             var postDTOs = new List<PostDTO>();
@@ -214,9 +209,27 @@ namespace FStudyForum.Infrastructure.Services
             return postDTOs;
         }
 
-        public Task<PostDTO> DeletePostById(long id, string username)
+        public async Task MovePostToTrash(long id, string username)
+        {
+            var post = await _postRepository.GetPostByIdAsync(id)
+                ?? throw new Exception("Post not found");
+            if (post.Creater.UserName != username)
+                throw new Exception("Not the author of the post");
+            await _postRepository.MovePostToTrashAsync(post);
+        }
+
+        public Task<PostDTO> DeletePost(long id, string username)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task RestorePostFromTrash(long id, string username)
+        {
+            var post = await _postRepository.GetPostByIdAsync(id)
+                ?? throw new Exception("Post not found");
+            if (post.Creater.UserName != username)
+                throw new Exception("Not the author of the post");
+            await _postRepository.RestorePostFromTrashAsync(post);
         }
     }
 }

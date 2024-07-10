@@ -20,20 +20,18 @@ const SearchPostPage: React.FC = () => {
 
   const keyword = useQueryParams().get("keyword");
 
-  const { data, fetchNextPage, isPending, isFetchingNextPage, error } =
+  const { data, fetchNextPage, isPending, isFetchingNextPage } =
     useInfiniteQuery({
-      queryKey: [`post-${keyword}-search-${filter}-query`, keyword],
+      queryKey: ["POST_LIST", "SEARCH", { keyword, filter }],
       queryFn: async ({ pageParam = 1 }) => {
         try {
-          const result = await SearchService.searchPosts(
+          return await SearchService.searchPosts(
             keyword || "",
             pageParam,
             LIMIT_SCROLLING_PAGNATION_RESULT,
             filter
           );
-
-          return result;
-        } catch (error) {
+        } catch (e) {
           return [];
         }
       },
@@ -44,10 +42,10 @@ const SearchPostPage: React.FC = () => {
   const posts = data?.pages.flatMap(p => p) ?? [];
 
   React.useEffect(() => {
-    if (inView && !error) {
+    if (inView) {
       fetchNextPage();
     }
-  }, [inView, error, fetchNextPage]);
+  }, [inView, fetchNextPage]);
 
   if (isPending) return <Spinner className="mx-auto" />;
 
@@ -69,7 +67,13 @@ const SearchPostPage: React.FC = () => {
             </div>
           ))}
           <div ref={ref} className="text-center">
-            {isFetchingNextPage && <Spinner className="mx-auto" />}
+            {isFetchingNextPage ? (
+              <Spinner className="mx-auto" />
+            ) : (
+              !isPending && (
+                <span className="text-xs font-light">Nothing more</span>
+              )
+            )}
           </div>
         </>
       )}

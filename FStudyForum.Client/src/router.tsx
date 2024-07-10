@@ -10,7 +10,7 @@ import RoleBasedGuard from "@/helpers/guards/RoleBasedGuard";
 import Donate from "./pages/donate";
 import Notification from "./pages/donate/notification";
 import SavePost from "./pages/user/saved";
-import { ROLE } from "@/helpers/constants";
+import { Roles } from "@/helpers/constants";
 import Loadable from "./helpers/loading/Loadable";
 import SearchUserCommentPage from "./pages/search/people/comments";
 
@@ -42,6 +42,7 @@ const TopicDetail = Loadable(lazy(() => import("@/pages/topic")));
 const Topics = Loadable(lazy(() => import("@/pages/topics")));
 const UserPosts = Loadable(lazy(() => import("@/pages/user/posts")));
 const UserOverview = Loadable(lazy(() => import("@/pages/user/overview")));
+const UserTrash = Loadable(lazy(() => import("@/pages/user/trash")));
 
 const SearchPage = Loadable(lazy(() => import("@/pages/search/posts")));
 const SearchTopics = Loadable(lazy(() => import("@/pages/search/topics")));
@@ -116,7 +117,7 @@ const Router: FC = () => {
         {
           path: "manager",
           element: (
-            <RoleBasedGuard accessibleRoles={[ROLE.Admin]}>
+            <RoleBasedGuard accessibleRoles={[Roles.ADMIN]}>
               <Outlet />
             </RoleBasedGuard>
           ),
@@ -206,7 +207,10 @@ const Router: FC = () => {
                   path: "saved",
                   element: <SavePost />
                 },
-                
+                {
+                  path: "trash",
+                  element: <UserTrash />
+                }
               ]
             },
             {
@@ -222,7 +226,7 @@ const Router: FC = () => {
                   element: <SearchUserCommentPage />
                 }
               ]
-            }
+            },
           ]
         },
         {

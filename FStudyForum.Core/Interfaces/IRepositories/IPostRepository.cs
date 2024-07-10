@@ -7,6 +7,8 @@ namespace FStudyForum.Core.Interfaces.IRepositories;
 public interface IPostRepository : IBaseRepository<Post>
 {
     public Task<Post> CreatePostAsync(CreatePostDTO postDTO);
+    public Task MovePostToTrashAsync(Post post);
+    public Task RestorePostFromTrashAsync(Post post);
     public Task<Post?> GetPostByIdAsync(long id);
     public Task<IList<Post>?> GetVotedPosts(string username);
     public Task<int> GetVoteCount(long Id);

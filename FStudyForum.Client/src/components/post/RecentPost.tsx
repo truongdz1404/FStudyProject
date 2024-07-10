@@ -7,11 +7,10 @@ import { cn } from "@/helpers/utils";
 const RecentPost: React.FC = () => {
   const queryClient = useQueryClient();
   const { data } = useQuery<Post[] | undefined>({
-    queryKey: ["recent-post"],
+    queryKey: ["POST_LIST", "RECENT"],
     queryFn: async () => {
       try {
-        const resp = await PostService.getRecentPosts();
-        return resp;
+        return await PostService.getRecentPosts();
       } catch (e) {
         return [];
       }

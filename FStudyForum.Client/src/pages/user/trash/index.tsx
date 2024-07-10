@@ -1,5 +1,5 @@
 import ContentLayout from "@/components/layout/ContentLayout";
-import PostItem from "@/components/post/PostItem";
+import TrashPost from "@/components/post/TrashPost";
 import { LIMIT_SCROLLING_PAGNATION_RESULT } from "@/helpers/constants";
 import { cn } from "@/helpers/utils";
 import { useAuth } from "@/hooks/useAuth";
@@ -10,7 +10,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import React from "react";
 import { useInView } from "react-intersection-observer";
 
-const Posts: React.FC = () => {
+const Trash: React.FC = () => {
   const { user } = useAuth();
   const { ref, inView } = useInView();
   const filter = useQueryParams().get("filter") ?? "New";
@@ -19,13 +19,13 @@ const Posts: React.FC = () => {
     useInfiniteQuery({
       queryKey: [
         "POST_LIST",
-        "IN_TOPIC",
+        "IN_TRASH",
         "BY_USER",
         { username: user?.username, filter }
       ],
       queryFn: async ({ pageParam = 1 }) => {
         try {
-          return await PostService.getPostsByUser(
+          return await PostService.getPostsInTrash(
             user!.username,
             pageParam,
             LIMIT_SCROLLING_PAGNATION_RESULT,
@@ -65,7 +65,7 @@ const Posts: React.FC = () => {
         {posts?.map((post, index) => (
           <div key={index}>
             <div className="hover:bg-gray-50 rounded-lg w-full">
-              <PostItem key={index} data={post} />
+              <TrashPost data={post} />
             </div>
             <hr className="my-1 border-blue-gray-50" />
           </div>
@@ -81,4 +81,4 @@ const Posts: React.FC = () => {
     </ContentLayout>
   );
 };
-export default Posts;
+export default Trash;
