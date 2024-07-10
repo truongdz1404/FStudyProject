@@ -32,5 +32,10 @@ namespace FStudyForum.Infrastructure.Repositories
             _dbContext.Donations.Remove(donation);
             await _dbContext.SaveChangesAsync();
         }
+        public async Task<IEnumerable<Donation>> GetStatisticsDonations(DateTime startDate, DateTime endDate)
+        {
+            return await _dbContext.Donations.Where(d => d.CreatedAt >= startDate
+            && d.CreatedAt <= endDate && d.Tid != null).ToListAsync();
+        }       
     }
 }

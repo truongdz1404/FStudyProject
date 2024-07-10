@@ -21,12 +21,18 @@ namespace FStudyForum.Infrastructure.Repositories
                            .FirstOrDefaultAsync();
             return profile;
         }
-
-
         public new async Task Update(Profile model)
         {
             _dbContext.Profiles.Update(model);
             await _dbContext.SaveChangesAsync();
+        }
+        public async Task<IEnumerable<Profile>> GetStatisticsProfile(DateTime startDate, DateTime endDate)
+        {
+            var profiles = await _dbContext.Profiles
+                           .Include(u => u.User)
+                           .Where(u => u.CreatedAt >= startDate && u.CreatedAt <= endDate)
+                           .ToListAsync();
+            return profiles;
         }
     }
 }

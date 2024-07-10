@@ -164,6 +164,28 @@ namespace FStudyForum.API.Controllers
                 });
             }
         }
+        [HttpGet("statistics={action}&date={date}")]
+        public async Task<IActionResult> GetStatisticsDonations(string action, int date)
+        {
+            try
+            {
+                var statistics = await _donateService.GetStatisticsDonations(action, date);
+                return Ok(new Response
+                {
+                    Data = statistics,
+                    Status = ResponseStatus.SUCCESS,
+                    Message = "Get statistics donation successfully"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = ex.Message
+                });
+            }
+        }
 
     }
 }

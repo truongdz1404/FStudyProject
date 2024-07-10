@@ -15,11 +15,13 @@ namespace FStudyForum.API.Controllers
     {
         private readonly IUserService _userService;
         private readonly IIdentityService _identityService;
-
-        public UserController(IUserService userService, IIdentityService identityService)
+       
+        public UserController(IUserService userService, IIdentityService identityService
+           )
         {
             _userService = userService;
             _identityService = identityService;
+           
         }
 
         [HttpGet("profile"), Authorize]
@@ -95,6 +97,28 @@ namespace FStudyForum.API.Controllers
                 });
             }
 
+        }
+        [HttpGet("statistics/{action}/{date}")]
+        public async Task<IActionResult> GetStatisticsProfile(string action, int date)
+        {
+            try
+            {
+                var profiles = await _userService.GetUserStatisticsDTO(action, date);
+                return Ok(new Response
+                {
+                    Status = ResponseStatus.SUCCESS,
+                    Message = "Get statistics profile successfully!",
+                    Data = profiles
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = ex.Message
+                });
+            }
         }
     }
 }

@@ -18,6 +18,7 @@ public interface IPostRepository : IBaseRepository<Post>
     public Task RemoveFromSavedByUser(SavedPost postByUser);
     public Task<IEnumerable<Post>> GetSavedPostsByUser(string username);
     public Task<IEnumerable<Post>> GetFilterPostsAsync(QueryPostDTO query);
+    public Task<IEnumerable<Post>> GetStatisticsPost(DateTime startDate, DateTime endDate);
 }
 
 

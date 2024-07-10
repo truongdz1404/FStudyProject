@@ -1,6 +1,6 @@
 import { ResponseWith } from "@/types/response";
 import api from "./api";
-import { CreatePost, Post, SavePost } from "@/types/post";
+import { CreatePost, Post, SavePost, StatisticsPost } from "@/types/post";
 
 const save = async (postId: number) => {
   const response = await api.post<ResponseWith<SavePost>>(
@@ -75,6 +75,10 @@ const getById = async (id: string) => {
   const response = await api.get<ResponseWith<Post>>(`/post/${id}`);
   return response.data.data;
 };
+const getStatisticsPost = async (action: string, date: number) => {
+  const response = await api.get<ResponseWith<StatisticsPost[]>>(`post/statistics=${action}&date=${date}`)
+  return response.data;
+}
 const PostService = {
   save,
   removeFromSave,
@@ -85,7 +89,8 @@ const PostService = {
   create,
   getById,
   getPosts,
-  getPostsByFeature
+  getPostsByFeature,
+  getStatisticsPost,
 };
 
 export default PostService;

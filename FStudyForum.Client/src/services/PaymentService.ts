@@ -1,6 +1,6 @@
 import { ResponseWith } from "@/types/response";
 import api from "./api";
-import { ApiResponse, CreateDonation, Donation, QRCode, UpdateDonation } from "@/types/donate";
+import { ApiResponse, CreateDonation, Donation, QRCode, StatisticsDonate, UpdateDonation } from "@/types/donate";
 import axios from "axios";
 
 
@@ -37,6 +37,10 @@ const deleteDonate = async (username: string) => {
   const response = await api.delete<ResponseWith<Donation>>(`/donate/deleteUserDonation/${username}`);
   return response.data.status;
 }
+const getStatisticsDonate = async (action: string, date:number) => {
+  const response = await api.get<ResponseWith<StatisticsDonate[]>>(`/donate/statistics=${action}&date=${date}`);
+  return response.data.data;
+}
 const PaymentService = {
   saveUserDonate,
   generateQRUrl,
@@ -44,6 +48,7 @@ const PaymentService = {
   getDonateByUser,
   checkDonate,
   updateDonate,
-  deleteDonate
+  deleteDonate,
+  getStatisticsDonate
 };
 export default PaymentService;

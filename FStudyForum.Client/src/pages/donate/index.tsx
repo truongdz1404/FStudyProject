@@ -106,7 +106,7 @@ const Donate = () => {
           </label>
           <Input
             id="phone"
-            type="text"
+            type="number"
             placeholder="ex: 20000"
             className={cn(
               "!border !border-gray-300 bg-white text-gray-900 shadow-xl shadow-gray-900/5 ring-4 ring-transparent placeholder:opacity-100",

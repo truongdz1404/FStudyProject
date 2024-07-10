@@ -12,6 +12,7 @@ using FStudyForum.Core.Helpers;
 using FStudyForum.Infrastructure.Repositories;
 using FStudyForum.Core.Models.DTOs;
 using FStudyForum.Core.Models.DTOs.Topic;
+using FStudyForum.Core.Models.DTOs.Post;
 namespace FStudyForum.Infrastructure.Services;
 
 public class UserService : IUserService
@@ -222,9 +223,46 @@ public class UserService : IUserService
         }
         return userDTOs;
     }
-
-    // public async Task<string> GetUserAvatar(string username){
-    //     var user = await _userManager.FindByNameAsync(username);
-    //     return user?.Avatar;
-    // }
+    public async Task<IEnumerable<UserStatisticsDTO>> GetUserStatisticsDTO(string action, int date)
+    {
+        DateTime startDate, endDate = DateTime.Now;       
+            switch (action)
+            {
+                case "day":
+                    startDate = endDate.AddDays(-date);
+                    break;
+                case "lifetime":
+                    startDate = DateTime.MinValue; 
+                    break;
+                case "year":
+                    startDate = new DateTime(date, 1, 1);
+                    endDate = new DateTime(date, 12, 31);
+                    break;
+            case "month":
+                startDate = new DateTime(endDate.Year, date, 1);
+                int daysInMonth = DateTime.DaysInMonth(endDate.Year, date);
+                endDate = new DateTime(endDate.Year, date, daysInMonth);
+                break;
+            default:
+                    throw new Exception("Invalid period");
+            }      
+        var users = await _profileRepository.GetStatisticsProfile(startDate, endDate);
+        var groupedSthatistics = users.GroupBy(u => u.CreatedAt.Date)
+            .Select(g => new UserStatisticsDTO
+            {
+                Date = DateOnly.FromDateTime(g.Key),
+                TotalNumberRegistrants = g.Count()
+            });
+        var allDates = Enumerable.Range(0, (endDate.Date - startDate.Date).Days + 1)
+                .Select(offset => startDate.Date.AddDays(offset))
+                .ToList();
+        var completeStatistics = allDates.Select(date =>
+                groupedSthatistics.FirstOrDefault(stat => stat.Date == DateOnly.FromDateTime(date))
+                ?? new UserStatisticsDTO
+                {
+                    Date = DateOnly.FromDateTime(date),
+                    TotalNumberRegistrants = 0
+                });
+        return completeStatistics;
+    }
 }

@@ -12,7 +12,7 @@ import Notification from "./pages/donate/notification";
 import SavePost from "./pages/profile/save";
 import { ROLE } from "@/helpers/constants";
 import Loadable from "./helpers/loading/Loadable";
-import Chart from "./pages/chart";
+import Analytics from "./pages/analytics";
 
 const QRCode = Loadable(lazy(() => import("./pages/donate/qrcode")));
 const Popular = Loadable(lazy(() => import("@/pages/popular")));
@@ -95,9 +95,6 @@ const Router: FC = () => {
               element: <Notification />
             }
           ]
-        }, {
-          path: "chart",
-          element: <Chart />
         },
         {
           path: "manager",
@@ -113,7 +110,7 @@ const Router: FC = () => {
             },
             {
               path: "analytics",
-              element: <>Analytics</>
+              element: <Analytics />
             },
             {
               path: "topics",

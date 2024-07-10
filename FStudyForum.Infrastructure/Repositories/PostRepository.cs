@@ -179,6 +179,17 @@ namespace FStudyForum.Infrastructure.Repositories
             .ToListAsync();
             return listPost;
         }
-
+        public async Task<IEnumerable<Post>> GetStatisticsPost(DateTime startDate, DateTime endDate)
+        {
+            var posts = await _dbContext.Posts
+                .Where(p => p.CreatedAt >= startDate && p.CreatedAt <= endDate)
+                .Include(p => p.Creater)
+                .Include(p => p.Topic)
+                .Include(p => p.Votes)
+                .Include(p => p.Attachments)
+                .Include(p => p.Comments)
+                .ToListAsync();
+            return posts;
+        }
     }
 }

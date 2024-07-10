@@ -22,11 +22,9 @@ import {
   SquareGanttChart,
   Tags,
   Flag,
-  BarChartBig
 } from "lucide-react";
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { label } from "yet-another-react-lightbox";
 
 const sidebarListItems = [
   {
@@ -55,11 +53,6 @@ const sidebarListItems = [
         label: "Donate",
         icon: CircleDollarSign,
         path: "/donate",
-        items: []
-      }, {
-        label: "Chart",
-        icon: BarChartBig,
-        path: "/chart",
         items: []
       }
     ]
