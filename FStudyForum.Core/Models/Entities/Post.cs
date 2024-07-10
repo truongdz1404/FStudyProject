@@ -17,5 +17,4 @@ public class Post : BaseEntity
     public virtual ICollection<Attachment> Attachments { get; set; } = new List<Attachment>();
     public virtual IEnumerable<SavedPost> SavedByUsers { get; set; } = new List<SavedPost>();
     public virtual IEnumerable<RecentPost> RecentViews { get; set; } = new List<RecentPost>();
-
 }

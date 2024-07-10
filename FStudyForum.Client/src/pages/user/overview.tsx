@@ -17,12 +17,7 @@ const Overview: React.FC = () => {
 
   const { data, fetchNextPage, isPending, isFetchingNextPage } =
     useInfiniteQuery({
-      queryKey: [
-        "POST_LIST",
-        "IN_PROFILE",
-        "BY_USER",
-        { username: user?.username, filter }
-      ],
+      queryKey: ["POST_LIST", "OVERVIEW", { user: user?.username, filter }],
       queryFn: async ({ pageParam = 1 }) => {
         try {
           return await PostService.getPostsInProfile(
@@ -35,7 +30,8 @@ const Overview: React.FC = () => {
           return [];
         }
       },
-      getNextPageParam: (_, pages) => pages.length + 1,
+      getNextPageParam: (last, pages) =>
+        last.length ? pages.length + 1 : undefined,
       initialPageParam: 1,
       enabled: !!user
     });

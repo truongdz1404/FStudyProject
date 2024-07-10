@@ -3,6 +3,6 @@
 }
 
 .custom-toast-body {
-  @apply font-inter flex items-center justify-center font-light text-sm;
+  @apply font-inter flex items-center justify-center text-sm;
 }
   

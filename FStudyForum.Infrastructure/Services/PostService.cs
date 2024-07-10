@@ -160,6 +160,7 @@ namespace FStudyForum.Infrastructure.Services
                     Id = p.Id,
                     Title = p.Title,
                     Author = p.Creater.UserName!,
+                    AuthorAvatar = p.Creater.Profile?.Avatar ?? string.Empty,
                     TopicName = p.Topic?.Name ?? string.Empty,
                     TopicAvatar = p.Topic?.Avatar ?? string.Empty,
                     VoteType = await _voteRepository.GetVotedType(username, p.Id),
@@ -195,6 +196,7 @@ namespace FStudyForum.Infrastructure.Services
                     Id = p.Id,
                     Title = p.Title,
                     Author = p.Creater.UserName!,
+                    AuthorAvatar = p.Creater.Profile?.Avatar ?? string.Empty,
                     TopicName = p.Topic?.Name ?? string.Empty,
                     TopicAvatar = p.Topic?.Avatar ?? string.Empty,
                     VoteType = await _voteRepository.GetVotedType(username, p.Id),
@@ -225,7 +227,7 @@ namespace FStudyForum.Infrastructure.Services
 
         public async Task RestorePostFromTrash(long id, string username)
         {
-            var post = await _postRepository.GetPostByIdAsync(id)
+            var post = await _postRepository.GetPostByIdAsync(id, true)
                 ?? throw new Exception("Post not found");
             if (post.Creater.UserName != username)
                 throw new Exception("Not the author of the post");

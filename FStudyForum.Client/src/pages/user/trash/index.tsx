@@ -17,28 +17,28 @@ const Trash: React.FC = () => {
 
   const { data, fetchNextPage, isPending, isFetchingNextPage } =
     useInfiniteQuery({
-      queryKey: [
-        "POST_LIST",
-        "IN_TRASH",
-        "BY_USER",
-        { username: user?.username, filter }
-      ],
+      queryKey: ["POST_LIST", "TRASH", { user: user?.username, filter }],
       queryFn: async ({ pageParam = 1 }) => {
         try {
-          return await PostService.getPostsInTrash(
+          const test = await PostService.getPostsInTrash(
             user!.username,
             pageParam,
             LIMIT_SCROLLING_PAGNATION_RESULT,
             filter
           );
+          console.log(!!user, test);
+
+          return test;
         } catch (e) {
           return [];
         }
       },
-      getNextPageParam: (_, pages) => pages.length + 1,
+      getNextPageParam: (last, pages) =>
+        last.length ? pages.length + 1 : undefined,
       initialPageParam: 1,
       enabled: !!user
     });
+
   React.useEffect(() => {
     if (inView) {
       fetchNextPage();

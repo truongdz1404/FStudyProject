@@ -5,6 +5,7 @@ import {
   Button,
   Input,
   Radio,
+  Spinner,
   Textarea
 } from "@material-tailwind/react";
 import { ArrowLeft, Camera, CircleAlert } from "lucide-react";
@@ -78,7 +79,6 @@ const ProfileSettings = () => {
       return {
         firstName: profile?.firstName,
         lastName: profile?.lastName,
-        gender: profile?.gender,
         avatar: profile?.avatar,
         phone: profile?.phone,
         bio: profile?.bio
@@ -89,13 +89,13 @@ const ProfileSettings = () => {
 
   React.useEffect(() => {
     if (!profile) return;
+
     reset({
-      firstName: profile?.firstName,
-      lastName: profile?.lastName,
-      gender: profile?.gender,
-      avatar: profile?.avatar,
-      phone: profile?.phone,
-      bio: profile?.bio
+      firstName: profile.firstName,
+      lastName: profile.lastName,
+      avatar: profile.avatar,
+      phone: profile.phone,
+      bio: profile.bio
     });
     setBanner(profile.banner ?? "");
     setAvatar(profile.avatar ?? "");
@@ -186,6 +186,9 @@ const ProfileSettings = () => {
     };
     updateProfile();
   };
+
+  if (!profile) return <Spinner className="mx-auto" />;
+
   return (
     <div className="p-4">
       <div className="mb-6">

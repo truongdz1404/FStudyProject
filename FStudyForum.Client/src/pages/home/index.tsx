@@ -32,7 +32,8 @@ const HomePage: React.FC = () => {
           return [];
         }
       },
-      getNextPageParam: (_, pages) => pages.length + 1,
+      getNextPageParam: (last, pages) =>
+        last.length ? pages.length + 1 : undefined,
       initialPageParam: 1
     });
   React.useEffect(() => {

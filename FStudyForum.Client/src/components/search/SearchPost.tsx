@@ -3,6 +3,8 @@ import { Avatar } from "@material-tailwind/react";
 import { Link, useNavigate } from "react-router-dom";
 import { Images } from "lucide-react";
 import DefaultTopic from "@/assets/images/topic.png";
+import DefaultUser from "@/assets/images/user.png";
+
 import ImageWithLoading from "../ui/ImageWithLoading";
 import React from "react";
 import LightBox from "../post/LightBox";
@@ -42,16 +44,30 @@ const SearchPost: React.FC<Props> = ({ data, keyword }) => {
     <div className="flex p-2" ref={containerRef} onClick={handleRemainClick}>
       <div className="flex flex-col gap-y-2 grow justify-between w-3/5">
         <div className="action">
-          <Link
-            to={`/topic/${data.topicName}`}
-            className="text-xs font-light hover:underline flex items-center gap-x-2"
-          >
-            <Avatar
-              src={data.topicAvatar || DefaultTopic}
-              className="w-6 h-6"
-            />
-            {`t/${data.topicName}`}
-          </Link>
+          {data.topicName ? (
+            <Link
+              to={`/topic/${data.topicName}`}
+              className="text-xs font-light hover:underline flex items-center gap-x-2"
+            >
+              <Avatar
+                src={data.topicAvatar || DefaultTopic}
+                className="w-6 h-6"
+              />
+              {`t/${data.topicName}`}
+            </Link>
+          ) : (
+            <Link
+              to={`/user/${data.author}`}
+              className="text-xs font-light hover:underline flex items-center gap-x-2"
+            >
+              <Avatar
+                src={data.authorAvatar || DefaultUser}
+                className="w-6 h-6"
+              />
+              {`u/${data.author}`}
+            </Link>
+          )}
+
           <span className="text-md w-full text-blue-gray-800 break-words">
             {data.title
               .split(regex)

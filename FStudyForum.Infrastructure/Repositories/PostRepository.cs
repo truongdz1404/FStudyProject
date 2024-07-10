@@ -1,5 +1,4 @@
 ﻿using FStudyForum.Core.Interfaces.IRepositories;
-using FStudyForum.Core.Models.DTOs;
 using FStudyForum.Core.Models.DTOs.Post;
 using FStudyForum.Core.Models.Entities;
 using FStudyForum.Infrastructure.Data;
@@ -115,10 +114,10 @@ namespace FStudyForum.Infrastructure.Repositories
             return post == null;
         }
 
-        public async Task<Post?> GetPostByIdAsync(long id)
+        public async Task<Post?> GetPostByIdAsync(long id, bool isDeleted = false)
         {
             return await _dbContext.Posts
-                .Where(p => p.IsDeleted == false && p.Id == id)
+                .Where(p => p.IsDeleted == isDeleted && p.Id == id)
                 .Include(p => p.Creater)
                 .Include(p => p.Creater.Profile)
                 .Include(p => p.Topic)
@@ -211,15 +210,12 @@ namespace FStudyForum.Infrastructure.Repositories
             var posts = await _dbContext.SavedPosts
             .Where(sp => sp.User.UserName == username && !sp.Post.IsDeleted)
             .Include(sp => sp.Post)
-            .ThenInclude(p => p.Creater)
-            .Include(sp => sp.Post)
-            .ThenInclude(p => p.Topic)
-            .Include(sp => sp.Post)
-            .ThenInclude(p => p.Votes)
-            .Include(sp => sp.Post)
-            .ThenInclude(p => p.Comments)
-            .Include(sp => sp.Post)
-            .ThenInclude(p => p.Attachments)
+            .Include(sp => sp.Post.Creater)
+            .Include(sp => sp.Post.Creater.Profile)
+            .Include(sp => sp.Post.Topic)
+            .Include(sp => sp.Post.Votes)
+            .Include(sp => sp.Post.Comments)
+            .Include(sp => sp.Post.Attachments)
             .Where(sp => sp.Post.Topic != null && !sp.Post.Topic.IsDeleted)
             .Select(sp => sp.Post)
             .ToListAsync();
@@ -231,16 +227,13 @@ namespace FStudyForum.Infrastructure.Repositories
             var posts = await _dbContext.RecentPosts
                 .Where(rp => rp.User.UserName == username && !rp.Post.IsDeleted)
                 .Include(rp => rp.Post)
-                .ThenInclude(p => p.Creater)
-                .Include(rp => rp.Post)
-                .ThenInclude(p => p.Topic)
-                .Include(sp => sp.Post)
-                .ThenInclude(p => p.Votes)
-                .Include(rp => rp.Post)
-                .ThenInclude(p => p.Comments)
-                .Include(rp => rp.Post)
-                .ThenInclude(p => p.Attachments)
-                .Where(rp => rp.Post.Topic != null && !rp.Post.Topic.IsDeleted)
+                .Include(rp => rp.Post.Creater)
+                .Include(rp => rp.Post.Creater.Profile)
+                .Include(rp => rp.Post.Topic)
+                .Include(rp => rp.Post.Votes)
+                .Include(rp => rp.Post.Comments)
+                .Include(rp => rp.Post.Attachments)
+                .Where(rp => rp.Post.Topic == null || !rp.Post.Topic.IsDeleted)
                 .Select(rp => rp.Post)
                 .ToListAsync();
             return posts;
@@ -252,6 +245,11 @@ namespace FStudyForum.Infrastructure.Repositories
                 .Where(rp => rp.User.UserName == username);
             _dbContext.RecentPosts.RemoveRange(recentPosts);
             await _dbContext.SaveChangesAsync();
+        }
+
+        public Task DeletePostAsync(Post post)
+        {
+            throw new NotImplementedException();
         }
     }
 }

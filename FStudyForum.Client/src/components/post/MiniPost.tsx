@@ -3,6 +3,7 @@ import { Avatar } from "@material-tailwind/react";
 import { Link } from "react-router-dom";
 import { Images } from "lucide-react";
 import DefaultTopic from "@/assets/images/topic.png";
+import DefaultUser from "@/assets/images/user.png";
 import ImageWithLoading from "../ui/ImageWithLoading";
 import LightBox from "./LightBox";
 import React from "react";
@@ -21,16 +22,29 @@ const MiniPost: React.FC<MiniPostProps> = ({ data }) => {
     <div className="flex p-2">
       <div className="flex flex-col justify-between grow flex-1 w-2/5">
         <div>
-          <Link
-            to={`/user/${data.topicName}`}
-            className="text-xs font-light hover:underline flex items-center gap-x-2"
-          >
-            <Avatar
-              src={data.topicAvatar || DefaultTopic}
-              className="w-6 h-6"
-            />
-            {`t/${data.topicName}`}
-          </Link>
+          {data.topicName ? (
+            <Link
+              to={`/topic/${data.topicName}`}
+              className="text-xs font-light hover:underline flex items-center gap-x-2"
+            >
+              <Avatar
+                src={data.topicAvatar || DefaultTopic}
+                className="w-6 h-6"
+              />
+              {`t/${data.topicName}`}
+            </Link>
+          ) : (
+            <Link
+              to={`/user/${data.author}`}
+              className="text-xs font-light hover:underline flex items-center gap-x-2"
+            >
+              <Avatar
+                src={data.authorAvatar || DefaultUser}
+                className="w-6 h-6"
+              />
+              {`u/${data.author}`}
+            </Link>
+          )}
           <Link
             className="text-sm text-gray-800 hover:underline break-words"
             to={`/topic/${data.topicName}/comments/${data.id}`}

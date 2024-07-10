@@ -1,4 +1,4 @@
-import { Bookmark, Ellipsis, Flag, RotateCcw, Trash2 } from "lucide-react";
+import { Bookmark, Ellipsis, Flag, Pencil, Trash2 } from "lucide-react";
 import { Response } from "@/types/response";
 import React from "react";
 import {
@@ -46,7 +46,11 @@ const MenuItemPost: React.FC<Props> = ({ post }) => {
     mutationFn: PostService.save,
     onSuccess: message => {
       showSuccessToast(message);
-      queryClient.invalidateQueries({ queryKey: ["POST_LIST"] });
+      queryClient.invalidateQueries({ queryKey: ["IS_SAVED"] });
+      queryClient.invalidateQueries({
+        queryKey: ["POST_LIST", "SAVED"],
+        refetchType: "all"
+      });
     },
     onError: e => {
       const error = e as AxiosError<Response>;
@@ -60,7 +64,12 @@ const MenuItemPost: React.FC<Props> = ({ post }) => {
     mutationFn: PostService.removeFromSaved,
     onSuccess: message => {
       showSuccessToast(message);
-      queryClient.invalidateQueries({ queryKey: ["POST_LIST"] });
+      queryClient.invalidateQueries({ queryKey: ["IS_SAVED"] });
+
+      queryClient.invalidateQueries({
+        queryKey: ["POST_LIST", "SAVED"],
+        refetchType: "all"
+      });
     },
     onError: e => {
       const error = e as AxiosError<Response>;
@@ -74,7 +83,10 @@ const MenuItemPost: React.FC<Props> = ({ post }) => {
     mutationFn: PostService.moveToTrash,
     onSuccess: message => {
       showSuccessToast(message);
-      queryClient.invalidateQueries({ queryKey: ["POST_LIST"] });
+      queryClient.invalidateQueries({
+        queryKey: ["POST_LIST"],
+        refetchType: "all"
+      });
     },
     onError: e => {
       const error = e as AxiosError<Response>;
@@ -84,100 +96,50 @@ const MenuItemPost: React.FC<Props> = ({ post }) => {
     }
   });
 
-  const { mutate: handleRestoreFromTrash } = useMutation({
-    mutationFn: PostService.restoreFromTrash,
-    onSuccess: message => {
-      showSuccessToast(message);
-      queryClient.invalidateQueries({ queryKey: ["POST_LIST"] });
+  const defaultMenuItem = [
+    {
+      icon: Bookmark,
+      label: isSaved ? "Remove from saved" : "Save",
+      handle: () =>
+        !isSaved ? handleSave(post.id) : handleRemoveFromSaved(post.id)
     },
-    onError: e => {
-      const error = e as AxiosError<Response>;
-      showErrorToast(
-        (error?.response?.data as Response)?.message || error.message
-      );
+    {
+      icon: Flag,
+      label: "Report",
+      handle: () => {
+        switchOpenReport();
+      }
     }
-  });
+  ];
 
-  const defaultMenuItem = React.useMemo(
-    () => [
-      {
-        icon: Bookmark,
-        label: isSaved ? "Remove from saved" : "Save",
-        handle: () =>
-          !isSaved ? handleSave(post.id) : handleRemoveFromSaved(post.id)
-      },
-      {
-        icon: Flag,
-        label: "Report",
-        handle: () => {
-          switchOpenReport();
-        }
+  const authorMenuItem = [
+    {
+      icon: Pencil,
+      label: "Edit post",
+      handle: () => handleMoveToTrash(post.id)
+    },
+    {
+      icon: Bookmark,
+      label: isSaved ? "Remove from saved" : "Save",
+      handle: () =>
+        !isSaved ? handleSave(post.id) : handleRemoveFromSaved(post.id)
+    },
+    {
+      icon: Flag,
+      label: "Report",
+      handle: () => {
+        switchOpenReport();
       }
-    ],
-    [handleRemoveFromSaved, handleSave, isSaved, post.id, switchOpenReport]
-  );
+    },
 
-  // const advanceMenuItem = React.useMemo(
-  //   () => [
-  //     {
-  //       icon: Bookmark,
-  //       label: isSaved ? "Remove from saved" : "Save",
-  //       handle: () => handleSave(post)
-  //     },
-  //     {
-  //       icon: Flag,
-  //       label: "Report",
-  //       handle: () => {
-  //         switchOpenReport();
-  //       }
-  //     },
-  //     {
-  //       icon: Ban,
-  //       label: "Ban user from topic",
-  //       handle: () => setOpenBan(true)
-  //     }
-  //   ],
-  //   [handleSave, isSaved, post, switchOpenReport]
-  // );
+    {
+      icon: Trash2,
+      label: "Move to trash",
+      handle: () => handleMoveToTrash(post.id)
+    }
+  ];
 
-  const authorMenuItem = React.useMemo(
-    () => [
-      {
-        icon: Bookmark,
-        label: isSaved ? "Remove from saved" : "Save",
-        handle: () =>
-          !isSaved ? handleSave(post.id) : handleRemoveFromSaved(post.id)
-      },
-      {
-        icon: Flag,
-        label: "Report",
-        handle: () => {
-          switchOpenReport();
-        }
-      },
-      {
-        icon: Trash2,
-        label: "Move to trash",
-        handle: () => handleMoveToTrash(post.id)
-      },
-      {
-        icon: RotateCcw,
-        label: "Restore from trash",
-        handle: () => handleRestoreFromTrash(post.id)
-      }
-    ],
-    [
-      post.id,
-      isSaved,
-      handleMoveToTrash,
-      handleRemoveFromSaved,
-      handleRestoreFromTrash,
-      handleSave,
-      switchOpenReport
-    ]
-  );
-
-  const getMenuItem = () => {
+  const menuItem = () => {
     return user?.username === post.author ? authorMenuItem : defaultMenuItem;
   };
 
@@ -194,7 +156,7 @@ const MenuItemPost: React.FC<Props> = ({ post }) => {
           </Button>
         </MenuHandler>
         <MenuList className="p-1">
-          {getMenuItem().map(({ label, icon, handle }) => {
+          {menuItem().map(({ label, icon, handle }) => {
             const isSaveItem = label == "Remove from saved" || label == "Save";
             return (
               <MenuItem
