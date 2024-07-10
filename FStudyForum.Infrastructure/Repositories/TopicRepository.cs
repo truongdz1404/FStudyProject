@@ -40,7 +40,6 @@ namespace FStudyForum.Infrastructure.Repositories
             var topics = await _dbContext.Topics
                 .Include(t => t.Categories)
                 .ToListAsync();
-
             return topics;
         }
 

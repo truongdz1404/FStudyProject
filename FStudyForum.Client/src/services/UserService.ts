@@ -12,8 +12,16 @@ const getAll = async () => {
   return response.data.data;
 };
 
+
+const search = async (
+  keyword: string) => {
+  const response = await api.get<ResponseWith<User[]>>(`/user/search?keyword=${keyword}&size=5`);
+  return response.data.data;
+};
+
 const UserService = {
   getProfile,
-  getAll
+  getAll,
+  search
 };
 export default UserService;

@@ -37,7 +37,6 @@ const options: HTMLReactParserOptions = {
         </span>
       );
     }
-
     return false;
   }
 };

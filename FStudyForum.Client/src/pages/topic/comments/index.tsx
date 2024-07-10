@@ -192,7 +192,7 @@ const Comments = () => {
       setComments(updatedComments);
       setReplyToCommentId(null);
 
-      initializeExpandedComments(updatedComments, 100);
+      setExpandedComments(initializeExpandedComments(updatedComments, 100));
     } catch (e) {
       const error = e as AxiosError;
       setError((error?.response?.data as Response)?.message || error.message);
