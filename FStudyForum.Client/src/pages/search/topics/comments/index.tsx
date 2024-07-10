@@ -15,9 +15,9 @@ const useQueryParams = () => {
     return new URLSearchParams(useLocation().search);
 };
 
-const SearchUserCommentPage: React.FC = () => {
+const SearchTopicCommentPage: React.FC = () => {
     const { ref, inView } = useInView();
-    const { username } = useParams<{ username: string }>();
+    const { name } = useParams<{ name: string }>();
     const queryParams = useQueryParams();
     const keyword = queryParams.get("keyword") ?? "";
     const [filter, setFilter] = useSearchParam<string>({
@@ -36,12 +36,12 @@ const SearchUserCommentPage: React.FC = () => {
         queryFn: async ({ pageParam = 1 }) => {
             if (!keyword) return { data: [], nextPage: undefined, hasMore: false };
             try {
-                const comments = await SearchService.searchCommentsUser(
+                const comments = await SearchService.searchCommentsTopic(
                     keyword,
                     pageParam,
                     LIMIT_SCROLLING_PAGNATION_RESULT,
                     filter,
-                    username || "",
+                    name || "",
                 );
                 const posts = await Promise.all(
                     comments.map(comment =>
@@ -114,4 +114,4 @@ const SearchUserCommentPage: React.FC = () => {
     );
 };
 
-export default SearchUserCommentPage;
+export default SearchTopicCommentPage;

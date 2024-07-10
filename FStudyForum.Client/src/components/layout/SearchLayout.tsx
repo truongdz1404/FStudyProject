@@ -1,5 +1,5 @@
 import ContentLayout from "@/components/layout/ContentLayout";
-import SearchTabs from "@/components/search/SearchTabsPeople";
+import SearchTabs from "@/components/search/SearchTabsPeopleNTopic";
 import { Outlet } from "react-router-dom";
 
 const SearchLayout = () => {

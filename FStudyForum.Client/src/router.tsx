@@ -13,6 +13,7 @@ import SavePost from "./pages/user/saved";
 import { Roles } from "@/helpers/constants";
 import Loadable from "./helpers/loading/Loadable";
 import SearchUserCommentPage from "./pages/search/people/comments";
+import SearchTopicCommentPage from "./pages/search/topics/comments";
 
 const QRCode = Loadable(lazy(() => import("./pages/donate/qrcode")));
 const Popular = Loadable(lazy(() => import("@/pages/popular")));
@@ -193,7 +194,7 @@ const Router: FC = () => {
                 },
                 {
                   path: "comments",
-                  element: <SearchUserCommentPage />
+                  element: <SearchTopicCommentPage />
                 }
               ]
             }

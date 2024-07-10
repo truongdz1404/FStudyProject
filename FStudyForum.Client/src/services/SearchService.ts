@@ -25,6 +25,15 @@ const searchCommentsUser = async (
   const response = await api.get<ResponseWith<Comment[]>>(`/search/comment?user=${user}&keyword=${keyword}&pageNumber=${pageNumber}&pageSize=${pageSize}&filter=${filter}`);
   return response.data.data;
 };
+const searchCommentsTopic = async (
+  keyword: string,
+  pageNumber: number,
+  pageSize: number,
+  filter: string,
+  topic: string) => {
+  const response = await api.get<ResponseWith<Comment[]>>(`/search/comment?topic=${topic}&keyword=${keyword}&pageNumber=${pageNumber}&pageSize=${pageSize}&filter=${filter}`);
+  return response.data.data;
+};
 
 const searchPosts = async (
   keyword: string,
@@ -78,7 +87,8 @@ const SearchService = {
   searchUsers,
   searchTopics,
   searchPostByKeywordInUser,
-  searchCommentsUser
+  searchCommentsUser,
+  searchCommentsTopic,
 };
 
 export default SearchService;

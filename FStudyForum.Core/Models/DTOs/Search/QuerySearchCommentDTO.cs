@@ -9,6 +9,7 @@ namespace FStudyForum.Core.Models.DTOs.Search
 {
     public string Filter { get; set; } = string.Empty;
     public string User { get; set; } = string.Empty;
+    public string Topic { get; set; } = string.Empty;
     public string Keyword { get; set; } = string.Empty;
     public QuerySearchCommentDTO()
     {
