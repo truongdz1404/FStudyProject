@@ -28,7 +28,7 @@ public class UserRepository(ApplicationDBContext dbContext)
                .ToListAsync();
     }
 
-    
+
 
     public async Task<IEnumerable<Topic>> GetModeratedTopics(string username)
     {
@@ -48,7 +48,10 @@ public class UserRepository(ApplicationDBContext dbContext)
     public async Task<IEnumerable<ApplicationUser>> Search(string keyword, int size)
     {
         return await _dbContext.Users
-        .Where(u => u.UserName!.Contains(keyword))
+        .Include(u => u.CreatedPosts)
+        .Include(u => u.Comments)
+        .Include(u => u.Profile)
+        .Where(u => u.UserName!.ToLower().Contains(keyword.ToLower()))
         .Take(size).ToListAsync();
     }
 }

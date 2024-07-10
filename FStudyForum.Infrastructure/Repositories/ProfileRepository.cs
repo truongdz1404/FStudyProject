@@ -17,6 +17,8 @@ namespace FStudyForum.Infrastructure.Repositories
         {
             var profile = await _dbContext.Profiles
                            .Include(u => u.User)
+                           .Include(u => u.User.CreatedPosts)
+                           .Include(u => u.User.Comments)
                            .Where(u => u.User.UserName!.Equals(username))
                            .FirstOrDefaultAsync();
             return profile;

@@ -66,12 +66,12 @@ namespace FStudyForum.API.Controllers
         {
             if (keyword == null) return BadRequest();
 
-            var users = await _userService.Search(keyword, size);
+            var profiles = await _userService.Search(keyword, size);
             return Ok(new Response
             {
                 Message = "Search Users successfully",
                 Status = ResponseStatus.SUCCESS,
-                Data = users
+                Data = profiles
             });
         }
         [HttpPost("create")]

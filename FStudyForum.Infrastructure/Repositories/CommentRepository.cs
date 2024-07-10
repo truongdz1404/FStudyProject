@@ -110,13 +110,13 @@ namespace FStudyForum.Infrastructure.Repositories
         {
             IQueryable<Comment> queryable = _context.Comments
               .Include(c => c.Creater)
-              .ThenInclude(c => c.Profile)
+              .Include(c => c.Creater.Profile)
               .Include(c => c.Post)
               .Include(c => c.Replies)
               .Include(c => c.Votes)
               .AsSplitQuery()
-              .Where(c => !c.IsDeleted && c.Content.Contains(query.Keyword.Trim()));
-              if (!string.IsNullOrEmpty(query.User))
+              .Where(c => !c.IsDeleted && c.Content.ToLower().Contains(query.Keyword.Trim().ToLower()));
+            if (!string.IsNullOrEmpty(query.User))
                 queryable = queryable.Where(c => c.Creater.UserName == query.User);
             queryable = query.Filter switch
             {

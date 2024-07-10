@@ -13,6 +13,7 @@ using FStudyForum.Infrastructure.Repositories;
 using FStudyForum.Core.Models.DTOs;
 using FStudyForum.Core.Models.DTOs.Topic;
 using FStudyForum.Core.Models.DTOs.Search;
+using FStudyForum.Core.Models.DTOs.Profile;
 namespace FStudyForum.Infrastructure.Services;
 
 public class UserService : IUserService
@@ -224,16 +225,22 @@ public class UserService : IUserService
         return userDTOs;
     }
 
-      public async Task<IEnumerable<UserDTO>> Search(string keyword, int size)
+    public async Task<IEnumerable<ProfileDTO>> Search(string keyword, int size)
     {
         var users = await _userRepository.Search(keyword, size);
-        var userDTOs = new List<UserDTO>();
-        if (users!= null)
+        var profileDTOs = new List<ProfileDTO>();
+        if (users != null)
         {
             foreach (var user in users)
-                userDTOs.Add(await GetProfileByUser(user));
+            {
+                var profileDTO = _mapper.Map<ProfileDTO>(user.Profile);
+                profileDTO.Username = user.UserName;
+                profileDTO.PostCount = user.CreatedPosts.Count;
+                profileDTO.CommentCount = user.Comments.Count;
+                profileDTOs.Add(profileDTO);
+            }
         }
-        return userDTOs;
-       
+        return profileDTOs;
+
     }
 }

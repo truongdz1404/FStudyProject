@@ -28,9 +28,12 @@ public class ProfileService : IProfileService
 
     public async Task<ProfileDTO?> GetByName(string username)
     {
-        var profile = await _profileRepository.GetByName(username);
-        ProfileDTO result = _mapper.Map<ProfileDTO>(profile);
+        var profile = await _profileRepository.GetByName(username)
+            ?? throw new Exception("Profile not found");
+        var result = _mapper.Map<ProfileDTO>(profile);
         result.Username = username;
+        result.PostCount = profile.User.CreatedPosts.Count;
+        result.CommentCount = profile.User.Comments.Count;
         return result;
     }
 

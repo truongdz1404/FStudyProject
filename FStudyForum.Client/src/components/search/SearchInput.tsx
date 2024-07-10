@@ -12,8 +12,8 @@ import { Topic } from "@/types/topic";
 import TopicService from "@/services/TopicService";
 import { debounce } from "lodash";
 import useQueryParams from "@/hooks/useQueryParams";
-import { User } from "@/types/user";
 import UserService from "@/services/UserService";
+import { Profile } from "@/types/profile";
 
 type History = {
   context: Context;
@@ -36,7 +36,7 @@ const SearchInput = () => {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [selectIndex, setSelectIndex] = React.useState(-1);
   const [foundTopics, setFoundTopics] = React.useState<Topic[]>([]);
-  const [foundUsers, setFoundUsers] = React.useState<User[]>([]);
+  const [foundUsers, setFoundUsers] = React.useState<Profile[]>([]);
   const keywordParam = useQueryParams().get("keyword");
   const [context, setContext] = React.useState<Context | undefined>(undefined);
   const navigate = useNavigate();
@@ -46,13 +46,13 @@ const SearchInput = () => {
       setContext({
         prefix: "t",
         name: topic.name,
-        avatar: topic.avatar || DefaultTopic,
+        avatar: topic.avatar || DefaultTopic
       });
     } else if (user) {
       setContext({
         prefix: "u",
         name: user.username,
-        avatar: user.avatar || DefaultAvatar,
+        avatar: user.avatar || DefaultAvatar
       });
     } else {
       setContext(undefined);
@@ -119,7 +119,7 @@ const SearchInput = () => {
   const handleClearContext = () => {
     setIsAll(true);
     setKeyword("");
-    setContext(undefined); // Sử dụng setContext thay vì gán trực tiếp
+    setContext(undefined);
   };
 
   const handleKeydown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -164,7 +164,7 @@ const SearchInput = () => {
     } else navigate(`/search/posts?keyword=${value.keyword}`);
   };
 
-  const handleSelect = (item: Topic | User) => {
+  const handleSelect = (item: Topic | Profile) => {
     if ("username" in item) {
       addHistory({
         context: { prefix: "u", name: item.username, avatar: item.avatar }
@@ -211,8 +211,18 @@ const SearchInput = () => {
 
   const boxSize = React.useMemo(
     () =>
-      canViewHistory() ? history.length : canSearch() ? foundTopics.length + foundUsers.length : 0,
-    [canSearch, canViewHistory, foundTopics.length, foundUsers.length, history.length]
+      canViewHistory()
+        ? history.length
+        : canSearch()
+        ? foundTopics.length + foundUsers.length
+        : 0,
+    [
+      canSearch,
+      canViewHistory,
+      foundTopics.length,
+      foundUsers.length,
+      history.length
+    ]
   );
 
   return (
@@ -245,7 +255,11 @@ const SearchInput = () => {
               onClick={() => setIsAll(true)}
             >
               <div className=" bg-blue-gray-900/80 rounded-full p-1">
-                <X className="w-3 h-3 text-white" strokeWidth={3} onClick={handleClearContext}/>
+                <X
+                  className="w-3 h-3 text-white"
+                  strokeWidth={3}
+                  onClick={handleClearContext}
+                />
               </div>
             </div>
           </span>
@@ -359,7 +373,8 @@ const SearchInput = () => {
                       key={index + foundTopics.length}
                       className={cn(
                         "flex gap-x-2 items-center py-2 px-4 hover:bg-blue-gray-50/40 cursor-pointer",
-                        selectIndex == index + foundTopics.length && "bg-blue-gray-50/40"
+                        selectIndex == index + foundTopics.length &&
+                          "bg-blue-gray-50/40"
                       )}
                       onClick={() => handleSelect(user)}
                     >
@@ -369,6 +384,10 @@ const SearchInput = () => {
                       />
                       <div className="flex-col flex">
                         <span className="text-xs font-normal">{`u/${user.username}`}</span>
+                        <span className="text-[0.7rem] font-light">
+                          {`${user.postCount} `}
+                          {user.postCount ? "posts" : "post"}
+                        </span>
                       </div>
                     </div>
                   ))}

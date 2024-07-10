@@ -2,6 +2,7 @@ import { User } from "@/types/user";
 import api from "./api";
 import { ResponseWith } from "@/types/response";
 import { Paginated } from "@/types/paginated";
+import { Profile } from "@/types/profile";
 
 const getProfile = async () => {
   const response = await api.get<ResponseWith<User>>("/user/profile");
@@ -12,10 +13,10 @@ const getAll = async () => {
   return response.data.data;
 };
 
-
-const search = async (
-  keyword: string) => {
-  const response = await api.get<ResponseWith<User[]>>(`/user/search?keyword=${keyword}&size=5`);
+const search = async (keyword: string) => {
+  const response = await api.get<ResponseWith<Profile[]>>(
+    `/user/search?keyword=${keyword}&size=5`
+  );
   return response.data.data;
 };
 
