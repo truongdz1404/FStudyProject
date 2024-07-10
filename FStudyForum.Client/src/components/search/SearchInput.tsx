@@ -38,23 +38,25 @@ const SearchInput = () => {
   const [foundTopics, setFoundTopics] = React.useState<Topic[]>([]);
   const [foundUsers, setFoundUsers] = React.useState<User[]>([]);
   const keywordParam = useQueryParams().get("keyword");
-
+  const [context, setContext] = React.useState<Context | undefined>(undefined);
   const navigate = useNavigate();
 
-  const context: Context | undefined = React.useMemo(() => {
-    if (topic)
-      return {
+  React.useEffect(() => {
+    if (topic) {
+      setContext({
         prefix: "t",
         name: topic.name,
-        avatar: topic.avatar || DefaultTopic
-      };
-    if (user)
-      return {
+        avatar: topic.avatar || DefaultTopic,
+      });
+    } else if (user) {
+      setContext({
         prefix: "u",
         name: user.username,
-        avatar: user.avatar || DefaultAvatar
-      };
-    return undefined;
+        avatar: user.avatar || DefaultAvatar,
+      });
+    } else {
+      setContext(undefined);
+    }
   }, [topic, user]);
 
   const closeBox = () => {
@@ -100,7 +102,7 @@ const SearchInput = () => {
   );
 
   const canViewHistory = React.useCallback(
-    () => !!keyword == false && !context,
+    () => !keyword && !context,
     [keyword, context]
   );
   const canSearch = React.useCallback(() => !context, [context]);
@@ -113,6 +115,12 @@ const SearchInput = () => {
       debouncedSearch.cancel();
     };
   }, [keyword, debouncedSearch, canSearch]);
+
+  const handleClearContext = () => {
+    setIsAll(true);
+    setKeyword("");
+    setContext(undefined); // Sử dụng setContext thay vì gán trực tiếp
+  };
 
   const handleKeydown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     switch (e.key) {
@@ -237,7 +245,7 @@ const SearchInput = () => {
               onClick={() => setIsAll(true)}
             >
               <div className=" bg-blue-gray-900/80 rounded-full p-1">
-                <X className="w-3 h-3 text-white" strokeWidth={3} />
+                <X className="w-3 h-3 text-white" strokeWidth={3} onClick={handleClearContext}/>
               </div>
             </div>
           </span>
