@@ -9,7 +9,6 @@ public interface IPostRepository : IBaseRepository<Post>
     public Task<Post> CreatePostAsync(CreatePostDTO postDTO);
     public Task DeletePostForeverAsync(Post post);
     public Task MovePostToTrashAsync(Post post);
-    public Task DeletePostAsync(Post post);
     public Task RestorePostFromTrashAsync(Post post);
     public Task<Post?> GetPostByIdAsync(long id, bool isDeleted = false);
     public Task<IList<Post>?> GetVotedPosts(string username);

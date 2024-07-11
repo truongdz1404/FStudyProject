@@ -1,20 +1,13 @@
 import React from "react";
-import { Avatar, Spinner } from "@material-tailwind/react";
+import { Spinner } from "@material-tailwind/react";
 import { useRouterParam } from "@/hooks/useRouterParam";
-import ContentLayout from "@/components/layout/ContentLayout";
-import ImageWithLoading from "@/components/ui/ImageWithLoading";
-import BannerDefault from "@/assets/images/banner.png";
-import AvatarDefault from "@/assets/images/user.png";
-import { Link } from "react-router-dom";
-import { PencilLine } from "lucide-react";
-import TopicDescription from "@/components/topic/TopicDescription";
 import useSearchParam from "@/hooks/useSearchParam";
 import PostFilter from "@/components/post/PostFilter";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { LIMIT_SCROLLING_PAGNATION_RESULT } from "@/helpers/constants";
 import PostService from "@/services/PostService";
 import { useInView } from "react-intersection-observer";
-import PostItem from "@/components/post/PostItem";
+import SearchPost from "@/components/search/SearchPost";
 import useQueryParams from "@/hooks/useQueryParams";
 import NotFoundSearch from "@/components/layout/NotFoundSearch";
 const SearchPostInTopic: React.FC = () => {
@@ -31,10 +24,16 @@ const SearchPostInTopic: React.FC = () => {
 
   const { data, fetchNextPage, isPending, isFetchingNextPage, refetch } =
     useInfiniteQuery({
-      queryKey: [`topic-${filter}-query`, keyword],
+      queryKey: [
+        "POST_LIST",
+        "SEARCH",
+        "BY_TOPIC",
+        topic?.name,
+        { keyword, filter }
+      ],
       queryFn: async ({ pageParam = 1 }) => {
         try {
-          const posts = await PostService.seachPostsByKeywordInTopic(
+          const posts = await PostService.searchPostsByKeywordInTopic(
             topic!.name,
             pageParam,
             LIMIT_SCROLLING_PAGNATION_RESULT,
@@ -64,57 +63,28 @@ const SearchPostInTopic: React.FC = () => {
   const posts = data?.pages.flatMap(p => p) ?? [];
 
   return (
-    <ContentLayout pannel={<TopicDescription />}>
-      <div className="flex flex-col items-center w-full mb-14">
-        <div className="relative w-full max-w-screen-lg">
-          <div className="w-full rounded-none md:rounded-lg h-28 overflow-hidden">
-            <ImageWithLoading
-              src={topic.banner || BannerDefault}
-              className="object-cover w-full h-full "
-            />
-          </div>
-          <div className="absolute -bottom-1/3 left-4">
-            <Avatar
-              variant="circular"
-              size="xl"
-              alt="avatar"
-              className="bg-white  p-0.5"
-              src={topic.avatar || AvatarDefault}
-            />
-          </div>
-
-          <div className="absolute left-24 flex items-center gap-x-2">
-            <p className="text-md font-semibold">t/{topic.name}</p>
-            <Link to="/settings/profile">
-              <PencilLine className="w-4 h-4 text-blue-gray-600" />
-            </Link>
-          </div>
-        </div>
-      </div>
-      <div className="pb-2 border-b-2">
-        <div className="relative flex text-left z-20 mx-2">
-          <PostFilter setFilter={setFilter} filter={filter} />
-        </div>
-        {posts.length === 0 && !isPending && (
+    <>
+      {posts.length === 0 || !keyword ? (
         <NotFoundSearch keyword={keyword} />
-      )}
-      </div>
-      <div className="pt-1">
-        {posts.map((post, index) => {
-          return (
+      ) : (
+        <>
+          <div className="relative flex text-left z-20">
+            <PostFilter setFilter={setFilter} filter={filter} />
+          </div>
+          {posts.map((post, index) => (
             <div key={index} className="w-full">
-              <div className="hover:bg-gray-50 rounded-lg w-full">
-                <PostItem key={index} data={post} />
+              <div className="hover:bg-gray-50 rounded-lg w-full p-2">
+                <SearchPost key={index} data={post} keyword={keyword} />
               </div>
               <hr className="my-1 border-blue-gray-50" />
             </div>
-          );
-        })}
-        <div ref={ref} className="text-center">
-          {isFetchingNextPage && <Spinner className="mx-auto" />}
-        </div>
-      </div>
-    </ContentLayout>
+          ))}
+          <div ref={ref} className="text-center">
+            {isFetchingNextPage && <Spinner className="mx-auto" />}
+          </div>
+        </>
+      )}
+    </>
   );
 };
 

@@ -4,8 +4,9 @@ import { useInView } from "react-intersection-observer";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { LIMIT_SCROLLING_PAGNATION_RESULT } from "@/helpers/constants";
 import NotFoundSearch from "@/components/layout/NotFoundSearch";
-import { Spinner } from "@material-tailwind/react";
+import { Avatar, Spinner } from "@material-tailwind/react";
 import { Link, useLocation } from "react-router-dom";
+import DefaultUser from "@/assets/images/user.png";
 
 const useQuery = () => {
   return new URLSearchParams(useLocation().search);
@@ -47,22 +48,20 @@ const SearchUserPage: React.FC = () => {
   );
 
   if (isPending) return <Spinner className="mx-auto" />;
-
+  if (uniqueTopics.length === 0) return <NotFoundSearch keyword={keyword} />;
   return (
     <>
-      {uniqueTopics.length === 0 && <NotFoundSearch keyword={keyword} />}
       {uniqueTopics.map((user, index) => {
         return (
           <Link to={`/user/${user?.username}`} key={user?.username}>
             <div key={index} className="w-full flex flex-col item-center">
-              <div className="hover:bg-gray-100 rounded-lg w-full py-6 flex items-center">
-                <img
-                  src={user?.avatar || "/src/assets/images/user.png"}
-                  alt={user?.username}
-                  className="ml-3 w-12 h-12 rounded-full mr-4"
+              <div className="hover:bg-gray-100 rounded-lg w-full p-4 gap-x-4 flex items-center text-blue-gray-800">
+                <Avatar
+                  src={user?.avatar || DefaultUser}
+                  className="w-10 h-10"
                 />
                 <div>
-                  <h3 className="font-semibold mb-1">{user?.username}</h3>
+                  <h3 className="font-semibold mb-1">u/{user?.username}</h3>
                 </div>
               </div>
               <hr className="my-1 border-blue-gray-50 w-full" />

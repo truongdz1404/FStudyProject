@@ -4,7 +4,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { Comment } from "@/types/comment";
 import DefaultTopic from "@/assets/images/topic.png";
 import React from "react";
-import LightBox from "../post/LightBox";
 import { formatElapsedTime } from "@/helpers/utils";
 
 interface Props {
@@ -13,11 +12,9 @@ interface Props {
   keyword: string;
 }
 const SearchPost: React.FC<Props> = ({ data, comment, keyword }) => {
-  const [open, setOpen] = React.useState(-1);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const actionRefs = React.useRef<HTMLElement[]>([]);
   const navigate = useNavigate();
-
 
   const handleRemainClick = (event: React.MouseEvent<HTMLDivElement>) => {
     if (!containerRef.current) return;
@@ -51,36 +48,49 @@ const SearchPost: React.FC<Props> = ({ data, comment, keyword }) => {
             />
             {`t/${data.topicName}`}
           </Link>
-          <span className="text-md flex w-full text-blue-gray-800 break-words mt-2 mb-2">
+          <span className="text-sm flex w-full font-semibold text-blue-gray-800 break-words mt-2 mb-2">
             {data.title}
           </span>
           <div className="bg-gray-100 w-full flex flex-col py-3 rounded-lg">
-          <Link
-            to={`/profile/${comment?.author}`}
-            className="action flex items-center gap-x-2 z-10"
-          >
-            <div className=" rounded-lg w-full flex items-center py-2 pb-3">
-              <img src={comment.avatar || "/src/assets/images/user.png"} alt={comment?.author} className="ml-3 w-6 h-6 rounded-full mr-2" />
-              <div>
-                <h3 className=" text-xs">{comment?.author}</h3>
+            <Link
+              to={`/profile/${comment?.author}`}
+              className="action flex items-center gap-x-2 z-10"
+            >
+              <div className=" rounded-lg w-full flex items-center py-2 pb-3">
+                <img
+                  src={comment.avatar || "/src/assets/images/user.png"}
+                  alt={comment?.author}
+                  className="ml-3 w-6 h-6 rounded-full mr-2"
+                />
+                <div>
+                  <h3 className=" text-xs">{comment?.author}</h3>
+                </div>
+                <span className="text-xs font-light mx-1">•</span>
+                <span className="text-xs font-light">
+                  {formatElapsedTime(comment.elapsed)}
+                </span>
               </div>
-              <span className="text-xs font-light mx-1">•</span>
-              <span className="text-xs font-light">
-                {formatElapsedTime(comment.elapsed)}
+            </Link>
+            <div className="ml-3 text-sm">
+              <span>
+                {comment.content
+                  .split(regex)
+                  .map((part, index) =>
+                    regex.test(part) ? (
+                      <strong key={index}>{part}</strong>
+                    ) : (
+                      part
+                    )
+                  )}
               </span>
             </div>
-          </Link>
-          <div className="ml-3 text-sm">
-            <span>{comment.content.split(regex)
-              .map((part, index) =>
-                regex.test(part) ? <strong key={index}>{part}</strong> : part
-              )}</span>
+            <div className="my-5 ml-3 text-gray-600 text-xs">
+              <span>
+                {comment.voteCount}{" "}
+                {Math.abs(comment.voteCount) <= 1 ? "vote" : "votes"}
+              </span>
+            </div>
           </div>
-          <div className="my-5 ml-3 text-gray-600 text-sm">
-            <span>{comment.voteCount} {Math.abs(comment.voteCount) <= 1 ? 'vote' : 'votes'}</span>
-          </div>
-        </div>
-
         </div>
         <div className="text-xs  font-light">
           {data.voteCount + ` ${data.commentCount > 1 ? "votes" : "vote"}`}{" "}
@@ -89,30 +99,6 @@ const SearchPost: React.FC<Props> = ({ data, comment, keyword }) => {
             ` ${data.commentCount > 1 ? "comments" : "comment"}`}
         </div>
       </div>
-
-      {/* {data.attachments[0] && (
-        <div
-          className="flex ml-3  overflow-hidden rounded-lg relative aspect-[4/3] h-24 action"
-          onClick={() => openLightBox(0)}
-        >
-          <ImageWithLoading
-            src={data.attachments[0].url}
-            className="object-cover w-full h-full"
-          />
-          {data.attachments.length > 1 && (
-            <div className="absolute bg-black/60 bottom-0 px-1 py-0.5 m-1 rounded-full text-white/80 flex items-center gap-x-1">
-              <Images className="w-3 h-3" />
-              <span className="text-[0.6rem]">{data.attachments.length}</span>
-            </div>
-          )}
-        </div>
-      )} */}
-      <LightBox
-        index={open}
-        hideArrow={data.attachments.length <= 1}
-        sliders={data.attachments.map(file => ({ src: file.url }))}
-        close={() => setOpen(-1)}
-      />
     </div>
   );
 };

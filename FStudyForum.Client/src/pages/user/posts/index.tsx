@@ -17,7 +17,7 @@ const Posts: React.FC = () => {
 
   const { data, fetchNextPage, isPending, isFetchingNextPage } =
     useInfiniteQuery({
-      queryKey: ["POST_LIST", "POST", { user: user?.username, filter }],
+      queryKey: ["POST_LIST", "POST", user?.username, { filter }],
       queryFn: async ({ pageParam = 1 }) => {
         try {
           return await PostService.getPostsByUser(

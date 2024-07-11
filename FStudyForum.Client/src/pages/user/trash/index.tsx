@@ -17,7 +17,7 @@ const Trash: React.FC = () => {
 
   const { data, fetchNextPage, isPending, isFetchingNextPage } =
     useInfiniteQuery({
-      queryKey: ["POST_LIST", "TRASH", { user: user?.username, filter }],
+      queryKey: ["POST_LIST", "TRASH", user?.username, { filter }],
       queryFn: async ({ pageParam = 1 }) => {
         try {
           const test = await PostService.getPostsInTrash(

@@ -51,7 +51,7 @@ const getPostsByTopicName = async (
   return response.data.data;
 };
 
-const seachPostsByKeywordInTopic = async (
+const searchPostsByKeywordInTopic = async (
   topicName: string,
   pageNumber: number,
   pageSize: number,
@@ -164,7 +164,7 @@ const PostService = {
   getPosts,
   create,
   edit,
-  seachPostsByKeywordInTopic,
+  searchPostsByKeywordInTopic,
   moveToTrash,
   getById
 };

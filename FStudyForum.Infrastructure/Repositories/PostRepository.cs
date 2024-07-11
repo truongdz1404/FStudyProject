@@ -281,9 +281,5 @@ namespace FStudyForum.Infrastructure.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
-        public Task DeletePostAsync(Post post)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

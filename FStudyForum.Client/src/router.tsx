@@ -13,6 +13,7 @@ import SavePost from "./pages/user/saved";
 import { Roles } from "@/helpers/constants";
 import Loadable from "./helpers/loading/Loadable";
 import SearchUserCommentPage from "./pages/search/people/comments";
+import SearchTopicCommentPage from "./pages/search/topics/comments";
 
 const QRCode = Loadable(lazy(() => import("./pages/donate/qrcode")));
 const Popular = Loadable(lazy(() => import("@/pages/popular")));
@@ -49,11 +50,11 @@ const SearchTopics = Loadable(lazy(() => import("@/pages/search/topics")));
 const SearchPostInTopic = Loadable(lazy(() => import("@/pages/search/topics/posts")));
 const SearchComments = Loadable(lazy(() => import("@/pages/search/comments")));
 const SearchPeople = Loadable(lazy(() => import("@/pages/search/people")));
-const SearchPost = Loadable(lazy(() => import("@/pages/search/people/posts/SearchPostPage")));
+const SearchPost = Loadable(lazy(() => import("@/pages/search/people/posts")));
 const SignOut = Loadable(lazy(() => import("@/pages/auth/signout")));
 const ListReport = Loadable(lazy(() => import("@/pages/manager/report/list")));
 const Search = Loadable(lazy(() => import("@/pages/search")));
-const People = Loadable(lazy(() => import("@/pages/search/people/posts")));
+const SearchLayout = Loadable(lazy(() => import("@/components/layout/SearchLayout")));
 
 const Test = Loadable(lazy(() => import("@/pages/test")));
 const Response = Loadable(
@@ -184,8 +185,18 @@ const Router: FC = () => {
               ]
             },
             {
-              path: "search/posts",
-              element: <SearchPostInTopic />
+              path: "search",
+              element: <SearchLayout />,
+              children: [
+                {
+                  path: "posts",
+                  element: <SearchPostInTopic />
+                },
+                {
+                  path: "comments",
+                  element: <SearchTopicCommentPage />
+                }
+              ]
             }
           ]
         },
@@ -215,7 +226,7 @@ const Router: FC = () => {
             },
             {
               path: "search",
-              element: <People />,
+              element: <SearchLayout />,
               children: [
                 {
                   path: "posts",

@@ -12,106 +12,106 @@ import CommentFilter from "@/components/comment/CommentFilter";
 import SearchComment from "@/components/search/SearchComment";
 
 const useQueryParams = () => {
-    return new URLSearchParams(useLocation().search);
+  return new URLSearchParams(useLocation().search);
 };
 
 const SearchUserCommentPage: React.FC = () => {
-    const { ref, inView } = useInView();
-    const { username } = useParams<{ username: string }>();
-    const queryParams = useQueryParams();
-    const keyword = queryParams.get("keyword") ?? "";
-    const [filter, setFilter] = useSearchParam<string>({
-        key: "filter",
-        defaultValue: "New"
-    });
+  const { ref, inView } = useInView();
+  const { username } = useParams<{ username: string }>();
+  const queryParams = useQueryParams();
+  const keyword = queryParams.get("keyword") ?? "";
+  const [filter, setFilter] = useSearchParam<string>({
+    key: "filter",
+    defaultValue: "New"
+  });
 
-    const {
-        data: comments,
-        fetchNextPage,
-        isPending,
-        isFetching,
-        refetch
-    } = useInfiniteQuery({
-        queryKey: [`search-comments-${filter}-query`, keyword],
-        queryFn: async ({ pageParam = 1 }) => {
-            if (!keyword) return { data: [], nextPage: undefined, hasMore: false };
-            try {
-                const comments = await SearchService.searchCommentsUser(
-                    keyword,
-                    pageParam,
-                    LIMIT_SCROLLING_PAGNATION_RESULT,
-                    filter,
-                    username || "",
-                );
-                const posts = await Promise.all(
-                    comments.map(comment =>
-                        PostService.getById(comment.postId.toString())
-                    )
-                );
-                return {
-                    data: comments.map((comment, index) => ({
-                        comment: comment,
-                        post: posts[index]
-                    })),
-                    nextPage:
-                        comments.length === LIMIT_SCROLLING_PAGNATION_RESULT
-                            ? pageParam + 1
-                            : undefined,
-                    hasMore: comments.length === LIMIT_SCROLLING_PAGNATION_RESULT
-                };
-            } catch (error: unknown) {
-                if (
-                    error instanceof Error &&
-                    error.message === "Request failed with status code 404"
-                ) {
-                    return { data: [], nextPage: undefined, hasMore: false };
-                } else {
-                    throw error;
-                }
-            }
-        },
-        getNextPageParam: lastPage =>
-            lastPage.hasMore ? lastPage.nextPage : undefined,
-        enabled: !!keyword,
-        initialPageParam: 1
-    });
-
-    const results = comments?.pages.flatMap(page => page.data) || [];
-
-    React.useEffect(() => {
-        if (inView && !isFetching) {
-            fetchNextPage();
+  const {
+    data: comments,
+    fetchNextPage,
+    isPending,
+    isFetching,
+    refetch
+  } = useInfiniteQuery({
+    queryKey: ["COMMENT_LIST", "SEARCH","BY_USER", username, { keyword, filter }],
+    queryFn: async ({ pageParam = 1 }) => {
+      if (!keyword) return { data: [], nextPage: undefined, hasMore: false };
+      try {
+        const comments = await SearchService.searchCommentsUser(
+          keyword,
+          pageParam,
+          LIMIT_SCROLLING_PAGNATION_RESULT,
+          filter,
+          username || ""
+        );
+        const posts = await Promise.all(
+          comments.map(comment =>
+            PostService.getById(comment.postId.toString())
+          )
+        );
+        return {
+          data: comments.map((comment, index) => ({
+            comment: comment,
+            post: posts[index]
+          })),
+          nextPage:
+            comments.length === LIMIT_SCROLLING_PAGNATION_RESULT
+              ? pageParam + 1
+              : undefined,
+          hasMore: comments.length === LIMIT_SCROLLING_PAGNATION_RESULT
+        };
+      } catch (error: unknown) {
+        if (
+          error instanceof Error &&
+          error.message === "Request failed with status code 404"
+        ) {
+          return { data: [], nextPage: undefined, hasMore: false };
+        } else {
+          throw error;
         }
-    }, [inView, isFetching, fetchNextPage]);
+      }
+    },
+    getNextPageParam: lastPage =>
+      lastPage.hasMore ? lastPage.nextPage : undefined,
+    enabled: !!keyword,
+    initialPageParam: 1
+  });
 
-    React.useEffect(() => {
-        refetch();
-    }, [keyword, refetch]);
+  const results = comments?.pages.flatMap(page => page.data) || [];
 
-    if (isPending) return <Spinner className="mx-auto" />;
-    console.table(results);
+  React.useEffect(() => {
+    if (inView && !isFetching) {
+      fetchNextPage();
+    }
+  }, [inView, isFetching, fetchNextPage]);
 
-    return (
-        <>
-            <div className="relative flex text-left z-20">
-                <CommentFilter setFilter={setFilter} filter={filter} />
-            </div>
-            {results.length === 0 && !isPending && (
-                <NotFoundSearch keyword={keyword} />
-            )}
-            {results.map(({ post, comment }, index) => (
-                <div key={index} className="w-full ">
-                    <div className="hover:bg-gray-100 rounded-lg w-full py-3">
-                        <SearchComment keyword={keyword} data={post} comment={comment} />
-                    </div>
-                    <hr className="my-1 border-blue-gray-50" />
-                </div>
-            ))}
-            <div ref={ref} className="text-center">
-                {isFetching && <Spinner className="mx-auto" />}
-            </div>
-        </>
-    );
+  React.useEffect(() => {
+    refetch();
+  }, [keyword, refetch]);
+
+  if (isPending) return <Spinner className="mx-auto" />;
+  console.table(results);
+
+  return (
+    <>
+      <div className="relative flex text-left z-20 mb-1">
+        <CommentFilter setFilter={setFilter} filter={filter} />
+      </div>
+      {results.length === 0 && !isPending && (
+        <NotFoundSearch keyword={keyword} />
+      )}
+      {results.map(({ post, comment }, index) => (
+        <div key={index} className="w-full ">
+          <div className="hover:bg-gray-100 rounded-lg w-full">
+            <SearchComment keyword={keyword} data={post} comment={comment} />
+          </div>
+          <hr className="my-1 border-blue-gray-50" />
+        </div>
+      ))}
+      <div ref={ref} className="text-center">
+        {isFetching && <Spinner className="mx-auto" />}
+      </div>
+    </>
+  );
 };
 
 export default SearchUserCommentPage;
