@@ -51,18 +51,7 @@ const getPostsByTopicName = async (
   return response.data.data;
 };
 
-const searchPostsByKeywordInTopic = async (
-  topicName: string,
-  pageNumber: number,
-  pageSize: number,
-  filter: string,
-  keyword: string
-) => {
-  const response = await api.get<ResponseWith<Post[]>>(
-    `/post/all?topic=${topicName}&keyword=${keyword}&pageNumber=${pageNumber}&pageSize=${pageSize}&filter=${filter}`
-  );
-  return response.data.data;
-};
+
 
 const getPostsByUser = async (
   userName: string,
@@ -164,7 +153,6 @@ const PostService = {
   getPosts,
   create,
   edit,
-  searchPostsByKeywordInTopic,
   moveToTrash,
   getById
 };

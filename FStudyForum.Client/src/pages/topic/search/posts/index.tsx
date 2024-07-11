@@ -5,11 +5,11 @@ import useSearchParam from "@/hooks/useSearchParam";
 import PostFilter from "@/components/post/PostFilter";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { LIMIT_SCROLLING_PAGNATION_RESULT } from "@/helpers/constants";
-import PostService from "@/services/PostService";
 import { useInView } from "react-intersection-observer";
 import SearchPost from "@/components/search/SearchPost";
 import useQueryParams from "@/hooks/useQueryParams";
 import NotFoundSearch from "@/components/layout/NotFoundSearch";
+import SearchService from "@/services/SearchService";
 const SearchPostInTopic: React.FC = () => {
   const { topic } = useRouterParam();
   const [filter, setFilter] = useSearchParam<string>({
@@ -33,7 +33,7 @@ const SearchPostInTopic: React.FC = () => {
       ],
       queryFn: async ({ pageParam = 1 }) => {
         try {
-          const posts = await PostService.searchPostsByKeywordInTopic(
+          const posts = await SearchService.searchPostsByKeywordInTopic(
             topic!.name,
             pageParam,
             LIMIT_SCROLLING_PAGNATION_RESULT,

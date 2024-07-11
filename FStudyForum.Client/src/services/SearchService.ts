@@ -81,12 +81,26 @@ const searchTopics = async (
   return response.data.data;
 };
 
+const searchPostsByKeywordInTopic = async (
+  topicName: string,
+  pageNumber: number,
+  pageSize: number,
+  filter: string,
+  keyword: string
+) => {
+  const response = await api.get<ResponseWith<Post[]>>(
+    `/search/post?topic=${topicName}&keyword=${keyword}&pageNumber=${pageNumber}&pageSize=${pageSize}&filter=${filter}`
+  );
+  return response.data.data;
+};
+
 const SearchService = {
   searchComments,
   searchPosts,
   searchUsers,
   searchTopics,
   searchPostByKeywordInUser,
+  searchPostsByKeywordInTopic,
   searchCommentsUser,
   searchCommentsTopic,
 };
