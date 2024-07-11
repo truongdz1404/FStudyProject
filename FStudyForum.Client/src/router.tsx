@@ -12,9 +12,14 @@ import Notification from "./pages/donate/notification";
 import SavePost from "./pages/user/saved";
 import { Roles } from "@/helpers/constants";
 import Loadable from "./helpers/loading/Loadable";
-import SearchUserCommentPage from "./pages/search/people/comments";
-import SearchTopicCommentPage from "./pages/search/topics/comments";
+
 import Analytics from "./pages/analytics";
+const SearchTopicCommentPage = Loadable(
+  lazy(() => import("./pages/topic/search/comments"))
+);
+const SearchUserCommentPage = Loadable(
+  lazy(() => import("./pages/user/search/comments"))
+);
 
 const QRCode = Loadable(lazy(() => import("./pages/donate/qrcode")));
 const Popular = Loadable(lazy(() => import("@/pages/popular")));
@@ -49,11 +54,11 @@ const Attachment = Loadable(lazy(() => import("@/pages/attachment")));
 const SearchPage = Loadable(lazy(() => import("@/pages/search/posts")));
 const SearchTopics = Loadable(lazy(() => import("@/pages/search/topics")));
 const SearchPostInTopic = Loadable(
-  lazy(() => import("@/pages/search/topics/posts"))
+  lazy(() => import("@/pages/topic/search/posts"))
 );
 const SearchComments = Loadable(lazy(() => import("@/pages/search/comments")));
 const SearchPeople = Loadable(lazy(() => import("@/pages/search/people")));
-const SearchPost = Loadable(lazy(() => import("@/pages/search/people/posts")));
+const SearchPost = Loadable(lazy(() => import("@/pages/user/search/posts")));
 const SignOut = Loadable(lazy(() => import("@/pages/auth/signout")));
 const ListReport = Loadable(lazy(() => import("@/pages/manager/report/list")));
 const Search = Loadable(lazy(() => import("@/pages/search")));

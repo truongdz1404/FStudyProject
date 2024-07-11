@@ -603,19 +603,19 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "396419f0-d40f-4d90-a5ec-62e4d3a77518",
+                            Id = "4f37720b-9ed9-4bb3-92b0-5ce0d254c136",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "87b5fbd4-adf3-474e-b12d-bb3c4417c764",
+                            Id = "28451c9e-a53f-4e6c-95ee-4ce01448c497",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "b09bc398-37f6-48df-bb1c-3d7d89c4d446",
+                            Id = "57dd4b91-bfe2-4474-892f-7b245ed58d74",
                             Name = "Moderator",
                             NormalizedName = "MODERATOR"
                         });
