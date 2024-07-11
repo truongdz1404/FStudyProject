@@ -196,7 +196,6 @@ const FileInput = forwardRef<HTMLInputElement, InputProps>(
                                 removeFile(index);
                               }}
                               onLoaded={url => {
-                                console.log(url);
                                 moveTemp(url);
                                 updateFile(index, { ...file, url });
                               }}

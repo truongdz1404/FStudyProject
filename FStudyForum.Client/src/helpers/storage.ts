@@ -2,13 +2,13 @@ import { initializeApp } from "firebase/app";
 import { deleteObject, getStorage, ref } from "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyALIggC2qzMSbwc8oGeJpoFXmcJnH6Xq6c",
-  authDomain: "fir-6ea1c.firebaseapp.com",
-  projectId: "fir-6ea1c",
-  storageBucket: "fir-6ea1c.appspot.com",
-  messagingSenderId: "360451442352",
-  appId: "1:360451442352:web:9a9a71e7ab4688f3ea5d75",
-  measurementId: "G-GLQ59EM21R"
+  apiKey: "AIzaSyChWkp9P9f2U_OlLFmzgB8YWqQr5Q3cAsg",
+  authDomain: "fstudyforum.firebaseapp.com",
+  projectId: "fstudyforum",
+  storageBucket: "fstudyforum.appspot.com",
+  messagingSenderId: "837834875365",
+  appId: "1:837834875365:web:219fb1df2385e931ffcf0c",
+  measurementId: "G-34X40HWD3R"
 };
 const app = initializeApp(firebaseConfig);
 export const storage = getStorage(app);

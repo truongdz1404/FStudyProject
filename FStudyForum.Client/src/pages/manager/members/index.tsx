@@ -1,5 +1,6 @@
-import UserService from "@/services/UserService"
-import { User } from "@/types/user"
+import UserService from "@/services/UserService";
+import { User } from "@/types/user";
+import DefaultUser from "@/assets/images/user.png";
 import {
   Card,
   CardHeader,
@@ -8,87 +9,48 @@ import {
   Button,
   CardBody,
   CardFooter,
-  Tabs,
-  TabsHeader,
-  Tab,
   Avatar,
   IconButton,
   Tooltip
-} from "@material-tailwind/react"
-import { ChevronsUpDown, Pencil, Plus, Search } from "lucide-react"
-import React from "react"
+} from "@material-tailwind/react";
+import { ChevronsUpDown, Pencil, Search } from "lucide-react";
+import React from "react";
 
-const tabs = [
-  {
-    label: "All",
-    value: "all"
-  },
-  {
-    label: "Monitored",
-    value: "monitored"
-  },
-  {
-    label: "Unmonitored",
-    value: "unmonitored"
-  }
-]
-
-const tableHead = ["Member", "Role", "Action"]
+const tableHead = ["Member", "Role", "Action"];
 
 const MembersPage = () => {
-  const [loading, setLoading] = React.useState(false)
-  const [users, setUsers] = React.useState<User[]>([])
+  const [loading, setLoading] = React.useState(false);
+  const [users, setUsers] = React.useState<User[]>([]);
   React.useEffect(() => {
     const fetchTopics = async () => {
-      setLoading(true)
+      setLoading(true);
       try {
-        const paginatedUsers = await UserService.getAll()
-        // console.log(paginatedUsers.data);
+        const paginatedUsers = await UserService.getAll();
 
-        setUsers(paginatedUsers.data)
+        setUsers(paginatedUsers.data);
       } catch (error) {
-        console.error(error)
+        console.error(error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
-    fetchTopics()
-  }, [])
+    };
+    fetchTopics();
+  }, []);
   return (
     <Card className="h-full w-full">
       <CardHeader floated={false} shadow={false} className="rounded-none">
         <div className="mb-8 flex items-center justify-between gap-8">
-          <div>
-            <Typography variant="h5" color="blue-gray">
-              Members list
-            </Typography>
-            <Typography color="gray" className="mt-1 font-normal">
-              See information about all members
-            </Typography>
-          </div>
-          <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
-            <Button className="flex items-center gap-2">
-              <Plus strokeWidth={2} className="h-4 w-4" /> Add member
-            </Button>
+          <div className="text-blue-gray-700">
+            <p className="font-semibold text-lg">Members list</p>
+            <p className="mt-1 text-sm">See information about all members</p>
           </div>
         </div>
-        <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-          <Tabs value="all" className="w-full md:w-max">
-            <TabsHeader>
-              {tabs.map(({ label, value }) => (
-                <Tab key={value} value={value}>
-                  &nbsp;&nbsp;{label}&nbsp;&nbsp;
-                </Tab>
-              ))}
-            </TabsHeader>
-          </Tabs>
-          <div className="w-full md:w-72">
-            <Input
-              label="Search"
-              icon={<Search className="h-5 w-5" />}
-              crossOrigin={undefined}
-            />
-          </div>
+        <div className="w-full md:w-72">
+          <Input
+            label="Search"
+            icon={<Search className="h-5 w-5" />}
+            crossOrigin={undefined}
+          />
         </div>
       </CardHeader>
       <CardBody className="overflow-hidden px-0" hidden={loading}>
@@ -116,16 +78,16 @@ const MembersPage = () => {
           </thead>
           <tbody>
             {users.map(({ avatar, username, roles }, index) => {
-              const isLast = index === users.length - 1
+              const isLast = index === users.length - 1;
               const classes = isLast
                 ? "p-4"
-                : "p-4 border-b border-blue-gray-50"
+                : "p-4 border-b border-blue-gray-50";
 
               return (
                 <tr key={username}>
                   <td className={classes}>
                     <div className="flex items-center gap-3">
-                      <Avatar src={avatar} size="sm" />
+                      <Avatar src={avatar || DefaultUser} size="sm" />
                       <div className="flex flex-col">
                         <Typography
                           variant="small"
@@ -138,13 +100,9 @@ const MembersPage = () => {
                     </div>
                   </td>
                   <td className={classes}>
-                    <Typography
-                      variant="small"
-                      color="blue-gray"
-                      className="font-normal opacity-70"
-                    >
-                      {roles}
-                    </Typography>
+                    <span className="font-normal opacity-70 text-xs">
+                      {roles.length ? roles : "NO ROLE"}
+                    </span>
                   </td>
 
                   <td className={classes}>
@@ -155,7 +113,7 @@ const MembersPage = () => {
                     </Tooltip>
                   </td>
                 </tr>
-              )
+              );
             })}
           </tbody>
         </table>
@@ -174,6 +132,6 @@ const MembersPage = () => {
         </div>
       </CardFooter>
     </Card>
-  )
-}
-export default MembersPage
+  );
+};
+export default MembersPage;

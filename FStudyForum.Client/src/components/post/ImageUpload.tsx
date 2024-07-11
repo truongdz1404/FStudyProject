@@ -4,11 +4,11 @@ import { cn, getImageParams } from "@/helpers/utils";
 import React from "react";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { storage } from "@/helpers/storage";
-import { toast } from "react-toastify";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 
 import { FileWithURL } from "./FileInput";
+import { showErrorToast } from "@/helpers/toast";
 interface ImageUploadProps extends React.HTMLAttributes<HTMLTableRowElement> {
   file: FileWithURL;
   onRemove: () => void;
@@ -50,7 +50,7 @@ const ImageUpload = forwardRef<HTMLTableRowElement, ImageUploadProps>(
             setProgess(Math.min(90, percent));
           },
           error => {
-            toast.error(error.message);
+            showErrorToast(error.message);
           },
           async () => {
             const url = await getDownloadURL(uploadTask.snapshot.ref);

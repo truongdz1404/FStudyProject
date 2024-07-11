@@ -107,10 +107,10 @@ const Editor: FC<EditorProps> = ({ context }) => {
     };
 
     try {
-      const createPost = await PostService.create(payload);
       const attachmentUrls = files.map(f => f.url!);
       const trashUrls = temp.filter(url => !attachmentUrls.includes(url));
       setTemp([]);
+      const createPost = await PostService.create(payload);
       await deleteFiles(trashUrls);
       if (context.prefix == "t")
         navigate(`/topic/${context.name}/comments/${createPost.id}`);
