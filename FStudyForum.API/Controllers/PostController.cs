@@ -146,20 +146,11 @@ namespace FStudyForum.API.Controllers
             {
                 var userName = User.Identity?.Name
                     ?? throw new Exception("User is not authenticated!");
-                var post = await _postService.DeletePost(id, userName);
-                if (post == null)
-                {
-                    return NotFound(new Response
-                    {
-                        Status = ResponseStatus.ERROR,
-                        Message = "Post not found",
-                    });
-                }
+                await _postService.DeletePost(id, userName);
                 return Ok(new Response
                 {
-                    Message = "Get Post successfully",
+                    Message = "Delete Post successfully",
                     Status = ResponseStatus.SUCCESS,
-                    Data = post
                 });
             }
             catch (Exception ex)
@@ -186,6 +177,30 @@ namespace FStudyForum.API.Controllers
                     Message = "Create post successfully",
                     Status = ResponseStatus.SUCCESS,
                     Data = post
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = ex.Message
+                });
+            }
+        }
+
+        [HttpPatch("edit/{postId}"), Authorize]
+        public async Task<IActionResult> EditPost([FromRoute] long postId, [FromBody] EditPostDTO postDTO)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            try
+            {
+                await _postService.EditPost(postId, postDTO);
+
+                return Ok(new Response
+                {
+                    Message = "Edit post successfully",
+                    Status = ResponseStatus.SUCCESS,
                 });
             }
             catch (Exception ex)

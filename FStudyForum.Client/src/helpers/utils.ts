@@ -106,3 +106,17 @@ export function stringToColor(str: string) {
   }
   return color;
 }
+
+export const truncateFileName = (
+  fileName: string,
+  maxLength: number = 15
+): string => {
+  if (fileName.length <= maxLength) return fileName;
+
+  const nameWithoutExtension = fileName.substring(0, fileName.lastIndexOf("."));
+  const extension = fileName.substring(fileName.lastIndexOf("."));
+
+  if (nameWithoutExtension.length <= maxLength) return fileName;
+
+  return nameWithoutExtension.substring(0, maxLength - 3) + "..." + extension;
+};

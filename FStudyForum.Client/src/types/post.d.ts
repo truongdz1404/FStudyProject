@@ -18,6 +18,12 @@ export interface CreatePost {
   content: string;
   attachments: Attachment[];
 }
+
+export interface EditPost {
+  title: string;
+  content: string;
+  attachments: Attachment[];
+}
 export interface SavePost {
   postId: number;
 }

@@ -163,8 +163,7 @@ const ProfileSettings = () => {
           upload(avatarFile, `images/avatar${user.username}`),
           upload(bannerFile, `images/banner${user.username}`)
         ]);
-        await ProfileService.update({
-          username: user.username,
+        await ProfileService.update(user.username, {
           firstName: form.firstName,
           lastName: form.lastName,
           gender: form.gender,

@@ -17,8 +17,7 @@ interface ImageUploadProps extends React.HTMLAttributes<HTMLTableRowElement> {
 
 const ImageUpload = forwardRef<HTMLTableRowElement, ImageUploadProps>(
   ({ file, className, onRemove, onLoaded, ...props }, imageRef) => {
-    const [progess, setProgess] = React.useState(file.get ? 100 : 0);
-    const [uploaded, setUploaded] = React.useState(false);
+    const [progess, setProgess] = React.useState(file.url ? 100 : 0);
 
     const handleRemove = (e: React.MouseEvent<HTMLButtonElement>) => {
       e.preventDefault();
@@ -26,10 +25,10 @@ const ImageUpload = forwardRef<HTMLTableRowElement, ImageUploadProps>(
     };
 
     React.useEffect(() => {
-      if (uploaded || file.get) return;
+      if (file.url) return;
       const startUpload = async () => {
-        setUploaded(true);
-        const { width, height } = await getImageParams(file.data);
+        if (!file.upload) return;
+        const { width, height } = await getImageParams(file.upload);
         const storageRef = ref(
           storage,
           `images/attachment${crypto.randomUUID()}_width${width}_height${height}`
@@ -39,7 +38,7 @@ const ImageUpload = forwardRef<HTMLTableRowElement, ImageUploadProps>(
         };
         const uploadTask = uploadBytesResumable(
           storageRef,
-          file.data,
+          file.upload,
           metadata
         );
         uploadTask.on(
@@ -62,7 +61,7 @@ const ImageUpload = forwardRef<HTMLTableRowElement, ImageUploadProps>(
       };
 
       startUpload();
-    }, [file.data, file.get, uploaded, onLoaded]);
+    }, [file.upload, file.url, onLoaded]);
 
     return (
       <tr ref={imageRef} {...props} className={cn("", className)}>
@@ -74,15 +73,15 @@ const ImageUpload = forwardRef<HTMLTableRowElement, ImageUploadProps>(
             )}
           >
             <img
-              src={file.preview}
-              alt={file.data.name}
+              src={file.preview || file.url}
               className="scale-125 absolute top-1/2 left-0 object-cover opacity-30 -translate-y-1/2 blur-xl w-full"
+              alt={file.name}
               loading="lazy"
             />
             <img
               className="object-contain"
-              src={file.preview}
-              alt={file.data.name}
+              src={file.preview || file.url}
+              alt={file.name}
             />
             <div
               className={cn(
@@ -109,7 +108,7 @@ const ImageUpload = forwardRef<HTMLTableRowElement, ImageUploadProps>(
                 "w-[10rem] text-ellipsis whitespace-nowrap overflow-hidden"
               )}
             >
-              {file.data.name}
+              {file.name}
             </p>
           </div>
         </td>
@@ -118,13 +117,14 @@ const ImageUpload = forwardRef<HTMLTableRowElement, ImageUploadProps>(
             "px-6 py-4 whitespace-nowrap text-sm dark:text-slate-400"
           )}
         >
-          {(file.data.size / 1000).toFixed(0)} KB
+          {(file.size / 1000).toFixed(0)} KB
         </td>
 
         <td className="px-6 py-4 h-full whitespace-nowrap text-sm ">
           <button
             type="button"
             className="flex p-2 items-center justify-center cursor-pointer"
+            disabled={progess != 100}
             onClick={handleRemove}
           >
             <Trash2 className="w-4 h-4 text-red-500" />

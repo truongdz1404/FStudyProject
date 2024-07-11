@@ -6,13 +6,13 @@ import { Alert, Spinner } from "@material-tailwind/react";
 import PostService from "@/services/PostService";
 import CommentService from "@/services/CommentService";
 import PostItem from "@/components/post/PostItem";
-import { Post } from "@/types/post";
 import { Response } from "@/types/response";
 import { Comment, CreateComment } from "@/types/comment";
 import CommentInput from "@/components/comment/CommentInput";
 import ContentLayout from "@/components/layout/ContentLayout";
 import CommentItem from "@/components/comment/CommentItem";
 import TopicDescription from "@/components/topic/TopicDescription";
+import { useQuery } from "@tanstack/react-query";
 
 const Comments = () => {
   const navigate = useNavigate();
@@ -20,7 +20,6 @@ const Comments = () => {
     name: string;
     id: string;
   }>();
-  const [post, setPost] = useState<Post | undefined>();
   const [comments, setComments] = useState<Comment[]>([]);
   const [replyToCommentId, setReplyToCommentId] = useState<number | null>(null);
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
@@ -50,27 +49,15 @@ const Comments = () => {
     return expanded;
   };
 
-  useEffect(() => {
-    if (!postId) {
-      setError("Invalid post id or topic name");
-      return;
-    }
-    if (post) return;
-    const fetchPost = async () => {
-      setLoading(true);
-      try {
-        const data = await PostService.getById(postId);
-        setPost(data);
-        addRecentPost(data.id);
-      } catch (e) {
-        const error = e as AxiosError;
-        setError((error?.response?.data as Response)?.message || error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchPost();
-  }, [post, postId]);
+  const { data: post } = useQuery({
+    queryKey: ["POST_DETAIL", postId],
+    queryFn: async () => {
+      const data = await PostService.getById(postId!);
+      addRecentPost(data.id);
+      return data;
+    },
+    enabled: !!postId
+  });
 
   useEffect(() => {
     const fetchComments = async () => {

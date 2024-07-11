@@ -45,6 +45,23 @@ const TrashPost: React.FC<Props> = ({ data }) => {
     }
   });
 
+  const { mutate: handleDelete } = useMutation({
+    mutationFn: PostService.deleteForever,
+    onSuccess: message => {
+      queryClient.invalidateQueries({
+        queryKey: ["POST_LIST"],
+        refetchType: "all"
+      });
+      showSuccessToast(message);
+    },
+    onError: e => {
+      const error = e as AxiosError<Response>;
+      showErrorToast(
+        (error?.response?.data as Response)?.message || error.message
+      );
+    }
+  });
+
   const menuItem = [
     {
       icon: RotateCcw,
@@ -54,7 +71,7 @@ const TrashPost: React.FC<Props> = ({ data }) => {
     {
       icon: Trash2,
       label: "Delete forever",
-      handle: () => console.log(data.id)
+      handle: () => handleDelete(data.id)
     }
   ];
 

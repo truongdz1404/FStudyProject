@@ -61,7 +61,7 @@ namespace FStudyForum.Infrastructure.Services
                 VoteType = await _voteRepository.GetVotedType(username, id),
                 VoteCount = await _postRepository.GetVoteCount(post.Id),
                 CommentCount = post.Comments.Count(c => !c.IsDeleted),
-                Attachments = post.Attachments.Select(a => new AttachmentDTO { Id = a.Id, Type = a.Type, Url = a.FileUrl }),
+                Attachments = _mapper.Map<AttachmentDTO[]>(post.Attachments),
                 Elapsed = DateTime.Now - post.CreatedAt,
             };
         }
@@ -86,7 +86,7 @@ namespace FStudyForum.Infrastructure.Services
                     Content = p.Content,
                     VoteCount = await _postRepository.GetVoteCount(p.Id),
                     CommentCount = p.Comments.Count,
-                    Attachments = p.Attachments.Select(a => new AttachmentDTO { Id = a.Id, Type = a.Type, Url = a.FileUrl }),
+                    Attachments = _mapper.Map<AttachmentDTO[]>(p.Attachments),
                     Elapsed = DateTime.Now - p.CreatedAt
                 });
             }
@@ -112,7 +112,7 @@ namespace FStudyForum.Infrastructure.Services
                     Content = p.Content,
                     VoteCount = await _postRepository.GetVoteCount(p.Id),
                     CommentCount = p.Comments.Count,
-                    Attachments = p.Attachments.Select(a => new AttachmentDTO { Id = a.Id, Type = a.Type, Url = a.FileUrl }),
+                    Attachments = _mapper.Map<AttachmentDTO[]>(p.Attachments),
                     Elapsed = DateTime.Now - p.CreatedAt
                 });
             }
@@ -167,7 +167,7 @@ namespace FStudyForum.Infrastructure.Services
                     Content = p.Content,
                     VoteCount = await _postRepository.GetVoteCount(p.Id),
                     CommentCount = p.Comments.Count,
-                    Attachments = p.Attachments.Select(a => new AttachmentDTO { Id = a.Id, Type = a.Type, Url = a.FileUrl }),
+                    Attachments = _mapper.Map<AttachmentDTO[]>(p.Attachments),
                     Elapsed = DateTime.Now - p.CreatedAt
                 });
             }
@@ -203,7 +203,7 @@ namespace FStudyForum.Infrastructure.Services
                     Content = p.Content,
                     VoteCount = await _postRepository.GetVoteCount(p.Id),
                     CommentCount = p.Comments.Count,
-                    Attachments = p.Attachments.Select(a => new AttachmentDTO { Id = a.Id, Type = a.Type, Url = a.FileUrl }),
+                    Attachments = _mapper.Map<AttachmentDTO[]>(p.Attachments),
                     Elapsed = DateTime.Now - p.CreatedAt
                 });
             }
@@ -218,11 +218,13 @@ namespace FStudyForum.Infrastructure.Services
             if (post.Creater.UserName != username)
                 throw new Exception("Not the author of the post");
             await _postRepository.MovePostToTrashAsync(post);
-        }
+    }
 
-        public Task<PostDTO> DeletePost(long id, string username)
+        public async Task DeletePost(long id, string username)
         {
-            throw new NotImplementedException();
+            var post = await _postRepository.GetPostByIdAsync(id, true)
+                ?? throw new Exception("Post not found");
+            await _postRepository.DeletePostForeverAsync(post);
         }
 
         public async Task RestorePostFromTrash(long id, string username)
@@ -232,6 +234,14 @@ namespace FStudyForum.Infrastructure.Services
             if (post.Creater.UserName != username)
                 throw new Exception("Not the author of the post");
             await _postRepository.RestorePostFromTrashAsync(post);
+        }
+
+        public async Task EditPost(long id, EditPostDTO postDTO)
+        {
+            var post = await _postRepository.GetPostByIdAsync(id)
+                ?? throw new Exception("Post not found");
+            await _postRepository.EditPostAsync(post, postDTO);
+
         }
     }
 }

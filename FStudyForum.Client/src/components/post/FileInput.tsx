@@ -1,32 +1,49 @@
 import { MAX_FILE_SIZE } from "@/helpers/constants";
-import { cn, validateFile } from "@/helpers/utils";
-import { Plus } from "lucide-react";
+import { cn, truncateFileName, validateFile } from "@/helpers/utils";
+import { CloudUpload, Plus } from "lucide-react";
 import { forwardRef, type ChangeEvent, type DragEvent } from "react";
 import ImageUpload from "./ImageUpload";
 
 import React from "react";
-import { FileInputContext } from "./Editor";
 import { showErrorToast } from "@/helpers/toast";
 
 export interface InputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "type"> {}
 
+export interface FileInputContextType {
+  files: FileWithURL[];
+  setFiles: React.Dispatch<React.SetStateAction<FileWithURL[]>>;
+  moveTemp: (url: string) => void;
+}
+
+export const FileInputContext = React.createContext<FileInputContextType>({
+  files: [],
+  setFiles: () => null,
+  moveTemp: () => null
+});
+
 export interface FileWithURL {
-  data: File;
+  upload?: File;
   preview: string;
-  get?: string;
+  url?: string;
+  name: string;
+  type: string;
+  size: number;
 }
 
 const FileInput = forwardRef<HTMLInputElement, InputProps>(
   ({ ...props }, inputRef) => {
     const [dragActive, setDragActive] = React.useState<boolean>(false);
-    const { files, setFiles } = React.useContext(FileInputContext);
+    const { files, setFiles, moveTemp } = React.useContext(FileInputContext);
 
     const addFiles = (files: File[]) => {
       const newFiles = files.map<FileWithURL>(file => {
         return {
-          data: file,
-          preview: URL.createObjectURL(file)
+          upload: file,
+          preview: URL.createObjectURL(file),
+          name: truncateFileName(file.name),
+          size: file.size,
+          type: file.type
         };
       });
       setFiles(cur => [...cur, ...newFiles]);
@@ -115,21 +132,7 @@ const FileInput = forwardRef<HTMLInputElement, InputProps>(
                   onDrop={handleDrop}
                 />
 
-                <svg
-                  aria-hidden="true"
-                  className="w-10 h-10 mb-3 text-gray-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                  ></path>
-                </svg>
+                <CloudUpload className="w-10 h-10 text-gray-400" />
 
                 <p className="mb-2 text-sm text-gray-500">
                   <span className="font-semibold">Click to upload</span> or drag
@@ -193,10 +196,9 @@ const FileInput = forwardRef<HTMLInputElement, InputProps>(
                                 removeFile(index);
                               }}
                               onLoaded={url => {
-                                updateFile(index, {
-                                  ...file,
-                                  get: url
-                                });
+                                console.log(url);
+                                moveTemp(url);
+                                updateFile(index, { ...file, url });
                               }}
                             />
                           ))}

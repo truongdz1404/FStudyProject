@@ -11,3 +11,25 @@ export interface Profile {
   banner?: string;
   bio?: string;
 }
+
+export interface CreateProfile {
+  firstName: string;
+  lastName: string;
+  major?: string;
+  gender: number;
+  avatar?: string;
+  phone?: string;
+  banner?: string;
+  bio?: string;
+}
+
+export interface EditProfile {
+  firstName: string;
+  lastName: string;
+  major?: string;
+  gender: number;
+  avatar?: string;
+  phone?: string;
+  banner?: string;
+  bio?: string;
+}

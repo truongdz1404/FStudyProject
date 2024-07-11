@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getStorage } from "firebase/storage";
+import { deleteObject, getStorage, ref } from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: "AIzaSyALIggC2qzMSbwc8oGeJpoFXmcJnH6Xq6c",
@@ -12,3 +12,13 @@ const firebaseConfig = {
 };
 const app = initializeApp(firebaseConfig);
 export const storage = getStorage(app);
+
+export const deleteFile = async (url: string) => {
+  const storageRef = ref(storage, url);
+  await deleteObject(storageRef);
+};
+
+export const deleteFiles = async (urls: string[]) => {
+  const detelePromises = urls.map(url => deleteFile(url));
+  await Promise.allSettled(detelePromises);
+};

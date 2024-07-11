@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FStudyForum.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20240709034916_Update")]
-    partial class Update
+    [Migration("20240710145133_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -118,8 +118,16 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
                     b.Property<long>("PostId")
                         .HasColumnType("bigint");
+
+                    b.Property<int>("Size")
+                        .HasColumnType("int");
 
                     b.Property<string>("Type")
                         .IsRequired()
@@ -273,6 +281,9 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsDeletedForever")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("datetime2");
 
@@ -281,7 +292,7 @@ namespace FStudyForum.Infrastructure.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<long>("TopicId")
+                    b.Property<long?>("TopicId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
@@ -595,19 +606,19 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "864ceac6-c324-4750-a912-cbded6fb5e1e",
+                            Id = "5c7bab15-ded3-4046-aad2-2b57439bda0d",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "dbf12be3-3ac4-466a-a6b3-049a7db0e16f",
+                            Id = "3df88d9c-bf04-4887-9c81-a810c1fc1ad5",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "2dc49bf2-458c-4a14-bc70-fa2542415f5c",
+                            Id = "e917c1ef-895c-449c-9d7d-4bbf14c22a55",
                             Name = "Moderator",
                             NormalizedName = "MODERATOR"
                         });
@@ -812,9 +823,7 @@ namespace FStudyForum.Infrastructure.Migrations
 
                     b.HasOne("FStudyForum.Core.Models.Entities.Topic", "Topic")
                         .WithMany("Posts")
-                        .HasForeignKey("TopicId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("TopicId");
 
                     b.Navigation("Creater");
 

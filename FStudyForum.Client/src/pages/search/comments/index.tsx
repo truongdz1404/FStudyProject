@@ -81,16 +81,13 @@ const SearchCommentPage: React.FC = () => {
   }, [keyword, refetch]);
 
   if (isPending) return <Spinner className="mx-auto" />;
-  console.table(results);
-
+  if (results.length === 0 && !isPending)
+    return <NotFoundSearch keyword={keyword} />;
   return (
     <>
       <div className="relative flex text-left z-20">
         <CommentFilter setFilter={setFilter} filter={filter} />
       </div>
-      {results.length === 0 && !isPending && (
-        <NotFoundSearch keyword={keyword} />
-      )}
       {results.map(({ post, comment }, index) => (
         <div key={index} className="w-full ">
           <div className="hover:bg-gray-100 rounded-lg w-full py-3">

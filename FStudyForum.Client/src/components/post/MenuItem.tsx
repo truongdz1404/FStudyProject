@@ -19,22 +19,30 @@ import ReportForm from "../report/ReportForm";
 import { showErrorToast, showSuccessToast } from "@/helpers/toast";
 import BanForm from "./BanForm";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import EditPostForm from "./EditPostForm";
+
+const Popups = {
+  BAN: 0,
+  REPORT: 1,
+  EDIT: 2
+};
+
 type Props = {
   post: Post;
 };
 
 const MenuItemPost: React.FC<Props> = ({ post }) => {
-  const [openBan, setOpenBan] = React.useState(false);
-  const [openReport, setOpenReport] = React.useState(false);
+  const [openPopup, setOpenPopup] = React.useState(-1);
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
-  const switchOpenReport = React.useCallback(
-    () => setOpenReport(!openReport),
-    [openReport]
-  );
-  const switchOpenBan = () => setOpenBan(!openBan);
+  const switchOpenReport = () =>
+    setOpenPopup(pre => (pre == -1 ? Popups.REPORT : -1));
+  const switchOpenBan = () =>
+    setOpenPopup(pre => (pre == -1 ? Popups.BAN : -1));
+  const switchOpenEdit = () =>
+    setOpenPopup(pre => (pre == -1 ? Popups.EDIT : -1));
 
   const { data: isSaved } = useQuery({
     queryKey: ["IS_SAVED", post.id, user!.username],
@@ -116,7 +124,9 @@ const MenuItemPost: React.FC<Props> = ({ post }) => {
     {
       icon: Pencil,
       label: "Edit post",
-      handle: () => handleMoveToTrash(post.id)
+      handle: () => {
+        switchOpenEdit();
+      }
     },
     {
       icon: Bookmark,
@@ -131,7 +141,6 @@ const MenuItemPost: React.FC<Props> = ({ post }) => {
         switchOpenReport();
       }
     },
-
     {
       icon: Trash2,
       label: "Move to trash",
@@ -181,7 +190,7 @@ const MenuItemPost: React.FC<Props> = ({ post }) => {
       </Menu>
       <Dialog
         className="max-w-[34rem] mb-6 p-5 max-h-full"
-        open={openReport}
+        open={openPopup == Popups.REPORT}
         handler={switchOpenReport}
       >
         <ReportForm
@@ -192,10 +201,18 @@ const MenuItemPost: React.FC<Props> = ({ post }) => {
       </Dialog>
       <Dialog
         className="max-w-[34rem] mb-6 p-5 max-h-full"
-        open={openBan}
+        open={openPopup == Popups.BAN}
         handler={switchOpenBan}
       >
         <BanForm post={post} handler={switchOpenBan} />
+      </Dialog>
+
+      <Dialog
+        className="max-w-[34rem] p-2"
+        open={openPopup == Popups.EDIT}
+        handler={switchOpenBan}
+      >
+        <EditPostForm post={post} handler={switchOpenEdit} />
       </Dialog>
     </>
   );

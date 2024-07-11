@@ -50,34 +50,34 @@ const Trash: React.FC = () => {
   const posts = data?.pages.flatMap(p => p) ?? [];
   return (
     <ContentLayout>
-      <div
-        className={cn(
-          "flex justify-center",
-          (posts?.length ?? 0) > 0 && "hidden"
-        )}
-      >
-        <Typography className="text-sm capitalize font-semibold">
+      <div className={cn("flex justify-center", posts.length > 0 && "hidden")}>
+        <Typography className="text-sm font-semibold capitalize">
           Hasn't posts yet
         </Typography>
       </div>
 
-      <div>
-        {posts?.map((post, index) => (
-          <div key={index}>
-            <div className="hover:bg-gray-50 rounded-lg w-full">
-              <TrashPost data={post} />
+      {posts.length > 0 && (
+        <div>
+          {posts?.map((post, index) => (
+            <div key={index}>
+              <div className="hover:bg-gray-50 rounded-lg w-full">
+                <TrashPost data={post} />
+              </div>
+              <hr className="my-1 border-blue-gray-50" />
             </div>
-            <hr className="my-1 border-blue-gray-50" />
+          ))}
+
+          <div ref={ref} className="text-center">
+            {isFetchingNextPage ? (
+              <Spinner className="mx-auto" />
+            ) : (
+              !isPending && (
+                <span className="text-xs font-light">Nothing more</span>
+              )
+            )}
           </div>
-        ))}
-      </div>
-      <div ref={ref} className="text-center">
-        {isFetchingNextPage ? (
-          <Spinner className="mx-auto" />
-        ) : (
-          !isPending && <span className="text-xs font-light">Nothing more</span>
-        )}
-      </div>
+        </div>
+      )}
     </ContentLayout>
   );
 };

@@ -8,6 +8,7 @@ using FStudyForum.Core.Models.DTOs.Donation;
 using FStudyForum.Core.Models.DTOs.Category;
 using FStudyForum.Core.Models.DTOs.Report;
 using Newtonsoft.Json;
+using FStudyForum.Core.Models.DTOs.Attachment;
 namespace FStudyForum.API.Mapper;
 
 public class MapperProfile : AutoMapper.Profile
@@ -15,6 +16,7 @@ public class MapperProfile : AutoMapper.Profile
     public MapperProfile()
     {
         CreateMap<ApplicationUser, UserDTO>();
+        CreateMap<Attachment, AttachmentDTO>();
         CreateMap<Topic, TopicDTO>().ReverseMap();
         CreateMap<Topic, TopicDTO>()
             .ForMember(dest => dest.Categories, opt => opt.MapFrom(src => src.Categories.Select(c => c.Id)));

@@ -39,13 +39,39 @@ namespace FStudyForum.Infrastructure.Repositories
                 attachments.Add(new Attachment
                 {
                     Type = attachmentDTO.Type,
-                    FileUrl = attachmentDTO.Url,
+                    Url = attachmentDTO.Url,
+                    Name = attachmentDTO.Name,
+                    Size = attachmentDTO.Size,
                     Post = post,
                     CreatedAt = DateTime.Now
                 });
             }
             post.Attachments = attachments;
             await Create(post);
+            return post;
+        }
+
+
+        public async Task<Post> EditPostAsync(Post post, EditPostDTO postDTO)
+        {
+            var attachments = new List<Attachment>();
+            foreach (var attachmentDTO in postDTO.Attachments)
+            {
+                attachments.Add(new Attachment
+                {
+                    Type = attachmentDTO.Type,
+                    Url = attachmentDTO.Url,
+                    Name = attachmentDTO.Name,
+                    Size = attachmentDTO.Size,
+                    Post = post,
+                    CreatedAt = DateTime.Now
+                });
+            }
+            post.Attachments.Clear();
+            post.Attachments = attachments;
+            post.Content = postDTO.Content;
+            post.Title = postDTO.Title;
+            await Update(post);
             return post;
         }
 
@@ -57,6 +83,12 @@ namespace FStudyForum.Infrastructure.Repositories
         public async Task RestorePostFromTrashAsync(Post post)
         {
             post.IsDeleted = false;
+            await Update(post);
+        }
+
+        public async Task DeletePostForeverAsync(Post post)
+        {
+            post.IsDeletedForever = true;
             await Update(post);
         }
 
@@ -131,7 +163,7 @@ namespace FStudyForum.Infrastructure.Repositories
         {
             IQueryable<Post> queryable = _dbContext.Posts
                 .Include(p => p.Topic)
-                .Where(p => p.Topic == null || !p.Topic.IsDeleted)
+                .Where(p => !p.IsDeletedForever && (p.Topic == null || !p.Topic.IsDeleted))
                 .Include(p => p.Creater)
                 .Include(p => p.Creater.Profile)
                 .Include(p => p.Votes)

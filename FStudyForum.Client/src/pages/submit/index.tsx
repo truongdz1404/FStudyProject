@@ -166,7 +166,7 @@ const SubmitPage = () => {
                   </div>
                   <div
                     className={cn(
-                      "hover:bg-gray-200 rounded-none normal-case flex items-center gap-x-2 p-2 w-full text-gray-900",
+                      "hover:bg-gray-200 rounded-none normal-case flex items-center gap-x-2 p-2 w-full text-gray-900 cursor-pointer",
                       selectedIndex == 0 ? "bg-gray-200" : ""
                     )}
                     onClick={() => handleSelect("u", user.username)}
@@ -196,7 +196,7 @@ const SubmitPage = () => {
                 <div
                   key={topic.name}
                   className={cn(
-                    "hover:bg-gray-200 rounded-none normal-case flex items-center gap-x-2 !p-2 w-full",
+                    "hover:bg-gray-200 rounded-none normal-case flex items-center gap-x-2 !p-2 w-full cursor-pointer",
                     index === selectedIndex ? "bg-gray-200" : ""
                   )}
                   onClick={() => handleSelect("t", topic.name)}

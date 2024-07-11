@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FStudyForum.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20240702151344_Init")]
-    partial class Init
+    [Migration("20240710185510_Update")]
+    partial class Update
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -110,21 +110,29 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("FileUrl")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
                     b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
                     b.Property<long>("PostId")
                         .HasColumnType("bigint");
+
+                    b.Property<int>("Size")
+                        .HasColumnType("int");
 
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.HasKey("Id");
 
@@ -273,6 +281,9 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsDeletedForever")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("datetime2");
 
@@ -281,7 +292,7 @@ namespace FStudyForum.Infrastructure.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<long>("TopicId")
+                    b.Property<long?>("TopicId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
@@ -595,19 +606,19 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "7f64d9ec-76b5-40b8-8392-77c04ff948ce",
+                            Id = "396419f0-d40f-4d90-a5ec-62e4d3a77518",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "01d2a80c-eb93-48eb-a10a-4f055f4d62c4",
+                            Id = "87b5fbd4-adf3-474e-b12d-bb3c4417c764",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "5ad9f1ba-35e3-4645-b22f-14f2820b768a",
+                            Id = "b09bc398-37f6-48df-bb1c-3d7d89c4d446",
                             Name = "Moderator",
                             NormalizedName = "MODERATOR"
                         });
@@ -812,9 +823,7 @@ namespace FStudyForum.Infrastructure.Migrations
 
                     b.HasOne("FStudyForum.Core.Models.Entities.Topic", "Topic")
                         .WithMany("Posts")
-                        .HasForeignKey("TopicId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("TopicId");
 
                     b.Navigation("Creater");
 

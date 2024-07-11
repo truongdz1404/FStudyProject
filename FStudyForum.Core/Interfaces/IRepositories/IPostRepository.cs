@@ -7,6 +7,7 @@ namespace FStudyForum.Core.Interfaces.IRepositories;
 public interface IPostRepository : IBaseRepository<Post>
 {
     public Task<Post> CreatePostAsync(CreatePostDTO postDTO);
+    public Task DeletePostForeverAsync(Post post);
     public Task MovePostToTrashAsync(Post post);
     public Task DeletePostAsync(Post post);
     public Task RestorePostFromTrashAsync(Post post);
@@ -20,6 +21,7 @@ public interface IPostRepository : IBaseRepository<Post>
     public Task RemoveFromSavedByUser(SavedPost postByUser);
     public Task<IEnumerable<Post>> GetSavedPostsByUser(string username);
     public Task<IEnumerable<Post>> GetPostsAsync(QueryPostDTO query);
+    public Task<Post> EditPostAsync(Post post, EditPostDTO postDTO);
     public Task AddOrUpdateRecentPost(RecentPost recentPost);
     public Task<IEnumerable<Post>> GetRecentPosts(string username);
     public Task ClearRecentPosts(string username);

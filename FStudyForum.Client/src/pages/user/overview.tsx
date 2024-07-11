@@ -57,23 +57,27 @@ const Overview: React.FC = () => {
         </Typography>
       </div>
 
-      <div>
-        {posts?.map((post, index) => (
-          <div key={index}>
-            <div className="hover:bg-gray-50 rounded-lg w-full">
-              <PostItem key={index} data={post} />
+      {posts.length > 0 && (
+        <div>
+          {posts?.map((post, index) => (
+            <div key={index}>
+              <div className="hover:bg-gray-50 rounded-lg w-full">
+                <PostItem key={index} data={post} />
+              </div>
+              <hr className="my-1 border-blue-gray-50" />
             </div>
-            <hr className="my-1 border-blue-gray-50" />
+          ))}
+          <div ref={ref} className="text-center">
+            {isFetchingNextPage ? (
+              <Spinner className="mx-auto" />
+            ) : (
+              !isPending && (
+                <span className="text-xs font-light">Nothing more</span>
+              )
+            )}
           </div>
-        ))}
-      </div>
-      <div ref={ref} className="text-center">
-        {isFetchingNextPage ? (
-          <Spinner className="mx-auto" />
-        ) : (
-          !isPending && <span className="text-xs font-light">Nothing more</span>
-        )}
-      </div>
+        </div>
+      )}
     </ContentLayout>
   );
 };

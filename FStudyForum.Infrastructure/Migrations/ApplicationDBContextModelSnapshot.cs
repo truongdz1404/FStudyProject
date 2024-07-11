@@ -107,21 +107,29 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("FileUrl")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
                     b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
                     b.Property<long>("PostId")
                         .HasColumnType("bigint");
+
+                    b.Property<int>("Size")
+                        .HasColumnType("int");
 
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.HasKey("Id");
 
@@ -268,6 +276,9 @@ namespace FStudyForum.Infrastructure.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeletedForever")
                         .HasColumnType("bit");
 
                     b.Property<DateTime>("ModifiedAt")
@@ -592,19 +603,19 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "b8fbcf21-01d9-4c56-bed6-8997c5863209",
+                            Id = "396419f0-d40f-4d90-a5ec-62e4d3a77518",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "75bc9ad5-4b4f-4ef6-96a3-0a04e36ea623",
+                            Id = "87b5fbd4-adf3-474e-b12d-bb3c4417c764",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "06015c83-93f3-4fd5-b714-71040d477659",
+                            Id = "b09bc398-37f6-48df-bb1c-3d7d89c4d446",
                             Name = "Moderator",
                             NormalizedName = "MODERATOR"
                         });

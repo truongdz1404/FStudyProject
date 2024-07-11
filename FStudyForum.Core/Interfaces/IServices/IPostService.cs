@@ -12,8 +12,9 @@ namespace FStudyForum.Core.Interfaces.IServices
                 public Task MovePostToTrash(long id, string username);
                 public Task RestorePostFromTrash(long id, string username);
 
-                public Task<PostDTO> DeletePost(long id, string username);
+                public Task DeletePost(long id, string username);
                 public Task<PostDTO> CreatePost(CreatePostDTO postDTO);
+                public Task EditPost(long id, EditPostDTO postDTO);
                 public Task<IEnumerable<PostDTO>> SearchPostAsync(string username, QuerySearchPostDTO query);
                 public Task<SavePostDTO?> SavePostByUser(SavePostDTO savedPostDTO);
                 public Task<SavePostDTO?> RemoveFromSavedByUser(SavePostDTO savedPostDTO);

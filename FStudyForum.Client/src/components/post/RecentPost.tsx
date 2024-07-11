@@ -19,7 +19,7 @@ const RecentPost: React.FC = () => {
 
   const clearRecentPosts = async () => {
     await PostService.clearRecent();
-    queryClient.invalidateQueries({ queryKey: ["recent-post"] });
+    queryClient.invalidateQueries({ queryKey: ["POST_LIST", "RECENT"] });
   };
 
   return (

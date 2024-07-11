@@ -1,6 +1,6 @@
 import { ResponseWith, Response } from "@/types/response";
 import api from "./api";
-import { CreatePost, Post, SavePost } from "@/types/post";
+import { CreatePost, EditPost, Post, SavePost } from "@/types/post";
 
 const save = async (postId: number) => {
   const response = await api.post<ResponseWith<SavePost>>(
@@ -50,7 +50,6 @@ const getPostsByTopicName = async (
   );
   return response.data.data;
 };
-
 
 const seachPostsByKeywordInTopic = async (
   topicName: string,
@@ -105,6 +104,14 @@ const create = async (post: CreatePost) => {
   return response.data.data;
 };
 
+const edit = async (postId: number, post: EditPost) => {
+  const response = await api.patch<ResponseWith<Post>>(
+    `/post/edit/${postId}`,
+    post
+  );
+  return response.data.data;
+};
+
 const moveToTrash = async (postId: number) => {
   const response = await api.post<Response>(`/post/move-trash/${postId}`);
   return response.data.message;
@@ -156,9 +163,10 @@ const PostService = {
   deleteForever,
   getPosts,
   create,
+  edit,
   seachPostsByKeywordInTopic,
   moveToTrash,
-  getById,
+  getById
 };
 
 export default PostService;

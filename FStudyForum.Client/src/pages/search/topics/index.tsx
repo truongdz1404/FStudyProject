@@ -49,10 +49,9 @@ const SearchTopicPage: React.FC = () => {
   );
 
   if (isPending) return <Spinner className="mx-auto" />;
-
+  if (uniqueTopics.length === 0) return <NotFoundSearch keyword={keyword} />;
   return (
     <>
-      {uniqueTopics.length === 0 && <NotFoundSearch keyword={keyword} />}
       {uniqueTopics.map(topic => {
         if (!topic) return null;
 
