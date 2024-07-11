@@ -27,3 +27,9 @@ export interface EditPost {
 export interface SavePost {
   postId: number;
 }
+export interface StatisticsPost {
+  date: Date;
+  totalPosts: number;
+  totalComments: number;
+  totalVotes: number;
+}

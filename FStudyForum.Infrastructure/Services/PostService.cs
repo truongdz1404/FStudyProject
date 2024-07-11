@@ -210,6 +210,49 @@ namespace FStudyForum.Infrastructure.Services
 
             return postDTOs;
         }
+        public async Task<IEnumerable<PostStatisticsDTO>> GetPostStatisticsDTO(string action, int date)
+        {
+            DateTime startDate, endDate = DateTime.Now;
+            switch (action)
+            {
+                case "day":
+                    startDate = endDate.AddDays(-date);
+                    break;
+                case "year":
+                    startDate = new DateTime(date, 1, 1);
+                    endDate = new DateTime(date, 12, 31);
+                    break;
+                case "month":
+                    startDate = new DateTime(endDate.Year, date, 1);
+                    int daysInMonth = DateTime.DaysInMonth(endDate.Year, date);
+                    endDate = new DateTime(endDate.Year, date, daysInMonth);
+                    break;
+                default:
+                    throw new Exception("Invalid period");
+            }
+            var postStatistics = await _postRepository.GetStatisticsPost(startDate, endDate);
+            var groupedSthatistics = postStatistics
+                .GroupBy(p => p.CreatedAt.Date)
+                .Select(group => new PostStatisticsDTO
+                {
+                    Date = DateOnly.FromDateTime(group.Key),
+                    TotalPosts = group.Count(),
+                    TotalVotes = group.Sum(p => p.Votes.Count()),
+                    TotalComments = group.Sum(p => p.Comments.Count()),
+                });
+            var allDates = Enumerable.Range(0, (endDate.Date - startDate.Date).Days + 1)
+                .Select(offset => startDate.Date.AddDays(offset))
+                .ToList();
+            var completeStatistics = allDates.Select(date =>
+                groupedSthatistics.FirstOrDefault(stat => stat.Date == DateOnly.FromDateTime(date)) ?? new PostStatisticsDTO
+                {
+                    Date = DateOnly.FromDateTime(date),
+                    TotalPosts = 0,
+                    TotalVotes = 0,
+                    TotalComments = 0
+                });
+            return completeStatistics;
+        }
 
         public async Task MovePostToTrash(long id, string username)
         {

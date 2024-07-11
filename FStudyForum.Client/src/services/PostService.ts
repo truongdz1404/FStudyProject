@@ -1,6 +1,12 @@
 import { ResponseWith, Response } from "@/types/response";
 import api from "./api";
-import { CreatePost, EditPost, Post, SavePost } from "@/types/post";
+import {
+  StatisticsPost,
+  CreatePost,
+  EditPost,
+  Post,
+  SavePost
+} from "@/types/post";
 
 const save = async (postId: number) => {
   const response = await api.post<ResponseWith<SavePost>>(
@@ -147,6 +153,12 @@ const clearRecent = async () => {
   return response.data.data;
 };
 
+const getStatisticsPost = async (action: string, date: number) => {
+  const response = await api.get<ResponseWith<StatisticsPost[]>>(
+    `post/statistics=${action}&date=${date}`
+  );
+  return response.data;
+};
 const PostService = {
   clearRecent,
   addRecent,
@@ -166,7 +178,8 @@ const PostService = {
   edit,
   searchPostsByKeywordInTopic,
   moveToTrash,
-  getById
+  getById,
+  getStatisticsPost
 };
 
 export default PostService;

@@ -1,4 +1,3 @@
-using FStudyForum.Core.Models.DTOs;
 using FStudyForum.Core.Models.DTOs.Post;
 using FStudyForum.Core.Models.DTOs.Topic;
 using FStudyForum.Core.Models.DTOs.Search;
@@ -23,5 +22,9 @@ namespace FStudyForum.Core.Interfaces.IServices
                 public Task<RecentPostDTO?> AddRecentPostByUser(RecentPostDTO recentPostDTO);
                 public Task<IEnumerable<PostDTO>> GetRecentPostsByUser(string username);
                 public Task ClearRecentPostsByUser(string username);
+                public Task<IEnumerable<PostStatisticsDTO>> GetPostStatisticsDTO(string action, int date);
         }
+
+
 }
+

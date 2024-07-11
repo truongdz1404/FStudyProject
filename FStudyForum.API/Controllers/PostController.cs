@@ -471,5 +471,29 @@ namespace FStudyForum.API.Controllers
                 });
             }
         }
+        [HttpGet("statistics={action}&date={date}")]
+        public async Task<IActionResult> GetPostStatics(string action, int date)
+        {
+            try
+            {
+                var postStatistics = await _postService.GetPostStatisticsDTO(action, date);
+
+                return Ok(new Response
+                {
+                    Data = postStatistics,
+                    Message = "Get post statistics successfully",
+                    Status = ResponseStatus.SUCCESS
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = ex.Message
+                });
+            }
+        }
+
     }
 }

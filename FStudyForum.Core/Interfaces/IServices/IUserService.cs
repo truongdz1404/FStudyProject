@@ -30,5 +30,5 @@ public interface IUserService
     Task<bool> IsUserLocked(string userName);
     Task<DateTimeOffset?> GetUnlockTime(string userName);
 
-
+    Task<IEnumerable<UserStatisticsDTO>> GetUserStatisticsDTO(string action, int date);
 }
