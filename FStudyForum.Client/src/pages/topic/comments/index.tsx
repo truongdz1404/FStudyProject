@@ -3,7 +3,6 @@ import { AxiosError } from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { Alert, Spinner } from "@material-tailwind/react";
-import PostService from "@/services/PostService";
 import CommentService from "@/services/CommentService";
 import PostItem from "@/components/post/PostItem";
 import { Response } from "@/types/response";
@@ -12,7 +11,7 @@ import CommentInput from "@/components/comment/CommentInput";
 import ContentLayout from "@/components/layout/ContentLayout";
 import CommentItem from "@/components/comment/CommentItem";
 import TopicDescription from "@/components/topic/TopicDescription";
-import { useQuery } from "@tanstack/react-query";
+import { useRouterParam } from "@/hooks/useRouterParam";
 
 const Comments = () => {
   const navigate = useNavigate();
@@ -20,6 +19,7 @@ const Comments = () => {
     name: string;
     id: string;
   }>();
+  const { post } = useRouterParam();
   const [comments, setComments] = useState<Comment[]>([]);
   const [replyToCommentId, setReplyToCommentId] = useState<number | null>(null);
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
@@ -28,9 +28,7 @@ const Comments = () => {
   const [expandedComments, setExpandedComments] = useState<{
     [key: number]: boolean;
   }>({});
-  const addRecentPost = (postId: number) => {
-    PostService.addRecent(postId);
-  };
+
   const initializeExpandedComments = (
     comments: Comment[],
     amount: number = 3
@@ -48,16 +46,6 @@ const Comments = () => {
     traverseComments(comments);
     return expanded;
   };
-
-  const { data: post } = useQuery({
-    queryKey: ["POST_DETAIL", postId],
-    queryFn: async () => {
-      const data = await PostService.getById(postId!);
-      addRecentPost(data.id);
-      return data;
-    },
-    enabled: !!postId
-  });
 
   useEffect(() => {
     const fetchComments = async () => {

@@ -175,7 +175,7 @@ const Header = React.memo(({ openSidebar }: HeaderProps) => {
 
   return (
     <Navbar className="max-w-screen-3xl rounded-none p-1 shadow-sm z-50">
-      <div className="relative mx-auto flex items-center justify-between text-blue-gray-900">
+      <div className="relative mx-auto flex items-center justify-between text-blue-gray-800">
         <div className="flex items-center w-1/4 lg:w-1/3">
           <IconButton
             size="sm"
@@ -193,9 +193,7 @@ const Header = React.memo(({ openSidebar }: HeaderProps) => {
             }}
           >
             <Icons.logo className="h-8 w-8" />
-            <span className="hidden text-zinc-700 text-md font-semibold md:block">
-              Study
-            </span>
+            <span className="hidden text-md font-semibold md:block">Study</span>
           </Link>
         </div>
         <div className="w-2/3 xl:w-2/5 max-w-screen-md hidden md:block">

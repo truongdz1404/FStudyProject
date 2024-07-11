@@ -77,7 +77,7 @@ const SearchPost: React.FC<Props> = ({ data, comment, keyword }) => {
                   .split(regex)
                   .map((part, index) =>
                     regex.test(part) ? (
-                      <strong key={index}>{part}</strong>
+                      <strong className="font-semibold" key={index}>{part}</strong>
                     ) : (
                       part
                     )

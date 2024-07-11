@@ -15,7 +15,7 @@ public interface IPostRepository : IBaseRepository<Post>
     public Task<int> GetVoteCount(long Id);
     public Task<IEnumerable<Post>> SearchPostAsync(QuerySearchPostDTO query);
     public Task SavePost(SavedPost savedPost);
-    public Task<bool> IsSaved(SavePostDTO savePostDTO);
+    public Task<bool> IsSaved(string userName, long postId);
     public Task<SavedPost?> FindPostByUser(SavePostDTO savePostDTO);
     public Task RemoveFromSavedByUser(SavedPost postByUser);
     public Task<IEnumerable<Post>> GetSavedPostsByUser(string username);
@@ -24,7 +24,6 @@ public interface IPostRepository : IBaseRepository<Post>
     public Task AddOrUpdateRecentPost(RecentPost recentPost);
     public Task<IEnumerable<Post>> GetRecentPosts(string username);
     public Task ClearRecentPosts(string username);
-    public Task<IEnumerable<Post>> GetFilterPostsAsync(QueryPostDTO query);
     public Task<IEnumerable<Post>> GetStatisticsPost(DateTime startDate, DateTime endDate);
 }
 

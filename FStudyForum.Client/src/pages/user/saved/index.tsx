@@ -10,7 +10,13 @@ const SavePost: React.FC = () => {
   const { user } = useAuth();
   const { data: posts, isPending } = useQuery({
     queryKey: ["POST_LIST", "SAVED", { user: user?.username }],
-    queryFn: () => PostService.getSavedPosts(user!.username),
+    queryFn: async () => {
+      try {
+        return await PostService.getSavedPosts(user!.username);
+      } catch (e) {
+        return [];
+      }
+    },
     enabled: !!user
   });
   if (isPending) return <Spinner className="mx-auto" />;

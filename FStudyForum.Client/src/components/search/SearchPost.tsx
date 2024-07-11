@@ -43,11 +43,11 @@ const SearchPost: React.FC<Props> = ({ data, keyword }) => {
   return (
     <div className="flex p-2" ref={containerRef} onClick={handleRemainClick}>
       <div className="flex flex-col gap-y-2 grow justify-between w-3/5">
-        <div className="action">
+        <div>
           {data.topicName ? (
             <Link
               to={`/topic/${data.topicName}`}
-              className="text-xs font-light hover:underline flex items-center gap-x-2"
+              className="action w-fit text-xs font-light hover:underline flex items-center gap-x-2"
             >
               <Avatar
                 src={data.topicAvatar || DefaultTopic}
@@ -58,7 +58,7 @@ const SearchPost: React.FC<Props> = ({ data, keyword }) => {
           ) : (
             <Link
               to={`/user/${data.author}`}
-              className="text-xs font-light hover:underline flex items-center gap-x-2"
+              className="action w-fit text-xs font-light hover:underline flex items-center gap-x-2"
             >
               <Avatar
                 src={data.authorAvatar || DefaultUser}
@@ -69,11 +69,15 @@ const SearchPost: React.FC<Props> = ({ data, keyword }) => {
           )}
 
           <span className="text-md w-full text-blue-gray-800 break-words">
-            {data.title
-              .split(regex)
-              .map((part, index) =>
-                regex.test(part) ? <strong key={index}>{part}</strong> : part
-              )}
+            {data.title.split(regex).map((part, index) =>
+              regex.test(part) ? (
+                <strong className="font-semibold" key={index}>
+                  {part}
+                </strong>
+              ) : (
+                part
+              )
+            )}
           </span>
         </div>
         <div className="text-xs  font-light">

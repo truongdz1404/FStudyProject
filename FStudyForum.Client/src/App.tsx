@@ -11,7 +11,7 @@ export default function App() {
     <GoogleOAuthProvider clientId={import.meta.env.VITE_CLIENT_ID}>
       <AuthProvider>
         <QueryClientProvider client={queryClient}>
-          <SignalRProvider hubName="post-hub">
+          <SignalRProvider hubName="test-hub">
             <Router />
           </SignalRProvider>
         </QueryClientProvider>

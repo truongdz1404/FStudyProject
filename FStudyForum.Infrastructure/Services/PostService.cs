@@ -49,21 +49,7 @@ namespace FStudyForum.Infrastructure.Services
         {
             var post = await _postRepository.GetPostByIdAsync(id)
                 ?? throw new Exception("Post not found");
-            return new PostDTO
-            {
-                Id = post.Id,
-                Title = post.Title,
-                Author = post.Creater.UserName!,
-                AuthorAvatar = post.Creater.Profile?.Avatar ?? string.Empty,
-                TopicName = post.Topic?.Name ?? string.Empty,
-                TopicAvatar = post.Topic?.Avatar ?? string.Empty,
-                Content = post.Content,
-                VoteType = await _voteRepository.GetVotedType(username, id),
-                VoteCount = await _postRepository.GetVoteCount(post.Id),
-                CommentCount = post.Comments.Count(c => !c.IsDeleted),
-                Attachments = _mapper.Map<AttachmentDTO[]>(post.Attachments),
-                Elapsed = DateTime.Now - post.CreatedAt,
-            };
+            return await ConvertToPostDTO(username, post);
         }
 
         public async Task<IEnumerable<PostDTO>> GetPosts(string username, QueryPostDTO query)
@@ -72,23 +58,7 @@ namespace FStudyForum.Infrastructure.Services
             var postDTOs = new List<PostDTO>();
             foreach (var p in posts)
             {
-                postDTOs.Add(new PostDTO
-                {
-                    Id = p.Id,
-                    Title = p.Title,
-                    Author = p.Creater.UserName!,
-                    AuthorAvatar = p.Creater.Profile?.Avatar ?? string.Empty,
-                    TopicName = p.Topic?.Name ?? string.Empty,
-                    TopicAvatar = p.Topic?.Avatar ?? string.Empty,
-                    VoteType = await _voteRepository.GetVotedType(username, p.Id),
-                    UpVoteCount = p.Votes.Count(v => v.IsUp),
-                    DownVoteCount = p.Votes.Count(v => !v.IsUp),
-                    Content = p.Content,
-                    VoteCount = await _postRepository.GetVoteCount(p.Id),
-                    CommentCount = p.Comments.Count,
-                    Attachments = _mapper.Map<AttachmentDTO[]>(p.Attachments),
-                    Elapsed = DateTime.Now - p.CreatedAt
-                });
+                postDTOs.Add(await ConvertToPostDTO(username, p));
             }
             return postDTOs;
         }
@@ -99,22 +69,7 @@ namespace FStudyForum.Infrastructure.Services
             var postDTOs = new List<PostDTO>();
             foreach (var p in posts)
             {
-                postDTOs.Add(new PostDTO
-                {
-                    Id = p.Id,
-                    Title = p.Title,
-                    Author = p.Creater.UserName!,
-                    TopicName = p.Topic?.Name ?? string.Empty,
-                    TopicAvatar = p.Topic?.Avatar ?? string.Empty,
-                    VoteType = await _voteRepository.GetVotedType(username, p.Id),
-                    UpVoteCount = p.Votes.Count(v => v.IsUp),
-                    DownVoteCount = p.Votes.Count(v => !v.IsUp),
-                    Content = p.Content,
-                    VoteCount = await _postRepository.GetVoteCount(p.Id),
-                    CommentCount = p.Comments.Count,
-                    Attachments = _mapper.Map<AttachmentDTO[]>(p.Attachments),
-                    Elapsed = DateTime.Now - p.CreatedAt
-                });
+                postDTOs.Add(await ConvertToPostDTO(username, p));
             }
             return postDTOs;
         }
@@ -122,7 +77,7 @@ namespace FStudyForum.Infrastructure.Services
         public async Task<SavePostDTO?> SavePostByUser(SavePostDTO savePostDTO)
         {
             if (savePostDTO.UserName == null) return null;
-            if (!await _postRepository.IsSaved(savePostDTO))
+            if (await _postRepository.IsSaved(savePostDTO.UserName, savePostDTO.PostId))
                 throw new Exception("Post is Exists.");
             var user = await _userManager.FindByNameAsync(savePostDTO.UserName)
                  ?? throw new Exception("User not found");
@@ -155,57 +110,53 @@ namespace FStudyForum.Infrastructure.Services
             var postDTOs = new List<PostDTO>();
             foreach (var p in posts)
             {
-                postDTOs.Add(new PostDTO
-                {
-                    Id = p.Id,
-                    Title = p.Title,
-                    Author = p.Creater.UserName!,
-                    AuthorAvatar = p.Creater.Profile?.Avatar ?? string.Empty,
-                    TopicName = p.Topic?.Name ?? string.Empty,
-                    TopicAvatar = p.Topic?.Avatar ?? string.Empty,
-                    VoteType = await _voteRepository.GetVotedType(username, p.Id),
-                    Content = p.Content,
-                    VoteCount = await _postRepository.GetVoteCount(p.Id),
-                    CommentCount = p.Comments.Count,
-                    Attachments = _mapper.Map<AttachmentDTO[]>(p.Attachments),
-                    Elapsed = DateTime.Now - p.CreatedAt
-                });
+                postDTOs.Add(await ConvertToPostDTO(username, p));
             }
             return postDTOs;
         }
+
+        private async Task<PostDTO> ConvertToPostDTO(string username, Post p)
+        {
+            return new PostDTO
+            {
+                Id = p.Id,
+                Title = p.Title,
+                Author = p.Creater.UserName!,
+                AuthorAvatar = p.Creater.Profile?.Avatar ?? string.Empty,
+                TopicName = p.Topic?.Name ?? string.Empty,
+                TopicAvatar = p.Topic?.Avatar ?? string.Empty,
+                VoteType = await _voteRepository.GetVotedType(username, p.Id),
+                UpVoteCount = p.Votes.Count(v => v.IsUp),
+                DownVoteCount = p.Votes.Count(v => !v.IsUp),
+                VoteCount = await _postRepository.GetVoteCount(p.Id),
+                CommentCount = p.Comments.Count,
+                Content = p.Content,
+                IsSaved = await _postRepository.IsSaved(username, p.Id),
+                InTrash = p.IsDeleted,
+                Attachments = _mapper.Map<AttachmentDTO[]>(p.Attachments),
+                Elapsed = DateTime.Now - p.CreatedAt
+            };
+        }
+
+
 
         public async Task ClearRecentPostsByUser(string username)
         {
             await _postRepository.ClearRecentPosts(username);
         }
 
-        public async Task<bool> IsPostExists(SavePostDTO savedPostDTO)
+        public async Task<bool> IsPostSaved(SavePostDTO savedPostDTO)
         {
-            return await _postRepository.IsSaved(savedPostDTO);
+            return await _postRepository.IsSaved(savedPostDTO.UserName, savedPostDTO.PostId);
         }
 
         public async Task<IEnumerable<PostDTO>> GetSavedPostsByUser(string username)
         {
-            var posts = await _postRepository.GetSavedPostsByUser(username
-                ?? throw new Exception("Not found."));
+            var posts = await _postRepository.GetSavedPostsByUser(username);
             var postDTOs = new List<PostDTO>();
             foreach (var p in posts)
             {
-                postDTOs.Add(new PostDTO
-                {
-                    Id = p.Id,
-                    Title = p.Title,
-                    Author = p.Creater.UserName!,
-                    AuthorAvatar = p.Creater.Profile?.Avatar ?? string.Empty,
-                    TopicName = p.Topic?.Name ?? string.Empty,
-                    TopicAvatar = p.Topic?.Avatar ?? string.Empty,
-                    VoteType = await _voteRepository.GetVotedType(username, p.Id),
-                    Content = p.Content,
-                    VoteCount = await _postRepository.GetVoteCount(p.Id),
-                    CommentCount = p.Comments.Count,
-                    Attachments = _mapper.Map<AttachmentDTO[]>(p.Attachments),
-                    Elapsed = DateTime.Now - p.CreatedAt
-                });
+                postDTOs.Add(await ConvertToPostDTO(username, p));
             }
 
             return postDTOs;
@@ -261,7 +212,7 @@ namespace FStudyForum.Infrastructure.Services
             if (post.Creater.UserName != username)
                 throw new Exception("Not the author of the post");
             await _postRepository.MovePostToTrashAsync(post);
-    }
+        }
 
         public async Task DeletePost(long id, string username)
         {

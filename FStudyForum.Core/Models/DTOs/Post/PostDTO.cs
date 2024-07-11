@@ -20,6 +20,8 @@ namespace FStudyForum.Core.Models.DTOs.Post
         public int DownVoteCount { get; set; }
         public int VoteCount { get; set; }
         public int CommentCount { get; set; }
+        public bool IsSaved { get; set; }
+        public bool InTrash { get; set; }
         public IEnumerable<AttachmentDTO> Attachments { get; set; } = [];
         public TimeSpan Elapsed { get; set; }
     }

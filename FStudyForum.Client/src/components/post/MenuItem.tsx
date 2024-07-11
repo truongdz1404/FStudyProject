@@ -18,7 +18,7 @@ import PostService from "@/services/PostService";
 import ReportForm from "../report/ReportForm";
 import { showErrorToast, showSuccessToast } from "@/helpers/toast";
 import BanForm from "./BanForm";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import EditPostForm from "./EditPostForm";
 
 const Popups = {
@@ -44,20 +44,16 @@ const MenuItemPost: React.FC<Props> = ({ post }) => {
   const switchOpenEdit = () =>
     setOpenPopup(pre => (pre == -1 ? Popups.EDIT : -1));
 
-  const { data: isSaved } = useQuery({
-    queryKey: ["IS_SAVED", post.id, user!.username],
-    queryFn: async () => await PostService.isSaved(user!.username, post.id),
-    enabled: !!user
-  });
-
   const { mutate: handleSave } = useMutation({
     mutationFn: PostService.save,
     onSuccess: message => {
       showSuccessToast(message);
-      queryClient.invalidateQueries({ queryKey: ["IS_SAVED"] });
       queryClient.invalidateQueries({
-        queryKey: ["POST_LIST", "SAVED"],
+        queryKey: ["POST_LIST"],
         refetchType: "all"
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["POST_DETAIL", post.id.toString()]
       });
     },
     onError: e => {
@@ -72,11 +68,12 @@ const MenuItemPost: React.FC<Props> = ({ post }) => {
     mutationFn: PostService.removeFromSaved,
     onSuccess: message => {
       showSuccessToast(message);
-      queryClient.invalidateQueries({ queryKey: ["IS_SAVED"] });
-
       queryClient.invalidateQueries({
-        queryKey: ["POST_LIST", "SAVED"],
+        queryKey: ["POST_LIST"],
         refetchType: "all"
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["POST_DETAIL", post.id.toString()]
       });
     },
     onError: e => {
@@ -107,9 +104,9 @@ const MenuItemPost: React.FC<Props> = ({ post }) => {
   const defaultMenuItem = [
     {
       icon: Bookmark,
-      label: isSaved ? "Remove from saved" : "Save",
+      label: post.isSaved ? "Remove from saved" : "Save",
       handle: () =>
-        !isSaved ? handleSave(post.id) : handleRemoveFromSaved(post.id)
+        !post.isSaved ? handleSave(post.id) : handleRemoveFromSaved(post.id)
     },
     {
       icon: Flag,
@@ -130,9 +127,9 @@ const MenuItemPost: React.FC<Props> = ({ post }) => {
     },
     {
       icon: Bookmark,
-      label: isSaved ? "Remove from saved" : "Save",
+      label: post.isSaved ? "Remove from saved" : "Save",
       handle: () =>
-        !isSaved ? handleSave(post.id) : handleRemoveFromSaved(post.id)
+        !post.isSaved ? handleSave(post.id) : handleRemoveFromSaved(post.id)
     },
     {
       icon: Flag,
@@ -176,7 +173,7 @@ const MenuItemPost: React.FC<Props> = ({ post }) => {
                 {React.createElement(icon, {
                   className: cn(
                     `h-4 w-4 text-blue-gray-700`,
-                    isSaveItem && isSaved && "fill-blue-gray-700"
+                    isSaveItem && post.isSaved && "fill-blue-gray-700"
                   ),
                   strokeWidth: 2
                 })}
@@ -189,7 +186,7 @@ const MenuItemPost: React.FC<Props> = ({ post }) => {
         </MenuList>
       </Menu>
       <Dialog
-        className="max-w-[34rem] mb-6 p-5 max-h-full"
+        className="max-w-[34rem] p-5 max-h-full"
         open={openPopup == Popups.REPORT}
         handler={switchOpenReport}
       >
@@ -200,7 +197,7 @@ const MenuItemPost: React.FC<Props> = ({ post }) => {
         />
       </Dialog>
       <Dialog
-        className="max-w-[34rem] mb-6 p-5 max-h-full"
+        className="max-w-[34rem] p-5 max-h-full"
         open={openPopup == Popups.BAN}
         handler={switchOpenBan}
       >

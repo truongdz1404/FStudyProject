@@ -17,7 +17,7 @@ namespace FStudyForum.Core.Interfaces.IServices
                 public Task<IEnumerable<PostDTO>> SearchPostAsync(string username, QuerySearchPostDTO query);
                 public Task<SavePostDTO?> SavePostByUser(SavePostDTO savedPostDTO);
                 public Task<SavePostDTO?> RemoveFromSavedByUser(SavePostDTO savedPostDTO);
-                public Task<bool> IsPostExists(SavePostDTO savedPostDTO);
+                public Task<bool> IsPostSaved(SavePostDTO savedPostDTO);
                 public Task<IEnumerable<PostDTO>> GetSavedPostsByUser(string username);
                 public Task<RecentPostDTO?> AddRecentPostByUser(RecentPostDTO recentPostDTO);
                 public Task<IEnumerable<PostDTO>> GetRecentPostsByUser(string username);

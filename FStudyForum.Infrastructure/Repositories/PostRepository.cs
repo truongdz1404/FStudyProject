@@ -104,11 +104,11 @@ namespace FStudyForum.Infrastructure.Repositories
             && p.User.UserName == savePostDTO.UserName);
         }
 
-        public async Task<bool> IsSaved(SavePostDTO savePostDTO)
+        public async Task<bool> IsSaved(string userName, long postId)
         {
-            var post = await _dbContext.SavedPosts.FirstOrDefaultAsync(p => p.Post.Id == savePostDTO.PostId
-           && p.User.UserName == savePostDTO.UserName);
-            return post == null;
+            var post = await _dbContext.SavedPosts.FirstOrDefaultAsync(p => p.Post.Id == postId
+            && p.User.UserName == userName);
+            return post != null;
         }
 
         public async Task SavePost(SavedPost savedPost)
@@ -250,7 +250,7 @@ namespace FStudyForum.Infrastructure.Repositories
             .Include(sp => sp.Post.Votes)
             .Include(sp => sp.Post.Comments)
             .Include(sp => sp.Post.Attachments)
-            .Where(sp => sp.Post.Topic != null && !sp.Post.Topic.IsDeleted)
+            .Where(sp => sp.Post.Topic == null || !sp.Post.Topic.IsDeleted)
             .Select(sp => sp.Post)
             .ToListAsync();
             return posts;

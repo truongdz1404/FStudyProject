@@ -32,41 +32,39 @@ const Analytics = () => {
   }
 
   const statistics = [
-    { label: "Total Post", value: totalPosts},
-    { label: "Total Comment", value: totalComment},
-    { label: "Total Vote", value: totalVote},
+    { label: "Total Post", value: totalPosts },
+    { label: "Total Comment", value: totalComment },
+    { label: "Total Vote", value: totalVote },
     { label: "Total Donate", value: totalDonate },
     {
       label: "Total Amount",
-      value: formatCurrency(totalAmount),
-      
+      value: formatCurrency(totalAmount)
     },
     { label: "Total Login", value: 0 },
-    { label: "Total register", value: 0}
+    { label: "Total register", value: 0 }
   ];
   return (
     <div>
-       <div className="grid grid-cols-4 gap-4 mb-4">
-      {statistics.map((stat, index) => (
-        <div
-          key={index}
-          className="p-5 rounded-lg shadow-md bg-gray-50 overflow-hidden"
-        >
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-600 whitespace-nowrap">
-              {stat.label}
-            </span>
-            <img src="invoice-icon.png" alt="Icon" className="w-6 h-6" />
+      <div className="grid grid-cols-4 gap-4 mb-4">
+        {statistics.map((stat, index) => (
+          <div
+            key={index}
+            className="p-5 rounded-lg shadow-md bg-gray-50 overflow-hidden"
+          >
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600 whitespace-nowrap">
+                {stat.label}
+              </span>
+              <img src="invoice-icon.png" alt="Icon" className="w-6 h-6" />
+            </div>
+            <div className="mt-2">
+              <span className="block text-2xl font-bold text-gray-800">
+                {stat.value}
+              </span>
+            </div>
           </div>
-          <div className="mt-2">
-            <span className="block text-2xl font-bold text-gray-800">
-              {stat.value}
-            </span>
-           
-          </div>
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
       <div>
         <SelectDate setDataPost={setDataPost} setDataDonate={setDataDonate} />
       </div>

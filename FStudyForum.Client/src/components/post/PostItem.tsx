@@ -110,8 +110,8 @@ const PostItem: FC<PostProps> = ({ data, hideLess = true }) => {
         <MenuItemPost post={data} />
       </div>
       <div
-        className={cn("my-2 flex flex-col gap-y-2 w-full text-blue-gray-900")}
-      >
+        className={cn("my-2 flex flex-col gap-y-2 w-full text-blue-gray-800")}
+    >
         <p className="font-semibold ">{data.title}</p>
         <EditorOutput content={data.content} hide={hideLess} className="mb-2" />
 

@@ -5,6 +5,10 @@ export interface Post {
   title: string;
   content: string;
   voteType: number;
+  upVoteCount: number;
+  downVoteCount: number;
+  isSaved: boolean;
+  InTrash: boolean;
   voteCount: number;
   commentCount: number;
   elapsed: string;

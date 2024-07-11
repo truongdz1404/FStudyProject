@@ -82,15 +82,18 @@ const SearchInput = () => {
 
   const debouncedSearch = React.useMemo(
     () =>
-      debounce(async (searchTerm: string) => {
-        if (!searchTerm) {
+      debounce(async (keyword: string) => {
+        if (!keyword) {
           setFoundTopics([]);
           setFoundUsers([]);
           return;
         }
         try {
-          const foundTopics = await TopicService.search(searchTerm);
-          const foundUsers = await UserService.search(searchTerm);
+          const [foundTopics, foundUsers] = await Promise.all([
+            TopicService.search(keyword.replace(/^(t\/)/, "")),
+            UserService.search(keyword.replace(/^(u\/)/, ""))
+          ]);
+
           setFoundTopics(foundTopics);
           setFoundUsers(foundUsers);
         } catch (e) {
@@ -109,8 +112,7 @@ const SearchInput = () => {
 
   React.useEffect(() => {
     if (!canSearch()) return;
-    const trimmedKeyword = keyword.trim().replace(/^t\//, "");
-    debouncedSearch(trimmedKeyword);
+    debouncedSearch(keyword.trim());
     return () => {
       debouncedSearch.cancel();
     };

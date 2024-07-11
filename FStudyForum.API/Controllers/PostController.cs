@@ -374,7 +374,7 @@ namespace FStudyForum.API.Controllers
                                .ToList();
                     var responseNotFound = new Response
                     {
-                        Status = (int)HttpStatusCode.BadRequest + "",
+                        Status = ResponseStatus.ERROR,
                         Message = string.Join("; ", errors)
                     };
                     return BadRequest(responseNotFound);
@@ -386,14 +386,14 @@ namespace FStudyForum.API.Controllers
                     {
                         Data = post,
                         Message = "User is not found.",
-                        Status = (int)HttpStatusCode.NotFound + ""
+                        Status = ResponseStatus.ERROR
                     });
                 }
                 return Ok(new Response
                 {
                     Data = post,
                     Message = "Removed from saved",
-                    Status = (int)HttpStatusCode.OK + "",
+                    Status = ResponseStatus.SUCCESS,
                 });
             }
             catch (Exception ex)
@@ -422,7 +422,7 @@ namespace FStudyForum.API.Controllers
                     };
                     return BadRequest(responseNotFound);
                 }
-                var isPostExists = await _postService.IsPostExists(new SavePostDTO()
+                var isPostExists = await _postService.IsPostSaved(new SavePostDTO()
                 { UserName = username, PostId = postId });
                 return Ok(new Response
                 {
