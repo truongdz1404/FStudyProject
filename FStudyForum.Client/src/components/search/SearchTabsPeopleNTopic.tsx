@@ -9,7 +9,6 @@ const SearchTabs = () => {
   const keyword = useQueryParams().get("keyword");
   const navigate = useNavigate();
 
-  //name: name of topic, path: "topic/:name"
   const { username, name } = useParams<{ username: string; name: string }>();
 
   const handleClick = (type: string) => {

@@ -1,5 +1,3 @@
-using FStudyForum.Core.Models.DTOs.Topic;
-
 namespace FStudyForum.Core.Models.DTOs.User;
 
 public class UserDTO
@@ -8,8 +6,6 @@ public class UserDTO
     public string Email { get; set; } = string.Empty;
     public string Avatar { get; set; } = string.Empty;
     public string Banner { get; set; } = string.Empty;
-    public IList<string> Mods { get; set; } = [];
-    public IList<TopicBanDTO> Banneds { get; set; } = [];
     public IList<string> Roles { get; set; } = [];
 
 }

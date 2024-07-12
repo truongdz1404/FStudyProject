@@ -26,7 +26,7 @@ import { Icons } from "../Icons";
 import { useAuth } from "@/hooks/useAuth";
 import SearchInput from "../search/SearchInput";
 
-function ProfileMenu() {
+export function ProfileMenu() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -104,16 +104,6 @@ function ProfileMenu() {
   );
 }
 
-const getCreatePath = (pathname: string) => {
-  const segments = pathname.split("/").filter(s => s !== "");
-  switch (segments[0]) {
-    case "topic":
-      return `${segments[0]}/${segments[1]}/submit`;
-    default:
-      return "/submit";
-  }
-};
-
 const navListItems = [
   {
     label: "Create",
@@ -129,15 +119,23 @@ const navListItems = [
   }
 ];
 
-function NavList() {
+export function NavList() {
   const { pathname } = useLocation();
-
+  const submitPath = (pathname: string) => {
+    const segments = pathname.split("/").filter(s => s !== "");
+    switch (segments[0]) {
+      case "topic":
+        return `${segments[0]}/${segments[1]}/submit`;
+      default:
+        return "/submit";
+    }
+  };
   return (
     <div className="mt-2 mb-4 flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center">
       {navListItems.map(({ label, icon, showLabel, path }) => (
         <Link
           key={label}
-          to={path === "/submit" ? getCreatePath(pathname) : path}
+          to={path === "/submit" ? submitPath(pathname) : path}
           className="w-full"
         >
           <Button
@@ -188,15 +186,12 @@ const Header = React.memo(({ openSidebar }: HeaderProps) => {
           <Link
             to="/"
             className="mx-2 xl:mx-4 cursor-pointer py-1.5 font-medium flex items-center select-none"
-            onClick={() => {
-              sessionStorage.clear();
-            }}
           >
             <Icons.logo className="h-8 w-8" />
             <span className="hidden text-md font-semibold md:block">Study</span>
           </Link>
         </div>
-        <div className="w-2/3 xl:w-2/5 max-w-screen-md hidden md:block">
+        <div className="w-2/3 xl:w-2/5 max-w-screen-md hidden md:block transition-all duration-300 ease-in-out">
           <SearchInput />
         </div>
 

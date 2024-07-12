@@ -44,7 +44,7 @@ const PostItem: FC<PostProps> = ({ data, hideLess = true }) => {
     <div
       ref={containerRef}
       onClick={handleRemainClick}
-      className="py-1 px-4 w-full "
+      className="py-1 px-4 w-full"
     >
       <div className="flex justify-between">
         <div className="flex items-center gap-x-2">
@@ -111,7 +111,7 @@ const PostItem: FC<PostProps> = ({ data, hideLess = true }) => {
       </div>
       <div
         className={cn("my-2 flex flex-col gap-y-2 w-full text-blue-gray-800")}
-    >
+      >
         <p className="font-semibold ">{data.title}</p>
         <EditorOutput content={data.content} hide={hideLess} className="mb-2" />
 

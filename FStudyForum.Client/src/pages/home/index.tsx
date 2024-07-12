@@ -54,7 +54,7 @@ const HomePage: React.FC = () => {
       {posts.map((post, index) => {
         return (
           <div key={index} className="w-full">
-            <div className="hover:bg-gray-50 rounded-lg w-full">
+            <div className="hover:bg-gray-50 rounded-lg w-full cursor-pointer">
               <PostItem key={index} data={post} />
             </div>
             <hr className="my-1 border-blue-gray-50" />

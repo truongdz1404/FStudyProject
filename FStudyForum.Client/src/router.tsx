@@ -3,25 +3,29 @@ import { Navigate, Outlet, useRoutes } from "react-router-dom";
 import AuthGuard from "@/helpers/guards/AuthGuard";
 import NotFound from "@/components/NotFound";
 import Layout from "@/components/layout/Layout";
-import TopicGuard from "./helpers/guards/TopicGuard";
 import WelcomeGuard from "@/helpers/guards/WelcomeGuard";
 import AuthLayout from "@/components/layout/AuthLayout";
 import RoleBasedGuard from "@/helpers/guards/RoleBasedGuard";
-import Donate from "./pages/donate";
-import Notification from "./pages/donate/notification";
-import SavePost from "./pages/user/saved";
+import Donate from "@/pages/donate";
+
 import { Roles } from "@/helpers/constants";
-import Loadable from "./helpers/loading/Loadable";
+import Loadable from "@/helpers/loading/Loadable";
 
-import Analytics from "./pages/analytics";
-const SearchTopicCommentPage = Loadable(
-  lazy(() => import("./pages/topic/search/comments"))
+const Analytics = Loadable(lazy(() => import("@/pages/analytics")));
+
+const Notification = Loadable(
+  lazy(() => import("@/pages/donate/notification"))
 );
-const SearchUserCommentPage = Loadable(
-  lazy(() => import("./pages/user/search/comments"))
+const SavePost = Loadable(lazy(() => import("@/pages/user/saved")));
+
+const SearchCommentInTopic = Loadable(
+  lazy(() => import("@/pages/topic/search/comments"))
+);
+const SearchCommentInUser = Loadable(
+  lazy(() => import("@/pages/user/search/comments"))
 );
 
-const QRCode = Loadable(lazy(() => import("./pages/donate/qrcode")));
+const QRCode = Loadable(lazy(() => import("@/pages/donate/qrcode")));
 const Popular = Loadable(lazy(() => import("@/pages/popular")));
 const Memebers = Loadable(lazy(() => import("@/pages/manager/members")));
 const Welcome = Loadable(lazy(() => import("@/pages/welcome")));
@@ -50,15 +54,19 @@ const Topics = Loadable(lazy(() => import("@/pages/topics")));
 const UserPosts = Loadable(lazy(() => import("@/pages/user/posts")));
 const UserOverview = Loadable(lazy(() => import("@/pages/user/overview")));
 const UserTrash = Loadable(lazy(() => import("@/pages/user/trash")));
-const Attachment = Loadable(lazy(() => import("@/pages/attachment")));
-const SearchPage = Loadable(lazy(() => import("@/pages/search/posts")));
+const Attachments = Loadable(
+  lazy(() => import("@/pages/topic/comments/attachments"))
+);
+const SearchPosts = Loadable(lazy(() => import("@/pages/search/posts")));
 const SearchTopics = Loadable(lazy(() => import("@/pages/search/topics")));
 const SearchPostInTopic = Loadable(
   lazy(() => import("@/pages/topic/search/posts"))
 );
 const SearchComments = Loadable(lazy(() => import("@/pages/search/comments")));
 const SearchPeople = Loadable(lazy(() => import("@/pages/search/people")));
-const SearchPost = Loadable(lazy(() => import("@/pages/user/search/posts")));
+const SearchPostInUser = Loadable(
+  lazy(() => import("@/pages/user/search/posts"))
+);
 const SignOut = Loadable(lazy(() => import("@/pages/auth/signout")));
 const ListReport = Loadable(lazy(() => import("@/pages/manager/report/list")));
 const Search = Loadable(lazy(() => import("@/pages/search")));
@@ -171,11 +179,7 @@ const Router: FC = () => {
         },
         {
           path: "topic/:name",
-          element: (
-            <TopicGuard>
-              <Outlet />
-            </TopicGuard>
-          ),
+          element: <Outlet />,
           children: [
             {
               index: true,
@@ -204,7 +208,7 @@ const Router: FC = () => {
                 },
                 {
                   path: "comments",
-                  element: <SearchTopicCommentPage />
+                  element: <SearchCommentInTopic />
                 }
               ]
             }
@@ -212,47 +216,43 @@ const Router: FC = () => {
         },
         {
           path: "user/:username",
+          element: <Profile />,
           children: [
             {
-              element: <Profile />,
-              children: [
-                {
-                  index: true,
-                  element: <UserOverview />
-                },
-                {
-                  path: "posts",
-                  element: <UserPosts />
-                },
-                {
-                  path: "saved",
-                  element: <SavePost />
-                },
-                {
-                  path: "trash",
-                  element: <UserTrash />
-                }
-              ]
+              index: true,
+              element: <UserOverview />
             },
+            {
+              path: "posts",
+              element: <UserPosts />
+            },
+            {
+              path: "saved",
+              element: <SavePost />
+            },
+            {
+              path: "trash",
+              element: <UserTrash />
+            }
+          ]
+        },
+        {
+          path: "user/:username",
+          children: [
             {
               path: "search",
               element: <SearchLayout />,
               children: [
                 {
                   path: "posts",
-                  element: <SearchPost />
+                  element: <SearchPostInUser />
                 },
                 {
                   path: "comments",
-                  element: <SearchUserCommentPage />
+                  element: <SearchCommentInUser />
                 }
               ]
-            }
-          ]
-        },
-        {
-          path: "user/:username",
-          children: [
+            },
             {
               path: "submit",
               element: <SubmitPage />
@@ -287,7 +287,7 @@ const Router: FC = () => {
           children: [
             {
               path: "posts",
-              element: <SearchPage />
+              element: <SearchPosts />
             },
             {
               path: "topics",
@@ -302,10 +302,6 @@ const Router: FC = () => {
               element: <SearchPeople />
             }
           ]
-        },
-        {
-          path: "attachment/:id",
-          element: <Attachment />
         }
       ]
     },
@@ -320,6 +316,10 @@ const Router: FC = () => {
         {
           path: "welcome",
           element: <Welcome />
+        },
+        {
+          path: "attachments",
+          element: <Attachments />
         }
       ]
     },
@@ -358,6 +358,7 @@ const Router: FC = () => {
         }
       ]
     },
+
     {
       path: "*",
       element: <NotFound />

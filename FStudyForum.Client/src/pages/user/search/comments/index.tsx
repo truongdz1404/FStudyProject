@@ -6,20 +6,16 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { LIMIT_SCROLLING_PAGNATION_RESULT } from "@/helpers/constants";
 import NotFoundSearch from "@/components/layout/NotFoundSearch";
 import { Spinner } from "@material-tailwind/react";
-import { useLocation, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import useSearchParam from "@/hooks/useSearchParam";
 import CommentFilter from "@/components/comment/CommentFilter";
 import SearchComment from "@/components/search/SearchComment";
+import useQueryParams from "@/hooks/useQueryParams";
 
-const useQueryParams = () => {
-  return new URLSearchParams(useLocation().search);
-};
-
-const SearchUserCommentPage: React.FC = () => {
+const SearchUserCommentPage = () => {
   const { ref, inView } = useInView();
   const { username } = useParams<{ username: string }>();
-  const queryParams = useQueryParams();
-  const keyword = queryParams.get("keyword") ?? "";
+  const keyword = useQueryParams().get("keyword") ?? "";
   const [filter, setFilter] = useSearchParam<string>({
     key: "filter",
     defaultValue: "New"
@@ -32,7 +28,13 @@ const SearchUserCommentPage: React.FC = () => {
     isFetching,
     refetch
   } = useInfiniteQuery({
-    queryKey: ["COMMENT_LIST", "SEARCH","BY_USER", username, { keyword, filter }],
+    queryKey: [
+      "COMMENT_LIST",
+      "SEARCH",
+      "BY_USER",
+      username,
+      { keyword, filter }
+    ],
     queryFn: async ({ pageParam = 1 }) => {
       if (!keyword) return { data: [], nextPage: undefined, hasMore: false };
       try {
@@ -89,7 +91,6 @@ const SearchUserCommentPage: React.FC = () => {
   }, [keyword, refetch]);
 
   if (isPending) return <Spinner className="mx-auto" />;
-  console.table(results);
 
   return (
     <>

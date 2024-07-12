@@ -91,10 +91,6 @@ public class UserService : IUserService
             Username = user.UserName!,
             Email = user.Email!,
             Roles = await _userManager.GetRolesAsync(user),
-            Mods = (await _userRepository.GetModeratedTopics(user.UserName!)).Select(p => p.Name).ToList(),
-            Banneds = (await _userRepository.GetBannedTopics(user.UserName!))
-                .Select(b => new TopicBanDTO() { TopicName = b.Topic.Name, BannedTime = b.BannedTime })
-                .ToList(),
             Avatar = profile?.Avatar ?? string.Empty
         };
     }

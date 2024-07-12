@@ -151,11 +151,9 @@ const AttachmentContainer: FC<Props> = ({ files }) => {
       )}
       <LightBox
         index={open}
-        hideArrow={files.length <= 1}
         sliders={files.map(file => ({ src: file.url }))}
         close={() => setOpen(-1)}
       />
-      {/* <BoxComment id={open} /> */}
     </div>
   );
 };

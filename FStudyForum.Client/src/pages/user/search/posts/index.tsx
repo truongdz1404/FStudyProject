@@ -12,7 +12,7 @@ import SearchPost from "@/components/search/SearchPost";
 import useQueryParams from "@/hooks/useQueryParams";
 import { useParams } from "react-router-dom";
 
-const SearchPostPage: React.FC = () => {
+const SearchPostPage = () => {
   const [filter, setFilter] = useSearchParam<string>({
     key: "filter",
     defaultValue: "New"
