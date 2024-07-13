@@ -107,7 +107,6 @@ const SearchPost: React.FC<Props> = ({ data, keyword }) => {
       )}
       <LightBox
         index={open}
-        hideArrow={data.attachments.length <= 1}
         sliders={data.attachments.map(file => ({ src: file.url }))}
         close={() => setOpen(-1)}
       />

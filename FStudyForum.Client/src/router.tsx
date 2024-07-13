@@ -1,5 +1,11 @@
-import { FC, lazy } from "react";
-import { Navigate, Outlet, useRoutes } from "react-router-dom";
+import { lazy } from "react";
+import {
+  createBrowserRouter,
+  Navigate,
+  Outlet,
+  RouterProvider,
+  ScrollRestoration
+} from "react-router-dom";
 import AuthGuard from "@/helpers/guards/AuthGuard";
 import NotFound from "@/components/NotFound";
 import Layout from "@/components/layout/Layout";
@@ -10,6 +16,7 @@ import Donate from "@/pages/donate";
 
 import { Roles } from "@/helpers/constants";
 import Loadable from "@/helpers/loading/Loadable";
+import RouterParamProvider from "@/contexts/router/RouterParamContext";
 
 const Analytics = Loadable(lazy(() => import("@/pages/analytics")));
 
@@ -54,9 +61,7 @@ const Topics = Loadable(lazy(() => import("@/pages/topics")));
 const UserPosts = Loadable(lazy(() => import("@/pages/user/posts")));
 const UserOverview = Loadable(lazy(() => import("@/pages/user/overview")));
 const UserTrash = Loadable(lazy(() => import("@/pages/user/trash")));
-const Attachments = Loadable(
-  lazy(() => import("@/pages/topic/comments/attachments"))
-);
+const Attachment = Loadable(lazy(() => import("@/pages/topic/comments/attachment")));
 const SearchPosts = Loadable(lazy(() => import("@/pages/search/posts")));
 const SearchTopics = Loadable(lazy(() => import("@/pages/search/topics")));
 const SearchPostInTopic = Loadable(
@@ -79,291 +84,319 @@ const Response = Loadable(
   lazy(() => import("@/pages/manager/report/response"))
 );
 
-const Router: FC = () => {
-  return useRoutes([
-    {
-      path: "/",
-      element: (
-        <AuthGuard>
-          <WelcomeGuard>
-            <Layout />
-          </WelcomeGuard>
-        </AuthGuard>
-      ),
-      children: [
-        {
-          index: true,
-          element: <Navigate to="/home" replace />
-        },
-        {
-          path: "test",
-          element: <Test />
-        },
-        {
-          path: "home",
-          element: <Home />
-        },
-        {
-          path: "popular",
-          element: <Popular />
-        },
-        {
-          path: "topics",
-          children: [
-            {
-              index: true,
-              element: <Topics />
-            }
-          ]
-        },
-        {
-          path: "donate",
-          children: [
-            {
-              index: true,
-              element: <Donate />
-            },
-            {
-              path: "qrcode",
-              element: <QRCode />
-            },
-            {
-              path: "transaction",
-              element: <Notification />
-            }
-          ]
-        },
-        {
-          path: "manager",
-          element: (
-            <RoleBasedGuard accessibleRoles={[Roles.ADMIN]}>
-              <Outlet />
-            </RoleBasedGuard>
-          ),
-          children: [
-            {
-              path: "members",
-              element: <Memebers />
-            },
-            {
-              path: "analytics",
-              element: <Analytics />
-            },
-            {
-              path: "topics",
-              children: [
-                {
-                  index: true,
-                  element: <TopcicManager />
-                }
-              ]
-            },
-            {
-              path: "categories",
-              children: [
-                {
-                  index: true,
-                  element: <CategoryManager />
-                }
-              ]
-            },
-            {
-              path: "report",
-              element: <ListReport />
-            },
-            {
-              path: "report/:reportId",
-              element: <Response />
-            }
-          ]
-        },
-        {
-          path: "topic/:name",
-          element: <Outlet />,
-          children: [
-            {
-              index: true,
-              element: <TopicDetail />
-            },
-            {
-              path: "submit",
-              element: <SubmitPage />
-            },
-            {
-              path: "comments/:id",
-              children: [
-                {
-                  index: true,
-                  element: <Comments />
-                }
-              ]
-            },
-            {
-              path: "search",
-              element: <SearchLayout />,
-              children: [
-                {
-                  path: "posts",
-                  element: <SearchPostInTopic />
-                },
-                {
-                  path: "comments",
-                  element: <SearchCommentInTopic />
-                }
-              ]
-            }
-          ]
-        },
-        {
-          path: "user/:username",
-          element: <Profile />,
-          children: [
-            {
-              index: true,
-              element: <UserOverview />
-            },
-            {
-              path: "posts",
-              element: <UserPosts />
-            },
-            {
-              path: "saved",
-              element: <SavePost />
-            },
-            {
-              path: "trash",
-              element: <UserTrash />
-            }
-          ]
-        },
-        {
-          path: "user/:username",
-          children: [
-            {
-              path: "search",
-              element: <SearchLayout />,
-              children: [
-                {
-                  path: "posts",
-                  element: <SearchPostInUser />
-                },
-                {
-                  path: "comments",
-                  element: <SearchCommentInUser />
-                }
-              ]
-            },
-            {
-              path: "submit",
-              element: <SubmitPage />
-            },
-            {
-              path: "comments/:id",
-              children: [
-                {
-                  index: true,
-                  element: <Comments />
-                }
-              ]
-            }
-          ]
-        },
-        {
-          path: "settings",
-          children: [
-            {
-              path: "profile",
-              element: <ProfileSettings />
-            }
-          ]
-        },
-        {
-          path: "submit",
-          element: <SubmitPage />
-        },
-        {
-          path: "search",
-          element: <Search />,
-          children: [
-            {
-              path: "posts",
-              element: <SearchPosts />
-            },
-            {
-              path: "topics",
-              element: <SearchTopics />
-            },
-            {
-              path: "comments",
-              element: <SearchComments />
-            },
-            {
-              path: "people",
-              element: <SearchPeople />
-            }
-          ]
-        }
-      ]
-    },
-    {
-      path: "/",
-      element: (
-        <AuthGuard>
-          <Outlet />
-        </AuthGuard>
-      ),
-      children: [
-        {
-          path: "welcome",
-          element: <Welcome />
-        },
-        {
-          path: "attachments",
-          element: <Attachments />
-        }
-      ]
-    },
-    {
-      path: "auth",
-      element: <AuthLayout />,
-      children: [
-        {
-          path: "signin",
-          element: <SignIn />
-        },
-        {
-          path: "signout",
-          element: <SignOut />
-        },
-        {
-          path: "register",
-          element: <Register />
-        },
-        {
-          path: "reset-password",
-          children: [
-            {
-              path: "change-password",
-              element: <ChangePassword />
-            },
-            {
-              index: true,
-              element: <ResetPassword />
-            }
-          ]
-        },
-        {
-          path: "confirm-email",
-          element: <ConfirmEmail />
-        }
-      ]
-    },
+const router = createBrowserRouter([
+  {
+    path: "",
+    element: (
+      <AuthGuard>
+        <WelcomeGuard>
+          <RouterParamProvider>
+            <Outlet />
+            <ScrollRestoration getKey={location => location.pathname} />
+          </RouterParamProvider>
+        </WelcomeGuard>
+      </AuthGuard>
+    ),
+    children: [
+      {
+        path: "",
+        children: [
+          {
+            path: "welcome",
+            element: <Welcome />
+          },
+          {
+            path: "topic/:name",
+            children: [
+              {
+                path: "comments/:id",
+                children: [
+                  {
+                    path: "attachment/:attachmentId",
+                    element: <Attachment />
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            path: "user/:username",
+            children: [
+              {
+                path: "comments/:id",
+                children: [
+                  {
+                    path: "attachment/:attachmentId",
+                    element: <Attachment />
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        path: "",
+        element: <Layout />,
+        children: [
+          {
+            index: true,
+            element: <Navigate to="/home" replace />
+          },
+          {
+            path: "test",
+            element: <Test />
+          },
+          {
+            path: "home",
+            element: <Home />
+          },
+          {
+            path: "popular",
+            element: <Popular />
+          },
+          {
+            path: "topics",
+            children: [
+              {
+                index: true,
+                element: <Topics />
+              }
+            ]
+          },
+          {
+            path: "donate",
+            children: [
+              {
+                index: true,
+                element: <Donate />
+              },
+              {
+                path: "qrcode",
+                element: <QRCode />
+              },
+              {
+                path: "transaction",
+                element: <Notification />
+              }
+            ]
+          },
+          {
+            path: "manager",
+            element: (
+              <RoleBasedGuard accessibleRoles={[Roles.ADMIN]}>
+                <Outlet />
+              </RoleBasedGuard>
+            ),
+            children: [
+              {
+                path: "members",
+                element: <Memebers />
+              },
+              {
+                path: "analytics",
+                element: <Analytics />
+              },
+              {
+                path: "topics",
+                children: [
+                  {
+                    index: true,
+                    element: <TopcicManager />
+                  }
+                ]
+              },
+              {
+                path: "categories",
+                children: [
+                  {
+                    index: true,
+                    element: <CategoryManager />
+                  }
+                ]
+              },
+              {
+                path: "report",
+                element: <ListReport />
+              },
+              {
+                path: "report/:reportId",
+                element: <Response />
+              }
+            ]
+          },
+          {
+            path: "topic/:name",
+            children: [
+              {
+                index: true,
+                element: <TopicDetail />
+              },
+              {
+                path: "submit",
+                element: <SubmitPage />
+              },
+              {
+                path: "comments/:id",
+                children: [
+                  {
+                    index: true,
+                    element: <Comments />
+                  }
+                ]
+              },
+              {
+                path: "search",
+                element: <SearchLayout />,
+                children: [
+                  {
+                    path: "posts",
+                    element: <SearchPostInTopic />
+                  },
+                  {
+                    path: "comments",
+                    element: <SearchCommentInTopic />
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            path: "user/:username",
+            element: <Profile />,
+            children: [
+              {
+                index: true,
+                element: <UserOverview />
+              },
+              {
+                path: "posts",
+                element: <UserPosts />
+              },
+              {
+                path: "saved",
+                element: <SavePost />
+              },
+              {
+                path: "trash",
+                element: <UserTrash />
+              }
+            ]
+          },
+          {
+            path: "user/:username",
+            children: [
+              {
+                path: "search",
+                element: <SearchLayout />,
+                children: [
+                  {
+                    path: "posts",
+                    element: <SearchPostInUser />
+                  },
+                  {
+                    path: "comments",
+                    element: <SearchCommentInUser />
+                  }
+                ]
+              },
+              {
+                path: "submit",
+                element: <SubmitPage />
+              },
+              {
+                path: "comments/:id",
+                children: [
+                  {
+                    index: true,
+                    element: <Comments />
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            path: "settings",
+            children: [
+              {
+                path: "profile",
+                element: <ProfileSettings />
+              }
+            ]
+          },
+          {
+            path: "submit",
+            element: <SubmitPage />
+          },
+          {
+            path: "search",
+            element: <Search />,
+            children: [
+              {
+                path: "posts",
+                element: <SearchPosts />
+              },
+              {
+                path: "topics",
+                element: <SearchTopics />
+              },
+              {
+                path: "comments",
+                element: <SearchComments />
+              },
+              {
+                path: "people",
+                element: <SearchPeople />
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    path: "auth",
+    element: <AuthLayout />,
+    children: [
+      {
+        path: "signin",
+        element: <SignIn />
+      },
+      {
+        path: "signout",
+        element: <SignOut />
+      },
+      {
+        path: "register",
+        element: <Register />
+      },
+      {
+        path: "reset-password",
+        children: [
+          {
+            path: "change-password",
+            element: <ChangePassword />
+          },
+          {
+            index: true,
+            element: <ResetPassword />
+          }
+        ]
+      },
+      {
+        path: "confirm-email",
+        element: <ConfirmEmail />
+      }
+    ]
+  },
+  {
+    path: "*",
+    element: <NotFound />
+  }
+]);
 
-    {
-      path: "*",
-      element: <NotFound />
-    }
-  ]);
+const MyRouterProvider = () => {
+  return <RouterProvider router={router} />;
 };
 
-export default Router;
+export default MyRouterProvider;

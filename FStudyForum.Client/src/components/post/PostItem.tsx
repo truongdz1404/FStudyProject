@@ -115,7 +115,7 @@ const PostItem: FC<PostProps> = ({ data, hideLess = true }) => {
         <p className="font-semibold ">{data.title}</p>
         <EditorOutput content={data.content} hide={hideLess} className="mb-2" />
 
-        <AttachmentContainer files={data.attachments} />
+        <AttachmentContainer post={data} />
       </div>
       <div className="flex space-x-4 text-gray-700">
         <PostVote

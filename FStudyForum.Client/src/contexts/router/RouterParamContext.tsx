@@ -7,11 +7,13 @@ import ProfileService from "@/services/ProfileService";
 import { useQuery } from "@tanstack/react-query";
 import PostService from "@/services/PostService";
 import { Post } from "@/types/post";
+import { Attachment } from "@/types/attachment";
 
 interface RouterParamType {
   topic?: Topic;
   user?: Profile;
   post?: Post;
+  attachment?: Attachment;
 }
 export const RouterParamContext = React.createContext<RouterParamType>({});
 

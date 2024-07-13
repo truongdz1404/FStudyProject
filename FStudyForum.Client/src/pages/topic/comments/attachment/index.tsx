@@ -2,19 +2,49 @@ import { FC } from "react";
 import useSearchParam from "@/hooks/useSearchParam";
 import { cn } from "@/helpers/utils";
 import Carousel from "@/components/attachment/Carousel";
-import slides from "@/components/attachment/slides";
 import { NavList, ProfileMenu } from "@/components/layout/Header";
 import CommentBox from "@/components/attachment/Comment";
 import { Icons } from "@/components/Icons";
-import { Link } from "react-router-dom";
+import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 import { X } from "lucide-react";
+import { useRouterParam } from "@/hooks/useRouterParam";
 
-const Box: FC = () => {
+const AttachmentPage: FC = () => {
+  const navigate = useNavigate();
+  const { attachmentId } = useParams<{ attachmentId: string }>();
   const [isExpand, setIsExpand] = useSearchParam<"true" | "false">({
     key: "full",
     defaultValue: "false"
   });
+  const { post } = useRouterParam();
   const handleExpand = () => setIsExpand(isExpand == "true" ? "false" : "true");
+  if (!post) return;
+  if (!post.attachments.length) return <Navigate to={"/not-found"} />;
+
+  const openDetail = (id: number) => {
+    if (post.topicName)
+      navigate(
+        `/topic/${post.topicName}/comments/${post.id}/attachment/${id}?full=${isExpand}`
+      );
+    else
+      navigate(
+        `/user/${post.author}/comments/${post.id}/attachment/${id}?full=${isExpand}`
+      );
+  };
+
+  const current = post.attachments.findIndex(
+    a => a.id.toString() == attachmentId
+  );
+
+  const handleNext = () => {
+    const last = post.attachments.length - 1;
+    openDetail(post.attachments[current == last ? 0 : current + 1].id);
+  };
+
+  const handlePrev = () => {
+    const last = post.attachments.length - 1;
+    openDetail(post.attachments[current == 0 ? last : current - 1].id);
+  };
 
   return (
     <div className="w-full h-screen flex relative">
@@ -23,6 +53,7 @@ const Box: FC = () => {
           key="my-button"
           type="button"
           className="rounded-full bg-gray-900/40 hover:bg-gray-900/50 p-2 text-white"
+          onClick={() => navigate(-1)}
         >
           <X strokeWidth={2} className="w-6 h-6" />
         </button>
@@ -38,9 +69,15 @@ const Box: FC = () => {
       >
         <div className="w-full h-screen z-0">
           <Carousel
-            index={0}
-            sliders={slides}
+            slide={{
+              src: post.attachments[current].url,
+              width: 3840,
+              height: 5760
+            }}
             expand={isExpand == "true"}
+            onNext={handleNext}
+            onPrev={handlePrev}
+            hideArrow={post.attachments.length == 1}
             onExpand={handleExpand}
           />
         </div>
@@ -68,4 +105,4 @@ const Box: FC = () => {
   );
 };
 
-export default Box;
+export default AttachmentPage;

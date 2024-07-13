@@ -5,12 +5,12 @@ import { Carousel } from "@material-tailwind/react";
 import React from "react";
 import { cn } from "@/helpers/utils";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import LightBox from "./LightBox";
 import { useSize } from "@/hooks/useSize";
-// import BoxComment from "../comment/BoxComment";
+import { useNavigate } from "react-router-dom";
+import { Post } from "@/types/post";
 
 type Props = {
-  files: Attachment[];
+  post: Post;
 };
 
 const getSizeFromPath = (path: string): { width: number; height: number } => {
@@ -41,40 +41,41 @@ const getContainerHeight = (
   );
 };
 
-const AttachmentContainer: FC<Props> = ({ files }) => {
+const AttachmentContainer: FC<Props> = ({ post }) => {
   const containerRef = React.useRef<HTMLDivElement>(null);
-  const [open, setOpen] = React.useState(-1);
+  const navigate = useNavigate();
   const { width } = useSize(containerRef);
   const [height, setHeight] = React.useState(0);
   React.useEffect(() => {
     if (width != 0 && containerRef.current != null)
-      setHeight(getContainerHeight(files, width));
-  }, [files, width]);
+      setHeight(getContainerHeight(post.attachments, width));
+  }, [post.attachments, width]);
 
-  const openLightBox = (index?: number, id?: number) => {
-    console.log(id);
-    setOpen(index ?? 0);
+  const openDetail = (id: number) => {
+    if (post.topicName)
+      navigate(`/topic/${post.topicName}/comments/${post.id}/attachment/${id}`);
+    else navigate(`/user/${post.author}/comments/${post.id}/attachment/${id}`);
   };
 
-  if (files.length == 0) return null;
+  if (post.attachments.length == 0) return null;
 
   return (
     <div className="action w-full z-0" ref={containerRef}>
-      {files.length == 1 ? (
+      {post.attachments.length == 1 ? (
         <div
           style={{ height: height }}
           className={cn(
             "max-h-[28rem] w-full object-contain relative overflow-hidden rounded-md "
           )}
-          onClick={() => openLightBox()}
+          onClick={() => openDetail(post.attachments[0].id)}
         >
           <img
-            src={files[0].url}
+            src={post.attachments[0].url}
             className="scale-125 absolute top-1/2 left-0 object-cover opacity-30 -translate-y-1/2 blur-xl w-full"
             loading="lazy"
           />
           <ImageWithLoading
-            src={files[0].url}
+            src={post.attachments[0].url}
             className={`object-contain w-full h-full relative`}
           />
         </div>
@@ -129,12 +130,12 @@ const AttachmentContainer: FC<Props> = ({ files }) => {
           )}
           className="overflow-hidden rounded-md text-sm"
         >
-          {files.map((file, index) => (
+          {post.attachments.map((file, index) => (
             <div
               key={index}
               style={{ height: height }}
               className="max-h-[28rem] object-contain relative overflow-hidden "
-              onClick={() => openLightBox(index, file.id)}
+              onClick={() => openDetail(file.id)}
             >
               <img
                 src={file.url}
@@ -149,11 +150,6 @@ const AttachmentContainer: FC<Props> = ({ files }) => {
           ))}
         </Carousel>
       )}
-      <LightBox
-        index={open}
-        sliders={files.map(file => ({ src: file.url }))}
-        close={() => setOpen(-1)}
-      />
     </div>
   );
 };

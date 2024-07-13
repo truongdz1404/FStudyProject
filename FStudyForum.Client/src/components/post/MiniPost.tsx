@@ -89,7 +89,6 @@ const MiniPost: React.FC<MiniPostProps> = ({ data }) => {
       )}
       <LightBox
         index={open}
-        hideArrow={data.attachments.length <= 1}
         sliders={data.attachments.map(file => ({ src: file.url }))}
         close={() => setOpen(-1)}
       />
