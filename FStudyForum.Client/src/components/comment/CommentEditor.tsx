@@ -45,8 +45,12 @@ const CommentEditor: FC<CommentInputProps> = ({ commentId, content, onSave, onCa
           Cancel
         </button>
         <button
+          disabled={!newContent.trim()}
           onClick={handleSave}
-          className="rounded-full p-2 bg-orange-800 text-white text-xs"
+          className = {cn(
+            "rounded-full p-2 bg-orange-800 text-white text-xs",
+            newContent.trim() ? "bg-orange-800" : "bg-gray-400 cursor-not-allowed"
+          )}
         >
           Save
         </button>

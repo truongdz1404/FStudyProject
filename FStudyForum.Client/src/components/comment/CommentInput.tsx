@@ -52,8 +52,12 @@ const CommentInput: FC<CommentInputProps> = ({ onSubmit }) => {
               Cancel
             </button>
             <button
+              disabled={!newComment.trim()}
               onClick={handleSubmit}
-              className="rounded-full p-2 bg-orange-800 text-white text-xs"
+              className={cn(
+                "rounded-full p-2 text-white text-xs",
+                newComment.trim() ? "bg-orange-800" : "bg-gray-400 cursor-not-allowed"
+              )}
             >
               Comment
             </button>

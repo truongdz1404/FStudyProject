@@ -57,7 +57,7 @@ namespace FStudyForum.API.Controllers
                 });
         }
 
-        [HttpGet("attachment/{attachmentId}")]
+        [HttpGet("attachment")]
         public async Task<ActionResult<IEnumerable<CommentDTO>>> GetCommentsByAttachment(long attachmentId)
         {
             var comments = await _commentService.GetCommentsByAttachmentIdAsync(attachmentId);

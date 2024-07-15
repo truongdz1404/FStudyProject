@@ -6,6 +6,10 @@ const getCommentsByPostId = async (postId: string) => {
   const response = await api.get<ResponseWith<Comment[]>>(`/comments/post?postId=${postId}`);
   return response.data.data;
 };
+const getCommentsByAttachmentId = async (attachmentId: string) => {
+  const response = await api.get<ResponseWith<Comment[]>>(`/comments/attachment?attachmentId=${attachmentId}`);
+  return response.data.data;
+};
 
 const getCommentById = async (id: string) => {
   const response = await api.get<ResponseWith<Comment>>(`/comments/comment?id=${id}`);
@@ -33,6 +37,7 @@ const CommentService = {
   createComment,
   updateComment,
   deleteComment,
+  getCommentsByAttachmentId,
 };
 
 export default CommentService;
