@@ -66,6 +66,16 @@ public class ApplicationDBContext(DbContextOptions options)
             .WithMany(t => t.ModeratedByUsers)
             .UsingEntity("tblModerators");
 
+        builder.Entity<ApplicationUser>()
+            .HasOne(u => u.HubConnection)
+            .WithOne(h => h.User)
+            .HasForeignKey<HubConnection>()
+            .IsRequired();
+
+        builder.Entity<ApplicationUser>()
+            .HasMany(u => u.Notifications)
+            .WithOne(n => n.Receiver);
+
         builder.Entity<Category>()
             .HasMany(c => c.Topics)
             .WithMany(t => t.Categories)
@@ -126,5 +136,7 @@ public class ApplicationDBContext(DbContextOptions options)
     public DbSet<SavedPost> SavedPosts { get; set; }
     public DbSet<RecentPost> RecentPosts { get; set; }
     public DbSet<TopicBan> TopicBans { get; set; }
+    public DbSet<HubConnection> HubConnections { get; set; }
+    public DbSet<Notification> Notifications { get; set; }
 }
 

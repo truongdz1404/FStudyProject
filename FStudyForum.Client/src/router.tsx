@@ -12,6 +12,9 @@ import Notification from "./pages/donate/notification";
 import SavePost from "./pages/user/saved";
 import { ROLE } from "@/helpers/constants";
 import Loadable from "./helpers/loading/Loadable";
+import { SignalRProvider } from "./contexts/signalR/SignalRContext";
+import Cookies from "js-cookie";
+
 
 const QRCode = Loadable(lazy(() => import("./pages/donate/qrcode")));
 const Popular = Loadable(lazy(() => import("@/pages/popular")));
@@ -62,7 +65,9 @@ const Router: FC = () => {
       element: (
         <AuthGuard>
           <WelcomeGuard>
-            <Layout />
+            <SignalRProvider hubName="notification-hub" accessTokenFactory={() => String(Cookies.get('FStudyForum-Access-Token'))}>
+              <Layout />
+            </SignalRProvider>
           </WelcomeGuard>
         </AuthGuard>
       ),

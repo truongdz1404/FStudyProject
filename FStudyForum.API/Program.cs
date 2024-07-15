@@ -98,6 +98,6 @@ app.UseCors(Policy.SINGLE_PAGE_APP);
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-
+app.MapHub<NotificationHub>("/notification-hub");
 app.MapHub<PostHub>("/post-hub");
 app.Run();

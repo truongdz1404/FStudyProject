@@ -731,6 +731,66 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.ToTable("tblModerators", "dbo");
                 });
 
+            modelBuilder.Entity("FStudyForum.Core.Models.Entities.HubConnection", b => {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("ConnectionId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("tblHubConnections", "dbo");
+                });
+
+            modelBuilder.Entity("FStudyForum.Core.Models.Entities.Notification", b => {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("MessageType")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ReceiverId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+                    
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReceiverId");
+
+                    b.ToTable("tblNotifications", "dbo");
+                });
+
+
             modelBuilder.Entity("tblTopicCategories", b =>
                 {
                     b.Property<long>("CategoriesId")
@@ -984,6 +1044,28 @@ namespace FStudyForum.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("FStudyForum.Core.Models.Entities.HubConnection", b => 
+                {
+                    b.HasOne("FStudyForum.Core.Models.Entities.ApplicationUser", "User")
+                        .WithOne("HubConnection")
+                        .HasForeignKey("FStudyForum.Core.Models.Entities.HubConnection", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("FStudyForum.Core.Models.Entities.Notification", b => 
+                {
+                    b.HasOne("FStudyForum.Core.Models.Entities.ApplicationUser", "Receiver")
+                        .WithMany("Notifications")
+                        .HasForeignKey("ReceiverId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Receiver");
+                });
+
             modelBuilder.Entity("tblTopicCategories", b =>
                 {
                     b.HasOne("FStudyForum.Core.Models.Entities.Category", null)
@@ -1018,6 +1100,10 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.Navigation("SavedPosts");
 
                     b.Navigation("Votes");
+
+                    b.Navigation("HubConnection");
+
+                    b.Navigation("Notifications");
                 });
 
             modelBuilder.Entity("FStudyForum.Core.Models.Entities.Attachment", b =>

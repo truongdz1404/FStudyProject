@@ -18,18 +18,24 @@ import {
   AlignJustify,
   Plus,
   Bell,
-  ChevronUp
+  ChevronUp,
+  BellDot
 } from "lucide-react";
 import { cn } from "@/helpers/utils";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Icons } from "../Icons";
 import { useAuth } from "@/hooks/useAuth";
 import SearchInput from "../search/SearchInput";
+import NotificationBox from "../notification";
+import { useNotification } from "@/contexts/NotificationContext";
+import useSignalR from "@/hooks/useSignalR";
+import * as signalR from "@microsoft/signalr";
 
 function ProfileMenu() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { connectionState } = useSignalR();
 
   const profileMenuItems = [
     {
@@ -66,6 +72,8 @@ function ProfileMenu() {
             className=" bg-white"
             src={user?.avatar ?? "/src/assets/images/user.png"}
           />
+          {connectionState===signalR.HubConnectionState.Connected ? (<div className="w-2 h-2 bg-green-500 rounded-full ml-1"></div>) : 
+          (<div className="w-2 h-2 bg-red-500 rounded-full ml-1"></div>)}
         </Button>
       </MenuHandler>
       <MenuList className="p-1">
@@ -130,30 +138,55 @@ const navListItems = [
 ];
 
 function NavList() {
+  const [isNotificationOpen, setIsNotificationOpen] = React.useState(false);
+  const { hasNotify } = useNotification();
   const { pathname } = useLocation();
 
+  const toggleNotification = () => {
+    setIsNotificationOpen(!isNotificationOpen);
+  };
   return (
-    <div className="mt-2 mb-4 flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center">
-      {navListItems.map(({ label, icon, showLabel, path }) => (
-        <Link
-          key={label}
-          to={path === "/submit" ? getCreatePath(pathname) : path}
-          className="w-full"
-        >
-          <Button
-            color="blue-gray"
-            variant="text"
-            className={cn(
-              "flex p-2 items-center gap-2 lg:rounded-full w-full",
-              "font-medium text-sm normal-case text-blue-gray-700"
-            )}
-          >
-            {React.createElement(icon, { className: "h-5 w-5" })}
-            <span className={cn(!showLabel && "lg:hidden")}>{label}</span>
-          </Button>
-        </Link>
-      ))}
-    </div>
+    <>
+      <div className="mt-2 mb-4 flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center">
+        {navListItems.map(({ label, icon, showLabel, path }) => {
+          if (label === "Notification") {
+            return (
+              <Button
+                key={label}
+                color="blue-gray"
+                variant="text"
+                className="flex p-2 items-center gap-2 lg:rounded-full w-full font-medium text-sm normal-case text-blue-gray-700"
+                onClick={toggleNotification}
+              >
+                {React.createElement((hasNotify ? BellDot : icon), { className: "h-5 w-5" })}
+                <span className={cn(!showLabel && "lg:hidden")}>{label}</span>
+              </Button>
+            );
+          } else {
+            return (
+              <Link
+                key={label}
+                to={path === "/submit" ? getCreatePath(pathname) : path}
+                className="w-full"
+              >
+                <Button
+                  color="blue-gray"
+                  variant="text"
+                  className={cn(
+                    "flex p-2 items-center gap-2 lg:rounded-full w-full",
+                    "font-medium text-sm normal-case text-blue-gray-700"
+                  )}
+                >
+                  {React.createElement(icon, { className: "h-5 w-5" })}
+                  <span className={cn(!showLabel && "lg:hidden")}>{label}</span>
+                </Button>
+              </Link>
+            );
+          }
+        })}
+      </div>
+      <NotificationBox isOpen={isNotificationOpen} />
+    </>
   );
 }
 type HeaderProps = {

@@ -1,3 +1,6 @@
+using FStudyForum.Core.Helpers;
+using FStudyForum.Core.Interfaces.IHelpers;
+using Microsoft.AspNetCore.SignalR;
 using FStudyForum.Core.Interfaces.IRepositories;
 using FStudyForum.Core.Interfaces.IServices;
 using FStudyForum.Core.Models.Entities;
@@ -26,6 +29,8 @@ public static class ServiceExtension
         services.AddScoped<IReportService, ReportService>();
         services.AddScoped<IQRCodeService, QRCodeService>();
         services.AddScoped<IDonateService, DonateService>();
+        services.AddScoped<INotificationService, NotificationService>();
+        services.AddScoped<IUserConnectionManager, UserConnectionManager>();
         #endregion
 
         #region Repositories
@@ -39,8 +44,14 @@ public static class ServiceExtension
         services.AddTransient<ICommentRepository, CommentRepository>();
         services.AddTransient<IDonationRepository, DonationRepository>();
         services.AddTransient<IReportRepository, ReportRepository>();
+        services.AddTransient<IHubConnectionRepository, HubConnectionRepository>();
+        services.AddTransient<INotificationRepository, NotificationRepository>();
         #endregion
 
+        #region Misc
+        services.AddSingleton<ConnectionDictionary<string, string>>();
+        services.AddSingleton<IUserIdProvider, UsernameBasedUserIdProvider>();
+        #endregion
 
         return services;
     }
