@@ -60,9 +60,7 @@ const SearchUserPage: React.FC = () => {
                   src={user?.avatar || DefaultUser}
                   className="w-10 h-10"
                 />
-                <div>
-                  <h3 className="font-semibold mb-1">u/{user?.username}</h3>
-                </div>
+                <div className="text-sm font-semibold">u/{user?.username}</div>
               </div>
               <hr className="my-1 border-blue-gray-50 w-full" />
             </div>

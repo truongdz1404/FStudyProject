@@ -158,7 +158,7 @@ const SubmitPage = () => {
               value={keyword}
               onKeyDown={handleKeyDown}
             />
-            <div className="absolute top-12 w-full bg-white rounded-md border shadow-lg shadow-gray-900/5 max-h-80 overflow-y-auto z-30">
+            <div className="absolute top-12 w-full bg-white rounded-lg border shadow-lg shadow-gray-900/5 max-h-80 overflow-y-auto z-30">
               {!keyword && (
                 <>
                   <div className="text-xs font-semibold px-2 py-4 text-gray-600 uppercase">

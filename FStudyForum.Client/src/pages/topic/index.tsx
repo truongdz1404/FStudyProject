@@ -77,7 +77,7 @@ const TopicDetail: React.FC = () => {
             <p className="text-md font-semibold">t/{topic.name}</p>
           </div>
           <Link
-            className="absolute right-0 bg-blue-600 text-white px-4 py-2 text-xs rounded-full my-2"
+            className="absolute right-0 bg-blue-800 text-white px-4 py-2 text-xs rounded-full my-2"
             to="moderator"
           >
             Mod tools

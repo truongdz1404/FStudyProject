@@ -75,7 +75,7 @@ namespace FStudyForum.API.Controllers
                 await _feedService.DeleteFeed(username, name);
                 return Ok(new Response
                 {
-                    Message = "Get topic successfully",
+                    Message = "Delete feed successfully",
                     Status = ResponseStatus.SUCCESS,
                 });
             }
@@ -99,7 +99,7 @@ namespace FStudyForum.API.Controllers
                 await _feedService.CreateFeed(username, createFeedDTO);
                 return Ok(new Response
                 {
-                    Message = "Get topic successfully",
+                    Message = "Create topic successfully",
                     Status = ResponseStatus.SUCCESS,
                 });
             }

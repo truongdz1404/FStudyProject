@@ -1,6 +1,6 @@
 import { CreateFeed, Feed } from "@/types/feed";
 import api from "./api";
-import { ResponseWith, Response } from "@/types/response";
+import { ResponseWith, Response, ResponseWithPagniate } from "@/types/response";
 
 const getFeed = async (name: string) => {
   const response = await api.get<ResponseWith<Feed>>(`/feed/${name}`);
@@ -8,7 +8,7 @@ const getFeed = async (name: string) => {
 };
 
 const getFeeds = async (pageNumber: number, pageSize: number) => {
-  const response = await api.get<ResponseWith<Feed[]>>(
+  const response = await api.get<ResponseWithPagniate<Feed>>(
     `/feed/all?pageNumber=${pageNumber}&pageSize=${pageSize}`
   );
 

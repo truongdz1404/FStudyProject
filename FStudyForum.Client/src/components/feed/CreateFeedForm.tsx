@@ -9,10 +9,10 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import FeedService from "@/services/FeedService";
 import { AxiosError } from "axios";
 import { Response } from "@/types/response";
-import { useNavigate } from "react-router-dom";
 
 type Props = {
   handler: () => void;
+  onSuccess: (name: string) => void;
 };
 const validation = Yup.object({
   name: Yup.string()
@@ -25,7 +25,7 @@ interface FeedSubmit {
   description?: string;
 }
 
-const CreateFeedForm: FC<Props> = ({ handler }) => {
+const CreateFeedForm: FC<Props> = ({ handler, onSuccess }) => {
   const {
     register,
     handleSubmit,
@@ -34,7 +34,6 @@ const CreateFeedForm: FC<Props> = ({ handler }) => {
     mode: "onTouched",
     resolver: yupResolver(validation)
   });
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [error, setError] = useState("");
   const { mutate: handleCreate } = useMutation({
@@ -43,10 +42,10 @@ const CreateFeedForm: FC<Props> = ({ handler }) => {
         name: data.name,
         description: data.description ?? ""
       }),
-    onSuccess: () => {
+    onSuccess: (_, submit) => {
       queryClient.invalidateQueries({ queryKey: ["FEED_LIST"] });
-      navigate("");
       handler();
+      onSuccess(submit.name);
     },
     onError: e => {
       const error = e as AxiosError<Response>;
@@ -55,7 +54,7 @@ const CreateFeedForm: FC<Props> = ({ handler }) => {
   });
 
   return (
-    <div className="relative p-2 ">
+    <div className="relative p-2 text-blue-gray-800">
       <h1 className="font-semibold text-center text-md">Create custom feed</h1>
       <button
         type="button"
@@ -74,7 +73,8 @@ const CreateFeedForm: FC<Props> = ({ handler }) => {
           <input
             type="text"
             placeholder="Name"
-            className="bg-blue-gray-50 py-3 px-4 rounded-xl w-full border-none focus:outline-none"
+            className="bg-blue-gray-50 py-3 px-4 rounded-2xl w-full border-none focus:outline-none"
+            autoComplete="off"
             {...register("name")}
           />
           {errors.name && (
@@ -93,8 +93,9 @@ const CreateFeedForm: FC<Props> = ({ handler }) => {
           </p>
           <TextareaAutosize
             placeholder="Description"
+            autoComplete="off"
             className={cn(
-              "w-full appearance-none overflow-hidden bg-blue-gray-50 rounded-xl",
+              "w-full appearance-none overflow-hidden bg-blue-gray-50 rounded-2xl min-h-24",
               "focus:outline-none py-3 px-4"
             )}
             {...register("description")}

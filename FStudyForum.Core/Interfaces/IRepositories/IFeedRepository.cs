@@ -1,3 +1,4 @@
+using FStudyForum.Core.Models.DTOs;
 using FStudyForum.Core.Models.DTOs.Feed;
 using FStudyForum.Core.Models.Entities;
 
@@ -7,7 +8,5 @@ public interface IFeedRepository : IBaseRepository<Feed>
 {
     Task CreateFeed(ApplicationUser Creater, CreateFeedDTO createFeedDTO);
     Task<Feed?> GetFeed(string username, string feedName);
-    Task<IList<Feed>> GetFeeds(string username, QueryFeedDTO query);
-
-
+    Task<PaginatedData<Feed>> GetFeeds(string username, QueryFeedDTO query);
 }

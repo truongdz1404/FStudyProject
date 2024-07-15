@@ -26,7 +26,8 @@ import {
   Flag,
   HandCoins,
   Tags,
-  Plus
+  Plus,
+  Eye
 } from "lucide-react";
 import React, { useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -66,7 +67,11 @@ const Sidebar = React.memo(({ handleClose }: SidebarProps) => {
   const { user } = useAuth();
 
   const [collapse, setCollapse] = React.useState<string[]>([]);
-  const { data: feeds } = useInfiniteQuery({
+  const {
+    data: feedData,
+    hasNextPage,
+    fetchNextPage
+  } = useInfiniteQuery({
     queryKey: ["FEED_LIST"],
     queryFn: async ({ pageParam = 1 }) => {
       return await FeedService.getFeeds(
@@ -74,9 +79,13 @@ const Sidebar = React.memo(({ handleClose }: SidebarProps) => {
         LIMIT_SCROLLING_PAGNATION_RESULT
       );
     },
-    retry: false,
-    getNextPageParam: (last, pages) =>
-      last.length ? pages.length + 1 : undefined,
+    getNextPageParam: (last, pages) => {
+      const totalPages = Math.ceil(
+        last.totalCount / LIMIT_SCROLLING_PAGNATION_RESULT
+      );
+      const nextPage = pages.length + 1;
+      return nextPage <= totalPages ? nextPage : undefined;
+    },
     initialPageParam: 1
   });
   const toggleLabel = (label: string) => {
@@ -86,6 +95,10 @@ const Sidebar = React.memo(({ handleClose }: SidebarProps) => {
         : [...prev, label]
     );
   };
+
+  const feeds = useMemo(() => {
+    return feedData?.pages.flatMap(page => page.data) ?? [];
+  }, [feedData]);
 
   const isCollapse = (label: string) => collapse.includes(label);
 
@@ -137,7 +150,7 @@ const Sidebar = React.memo(({ handleClose }: SidebarProps) => {
                     className="w-5 h-5 rounded-full"
                   />
                 ),
-                handle: () => console.log("test")
+                path: `/topic/${topic.name}/moderator`
               };
             })
           }
@@ -155,17 +168,24 @@ const Sidebar = React.memo(({ handleClose }: SidebarProps) => {
                 icon: <Plus className="w-5 h-5" />,
                 handle: () => switchOpenFeed()
               },
-              ...(feeds?.pages
-                .flatMap(p => p)
-                .map<SubItem>(feed => {
-                  return {
-                    label: feed.name,
-                    icon: (
-                      <img src={DefaultFeed} className="w-5 h-5 rounded-full" />
-                    ),
-                    path: `/user/${user!.username}/feed/${feed.name}`
-                  };
-                }) ?? [])
+              ...(feeds.map<SubItem>(feed => {
+                return {
+                  label: feed.name,
+                  icon: (
+                    <img src={DefaultFeed} className="w-5 h-5 rounded-full" />
+                  ),
+                  path: `/user/${user!.username}/feed/${feed.name}`
+                };
+              }) ?? []),
+              ...(hasNextPage
+                ? [
+                    {
+                      label: "View more",
+                      icon: <Eye className="w-5 h-5" />,
+                      handle: () => fetchNextPage()
+                    }
+                  ]
+                : [])
             ]
           }
         ]
@@ -209,7 +229,7 @@ const Sidebar = React.memo(({ handleClose }: SidebarProps) => {
         ]
       }
     ],
-    [feeds?.pages, user]
+    [feeds, fetchNextPage, hasNextPage, user]
   );
   if (!user) return;
 
@@ -294,11 +314,17 @@ const Sidebar = React.memo(({ handleClose }: SidebarProps) => {
         )}
       </Card>
       <Dialog
+        size="sm"
         className="w-[32rem] p-2"
         open={openPopup == Popups.CREATE_FEED}
         handler={switchOpenFeed}
       >
-        <CreateFeedForm handler={switchOpenFeed} />
+        <CreateFeedForm
+          handler={switchOpenFeed}
+          onSuccess={name => {
+            navigate(`/user/${user?.username}/feed/${name}`);
+          }}
+        />
       </Dialog>
     </>
   );

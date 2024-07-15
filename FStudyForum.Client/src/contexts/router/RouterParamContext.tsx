@@ -43,7 +43,6 @@ const RouterParamProvider: FC<PropsWithChildren> = ({ children }) => {
       ]);
       return data;
     },
-    retry: false,
     enabled: !!postId
   });
 
@@ -54,7 +53,6 @@ const RouterParamProvider: FC<PropsWithChildren> = ({ children }) => {
       const data = await TopicService.getTopicByName(topicName);
       return data;
     },
-    retry: false,
     enabled: !!topicName
   });
 
@@ -65,7 +63,6 @@ const RouterParamProvider: FC<PropsWithChildren> = ({ children }) => {
       const data = await FeedService.getFeed(feedName);
       return data;
     },
-    retry: false,
     enabled: !!feedName
   });
 
@@ -76,7 +73,6 @@ const RouterParamProvider: FC<PropsWithChildren> = ({ children }) => {
       const data = await ProfileService.getByUsername(username);
       return data;
     },
-    retry: false,
     enabled: !!username
   });
 

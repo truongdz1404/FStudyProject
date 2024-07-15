@@ -196,9 +196,8 @@ public class TopicService : ITopicService
         });
     }
 
-    public async Task<IEnumerable<TopicDTO>> SearchTopicContainKeywordAsync(QuerySearchTopicDTO query)
+    private static List<TopicDTO> ConvertToTopicDTOs(IEnumerable<Topic> topics)
     {
-        var topics = await _topicRepository.SearchTopicContainKeywordAsync(query);
         var topicDTOs = new List<TopicDTO>();
         foreach (var topic in topics)
         {
@@ -206,6 +205,7 @@ public class TopicService : ITopicService
             {
                 Id = topic.Id,
                 Name = topic.Name,
+                PostCount = topic.Posts.Count,
                 Description = topic.Description,
                 Avatar = topic.Avatar,
                 Banner = topic.Panner,
@@ -214,6 +214,12 @@ public class TopicService : ITopicService
             });
         }
         return topicDTOs;
+    }
+
+    public async Task<IEnumerable<TopicDTO>> SearchTopicContainKeywordAsync(QuerySearchTopicDTO query)
+    {
+        var topics = await _topicRepository.SearchTopicContainKeywordAsync(query);
+        return ConvertToTopicDTOs(topics);
     }
     public async Task<IEnumerable<TopicDTO>> GetTopicsByCategories(List<long> categoryIds)
     {

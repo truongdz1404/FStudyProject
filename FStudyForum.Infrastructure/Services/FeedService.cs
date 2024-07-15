@@ -1,6 +1,7 @@
 using AutoMapper;
 using FStudyForum.Core.Interfaces.IRepositories;
 using FStudyForum.Core.Interfaces.IServices;
+using FStudyForum.Core.Models.DTOs;
 using FStudyForum.Core.Models.DTOs.Feed;
 using FStudyForum.Core.Models.DTOs.Topic;
 using FStudyForum.Core.Models.Entities;
@@ -31,7 +32,8 @@ public class FeedService : IFeedService
              ?? throw new Exception("Feed not found");
         var topic = await _topicRepository.GetByName(addFeedDTO.TopicName)
             ?? throw new Exception("Topic not found");
-        if (feed.Topics.FirstOrDefault(topic) != null) throw new Exception("Topic is existed in feed");
+        if (feed.Topics.FirstOrDefault(t => t.Name == topic.Name) != null)
+            throw new Exception("Topic is existed in feed");
         feed.Topics.Add(topic);
         await _feedRepository.Update(feed);
     }
@@ -60,26 +62,28 @@ public class FeedService : IFeedService
         {
             Id = feed.Id,
             Name = feed.Name,
+            Author = username,
             Description = feed.Description,
             Topics = _mapper.Map<TopicDTO[]>(feed.Topics)
         };
     }
 
-    public async Task<IEnumerable<FeedDTO>> GetFeeds(string username, QueryFeedDTO query)
+    public async Task<PaginatedData<FeedDTO>> GetFeeds(string username, QueryFeedDTO query)
     {
-        var feeds = await _feedRepository.GetFeeds(username, query);
+        var result = await _feedRepository.GetFeeds(username, query);
         var feedDTOs = new List<FeedDTO>();
-        foreach (var feed in feeds)
+        foreach (var feed in result.Data)
         {
             feedDTOs.Add(new FeedDTO()
             {
                 Id = feed.Id,
                 Name = feed.Name,
+                Author = username,
                 Description = feed.Description,
                 Topics = _mapper.Map<TopicDTO[]>(feed.Topics)
             });
         }
-        return feedDTOs;
+        return new(feedDTOs, result.TotalCount);
 
     }
 

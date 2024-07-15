@@ -28,7 +28,6 @@ const HomePage: React.FC = () => {
           filter
         );
       },
-      retry: false,
       getNextPageParam: (last, pages) =>
         last.length ? pages.length + 1 : undefined,
       initialPageParam: 1
