@@ -1,78 +1,33 @@
-import { useAuth } from "@/hooks/useAuth";
-import useSignalR from "@/hooks/useSignalR";
+
 import React from "react";
 import { EllipsisVertical, Trash2 } from "lucide-react";
 import { Notification } from "@/types/notification";
 import { Card } from "@material-tailwind/react";
-import { useNotification } from "@/contexts/NotificationContext";
 
-const NotificationBox: React.FC<{ isOpen: boolean }> = ({ isOpen }) => {
-  const [notifications, setNotifications] = React.useState<Notification[]>([]);
+const NotificationBox: React.FC<{ 
+  isOpen: boolean, 
+  notifications: Notification[],
+  ClearNotifications: () => void,
+  DeleteNotification: (id: number) => void,
+  MarkAsRead: (id: number) => void,
+  MarkAllAsRead: () => void
+}> = ({ 
+  isOpen, 
+  notifications,
+  ClearNotifications,
+  DeleteNotification,
+  MarkAsRead,
+  MarkAllAsRead
+ }) => {
   const [showOptions, setShowOptions] = React.useState<boolean>(false);
-  const { setHasNotify } = useNotification();     
   const [selectedNotification, setSelectedNotification] =
     React.useState<Notification | null>(null);
-  const { on, off, invokeMethod } = useSignalR();
-  const { user } = useAuth();
 
   const handleSelectNotification = (notification: Notification) => {
     setSelectedNotification(notification);
   };
 
-  const MarkAsRead = (id: number) => {
-    invokeMethod("MarkNotificationAsRead", id);
-    setNotifications(
-      notifications.map(noti =>
-        noti.id === id ? { ...noti, isRead: true } : noti
-      )
-    );
-  };
-
-  const MarkAllAsRead = () => {
-     invokeMethod("MarkAllNotificationsAsRead", user?.username);
-  }
-
-  const ClearNotifications = () => {
-     invokeMethod("ClearNotifications", user?.username);
-     setNotifications([]);
-   };
-
   const toggleOptions = () => setShowOptions(!showOptions);
-
-  const InvokeNotifications = React.useCallback(() => {
-    invokeMethod("GetAllNotifications", user?.username);
-  }, [invokeMethod, user?.username]);
-
-  const DeleteNotification = (id: number) => {
-    invokeMethod("DeleteNotification", id)
-      .then(() => {
-        setNotifications(notifications.filter(noti => noti.id !== id));
-      })
-      .catch(err => console.log("Error deleting notification: ", err));
-  };
-
-  React.useEffect(() => {
-    if (isOpen) {
-      InvokeNotifications();
-      const handleAddNotification = (obj: Notification) => {
-        setNotifications(prev => [...prev, obj]);
-      };
-
-      const handleGetAllNotifications = (obj: Notification[]) => {
-        setNotifications(obj);
-      };
-      on("ReceiveAllNotification", handleGetAllNotifications);
-      on("ReceiveNewestNotification", handleAddNotification);
-      return () => {
-        off("ReceiveAllNotification", handleGetAllNotifications);
-        off("ReceiveNewestNotification", handleAddNotification);
-      };
-    }
-  }, [InvokeNotifications, isOpen, off, on, setHasNotify]);
-
-  React.useEffect(() => {
-     setHasNotify(notifications.length > 0);
-  }, [notifications.length, setHasNotify]);
 
   if (!isOpen) return null;
 

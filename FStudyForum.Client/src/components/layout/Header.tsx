@@ -26,8 +26,10 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Icons } from "../Icons";
 import { useAuth } from "@/hooks/useAuth";
 import SearchInput from "../search/SearchInput";
+import useSignalR from "@/hooks/useSignalR";
+import { Notification } from "@/types/notification";
+import * as signalR from "@microsoft/signalr";
 import NotificationBox from "../notification";
-import { useNotification } from "@/contexts/NotificationContext";
 
 function ProfileMenu() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
@@ -134,8 +136,62 @@ const navListItems = [
 
 function NavList() {
   const [isNotificationOpen, setIsNotificationOpen] = React.useState(false);
-  const { hasNotify } = useNotification();
   const { pathname } = useLocation();
+  const { on,off,invokeMethod,connectionState } = useSignalR();
+  const { user } = useAuth();
+  const [ notifications, setNotifications ] = React.useState<Notification[]>([]);
+
+  const handleMarkAsRead = (id: number) => {
+    invokeMethod("MarkNotificationAsRead", id);
+    setNotifications(
+      notifications.map(noti =>
+        noti.id === id ? { ...noti, isRead: true } : noti
+      )
+    );
+  };
+
+  const handleMarkAllAsRead = () => {
+     invokeMethod("MarkAllNotificationsAsRead", user?.username);
+  }
+
+  const handleClearNotifications = () => {
+     invokeMethod("ClearNotifications", user?.username);
+     setNotifications([]);
+   };
+
+  const handleDeleteNotification = (id: number) => {
+    invokeMethod("DeleteNotification", id)
+      .then(() => {
+        setNotifications(notifications.filter(noti => noti.id !== id));
+      })
+      .catch(err => console.log("Error deleting notification: ", err));
+  };
+
+  const InvokeNotification = React.useCallback(() => {
+    if (connectionState===signalR.HubConnectionState.Connected){
+      invokeMethod("GetAllNotifications", user?.username);
+    }
+  }, [invokeMethod, user?.username, connectionState]);
+
+  React.useEffect(() => {
+    InvokeNotification();
+    const handleGetAllNotifications = (obj: Notification[]) => {
+      setNotifications(obj);
+    }
+
+    const handleGetNewestNotification = (obj: Notification) => {
+      setNotifications(prev => [obj, ...prev]);
+    }
+  
+    on("ReceiveAllNotification", handleGetAllNotifications);
+    on("ReceiveNewestNotification", handleGetNewestNotification);
+  
+    return () => {
+      off("ReceiveAllNotification", handleGetAllNotifications);
+      off("ReceiveNewestNotification", handleGetNewestNotification);
+    };
+  }, [on, off, user?.username, connectionState, invokeMethod, InvokeNotification]); 
+
 
   const toggleNotification = () => {
     setIsNotificationOpen(!isNotificationOpen);
@@ -153,7 +209,7 @@ function NavList() {
                 className="flex p-2 items-center gap-2 lg:rounded-full w-full font-medium text-sm normal-case text-blue-gray-700"
                 onClick={toggleNotification}
               >
-                {React.createElement((hasNotify ? BellDot : icon), { className: "h-5 w-5" })}
+                {React.createElement(((notifications.length>0) ? BellDot : icon), { className: "h-5 w-5" })}
                 <span className={cn(!showLabel && "lg:hidden")}>{label}</span>
               </Button>
             );
@@ -180,7 +236,14 @@ function NavList() {
           }
         })}
       </div>
-      <NotificationBox isOpen={isNotificationOpen} />
+      <NotificationBox 
+        isOpen={isNotificationOpen} 
+        notifications={notifications}
+        MarkAllAsRead={handleMarkAllAsRead}
+        MarkAsRead={handleMarkAsRead}
+        DeleteNotification={handleDeleteNotification}
+        ClearNotifications={handleClearNotifications}
+      />
     </>
   );
 }
