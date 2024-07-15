@@ -2,6 +2,7 @@
 using FStudyForum.Core.Interfaces.IHelpers;
 using FStudyForum.Core.Interfaces.IServices;
 using FStudyForum.Core.Models.DTOs.HubConnection;
+using FStudyForum.Core.Models.DTOs.User;
 using FStudyForum.Core.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 
@@ -10,15 +11,17 @@ namespace FStudyForum.Core.Helpers
     public class UserConnectionManager : IUserConnectionManager
     {
         private readonly ConnectionDictionary<string, string> _userConnections;
-
+        private readonly IUserService _userService;
         private readonly IHubConnectionRepository _hubConnectionService;
         private readonly UserManager<ApplicationUser> _userManager;
 
         public UserConnectionManager(
+            IUserService userService,
             IHubConnectionRepository hubConnectionService, 
             UserManager<ApplicationUser> userManager,
             ConnectionDictionary<string, string> userConnections)
         {
+            _userService = userService;
             _hubConnectionService = hubConnectionService;
             _userManager = userManager;
             _userConnections = userConnections;

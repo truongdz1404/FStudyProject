@@ -28,14 +28,11 @@ import { useAuth } from "@/hooks/useAuth";
 import SearchInput from "../search/SearchInput";
 import NotificationBox from "../notification";
 import { useNotification } from "@/contexts/NotificationContext";
-import useSignalR from "@/hooks/useSignalR";
-import * as signalR from "@microsoft/signalr";
 
 function ProfileMenu() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { connectionState } = useSignalR();
 
   const profileMenuItems = [
     {
@@ -72,8 +69,6 @@ function ProfileMenu() {
             className=" bg-white"
             src={user?.avatar ?? "/src/assets/images/user.png"}
           />
-          {connectionState===signalR.HubConnectionState.Connected ? (<div className="w-2 h-2 bg-green-500 rounded-full ml-1"></div>) : 
-          (<div className="w-2 h-2 bg-red-500 rounded-full ml-1"></div>)}
         </Button>
       </MenuHandler>
       <MenuList className="p-1">

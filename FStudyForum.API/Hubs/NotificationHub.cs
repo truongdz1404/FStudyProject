@@ -11,14 +11,17 @@ namespace FStudyForum.API.Hubs
     public class NotificationHub : Hub<INotificationClient>
     {
         private readonly INotificationService _notificationService;
+        private readonly IUserService _userService;
         private readonly ILogger<NotificationHub> _logger;
         private readonly IUserConnectionManager _userConnections;
 
         public NotificationHub(
+            IUserService userService,
             INotificationService notificationService,
             ILogger<NotificationHub> logger,
             IUserConnectionManager userConnections)
         {
+            _userService = userService;
             _notificationService = notificationService;
             _logger = logger;
             _userConnections = userConnections;
@@ -60,13 +63,14 @@ namespace FStudyForum.API.Hubs
         {
             try
             {
-                var allConnections = _userConnections.GetAllConnections();
+                var allConnections = await _userService.GetAllUser();
                 var senderConnectionId = await _userConnections.GetUserConnection(sender)
                     ?? throw new Exception("Not found sender connection id!");
-                foreach (var username in allConnections)
+                foreach (var userDto in allConnections)
                 {
-                    if (username != sender)
+                    if (userDto.Username != sender)
                     {
+                        var username = userDto.Username;
                         var notificationDto = new NotificationDTO
                         {
                             MessageType = "All",

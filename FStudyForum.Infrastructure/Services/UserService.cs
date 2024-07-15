@@ -224,6 +224,15 @@ public class UserService : IUserService
         return userDTOs;
     }
 
+    public async Task<IEnumerable<UserDTO>> GetAllUser()
+    {
+        var users = await _userRepository.GetAll();
+        var userDTOs = new List<UserDTO>();
+        foreach (var user in users)
+            userDTOs.Add(await GetProfileByUser(user));
+        return userDTOs;
+    }
+
     // public async Task<string> GetUserAvatar(string username){
     //     var user = await _userManager.FindByNameAsync(username);
     //     return user?.Avatar;
