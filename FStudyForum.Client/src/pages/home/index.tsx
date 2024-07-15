@@ -22,16 +22,13 @@ const HomePage: React.FC = () => {
     useInfiniteQuery({
       queryKey: ["POST_LIST", "HOME", { filter }],
       queryFn: async ({ pageParam = 1 }) => {
-        try {
-          return await PostService.getPosts(
-            pageParam,
-            LIMIT_SCROLLING_PAGNATION_RESULT,
-            filter
-          );
-        } catch (e) {
-          return [];
-        }
+        return await PostService.getPosts(
+          pageParam,
+          LIMIT_SCROLLING_PAGNATION_RESULT,
+          filter
+        );
       },
+      retry: false,
       getNextPageParam: (last, pages) =>
         last.length ? pages.length + 1 : undefined,
       initialPageParam: 1

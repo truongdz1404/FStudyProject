@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace FStudyForum.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class Final : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -171,6 +171,30 @@ namespace FStudyForum.Infrastructure.Migrations
                         principalTable: "tblUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "tblFeeds",
+                schema: "dbo",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreaterId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_tblFeeds", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_tblFeeds_tblUsers_CreaterId",
+                        column: x => x.CreaterId,
+                        principalSchema: "dbo",
+                        principalTable: "tblUsers",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -417,6 +441,33 @@ namespace FStudyForum.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "tblTopicFeeds",
+                schema: "dbo",
+                columns: table => new
+                {
+                    FeedsId = table.Column<long>(type: "bigint", nullable: false),
+                    TopicsId = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_tblTopicFeeds", x => new { x.FeedsId, x.TopicsId });
+                    table.ForeignKey(
+                        name: "FK_tblTopicFeeds_tblFeeds_FeedsId",
+                        column: x => x.FeedsId,
+                        principalSchema: "dbo",
+                        principalTable: "tblFeeds",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_tblTopicFeeds_tblTopics_TopicsId",
+                        column: x => x.TopicsId,
+                        principalSchema: "dbo",
+                        principalTable: "tblTopics",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "tblAttachments",
                 schema: "dbo",
                 columns: table => new
@@ -595,9 +646,9 @@ namespace FStudyForum.Infrastructure.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "28451c9e-a53f-4e6c-95ee-4ce01448c497", null, "User", "USER" },
-                    { "4f37720b-9ed9-4bb3-92b0-5ce0d254c136", null, "Admin", "ADMIN" },
-                    { "57dd4b91-bfe2-4474-892f-7b245ed58d74", null, "Moderator", "MODERATOR" }
+                    { "408b5ddf-5a65-456a-a5b7-9699b27267ac", null, "User", "USER" },
+                    { "5e184ab5-6a74-4020-8813-f9f2b1d688dd", null, "Moderator", "MODERATOR" },
+                    { "c86effce-aad1-4ada-9432-a4834b32b59a", null, "Admin", "ADMIN" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -635,6 +686,12 @@ namespace FStudyForum.Infrastructure.Migrations
                 schema: "dbo",
                 table: "tblDonations",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_tblFeeds_CreaterId",
+                schema: "dbo",
+                table: "tblFeeds",
+                column: "CreaterId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_tblModerators_ModeratedTopicsId",
@@ -721,6 +778,12 @@ namespace FStudyForum.Infrastructure.Migrations
                 name: "IX_tblTopicCategories_TopicsId",
                 schema: "dbo",
                 table: "tblTopicCategories",
+                column: "TopicsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_tblTopicFeeds_TopicsId",
+                schema: "dbo",
+                table: "tblTopicFeeds",
                 column: "TopicsId");
 
             migrationBuilder.CreateIndex(
@@ -821,6 +884,10 @@ namespace FStudyForum.Infrastructure.Migrations
                 schema: "dbo");
 
             migrationBuilder.DropTable(
+                name: "tblTopicFeeds",
+                schema: "dbo");
+
+            migrationBuilder.DropTable(
                 name: "tblUserClaims",
                 schema: "dbo");
 
@@ -842,6 +909,10 @@ namespace FStudyForum.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "tblCategories",
+                schema: "dbo");
+
+            migrationBuilder.DropTable(
+                name: "tblFeeds",
                 schema: "dbo");
 
             migrationBuilder.DropTable(

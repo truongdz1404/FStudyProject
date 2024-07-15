@@ -15,13 +15,14 @@ namespace FStudyForum.API.Controllers
     {
         private readonly IUserService _userService;
         private readonly IIdentityService _identityService;
-       
-        public UserController(IUserService userService, IIdentityService identityService
-           )
+
+        public UserController(IUserService userService,
+            IIdentityService identityService
+        )
         {
             _userService = userService;
             _identityService = identityService;
-           
+
         }
 
         [HttpGet("profile"), Authorize]

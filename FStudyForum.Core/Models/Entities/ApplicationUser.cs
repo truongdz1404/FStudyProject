@@ -19,5 +19,5 @@ public class ApplicationUser : IdentityUser
     public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
     public virtual ICollection<Topic> ModeratedTopics { get; set; } = new List<Topic>();
     public virtual ICollection<TopicBan> BannedByTopics { get; set; } = new List<TopicBan>();
-
+    public virtual ICollection<Feed> Feeds { get; set; } = new List<Feed>();
 }

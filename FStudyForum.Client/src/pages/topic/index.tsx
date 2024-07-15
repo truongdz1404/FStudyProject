@@ -5,8 +5,6 @@ import ContentLayout from "@/components/layout/ContentLayout";
 import ImageWithLoading from "@/components/ui/ImageWithLoading";
 import BannerDefault from "@/assets/images/banner.png";
 import AvatarDefault from "@/assets/images/user.png";
-import { Link } from "react-router-dom";
-import { PencilLine } from "lucide-react";
 import TopicDescription from "@/components/topic/TopicDescription";
 import useSearchParam from "@/hooks/useSearchParam";
 import PostFilter from "@/components/post/PostFilter";
@@ -15,6 +13,7 @@ import { LIMIT_SCROLLING_PAGNATION_RESULT } from "@/helpers/constants";
 import PostService from "@/services/PostService";
 import { useInView } from "react-intersection-observer";
 import PostItem from "@/components/post/PostItem";
+import { Link } from "react-router-dom";
 const TopicDetail: React.FC = () => {
   const { topic } = useRouterParam();
   const [filter, setFilter] = useSearchParam<string>({
@@ -76,10 +75,13 @@ const TopicDetail: React.FC = () => {
 
           <div className="absolute left-24 flex items-center gap-x-2">
             <p className="text-md font-semibold">t/{topic.name}</p>
-            <Link to="/settings/profile">
-              <PencilLine className="w-4 h-4 text-blue-gray-600" />
-            </Link>
           </div>
+          <Link
+            className="absolute right-0 bg-blue-600 text-white px-4 py-2 text-xs rounded-full my-2"
+            to="moderator"
+          >
+            Mod tools
+          </Link>
         </div>
       </div>
       <div className="pb-2 border-b-2">

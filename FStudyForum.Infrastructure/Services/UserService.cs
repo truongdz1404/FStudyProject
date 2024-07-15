@@ -91,6 +91,15 @@ public class UserService : IUserService
             Username = user.UserName!,
             Email = user.Email!,
             Roles = await _userManager.GetRolesAsync(user),
+            Mods = (await _userRepository.GetModeratedTopics(user.UserName!)).Select(topic => new TopicDTO
+                {
+                    Id = topic.Id,
+                    Name = topic.Name,
+                    Description = topic.Description,
+                    Avatar = topic.Avatar,
+                    Banner = topic.Panner,
+                    Categories = topic.Categories.Select(c => c.Id).ToList()
+                }),
             Avatar = profile?.Avatar ?? string.Empty
         };
     }

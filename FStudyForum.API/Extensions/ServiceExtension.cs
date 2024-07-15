@@ -14,6 +14,8 @@ public static class ServiceExtension
         #region Services
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IFeedService, FeedService>();
+
         services.AddScoped<IProfileService, ProfileService>();
         services.AddScoped<IIdentityService, IdentityService>();
         services.AddScoped<IEmailService, EmailService>();
@@ -30,6 +32,7 @@ public static class ServiceExtension
 
         #region Repositories
         services.AddTransient<IUserRepository, UserRepository>();
+        services.AddTransient<IFeedRepository, FeedRepository>();
         services.AddTransient<ITopicRepository, TopicRepository>();
         services.AddTransient<IBaseRepository<Profile>, BaseRepository<Profile>>();
         services.AddTransient<IProfileRepository, ProfileRepository>();

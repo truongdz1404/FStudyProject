@@ -267,19 +267,12 @@ namespace FStudyForum.API.Controllers
                 var userName = User.FindFirstValue(ClaimTypes.Name)
                     ?? throw new Exception("User is not authenticated!");
                 var posts = await _postService.GetRecentPostsByUser(userName);
-                if (posts.IsNullOrEmpty())
-                {
-                    return NotFound(new Response
-                    {
-                        Status = ResponseStatus.ERROR,
-                        Message = "Posts not found",
-                    });
-                }
+
                 return Ok(new Response
                 {
                     Message = "Get Posts successfully",
                     Status = ResponseStatus.SUCCESS,
-                    Data = posts
+                    Data = posts ?? []
                 });
             }
             catch (Exception ex)

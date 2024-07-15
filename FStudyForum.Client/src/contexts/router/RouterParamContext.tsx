@@ -8,11 +8,14 @@ import { useQuery } from "@tanstack/react-query";
 import PostService from "@/services/PostService";
 import { Post } from "@/types/post";
 import { Attachment } from "@/types/attachment";
+import FeedService from "@/services/FeedService";
+import { Feed } from "@/types/feed";
 
 interface RouterParamType {
   topic?: Topic;
   user?: Profile;
   post?: Post;
+  feed?: Feed;
   attachment?: Attachment;
 }
 export const RouterParamContext = React.createContext<RouterParamType>({});
@@ -21,8 +24,14 @@ const RouterParamProvider: FC<PropsWithChildren> = ({ children }) => {
   const {
     name: topicName,
     username,
-    id: postId
-  } = useParams<{ name: string; username: string; id: string }>();
+    id: postId,
+    feedName
+  } = useParams<{
+    name: string;
+    username: string;
+    id: string;
+    feedName: string;
+  }>();
 
   const { data: post, error: postError } = useQuery({
     queryKey: ["POST_DETAIL", postId],
@@ -34,6 +43,7 @@ const RouterParamProvider: FC<PropsWithChildren> = ({ children }) => {
       ]);
       return data;
     },
+    retry: false,
     enabled: !!postId
   });
 
@@ -44,7 +54,19 @@ const RouterParamProvider: FC<PropsWithChildren> = ({ children }) => {
       const data = await TopicService.getTopicByName(topicName);
       return data;
     },
+    retry: false,
     enabled: !!topicName
+  });
+
+  const { data: feed, error: feedError } = useQuery({
+    queryKey: ["FEED_DETAIL", feedName],
+    queryFn: async () => {
+      if (!feedName) return;
+      const data = await FeedService.getFeed(feedName);
+      return data;
+    },
+    retry: false,
+    enabled: !!feedName
   });
 
   const { data: user, error: userError } = useQuery({
@@ -54,14 +76,15 @@ const RouterParamProvider: FC<PropsWithChildren> = ({ children }) => {
       const data = await ProfileService.getByUsername(username);
       return data;
     },
+    retry: false,
     enabled: !!username
   });
 
-  if (postError || topicError || userError)
+  if (postError || topicError || userError || feedError)
     return <Navigate to={"not-found"} />;
 
   return (
-    <RouterParamContext.Provider value={{ topic, user, post }}>
+    <RouterParamContext.Provider value={{ topic, user, post, feed }}>
       {children}
     </RouterParamContext.Provider>
   );

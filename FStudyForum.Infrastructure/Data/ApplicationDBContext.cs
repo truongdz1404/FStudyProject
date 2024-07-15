@@ -62,6 +62,10 @@ public class ApplicationDBContext(DbContextOptions options)
             .WithOne(rp => rp.User);
 
         builder.Entity<ApplicationUser>()
+            .HasMany(u => u.Feeds)
+            .WithOne(f => f.Creater);
+
+        builder.Entity<ApplicationUser>()
             .HasMany(u => u.ModeratedTopics)
             .WithMany(t => t.ModeratedByUsers)
             .UsingEntity("tblModerators");
@@ -78,6 +82,11 @@ public class ApplicationDBContext(DbContextOptions options)
         builder.Entity<Topic>()
         .HasMany(t => t.BannedUser)
         .WithOne(b => b.Topic);
+
+        builder.Entity<Topic>()
+        .HasMany(t => t.Feeds)
+        .WithMany(f => f.Topics)
+        .UsingEntity("tblTopicFeeds");
 
         builder.Entity<Post>()
            .HasMany(p => p.SavedByUsers)
@@ -115,6 +124,7 @@ public class ApplicationDBContext(DbContextOptions options)
     }
 
     public DbSet<Profile> Profiles { get; set; }
+    public DbSet<Feed> Feeds { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<Topic> Topics { get; set; }
     public DbSet<Post> Posts { get; set; }

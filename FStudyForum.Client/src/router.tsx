@@ -18,20 +18,18 @@ import { Roles } from "@/helpers/constants";
 import Loadable from "@/helpers/loading/Loadable";
 import RouterParamProvider from "@/contexts/router/RouterParamContext";
 
-const Analytics = Loadable(lazy(() => import("@/pages/analytics")));
-
+const AnalyticsPage = Loadable(lazy(() => import("@/pages/analytics")));
 const Notification = Loadable(
   lazy(() => import("@/pages/donate/notification"))
 );
 const SavePost = Loadable(lazy(() => import("@/pages/user/saved")));
-
 const SearchCommentInTopic = Loadable(
   lazy(() => import("@/pages/topic/search/comments"))
 );
 const SearchCommentInUser = Loadable(
   lazy(() => import("@/pages/user/search/comments"))
 );
-
+const FeedPage = Loadable(lazy(() => import("@/pages/user/feed")));
 const QRCode = Loadable(lazy(() => import("@/pages/donate/qrcode")));
 const Popular = Loadable(lazy(() => import("@/pages/popular")));
 const Memebers = Loadable(lazy(() => import("@/pages/manager/members")));
@@ -61,7 +59,9 @@ const Topics = Loadable(lazy(() => import("@/pages/topics")));
 const UserPosts = Loadable(lazy(() => import("@/pages/user/posts")));
 const UserOverview = Loadable(lazy(() => import("@/pages/user/overview")));
 const UserTrash = Loadable(lazy(() => import("@/pages/user/trash")));
-const Attachment = Loadable(lazy(() => import("@/pages/topic/comments/attachment")));
+const Attachment = Loadable(
+  lazy(() => import("@/pages/topic/comments/attachment"))
+);
 const SearchPosts = Loadable(lazy(() => import("@/pages/search/posts")));
 const SearchTopics = Loadable(lazy(() => import("@/pages/search/topics")));
 const SearchPostInTopic = Loadable(
@@ -78,7 +78,7 @@ const Search = Loadable(lazy(() => import("@/pages/search")));
 const SearchLayout = Loadable(
   lazy(() => import("@/components/layout/SearchLayout"))
 );
-
+const ModeratorPage = Loadable(lazy(() => import("@/pages/topic/moderator")));
 const Test = Loadable(lazy(() => import("@/pages/test")));
 const Response = Loadable(
   lazy(() => import("@/pages/manager/report/response"))
@@ -101,10 +101,6 @@ const router = createBrowserRouter([
       {
         path: "",
         children: [
-          {
-            path: "welcome",
-            element: <Welcome />
-          },
           {
             path: "topic/:name",
             children: [
@@ -195,7 +191,7 @@ const router = createBrowserRouter([
               },
               {
                 path: "analytics",
-                element: <Analytics />
+                element: <AnalyticsPage />
               },
               {
                 path: "topics",
@@ -231,6 +227,10 @@ const router = createBrowserRouter([
               {
                 index: true,
                 element: <TopicDetail />
+              },
+              {
+                path: "moderator",
+                element: <ModeratorPage />
               },
               {
                 path: "submit",
@@ -301,6 +301,10 @@ const router = createBrowserRouter([
                 ]
               },
               {
+                path: "feed/:feedName",
+                element: <FeedPage />
+              },
+              {
                 path: "submit",
                 element: <SubmitPage />
               },
@@ -353,6 +357,14 @@ const router = createBrowserRouter([
         ]
       }
     ]
+  },
+  {
+    path: "welcome",
+    element: (
+      <AuthGuard>
+        <Welcome />
+      </AuthGuard>
+    )
   },
   {
     path: "auth",

@@ -14,7 +14,11 @@ const Layout = () => {
       <div className="sticky top-0 z-30 w-full">
         <Header openSidebar={openSidebar} />
       </div>
-      <div className={cn("fixed left-0 hidden xl:block max-w-[18rem]")}>
+      <div
+        className={cn(
+          "fixed left-0 hidden xl:block max-w-[18rem] h-[calc(100vh-3.25rem)]"
+        )}
+      >
         <Sidebar />
       </div>
       <div className="flex flex-col items-center">
