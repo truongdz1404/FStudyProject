@@ -47,8 +47,8 @@ const AttachmentPage: FC = () => {
   };
 
   return (
-    <div className="w-full h-screen flex relative">
-      <div className="absolute top-0 z-10 h-14 flex items-center justify-center mx-2 xl:mx-4">
+    <div className="w-full h-screen flex">
+      <div className="fixed top-0 z-10 h-14 flex items-center justify-center mx-2 xl:mx-4">
         <button
           key="my-button"
           type="button"
@@ -88,7 +88,7 @@ const AttachmentPage: FC = () => {
           isExpand == "true" && "hidden"
         )}
       >
-        <div className="h-14 w-[24rem] fixed top-0 border-b bg-white shadow-sm">
+        <div className="h-14 w-[24rem] fixed top-0 border-b bg-white shadow-sm z-10">
           <div className="px-2 h-full w-full flex items-center justify-end gap-x-2">
             <div className="hidden lg:block ">
               <NavList />
@@ -97,7 +97,7 @@ const AttachmentPage: FC = () => {
             <ProfileMenu />
           </div>
         </div>
-        <div className="mt-14 w-full h-[calc(100%-3.5rem)] p-2">
+        <div className="mt-14 w-full h-[calc(100%-3.5rem)] p-2 z-0">
           <CommentBox />
         </div>
       </div>

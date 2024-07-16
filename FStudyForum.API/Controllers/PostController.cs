@@ -353,6 +353,32 @@ namespace FStudyForum.API.Controllers
                 });
             }
         }
+        [HttpGet("feed/{feedName}")]
+        public async Task<IActionResult> GetPostInFeed([FromQuery] QueryPostDTO query, [FromRoute] string feedName)
+        {
+            try
+            {
+                var userName = User.FindFirstValue(ClaimTypes.Name)
+                    ?? throw new Exception("User is not authenticated!");
+                var posts = await _postService.GetPostsInFeed(userName, feedName, query);
+
+                return Ok(new Response
+                {
+                    Message = "Get Posts successfully",
+                    Status = ResponseStatus.SUCCESS,
+                    Data = posts
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = ex.Message
+                });
+            }
+        }
+
         [HttpDelete("remove-save/{postID}"), Authorize]
         public async Task<IActionResult> RemoveSavedPost([FromRoute] int postID)
         {

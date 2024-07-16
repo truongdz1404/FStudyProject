@@ -57,8 +57,6 @@ const getPostsByTopicName = async (
   return response.data.data;
 };
 
-
-
 const getPostsByUser = async (
   userName: string,
   pageNumber: number,
@@ -148,6 +146,19 @@ const getStatisticsPost = async (action: string, date: number) => {
   );
   return response.data;
 };
+
+const getPostsInFeed = async (
+  pageNumber: number,
+  pageSize: number,
+  filter: string,
+  feedName: string
+) => {
+  const response = await api.get<ResponseWith<Post[]>>(
+    `/post/feed/${feedName}?pageNumber=${pageNumber}&pageSize=${pageSize}&filter=${filter}`
+  );
+  return response.data.data;
+};
+
 const PostService = {
   clearRecent,
   addRecent,
@@ -167,7 +178,8 @@ const PostService = {
   edit,
   moveToTrash,
   getById,
-  getStatisticsPost
+  getStatisticsPost,
+  getPostsInFeed
 };
 
 export default PostService;

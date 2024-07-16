@@ -241,6 +241,44 @@ namespace FStudyForum.Infrastructure.Repositories
                 .Paginate(query.PageNumber, query.PageSize)
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<Post>> GetPostsInTopics(QueryPostDTO query, ICollection<Topic> topics)
+        {
+            IQueryable<Post> queryable = _dbContext.Posts
+                            .Include(p => p.Topic)
+                            .Where(p => !p.IsDeletedForever
+                                && !p.IsDeleted
+                                && p.IsApproved
+                                && p.Topic != null
+                                && !p.Topic.IsDeleted)
+                            .Include(p => p.Creater)
+                            .Include(p => p.Creater.Profile)
+                            .Include(p => p.Votes)
+                            .Include(p => p.Attachments)
+                            .Include(p => p.Comments);
+
+
+            if (!string.IsNullOrEmpty(query.Topic))
+                queryable = queryable.Where(p => p.Topic != null && p.Topic.Name == query.Topic);
+
+            if (!string.IsNullOrEmpty(query.User))
+                queryable = queryable.Where(p => p.Creater.UserName == query.User);
+            if (!string.IsNullOrEmpty(query.Keyword))
+                queryable = queryable.Where(p => p.Title.Contains(query.Keyword) || p.Content.Contains(query.Keyword));
+            if (!string.IsNullOrEmpty(query.Filter))
+                queryable = query.Filter switch
+                {
+                    "Hot" => queryable.OrderByDescending(p => p.Votes.Sum(v => v.IsUp ? 1 : 0) + p.Comments.Count),
+                    "New" => queryable.OrderByDescending(p => p.CreatedAt),
+                    _ => queryable.OrderBy(p => p.Id),
+                };
+            queryable = queryable.Where(p => p.Topic != null && topics.Contains(p.Topic));
+            return await queryable
+                .Paginate(query.PageNumber, query.PageSize)
+                .ToListAsync();
+        }
+
+
         public async Task<IEnumerable<Post>> GetSavedPostsByUser(string username)
         {
             var posts = await _dbContext.SavedPosts

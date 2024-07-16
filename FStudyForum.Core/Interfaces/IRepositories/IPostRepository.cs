@@ -25,6 +25,7 @@ public interface IPostRepository : IBaseRepository<Post>
     public Task<IEnumerable<Post>> GetRecentPosts(string username);
     public Task ClearRecentPosts(string username);
     public Task<IEnumerable<Post>> GetStatisticsPost(DateTime startDate, DateTime endDate);
+    public Task<IEnumerable<Post>> GetPostsInTopics(QueryPostDTO query, ICollection<Topic> topics);
 }
 
 

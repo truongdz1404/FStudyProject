@@ -13,7 +13,6 @@ public class FeedRepository(ApplicationDBContext dbContext)
     : BaseRepository<Feed>(dbContext), IFeedRepository
 {
 
-
     public async Task CreateFeed(ApplicationUser Creater, CreateFeedDTO createFeedDTO)
     {
         var feed = new Feed()

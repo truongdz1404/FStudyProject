@@ -18,13 +18,15 @@ namespace FStudyForum.Infrastructure.Services
         private readonly IVoteRepository _voteRepository;
         private readonly IMapper _mapper;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IFeedRepository _feedRepository;
 
-        public PostService(IPostRepository postRepository, IVoteRepository voteRepository, IMapper mapper, UserManager<ApplicationUser> userManager)
+        public PostService(IPostRepository postRepository, IVoteRepository voteRepository, IMapper mapper, UserManager<ApplicationUser> userManager, IFeedRepository feedRepository)
         {
             _postRepository = postRepository;
             _voteRepository = voteRepository;
             _mapper = mapper;
             _userManager = userManager;
+            _feedRepository = feedRepository;
         }
 
         public async Task<SavePostDTO?> RemoveFromSavedByUser(SavePostDTO savedPost)
@@ -138,7 +140,19 @@ namespace FStudyForum.Infrastructure.Services
             };
         }
 
-
+        public async Task<IEnumerable<PostDTO>> GetPostsInFeed(string username, string feedName, QueryPostDTO query)
+        {
+            var feed = await _feedRepository.GetFeed(username, feedName)
+                ?? throw new Exception("Feed not found");
+            var topics = feed.Topics;
+            var posts = await _postRepository.GetPostsInTopics(query, topics);
+            var postDTOs = new List<PostDTO>();
+            foreach (var p in posts)
+            {
+                postDTOs.Add(await ConvertToPostDTO(username, p));
+            }
+            return postDTOs;
+        }
 
         public async Task ClearRecentPostsByUser(string username)
         {

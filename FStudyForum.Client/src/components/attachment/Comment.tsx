@@ -3,18 +3,16 @@ import { AxiosError } from "axios";
 import { useParams } from "react-router-dom";
 import { Alert, Spinner } from "@material-tailwind/react";
 import CommentService from "@/services/CommentService";
-import AttachmentItem from "@/components/post/PostItemAttachment";
+import PostItem from "@/components/attachment/PostItem";
 import { Response } from "@/types/response";
 import { Comment, CreateComment } from "@/types/comment";
 import CommentInput from "@/components/comment/CommentInput";
 import ContentLayout from "@/components/layout/ContentLayout";
 import CommentItem from "@/components/comment/CommentItemAttachment";
-import TopicDescription from "@/components/topic/TopicDescription";
 import { useRouterParam } from "@/hooks/useRouterParam";
 
 const CommentBox = () => {
-  const { name: topicName, id: postId, attachmentId } = useParams<{
-    name: string;
+  const { id: postId, attachmentId } = useParams<{
     id: string;
     attachmentId: string;
   }>();
@@ -52,7 +50,9 @@ const CommentBox = () => {
       if (!attachmentId) return;
       setLoading(true);
       try {
-        const data = await CommentService.getCommentsByAttachmentId(attachmentId);
+        const data = await CommentService.getCommentsByAttachmentId(
+          attachmentId
+        );
         const structuredComments = structureComments(data || []);
         setComments(structuredComments);
         setExpandedComments(initializeExpandedComments(structuredComments));
@@ -84,7 +84,6 @@ const CommentBox = () => {
     });
     return roots;
   };
-
 
   const handleDeleteComment = async (id: string) => {
     try {
@@ -133,10 +132,18 @@ const CommentBox = () => {
         content,
         attachmentId: Number(attachmentId)
       } as CreateComment);
-  
-      const updatedReply = await CommentService.getCommentById(newReplyData.id.toString());
-      updatedReply.commentParent =  (await CommentService.getCommentById(commentId.toString())).author;
-      const updatedComments = await addReplyToComments(comments, updatedReply, commentId);
+
+      const updatedReply = await CommentService.getCommentById(
+        newReplyData.id.toString()
+      );
+      updatedReply.commentParent = (
+        await CommentService.getCommentById(commentId.toString())
+      ).author;
+      const updatedComments = await addReplyToComments(
+        comments,
+        updatedReply,
+        commentId
+      );
       setComments(updatedComments);
       setReplyToCommentId(null);
       setExpandedComments(initializeExpandedComments(updatedComments, 100));
@@ -145,30 +152,31 @@ const CommentBox = () => {
       setError((error?.response?.data as Response)?.message || error.message);
     }
   };
-  
+
   const addReplyToComments = async (
     comments: Comment[],
     reply: Comment,
     commentId: number
   ): Promise<Comment[]> => {
-    const updatedComments = await Promise.all(comments.map(async comment => {
-      if (comment.id === commentId) {
-        return {
-          ...comment,
-          replies: [...(comment.replies || []), reply]
-        };
-      }
-      if (comment.replies && comment.replies.length > 0) {
-        return {
-          ...comment,
-          replies: await addReplyToComments(comment.replies, reply, commentId)
-        };
-      }
-      return comment;
-    }));
+    const updatedComments = await Promise.all(
+      comments.map(async comment => {
+        if (comment.id === commentId) {
+          return {
+            ...comment,
+            replies: [...(comment.replies || []), reply]
+          };
+        }
+        if (comment.replies && comment.replies.length > 0) {
+          return {
+            ...comment,
+            replies: await addReplyToComments(comment.replies, reply, commentId)
+          };
+        }
+        return comment;
+      })
+    );
     return updatedComments;
-  };  
-
+  };
 
   const handleReplyClick = (commentId: number | null) => {
     setReplyToCommentId(commentId);
@@ -222,7 +230,7 @@ const CommentBox = () => {
   if (loading || !post) return <Spinner className="mx-auto" />;
 
   return (
-    <ContentLayout pannel={topicName ? <TopicDescription /> : undefined}>
+    <ContentLayout>
       <div className="relative">
         {error && (
           <Alert color="red" className="mb-4">
@@ -230,7 +238,7 @@ const CommentBox = () => {
           </Alert>
         )}
         {loading && <p>Loading...</p>}
-        <AttachmentItem data={post} hideLess={false} />
+        <PostItem data={post} hideLess={false} />
         <div className="px-4 pb-5">
           <CommentInput onSubmit={handleCreateComment} />
         </div>
@@ -259,7 +267,6 @@ const CommentBox = () => {
             <p className="text-sm text-center">No comments yet</p>
           )}
         </div>
-
       </div>
     </ContentLayout>
   );

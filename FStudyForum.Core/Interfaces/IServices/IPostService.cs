@@ -23,6 +23,8 @@ namespace FStudyForum.Core.Interfaces.IServices
                 public Task<IEnumerable<PostDTO>> GetRecentPostsByUser(string username);
                 public Task ClearRecentPostsByUser(string username);
                 public Task<IEnumerable<PostStatisticsDTO>> GetPostStatisticsDTO(string action, int date);
+                public Task<IEnumerable<PostDTO>> GetPostsInFeed(string username, string feedName, QueryPostDTO query);
+
         }
 
 

@@ -21,7 +21,6 @@ public class AuthController : ControllerBase
     private readonly IIdentityService _identityService;
     private readonly IEmailService _emailService;
 
-
     public AuthController(
         IOptions<JwtConfig> jwtConfig,
         IUserService accountService,
@@ -34,7 +33,6 @@ public class AuthController : ControllerBase
         _emailService = emailService;
 
     }
-
 
     [HttpPost("login")]
     public async Task<IActionResult> Authenticate([FromBody] LoginDTO loginDTO)
@@ -62,8 +60,6 @@ public class AuthController : ControllerBase
                 Message = ex.Message
             });
         }
-
-
     }
 
     [HttpPost("login-google")]

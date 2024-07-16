@@ -1,5 +1,5 @@
 import { FC } from "react";
-import MenuItemPost from "./MenuItem";
+import MenuItemPost from "../post/MenuItem";
 import { MessageSquare, Share } from "lucide-react";
 import { Post } from "@/types/post";
 import { Avatar } from "@material-tailwind/react";
@@ -9,16 +9,14 @@ import DefaultUser from "@/assets/images/user.png";
 import { cn, formatElapsedTime } from "@/helpers/utils";
 import { Link, useNavigate } from "react-router-dom";
 import React from "react";
-import EditorOutput from "./EditorOutput";
-import PostVote from "./PostVote";
-// import { Attachment } from "@/types/attachment";
+import EditorOutput from "../post/EditorOutput";
+import PostVote from "../post/PostVote";
 
 type PostProps = {
   data: Post;
-  // attachment: Attachment;
   hideLess?: boolean;
 };
-const AttachmentItem: FC<PostProps> = ({ data, hideLess = true }) => {
+const PostItem: FC<PostProps> = ({ data, hideLess = true }) => {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const actionRefs = React.useRef<HTMLElement[]>([]);
   const navigate = useNavigate();
@@ -116,7 +114,11 @@ const AttachmentItem: FC<PostProps> = ({ data, hideLess = true }) => {
         {data.attachments.length == 1 && (
           <>
             <p className="font-semibold ">{data.title}</p>
-            <EditorOutput content={data.content} hide={hideLess} className="mb-2" />
+            <EditorOutput
+              content={data.content}
+              hide={hideLess}
+              className="mb-2"
+            />
             <div className="flex space-x-4 text-gray-700">
               <PostVote
                 postId={data.id}
@@ -135,9 +137,8 @@ const AttachmentItem: FC<PostProps> = ({ data, hideLess = true }) => {
           </>
         )}
       </div>
-
     </div>
   );
 };
 
-export default AttachmentItem;
+export default PostItem;
