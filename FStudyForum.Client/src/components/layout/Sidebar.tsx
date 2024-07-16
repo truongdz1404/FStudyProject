@@ -150,7 +150,7 @@ const Sidebar = React.memo(({ handleClose }: SidebarProps) => {
                     className="w-5 h-5 rounded-full"
                   />
                 ),
-                path: `/topic/${topic.name}/moderator`
+                path: `/topic/${topic.name}`
               };
             })
           }
@@ -314,8 +314,8 @@ const Sidebar = React.memo(({ handleClose }: SidebarProps) => {
         )}
       </Card>
       <Dialog
-        size="sm"
-        className="w-[32rem] p-2"
+        size="xs"
+        className="p-2"
         open={openPopup == Popups.CREATE_FEED}
         handler={switchOpenFeed}
       >

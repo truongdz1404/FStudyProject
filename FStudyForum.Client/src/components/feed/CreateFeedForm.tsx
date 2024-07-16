@@ -54,26 +54,30 @@ const CreateFeedForm: FC<Props> = ({ handler, onSuccess }) => {
   });
 
   return (
-    <div className="relative p-2 text-blue-gray-800">
-      <h1 className="font-semibold text-center text-md">Create custom feed</h1>
-      <button
-        type="button"
-        className="absolute p-1 bg-blue-gray-700/50 rounded-full right-0 top-0"
-        onClick={handler}
-      >
-        <X className="text-white w-4 h-4" />
-      </button>
+    <div className="p-2 text-gray-800">
+      <div className="relative border-b pb-4">
+        <h1 className="font-semibold text-center text-md">
+          Create custom feed
+        </h1>
+        <button
+          type="button"
+          className="absolute p-1 bg-blue-gray-700/50 rounded-full -right-2 -top-2"
+          onClick={handler}
+        >
+          <X className="text-white w-4 h-4" />
+        </button>
+      </div>
 
       <form
         onSubmit={handleSubmit(data => handleCreate(data))}
-        className="flex flex-col gap-y-4"
+        className="flex flex-col gap-y-2 mt-2"
       >
-        <div className="text-blue-gray-800">
+        <div className="text-gray-800">
           <p className="font-medium text-sm ml-1 mb-1">Name</p>
           <input
             type="text"
-            placeholder="Name"
-            className="bg-blue-gray-50 py-3 px-4 rounded-2xl w-full border-none focus:outline-none"
+            placeholder="My feed"
+            className="bg-blue-gray-50 py-3 px-4 rounded-2xl w-full border-none focus:outline-none text-sm"
             autoComplete="off"
             {...register("name")}
           />
@@ -87,15 +91,15 @@ const CreateFeedForm: FC<Props> = ({ handler, onSuccess }) => {
             </span>
           )}
         </div>
-        <div className="text-blue-gray-800">
+        <div className="text-gray-800">
           <p className="font-medium text-sm ml-1 mb-1">
             Description (optional)
           </p>
           <TextareaAutosize
-            placeholder="Description"
+            placeholder="Write something..."
             autoComplete="off"
             className={cn(
-              "w-full appearance-none overflow-hidden bg-blue-gray-50 rounded-2xl min-h-24",
+              "w-full appearance-none overflow-hidden bg-blue-gray-50 rounded-2xl min-h-24 text-sm",
               "focus:outline-none py-3 px-4"
             )}
             {...register("description")}
@@ -109,23 +113,25 @@ const CreateFeedForm: FC<Props> = ({ handler, onSuccess }) => {
               <CircleAlert className="w-3 h-3" /> {errors.description.message}
             </span>
           )}
+
+          {error && (
+            <span className="flex items-center tracking-wide text-xs text-red-500 mt-1 ml-1 gap-x-1">
+              <CircleAlert className="w-3 h-3" /> {error}
+            </span>
+          )}
         </div>
-        {error && (
-          <span className="flex items-center tracking-wide text-xs text-red-500 mt-1 ml-1 gap-x-1">
-            <CircleAlert className="w-3 h-3" /> {error}
-          </span>
-        )}
-        <div className="flex gap-x-2 justify-end text-blue-gray-800">
+
+        <div className="flex gap-x-2 justify-end text-gray-800">
           <button
             type="button"
-            className="bg-blue-gray-100 p-2 rounded-full text-sm font-medium"
+            className="bg-blue-gray-100 p-2 px-3 rounded-full text-xs font-medium"
             onClick={handler}
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="bg-blue-600 text-white p-2 rounded-full text-sm font-medium"
+            className="bg-blue-800 text-white p-2 px-3 rounded-full text-xs font-medium"
           >
             Create
           </button>

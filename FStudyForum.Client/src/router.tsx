@@ -78,10 +78,19 @@ const Search = Loadable(lazy(() => import("@/pages/search")));
 const SearchLayout = Loadable(
   lazy(() => import("@/components/layout/SearchLayout"))
 );
+const NeedReviewPage = Loadable(
+  lazy(() => import("@/pages/topic/moderator/needreview"))
+);
+const UserManagerPage = Loadable(
+  lazy(() => import("@/pages/topic/moderator/usermanager"))
+);
 const ModeratorPage = Loadable(lazy(() => import("@/pages/topic/moderator")));
 const Test = Loadable(lazy(() => import("@/pages/test")));
 const Response = Loadable(
   lazy(() => import("@/pages/manager/report/response"))
+);
+const SettingPage = Loadable(
+  lazy(() => import("@/pages/topic/moderator/setting"))
 );
 
 const router = createBrowserRouter([
@@ -230,7 +239,25 @@ const router = createBrowserRouter([
               },
               {
                 path: "moderator",
-                element: <ModeratorPage />
+                element: <ModeratorPage />,
+                children: [
+                  {
+                    index: true,
+                    element: <Navigate to="needs-review" replace />
+                  },
+                  {
+                    path: "needs-review",
+                    element: <NeedReviewPage />
+                  },
+                  {
+                    path: "user-manager",
+                    element: <UserManagerPage />
+                  },
+                  {
+                    path: "settings",
+                    element: <SettingPage />
+                  }
+                ]
               },
               {
                 path: "submit",
