@@ -1,8 +1,10 @@
-import { FC, useCallback, useEffect, useRef, useState } from "react";
+import { FC, useCallback, useRef, useState } from "react";
 import {
   ArrowBigUp,
   ArrowBigDown,
   MessageSquare,
+  ArrowUp,
+  ArrowDown,
 } from "lucide-react";
 import { Comment } from "@/types/comment";
 import ReplyInput from "@/components/comment/ReplyInput";
@@ -13,7 +15,7 @@ import { cn, formatElapsedTime } from "@/helpers/utils";
 import { Link } from "react-router-dom";
 import { VoteTypes } from "@/helpers/constants";
 import VoteService from "@/services/VoteService";
-import CommentService from "@/services/CommentService";
+import CommentItemReply from "./CommentItemReply";
 
 type CommentItemProps = {
   comment: Comment;
@@ -44,7 +46,6 @@ const CommentItem: FC<CommentItemProps> = ({
 }) => {
   const [voteType, setVoteType] = useState(comment.voteType);
   const [voteCount, setVoteCount] = useState(comment.voteCount);
-  const [commentParent, setCommentParent] = useState<Comment>();
   const lastCommentChildRef = useRef<HTMLDivElement>(null);
 
   const isExpand = useCallback(
@@ -65,28 +66,14 @@ const CommentItem: FC<CommentItemProps> = ({
     }
   };
 
-  useEffect(() => {
-    const fetchComments = async () => {
-      if (!comment.replyId) return;
-      try {
-        const data = await CommentService.getCommentById(comment.replyId.toString());
-        setCommentParent(data);
-      } 
-      catch (error) {
-        console.error(error);
-      }
-    };
-    fetchComments();
-  }, [comment.replyId]);
-
   return (
-    <div key={comment.id} className={`comment ${level === 1 ? 'pl-10' : ''} ${level === 0 ? 'pb-4' : ''}`}>
+    <div key={comment.id} className={`comment pb-4`}>
       <div className="flex flex-col h-full">
         <div className="flex items-center h-full gap-x-2 relative">
           <img
             src={comment.avatar || Default}
             alt="avatar"
-            className={level === 0 ? "w-8 h-8 rounded-full" : "w-7 h-7 rounded-full"}
+            className={"w-8 h-8 rounded-full"}
           />
           <div className="flex flex-col">
             <div className="flex items-center">
@@ -116,13 +103,6 @@ const CommentItem: FC<CommentItemProps> = ({
               </div>
             ) : (
               <span className="text-sm break-words min-w-0">
-                {level !== 1 && comment.replyId && (
-                  <span className="text-sm font-medium">
-                    <Link to={`/user/${commentParent?.author}`} className="mr-1 font-medium">
-                      @{commentParent?.author}:
-                    </Link>
-                  </span>
-                )}
                 {comment.content}
               </span>
             )}
@@ -193,10 +173,9 @@ const CommentItem: FC<CommentItemProps> = ({
                       key={reply.id}
                       ref={index + 1 === comment.replies?.length ? lastCommentChildRef : null}
                     >
-                      <CommentItem
+                      <CommentItemReply
+                        key={reply.id}
                         comment={reply}
-                        expandedComments={expandedComments}
-                        toggleExpand={toggleExpand}
                         handleReplyClick={handleReplyClick}
                         handleDeleteComment={handleDeleteComment}
                         handleCreateReply={handleCreateReply}
@@ -204,7 +183,6 @@ const CommentItem: FC<CommentItemProps> = ({
                         handleSaveEditedComment={handleSaveEditedComment}
                         replyToCommentId={replyToCommentId}
                         editingCommentId={editingCommentId}
-                        level={level + 1}
                       />
                     </div>
                   ))}
@@ -218,39 +196,17 @@ const CommentItem: FC<CommentItemProps> = ({
                   >
                     {isExpand() ? (
                       <span className="mr-1 flex items-center text-sm">
-                        <span className="border-t border-black flex-grow mr-1"></span>
-                        View less
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          fill="currentColor"
-                          className="w-4 h-4 inline-block transform -rotate-90 ml-1 mt-1"
-                          style={{ verticalAlign: 'middle' }}
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M10.293 3.293a1 1 0 011.414 0l7 7a1 1 0 010 1.414l-7 7a1 1 0 01-1.414-1.414L16.586 12 10.293 5.707a1 1 0 010-1.414z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
+                        <span className="mr-2">
+                          <ArrowUp size={16} />
+                        </span>
+                        Hide replies
                       </span>
                     ) : (
                       <span className="mr-1 flex items-center text-sm">
-                        <span className="border-b border-black flex-grow mr-1"></span>
-                        View more
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          fill="currentColor"
-                          className="w-4 h-4 inline-block transform rotate-90 ml-1"
-                          style={{ verticalAlign: 'middle' }}
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M10.293 3.293a1 1 0 011.414 0l7 7a1 1 0 010 1.414l-7 7a1 1 0 01-1.414-1.414L16.586 12 10.293 5.707a1 1 0 010-1.414z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
+                        <span className="mr-2">
+                          <ArrowDown size={16} />
+                        </span>
+                        Show replies
                       </span>
                     )}
                   </button>
@@ -263,5 +219,6 @@ const CommentItem: FC<CommentItemProps> = ({
     </div>
   );
 };
+
 
 export default CommentItem;

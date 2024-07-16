@@ -31,7 +31,7 @@ const CommentBox = () => {
 
   const initializeExpandedComments = (
     comments: Comment[],
-    amount: number = 3
+    amount: number = 1
   ) => {
     const expanded: { [key: number]: boolean } = {};
     const traverseComments = (commentList: Comment[]) => {
@@ -134,17 +134,9 @@ const CommentBox = () => {
         attachmentId: Number(attachmentId)
       } as CreateComment);
   
-      const updatedReply = await CommentService.getCommentById(
-        newReplyData.id.toString()
-      );
-  
-      const updatedComments = addReplyToComments(
-        comments,
-        updatedReply,
-        commentId,
-        Number(attachmentId)
-      );
-  
+      const updatedReply = await CommentService.getCommentById(newReplyData.id.toString());
+      updatedReply.commentParent =  await CommentService.getCommentById(commentId.toString());
+      const updatedComments = await addReplyToComments(comments, updatedReply, commentId);
       setComments(updatedComments);
       setReplyToCommentId(null);
       setExpandedComments(initializeExpandedComments(updatedComments, 100));
@@ -154,13 +146,12 @@ const CommentBox = () => {
     }
   };
   
-  const addReplyToComments = (
+  const addReplyToComments = async (
     comments: Comment[],
     reply: Comment,
-    commentId: number,
-    attachmentId: number
-  ): Comment[] => {
-    return comments.map(comment => {
+    commentId: number
+  ): Promise<Comment[]> => {
+    const updatedComments = await Promise.all(comments.map(async comment => {
       if (comment.id === commentId) {
         return {
           ...comment,
@@ -170,18 +161,18 @@ const CommentBox = () => {
       if (comment.replies && comment.replies.length > 0) {
         return {
           ...comment,
-          replies: addReplyToComments(comment.replies, reply, commentId, attachmentId)
+          replies: await addReplyToComments(comment.replies, reply, commentId)
         };
       }
       return comment;
-    });
-  };
-  
+    }));
+    return updatedComments;
+  };  
+
 
   const handleReplyClick = (commentId: number | null) => {
     setReplyToCommentId(commentId);
   };
-
   const handleEditComment = (commentId: number | null) => {
     setEditingCommentId(commentId);
   };
@@ -240,7 +231,7 @@ const CommentBox = () => {
         )}
         {loading && <p>Loading...</p>}
         <AttachmentItem data={post} hideLess={false} />
-        <div className="px-4">
+        <div className="px-4 pb-5">
           <CommentInput onSubmit={handleCreateComment} />
         </div>
         <div className="px-4">

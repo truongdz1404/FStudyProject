@@ -23,7 +23,7 @@ const ReplyInput: FC<ReplyInputProps> = ({ commentId, onSubmit, onCancel }) => {
       <TextareaAutosize
         autoFocus
         value={newReply}
-        onChange={e => setNewReply(e.target.value)}
+        onChange={e => {setNewReply(e.target.value); console.log(commentId)}}
         className={cn(
           "w-full appearance-none overflow-hidden bg-transparent",
           "text-sm focus:outline-none py-3 px-4"
