@@ -135,7 +135,7 @@ const CommentBox = () => {
       } as CreateComment);
   
       const updatedReply = await CommentService.getCommentById(newReplyData.id.toString());
-      updatedReply.commentParent =  await CommentService.getCommentById(commentId.toString());
+      updatedReply.commentParent =  (await CommentService.getCommentById(commentId.toString())).author;
       const updatedComments = await addReplyToComments(comments, updatedReply, commentId);
       setComments(updatedComments);
       setReplyToCommentId(null);

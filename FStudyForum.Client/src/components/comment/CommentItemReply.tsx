@@ -39,7 +39,7 @@ const CommentItemReply: FC<CommentItemProps> = ({
   const [voteType, setVoteType] = useState(comment.voteType);
   const [voteCount, setVoteCount] = useState(comment.voteCount);
   const [allComments, setAllComments] = useState<Comment[]>([]);
-  const [commentParent, setCommentParent] = useState<Comment | undefined>(comment.commentParent);
+  const [commentParent, setCommentParent] = useState<string | undefined>(comment.commentParent);
   const lastCommentChildRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -67,7 +67,7 @@ const CommentItemReply: FC<CommentItemProps> = ({
       if (!comment.replyId) return;
       try {
         const data = await CommentService.getCommentById(comment.replyId.toString());
-        setCommentParent(data);
+        setCommentParent(data.author);
       }
       catch (error) {
         console.error(error);
@@ -136,8 +136,8 @@ const CommentItemReply: FC<CommentItemProps> = ({
                     </>
                     {commentItem.replyId !== comment.id && (
                       <span className="text-sm font-medium">
-                        <Link to={`/user/${commentParent?.author}`} className="mr-1 font-medium">
-                          @{commentParent?.author}:
+                        <Link to={`/user/${commentParent}`} className="mr-1 font-medium">
+                          @{commentParent}:
                         </Link>
                       </span>
                     )}

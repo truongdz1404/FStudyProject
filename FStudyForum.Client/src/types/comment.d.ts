@@ -11,7 +11,7 @@ export interface Comment {
   avatar: string;
   elapsed: string;
   updatedAt: string;
-  commentParent?: Comment;
+  commentParent?: string;
   replies?: Comment[];
 }
 
