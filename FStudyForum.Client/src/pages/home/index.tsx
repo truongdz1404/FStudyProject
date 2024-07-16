@@ -62,7 +62,7 @@ const HomePage: React.FC = () => {
           <Spinner className="mx-auto" />
         ) : (
           !isPending && <span className="text-xs font-light">Nothing more</span>
-        )}
+        )}  
       </div>
     </ContentLayout>
   );

@@ -11,6 +11,7 @@ export interface Comment {
   avatar: string;
   elapsed: string;
   updatedAt: string;
+  commentParent?: string;
   replies?: Comment[];
 }
 
@@ -18,4 +19,5 @@ export interface CreateComment {
   postId: number;
   content: string;
   replyId?: number;
+  attachmentId?: number;
 }
