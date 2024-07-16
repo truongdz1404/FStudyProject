@@ -25,5 +25,4 @@ public class Topic : BaseEntity
     public virtual ICollection<ApplicationUser> ModeratedByUsers { get; set; } = new List<ApplicationUser>();
     public virtual ICollection<TopicBan> BannedUser { get; set; } = new List<TopicBan>();
     public virtual ICollection<Feed> Feeds { get; set; } = new List<Feed>();
-
 }

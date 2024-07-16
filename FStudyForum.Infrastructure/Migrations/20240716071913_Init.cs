@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace FStudyForum.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Final : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -59,6 +59,7 @@ namespace FStudyForum.Infrastructure.Migrations
                     Name = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    NeedReview = table.Column<bool>(type: "bit", nullable: false),
                     Panner = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
                     Avatar = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -233,6 +234,7 @@ namespace FStudyForum.Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsApproved = table.Column<bool>(type: "bit", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     IsDeletedForever = table.Column<bool>(type: "bit", nullable: false),
                     TopicId = table.Column<long>(type: "bigint", nullable: true),
@@ -646,9 +648,9 @@ namespace FStudyForum.Infrastructure.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "408b5ddf-5a65-456a-a5b7-9699b27267ac", null, "User", "USER" },
-                    { "5e184ab5-6a74-4020-8813-f9f2b1d688dd", null, "Moderator", "MODERATOR" },
-                    { "c86effce-aad1-4ada-9432-a4834b32b59a", null, "Admin", "ADMIN" }
+                    { "71808513-d7e3-4624-b0bd-aed376aa5dd5", null, "User", "USER" },
+                    { "94fce8a7-ff8c-41f4-840c-b735387aec5a", null, "Admin", "ADMIN" },
+                    { "ebf509d9-d94c-43c8-a423-d7fb203c5aa6", null, "Moderator", "MODERATOR" }
                 });
 
             migrationBuilder.CreateIndex(

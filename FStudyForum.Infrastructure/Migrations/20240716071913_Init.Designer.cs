@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FStudyForum.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20240714105922_Final")]
-    partial class Final
+    [Migration("20240716071913_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -310,6 +310,9 @@ namespace FStudyForum.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -525,6 +528,9 @@ namespace FStudyForum.Infrastructure.Migrations
                         .HasMaxLength(25)
                         .HasColumnType("nvarchar(25)");
 
+                    b.Property<bool>("NeedReview")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Panner")
                         .IsRequired()
                         .HasMaxLength(300)
@@ -638,19 +644,19 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "c86effce-aad1-4ada-9432-a4834b32b59a",
+                            Id = "94fce8a7-ff8c-41f4-840c-b735387aec5a",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "408b5ddf-5a65-456a-a5b7-9699b27267ac",
+                            Id = "71808513-d7e3-4624-b0bd-aed376aa5dd5",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "5e184ab5-6a74-4020-8813-f9f2b1d688dd",
+                            Id = "ebf509d9-d94c-43c8-a423-d7fb203c5aa6",
                             Name = "Moderator",
                             NormalizedName = "MODERATOR"
                         });

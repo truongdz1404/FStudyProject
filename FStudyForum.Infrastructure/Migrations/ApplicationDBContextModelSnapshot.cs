@@ -641,19 +641,19 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "5bc11b72-a812-43f2-b655-134a40e91bdf",
+                            Id = "94fce8a7-ff8c-41f4-840c-b735387aec5a",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "69ea9850-a544-4661-a294-f327d3a7da60",
+                            Id = "71808513-d7e3-4624-b0bd-aed376aa5dd5",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "e67d74d2-f5ea-4a92-9178-564aea1a2ad3",
+                            Id = "ebf509d9-d94c-43c8-a423-d7fb203c5aa6",
                             Name = "Moderator",
                             NormalizedName = "MODERATOR"
                         });
