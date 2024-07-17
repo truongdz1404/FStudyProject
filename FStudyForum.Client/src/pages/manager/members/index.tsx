@@ -10,13 +10,13 @@ import {
   CardFooter,
   Avatar,
   IconButton,
-  Tooltip,
-  Spinner
+  Tooltip
 } from "@material-tailwind/react";
 import { ChevronsUpDown, Pencil, Search } from "lucide-react";
 import React from "react";
 import useSearchParam from "@/hooks/useSearchParam";
 import { useQuery } from "@tanstack/react-query";
+import useDebounce from "@/hooks/useDebounce";
 
 const tableHead = ["Member", "Role", "Action"];
 const PAGE_SIZE = 10;
@@ -27,10 +27,15 @@ const MembersPage = () => {
     defaultValue: "1"
   });
 
+  const [keyword, setKeyword] = useSearchParam<string>({
+    key: "search",
+    defaultValue: ""
+  });
+  const debouncedSearch = useDebounce(keyword, 300);
   const { data: users } = useQuery({
-    queryKey: ["USER_LIST", { pageNumber }],
+    queryKey: ["USER_LIST", { debouncedSearch, pageNumber }],
     queryFn: async () => {
-      const result = await UserService.getAll(+pageNumber, PAGE_SIZE);
+      const result = await UserService.getAll(+pageNumber, PAGE_SIZE, keyword);
       setMaxPage(Math.ceil(result.totalCount / PAGE_SIZE));
       return result.data;
     }
@@ -48,8 +53,6 @@ const MembersPage = () => {
     setPageNumber("" + n);
   };
 
-  if (!users) return <Spinner className="mx-auto" />;
-
   return (
     <Card className="h-full w-full">
       <CardHeader floated={false} shadow={false} className="rounded-none">
@@ -64,10 +67,11 @@ const MembersPage = () => {
             label="Search"
             icon={<Search className="h-5 w-5" />}
             crossOrigin={undefined}
+            onChange={e => setKeyword(e.target.value)}
           />
         </div>
       </CardHeader>
-      <CardBody className="overflow-hidden px-0">
+      <CardBody className="overflow-hidden p-0">
         <table className="mt-4 w-full min-w-max table-auto text-left">
           <thead>
             <tr>
@@ -90,45 +94,47 @@ const MembersPage = () => {
               ))}
             </tr>
           </thead>
+
           <tbody>
-            {users.map(({ avatar, username, roles }, index) => {
-              const isLast = index === users.length - 1;
-              const classes = isLast
-                ? "p-4"
-                : "p-4 border-b border-blue-gray-50";
+            {users != null &&
+              users.map(({ avatar, username, roles }, index) => {
+                const isLast = index === users.length - 1;
+                const classes = isLast
+                  ? "p-4"
+                  : "p-4 border-b border-blue-gray-50";
 
-              return (
-                <tr key={username}>
-                  <td className={classes}>
-                    <div className="flex items-center gap-3">
-                      <Avatar src={avatar || DefaultUser} size="sm" />
-                      <div className="flex flex-col">
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal opacity-70"
-                        >
-                          {username}
-                        </Typography>
+                return (
+                  <tr key={username}>
+                    <td className={classes}>
+                      <div className="flex items-center gap-3">
+                        <Avatar src={avatar || DefaultUser} size="sm" />
+                        <div className="flex flex-col">
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-normal opacity-70"
+                          >
+                            {username}
+                          </Typography>
+                        </div>
                       </div>
-                    </div>
-                  </td>
-                  <td className={classes}>
-                    <span className="font-normal opacity-70 text-xs uppercase">
-                      {roles.length ? roles : "NO ROLE"}
-                    </span>
-                  </td>
+                    </td>
+                    <td className={classes}>
+                      <span className="font-normal opacity-70 text-xs uppercase">
+                        {roles.length ? roles : "NO ROLE"}
+                      </span>
+                    </td>
 
-                  <td className={classes}>
-                    <Tooltip content="Edit User">
-                      <IconButton variant="text">
-                        <Pencil className="h-4 w-4" />
-                      </IconButton>
-                    </Tooltip>
-                  </td>
-                </tr>
-              );
-            })}
+                    <td className={classes}>
+                      <Tooltip content="Edit User">
+                        <IconButton variant="text">
+                          <Pencil className="h-4 w-4" />
+                        </IconButton>
+                      </Tooltip>
+                    </td>
+                  </tr>
+                );
+              })}
           </tbody>
         </table>
       </CardBody>

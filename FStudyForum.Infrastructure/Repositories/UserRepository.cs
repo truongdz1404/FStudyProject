@@ -31,7 +31,7 @@ public class UserRepository(ApplicationDBContext dbContext)
 
     public async Task<IEnumerable<ApplicationUser>> GetUsers(QueryUserDTO query)
     {
-        IQueryable<ApplicationUser> queryable = _dbContext.Users;
+        IQueryable<ApplicationUser> queryable = _dbContext.Users.AsSplitQuery();
         if (query.Search != null)
             queryable = queryable.Where(u => u.UserName!.Contains(query.Search.Trim()));
         return await queryable

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { AxiosError } from "axios";
 import { useParams } from "react-router-dom";
-import { Alert, Spinner } from "@material-tailwind/react";
+import { Alert } from "@material-tailwind/react";
 import CommentService from "@/services/CommentService";
 import PostItem from "@/components/attachment/PostItem";
 import { Response } from "@/types/response";
@@ -227,7 +227,7 @@ const CommentBox = () => {
     }));
   };
 
-  if (loading || !post) return <Spinner className="mx-auto" />;
+  if (loading || !post) return;
 
   return (
     <ContentLayout>
@@ -237,7 +237,6 @@ const CommentBox = () => {
             {error}
           </Alert>
         )}
-        {loading && <p>Loading...</p>}
         <PostItem data={post} hideLess={false} />
         <div className="px-4 pb-5">
           <CommentInput onSubmit={handleCreateComment} />

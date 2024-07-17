@@ -117,7 +117,7 @@ const SearchInput = () => {
       debouncedSearch.cancel();
     };
   }, [keyword, debouncedSearch, canSearch]);
-
+  
   const handleClearContext = () => {
     setIsAll(true);
     setKeyword("");

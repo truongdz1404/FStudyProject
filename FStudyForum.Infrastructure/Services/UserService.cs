@@ -208,7 +208,7 @@ public class UserService : IUserService
     }
     public async Task<PaginatedData<UserDTO>> GetAll(QueryUserDTO query)
     {
-        var users = await _userRepository.GetQuery(query);
+        var users = await _userRepository.GetUsers(query);
         var totalCount = await _userRepository.CountAsync();
 
         var userDTOs = new List<UserDTO>();

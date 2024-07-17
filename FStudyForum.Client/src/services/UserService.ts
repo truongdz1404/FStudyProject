@@ -8,9 +8,15 @@ const getProfile = async () => {
   const response = await api.get<ResponseWith<User>>("/user/profile");
   return response.data.data;
 };
-const getAll = async (pageNumber: number, pageSize: number) => {
+const getAll = async (
+  pageNumber: number,
+  pageSize: number,
+  keyword: string
+) => {
   const response = await api.get<ResponseWith<Paginated<User>>>(
-    `/user/all?pageNumber=${pageNumber}&pageSize=${pageSize}`
+    `/user/all?pageNumber=${pageNumber}&pageSize=${pageSize}${
+      keyword ? `&search=${keyword}` : ""
+    }`
   );
   return response.data.data;
 };
