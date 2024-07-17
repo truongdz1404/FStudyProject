@@ -170,6 +170,170 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("tblCategories", "dbo");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "A major of FPT University",
+                            ModifiedAt = new DateTime(2024, 7, 18, 1, 28, 31, 184, DateTimeKind.Local).AddTicks(9275),
+                            Name = "Software Engineering",
+                            Type = "major"
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "A major of FPT University",
+                            ModifiedAt = new DateTime(2024, 7, 18, 1, 28, 31, 184, DateTimeKind.Local).AddTicks(9296),
+                            Name = "Information Systems",
+                            Type = "major"
+                        },
+                        new
+                        {
+                            Id = 3L,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "A major of FPT University",
+                            ModifiedAt = new DateTime(2024, 7, 18, 1, 28, 31, 184, DateTimeKind.Local).AddTicks(9297),
+                            Name = "Artificial Intelligence",
+                            Type = "major"
+                        },
+                        new
+                        {
+                            Id = 4L,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "A major of FPT University",
+                            ModifiedAt = new DateTime(2024, 7, 18, 1, 28, 31, 184, DateTimeKind.Local).AddTicks(9298),
+                            Name = "Information Security",
+                            Type = "major"
+                        },
+                        new
+                        {
+                            Id = 5L,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "A major of FPT University",
+                            ModifiedAt = new DateTime(2024, 7, 18, 1, 28, 31, 184, DateTimeKind.Local).AddTicks(9299),
+                            Name = "Digital Art Design",
+                            Type = "major"
+                        },
+                        new
+                        {
+                            Id = 6L,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "A major of FPT University",
+                            ModifiedAt = new DateTime(2024, 7, 18, 1, 28, 31, 184, DateTimeKind.Local).AddTicks(9301),
+                            Name = "Digital Marketing",
+                            Type = "major"
+                        },
+                        new
+                        {
+                            Id = 7L,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "A major of FPT University",
+                            ModifiedAt = new DateTime(2024, 7, 18, 1, 28, 31, 184, DateTimeKind.Local).AddTicks(9302),
+                            Name = "International Business",
+                            Type = "major"
+                        },
+                        new
+                        {
+                            Id = 8L,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "A major of FPT University",
+                            ModifiedAt = new DateTime(2024, 7, 18, 1, 28, 31, 184, DateTimeKind.Local).AddTicks(9303),
+                            Name = "Hotel Management",
+                            Type = "major"
+                        },
+                        new
+                        {
+                            Id = 9L,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "A major of FPT University",
+                            ModifiedAt = new DateTime(2024, 7, 18, 1, 28, 31, 184, DateTimeKind.Local).AddTicks(9304),
+                            Name = "Multimedia Communication",
+                            Type = "major"
+                        },
+                        new
+                        {
+                            Id = 10L,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "A major of FPT University",
+                            ModifiedAt = new DateTime(2024, 7, 18, 1, 28, 31, 184, DateTimeKind.Local).AddTicks(9305),
+                            Name = "Finance",
+                            Type = "major"
+                        },
+                        new
+                        {
+                            Id = 11L,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "A major of FPT University",
+                            ModifiedAt = new DateTime(2024, 7, 18, 1, 28, 31, 184, DateTimeKind.Local).AddTicks(9306),
+                            Name = "Tourism Services Management",
+                            Type = "major"
+                        },
+                        new
+                        {
+                            Id = 12L,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "A major of FPT University",
+                            ModifiedAt = new DateTime(2024, 7, 18, 1, 28, 31, 184, DateTimeKind.Local).AddTicks(9307),
+                            Name = "English Language",
+                            Type = "major"
+                        },
+                        new
+                        {
+                            Id = 13L,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "A major of FPT University",
+                            ModifiedAt = new DateTime(2024, 7, 18, 1, 28, 31, 184, DateTimeKind.Local).AddTicks(9308),
+                            Name = "Chinese Language",
+                            Type = "major"
+                        },
+                        new
+                        {
+                            Id = 14L,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "A major of FPT University",
+                            ModifiedAt = new DateTime(2024, 7, 18, 1, 28, 31, 184, DateTimeKind.Local).AddTicks(9309),
+                            Name = "Japanese Language",
+                            Type = "major"
+                        },
+                        new
+                        {
+                            Id = 15L,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "A major of FPT University",
+                            ModifiedAt = new DateTime(2024, 7, 18, 1, 28, 31, 184, DateTimeKind.Local).AddTicks(9309),
+                            Name = "Korean Language",
+                            Type = "major"
+                        },
+                        new
+                        {
+                            Id = 16L,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "A major of FPT University",
+                            ModifiedAt = new DateTime(2024, 7, 18, 1, 28, 31, 184, DateTimeKind.Local).AddTicks(9310),
+                            Name = "Automotive Digital Technology",
+                            Type = "major"
+                        },
+                        new
+                        {
+                            Id = 17L,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "A major of FPT University",
+                            ModifiedAt = new DateTime(2024, 7, 18, 1, 28, 31, 184, DateTimeKind.Local).AddTicks(9311),
+                            Name = "Logistics",
+                            Type = "major"
+                        },
+                        new
+                        {
+                            Id = 18L,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "A major of FPT University",
+                            ModifiedAt = new DateTime(2024, 7, 18, 1, 28, 31, 184, DateTimeKind.Local).AddTicks(9312),
+                            Name = "Public Relations",
+                            Type = "major"
+                        });
                 });
 
             modelBuilder.Entity("FStudyForum.Core.Models.Entities.Comment", b =>
@@ -286,6 +450,67 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.HasIndex("CreaterId");
 
                     b.ToTable("tblFeeds", "dbo");
+                });
+
+            modelBuilder.Entity("FStudyForum.Core.Models.Entities.HubConnection", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("ConnectionId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("tblHubConnections", "dbo");
+                });
+
+            modelBuilder.Entity("FStudyForum.Core.Models.Entities.Notification", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MessageType")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ReceiverId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReceiverId");
+
+                    b.ToTable("tblNotifications", "dbo");
                 });
 
             modelBuilder.Entity("FStudyForum.Core.Models.Entities.Post", b =>
@@ -641,19 +866,19 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "94fce8a7-ff8c-41f4-840c-b735387aec5a",
+                            Id = "222710c3-5a61-4f0a-8ceb-ea941831f92e",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "71808513-d7e3-4624-b0bd-aed376aa5dd5",
+                            Id = "5462194a-344e-45c4-94e2-b44e37d367d6",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "ebf509d9-d94c-43c8-a423-d7fb203c5aa6",
+                            Id = "9cc482cd-ca8e-488f-a049-64df9b5f9963",
                             Name = "Moderator",
                             NormalizedName = "MODERATOR"
                         });
@@ -780,66 +1005,6 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.ToTable("tblModerators", "dbo");
                 });
 
-            modelBuilder.Entity("FStudyForum.Core.Models.Entities.HubConnection", b => {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("ConnectionId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
-
-                    b.ToTable("tblHubConnections", "dbo");
-                });
-
-            modelBuilder.Entity("FStudyForum.Core.Models.Entities.Notification", b => {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("MessageType")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("Message")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsRead")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("ReceiverId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-                    
-                    b.Property<DateTime>("ModifiedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ReceiverId");
-
-                    b.ToTable("tblNotifications", "dbo");
-                });
-
-
             modelBuilder.Entity("tblTopicCategories", b =>
                 {
                     b.Property<long>("CategoriesId")
@@ -930,6 +1095,28 @@ namespace FStudyForum.Infrastructure.Migrations
                         .HasForeignKey("CreaterId");
 
                     b.Navigation("Creater");
+                });
+
+            modelBuilder.Entity("FStudyForum.Core.Models.Entities.HubConnection", b =>
+                {
+                    b.HasOne("FStudyForum.Core.Models.Entities.ApplicationUser", "User")
+                        .WithOne("HubConnection")
+                        .HasForeignKey("FStudyForum.Core.Models.Entities.HubConnection", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("FStudyForum.Core.Models.Entities.Notification", b =>
+                {
+                    b.HasOne("FStudyForum.Core.Models.Entities.ApplicationUser", "Receiver")
+                        .WithMany("Notifications")
+                        .HasForeignKey("ReceiverId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Receiver");
                 });
 
             modelBuilder.Entity("FStudyForum.Core.Models.Entities.Post", b =>
@@ -1117,28 +1304,6 @@ namespace FStudyForum.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("FStudyForum.Core.Models.Entities.HubConnection", b => 
-                {
-                    b.HasOne("FStudyForum.Core.Models.Entities.ApplicationUser", "User")
-                        .WithOne("HubConnection")
-                        .HasForeignKey("FStudyForum.Core.Models.Entities.HubConnection", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("FStudyForum.Core.Models.Entities.Notification", b => 
-                {
-                    b.HasOne("FStudyForum.Core.Models.Entities.ApplicationUser", "Receiver")
-                        .WithMany("Notifications")
-                        .HasForeignKey("ReceiverId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Receiver");
-                });
-
             modelBuilder.Entity("tblTopicCategories", b =>
                 {
                     b.HasOne("FStudyForum.Core.Models.Entities.Category", null)
@@ -1181,6 +1346,10 @@ namespace FStudyForum.Infrastructure.Migrations
 
                     b.Navigation("Feeds");
 
+                    b.Navigation("HubConnection");
+
+                    b.Navigation("Notifications");
+
                     b.Navigation("Profile");
 
                     b.Navigation("RecentPosts");
@@ -1190,10 +1359,6 @@ namespace FStudyForum.Infrastructure.Migrations
                     b.Navigation("SavedPosts");
 
                     b.Navigation("Votes");
-
-                    b.Navigation("HubConnection");
-
-                    b.Navigation("Notifications");
                 });
 
             modelBuilder.Entity("FStudyForum.Core.Models.Entities.Attachment", b =>

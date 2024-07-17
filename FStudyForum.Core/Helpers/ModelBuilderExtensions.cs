@@ -19,7 +19,6 @@ public static class ModelBuilderExtensions
                 NormalizedName = role.ToUpper()
             });
         }
-
         var categories = new List<Category>();
         int i = 1;
         foreach (var category in Major.All)
@@ -34,6 +33,7 @@ public static class ModelBuilderExtensions
             i++;
         }
 
+        builder.Entity<IdentityRole>().HasData(roles);
         builder.Entity<Category>().HasData(categories);
     }
 

@@ -275,8 +275,8 @@ const Welcome = () => {
                     key={name}
                     onClick={() => setMajor(name)}
                     className={cn(
-                      "hover:cursor-pointer bg-blue-gray-200 rounded-full text-xs text-blue-gray-50 px-3 py-1 text-center font-semibold",
-                      major == name && "bg-blue-gray-400"
+                      "hover:cursor-pointer bg-blue-gray-400 rounded-full text-xs text-blue-gray-50 px-3 py-1 text-center font-semibold",
+                      major == name && "bg-blue-gray-800"
                     )}
                   >
                     {name}

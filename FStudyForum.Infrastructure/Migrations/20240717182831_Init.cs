@@ -199,6 +199,28 @@ namespace FStudyForum.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "tblHubConnections",
+                schema: "dbo",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ConnectionId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_tblHubConnections", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_tblHubConnections_tblUsers_UserId",
+                        column: x => x.UserId,
+                        principalSchema: "dbo",
+                        principalTable: "tblUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "tblModerators",
                 schema: "dbo",
                 columns: table => new
@@ -226,31 +248,9 @@ namespace FStudyForum.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "tblHubConnections",
-                schema: "dbo",
-                columns: table => new 
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ConnectionId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                },
-                constraints: table => 
-                {
-                    table.PrimaryKey("PK_tblHubConnections", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_tblHubConnections_tblUsers_UserId",
-                        column: x => x.UserId,
-                        principalSchema: "dbo",
-                        principalTable: "tblUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "tblNotifications",
                 schema: "dbo",
-                columns: table => new 
+                columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
@@ -261,11 +261,11 @@ namespace FStudyForum.Infrastructure.Migrations
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
-                constraints: table => 
+                constraints: table =>
                 {
                     table.PrimaryKey("PK_tblNotifications", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_tblNotifications_tblUsers_UserId",
+                        name: "FK_tblNotifications_tblUsers_ReceiverId",
                         column: x => x.ReceiverId,
                         principalSchema: "dbo",
                         principalTable: "tblUsers",
@@ -692,13 +692,39 @@ namespace FStudyForum.Infrastructure.Migrations
 
             migrationBuilder.InsertData(
                 schema: "dbo",
+                table: "tblCategories",
+                columns: new[] { "Id", "CreatedAt", "Description", "ModifiedAt", "Name", "Type" },
+                values: new object[,]
+                {
+                    { 1L, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "A major of FPT University", new DateTime(2024, 7, 18, 1, 28, 31, 184, DateTimeKind.Local).AddTicks(9275), "Software Engineering", "major" },
+                    { 2L, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "A major of FPT University", new DateTime(2024, 7, 18, 1, 28, 31, 184, DateTimeKind.Local).AddTicks(9296), "Information Systems", "major" },
+                    { 3L, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "A major of FPT University", new DateTime(2024, 7, 18, 1, 28, 31, 184, DateTimeKind.Local).AddTicks(9297), "Artificial Intelligence", "major" },
+                    { 4L, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "A major of FPT University", new DateTime(2024, 7, 18, 1, 28, 31, 184, DateTimeKind.Local).AddTicks(9298), "Information Security", "major" },
+                    { 5L, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "A major of FPT University", new DateTime(2024, 7, 18, 1, 28, 31, 184, DateTimeKind.Local).AddTicks(9299), "Digital Art Design", "major" },
+                    { 6L, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "A major of FPT University", new DateTime(2024, 7, 18, 1, 28, 31, 184, DateTimeKind.Local).AddTicks(9301), "Digital Marketing", "major" },
+                    { 7L, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "A major of FPT University", new DateTime(2024, 7, 18, 1, 28, 31, 184, DateTimeKind.Local).AddTicks(9302), "International Business", "major" },
+                    { 8L, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "A major of FPT University", new DateTime(2024, 7, 18, 1, 28, 31, 184, DateTimeKind.Local).AddTicks(9303), "Hotel Management", "major" },
+                    { 9L, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "A major of FPT University", new DateTime(2024, 7, 18, 1, 28, 31, 184, DateTimeKind.Local).AddTicks(9304), "Multimedia Communication", "major" },
+                    { 10L, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "A major of FPT University", new DateTime(2024, 7, 18, 1, 28, 31, 184, DateTimeKind.Local).AddTicks(9305), "Finance", "major" },
+                    { 11L, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "A major of FPT University", new DateTime(2024, 7, 18, 1, 28, 31, 184, DateTimeKind.Local).AddTicks(9306), "Tourism Services Management", "major" },
+                    { 12L, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "A major of FPT University", new DateTime(2024, 7, 18, 1, 28, 31, 184, DateTimeKind.Local).AddTicks(9307), "English Language", "major" },
+                    { 13L, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "A major of FPT University", new DateTime(2024, 7, 18, 1, 28, 31, 184, DateTimeKind.Local).AddTicks(9308), "Chinese Language", "major" },
+                    { 14L, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "A major of FPT University", new DateTime(2024, 7, 18, 1, 28, 31, 184, DateTimeKind.Local).AddTicks(9309), "Japanese Language", "major" },
+                    { 15L, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "A major of FPT University", new DateTime(2024, 7, 18, 1, 28, 31, 184, DateTimeKind.Local).AddTicks(9309), "Korean Language", "major" },
+                    { 16L, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "A major of FPT University", new DateTime(2024, 7, 18, 1, 28, 31, 184, DateTimeKind.Local).AddTicks(9310), "Automotive Digital Technology", "major" },
+                    { 17L, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "A major of FPT University", new DateTime(2024, 7, 18, 1, 28, 31, 184, DateTimeKind.Local).AddTicks(9311), "Logistics", "major" },
+                    { 18L, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "A major of FPT University", new DateTime(2024, 7, 18, 1, 28, 31, 184, DateTimeKind.Local).AddTicks(9312), "Public Relations", "major" }
+                });
+
+            migrationBuilder.InsertData(
+                schema: "dbo",
                 table: "tblRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "71808513-d7e3-4624-b0bd-aed376aa5dd5", null, "User", "USER" },
-                    { "94fce8a7-ff8c-41f4-840c-b735387aec5a", null, "Admin", "ADMIN" },
-                    { "ebf509d9-d94c-43c8-a423-d7fb203c5aa6", null, "Moderator", "MODERATOR" }
+                    { "222710c3-5a61-4f0a-8ceb-ea941831f92e", null, "Admin", "ADMIN" },
+                    { "5462194a-344e-45c4-94e2-b44e37d367d6", null, "User", "USER" },
+                    { "9cc482cd-ca8e-488f-a049-64df9b5f9963", null, "Moderator", "MODERATOR" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -744,10 +770,23 @@ namespace FStudyForum.Infrastructure.Migrations
                 column: "CreaterId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_tblHubConnections_UserId",
+                schema: "dbo",
+                table: "tblHubConnections",
+                column: "UserId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_tblModerators_ModeratedTopicsId",
                 schema: "dbo",
                 table: "tblModerators",
                 column: "ModeratedTopicsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_tblNotifications_ReceiverId",
+                schema: "dbo",
+                table: "tblNotifications",
+                column: "ReceiverId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_tblPosts_CreaterId",
@@ -892,20 +931,6 @@ namespace FStudyForum.Infrastructure.Migrations
                 schema: "dbo",
                 table: "tblVotes",
                 column: "VoterId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_tblHubConnections_UserId",
-                schema: "dbo",
-                table: "tblHubConnections",
-                column: "UserId",
-                unique: true);
-            
-            migrationBuilder.CreateIndex(
-                name: "IX_tblNotifications_ReceiverId",
-                schema: "dbo",
-                table: "tblNotifications",
-                column: "ReceiverId"
-            );
         }
 
         /// <inheritdoc />
@@ -916,7 +941,15 @@ namespace FStudyForum.Infrastructure.Migrations
                 schema: "dbo");
 
             migrationBuilder.DropTable(
+                name: "tblHubConnections",
+                schema: "dbo");
+
+            migrationBuilder.DropTable(
                 name: "tblModerators",
+                schema: "dbo");
+
+            migrationBuilder.DropTable(
+                name: "tblNotifications",
                 schema: "dbo");
 
             migrationBuilder.DropTable(
@@ -998,15 +1031,6 @@ namespace FStudyForum.Infrastructure.Migrations
             migrationBuilder.DropTable(
                 name: "tblTopics",
                 schema: "dbo");
-
-            migrationBuilder.DropTable(
-                name: "tblHubConnections",
-                schema: "dbo");
-
-            migrationBuilder.DropTable(
-                name: "tblNotifications",
-                schema: "dbo"
-            );
 
             migrationBuilder.DropTable(
                 name: "tblUsers",

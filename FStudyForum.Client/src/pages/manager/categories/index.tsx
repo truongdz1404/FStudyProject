@@ -26,7 +26,7 @@ import CategoryService from "@/services/CategoryService";
 import CategoryTypeService from "@/services/CategoryTypeService";
 
 const titles = ["Name", "Description", "Types", "Action"];
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 10;
 
 const CategoriesPage = () => {
   const [popupOpen, setPopupOpen] = useState(0);
@@ -145,22 +145,21 @@ const CategoriesPage = () => {
       <Card className="h-full w-full">
         <CardHeader floated={false} shadow={false} className="rounded-none">
           <div className="mb-4 flex items-center justify-between gap-8">
-            <div>
-              <Typography variant="h5" color="blue-gray">
-                Categories list
-              </Typography>
-              <Typography color="gray" className="mt-1 font-normal">
+            <div className="text-blue-gray-700">
+              <p className="font-semibold text-lg">Categories list</p>
+              <p className="mt-1 text-sm">
                 See information about all categories
-              </Typography>
+              </p>
             </div>
+
             <div className="flex items-center gap-4">
               <Button
                 variant="gradient"
-                className="flex items-center gap-2 capitalize text-sm"
+                className="flex items-center gap-1 capitalize text-xs"
                 color="orange"
                 onClick={openAddPopup}
               >
-                <Plus strokeWidth={3} className="h-4 w-4" /> Add
+                <Plus strokeWidth={4} className="h-3 w-3" /> Add
               </Button>
             </div>
           </div>
@@ -170,7 +169,7 @@ const CategoriesPage = () => {
             <select
               value={selectedType ?? ""}
               onChange={e => setSelectedType(e.target.value || undefined)}
-              className="px-3 py-1 text-sm rounded bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="ml-4 px-3 py-2 text-sm rounded bg-white border border-gray-300 focus:outline-none"
             >
               <option value="">All Types</option>
               {categoryTypes.map((type, index) => (

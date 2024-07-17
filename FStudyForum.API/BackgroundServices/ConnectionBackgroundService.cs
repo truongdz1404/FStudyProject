@@ -1,10 +1,9 @@
-
 using FStudyForum.API.Hubs;
 using FStudyForum.Core.Interfaces.IHelpers;
 using Microsoft.AspNetCore.SignalR;
 
-namespace FStudyForum.API.Backgroundservice
-{ 
+namespace FStudyForum.API.BackgroundServices
+{
     public class ConnectionBackgroundService : BackgroundService
     {
         private static readonly TimeSpan Period = TimeSpan.FromMinutes(3);
@@ -12,7 +11,7 @@ namespace FStudyForum.API.Backgroundservice
         private readonly IHubContext<NotificationHub, INotificationClient> _hubContext;
         private readonly IServiceScopeFactory _serviceScopeFactory;
         public ConnectionBackgroundService(
-            IHubContext<NotificationHub, INotificationClient> hubContext, 
+            IHubContext<NotificationHub, INotificationClient> hubContext,
             ILogger<ConnectionBackgroundService> logger,
             IServiceScopeFactory serviceScopeFactory)
         {
@@ -28,11 +27,9 @@ namespace FStudyForum.API.Backgroundservice
             while (!stoppingToken.IsCancellationRequested && await timer.WaitForNextTickAsync(stoppingToken))
             {
                 var dateTime = DateTime.Now;
-                using (var scope = _serviceScopeFactory.CreateScope())
-                {
-                    var userConnections = scope.ServiceProvider.GetRequiredService<IUserConnectionManager>();
-                    await userConnections.SynchronizeUserConnections();
-                }
+                using var scope = _serviceScopeFactory.CreateScope();
+                var userConnections = scope.ServiceProvider.GetRequiredService<IUserConnectionManager>();
+                await userConnections.SynchronizeUserConnections();
             }
         }
     }

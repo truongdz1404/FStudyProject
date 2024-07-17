@@ -1,11 +1,11 @@
-import { cn } from "@/helpers/utils"
-import { Outlet } from "react-router-dom"
-import FadeInUp from "../animation/FadeInUp"
-import Thumbnail from "@/assets/images/hero.png"
+import { cn } from "@/helpers/utils";
+import { Outlet } from "react-router-dom";
+import FadeInUp from "../animation/FadeInUp";
+import Thumbnail from "@/assets/images/hero.png";
 
 const AuthLayout = () => {
   return (
-    <div className="flex h-screen font-inter justify-around">
+    <div className="flex h-screen justify-around">
       <div
         className={cn(
           "w-full lg:w-1/2 flex flex-col justify-center items-center"
@@ -25,7 +25,7 @@ const AuthLayout = () => {
         <img className="w-96 mx-auto my-auto" src={Thumbnail} />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default AuthLayout
+export default AuthLayout;

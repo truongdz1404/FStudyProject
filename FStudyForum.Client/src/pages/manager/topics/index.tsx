@@ -31,7 +31,7 @@ import {
 } from "lucide-react";
 
 const titles = ["Name", "Description", "Action"];
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 10;
 
 const queryClient = new QueryClient();
 
@@ -117,33 +117,28 @@ const TopicsPage = () => {
         <Card className="h-full w-full">
           <CardHeader floated={false} shadow={false} className="rounded-none">
             <div className="mb-4 flex items-center justify-between gap-8">
-              <div>
-                <Typography variant="h5" color="blue-gray">
-                  Topic list
-                </Typography>
-                <Typography color="gray" className="mt-1 font-normal">
-                  See information about all topics
-                </Typography>
+              <div className="text-blue-gray-700">
+                <p className="font-semibold text-lg">Topic list</p>
+                <p className="mt-1 text-sm">See information about all topics</p>
               </div>
-              <div className="flex items-center gap-4">
-                <Button
-                  variant="gradient"
-                  className="flex items-center gap-2 capitalize text-sm"
-                  color="orange"
-                  onClick={openAddPopup}
-                >
-                  <Plus strokeWidth={3} className="h-4 w-4" /> Add
-                </Button>
-              </div>
+
+              <Button
+                variant="gradient"
+                className="flex items-center gap-1 capitalize text-xs"
+                color="orange"
+                onClick={openAddPopup}
+              >
+                <Plus strokeWidth={4} className="h-3 w-3" /> Add
+              </Button>
             </div>
           </CardHeader>
           <CardBody className="overflow-y-hidden px-0">
             <select
               value={selectedCategory ?? ""}
               onChange={e => setSelectedCategory(e.target.value)}
-              className="px-3 py-1 text-sm rounded bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="ml-4 px-3 py-2 text-sm rounded bg-white border border-gray-300 focus:outline-none"
             >
-              <option value="">All</option>
+              <option value="">All Categories</option>
               {categories.map(category => (
                 <option key={category.id} value={String(category.id)}>
                   {category.name}

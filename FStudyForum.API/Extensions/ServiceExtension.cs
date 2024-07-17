@@ -6,7 +6,7 @@ using FStudyForum.Core.Interfaces.IServices;
 using FStudyForum.Core.Models.Entities;
 using FStudyForum.Infrastructure.Repositories;
 using FStudyForum.Infrastructure.Services;
-using FStudyForum.API.Backgroundservice;
+using FStudyForum.API.BackgroundServices;
 
 namespace FStudyForum.API.Extensions;
 
