@@ -251,5 +251,16 @@ namespace FStudyForum.Infrastructure.Services
             await _postRepository.EditPostAsync(post, postDTO);
 
         }
+        public async Task<IEnumerable<PostDTO>> GetSuitPosts(string username, QueryPostDTO query)
+        {
+            var posts = await _postRepository.GetSuitPosts(query, username);
+            var postDTOs = new List<PostDTO>();
+            foreach (var p in posts)
+            {
+                postDTOs.Add(await ConvertToPostDTO(username, p));
+            }
+            return postDTOs;
+        }
+
     }
 }

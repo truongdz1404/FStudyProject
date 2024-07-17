@@ -17,8 +17,6 @@ public static class ModelBuilderExtensions
                 NormalizedName = role.ToUpper()
             });
         }
-
         builder.Entity<IdentityRole>().HasData(roles);
     }
-
 }

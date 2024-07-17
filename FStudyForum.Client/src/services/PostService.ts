@@ -3,9 +3,9 @@ import api from "./api";
 import {
   StatisticsPost,
   CreatePost,
-  EditPost,
   Post,
-  SavePost
+  SavePost,
+  EditPost
 } from "@/types/post";
 
 const save = async (postId: number) => {
@@ -33,6 +33,19 @@ const getSavedPosts = async (username: string) => {
   return response.data.data;
 };
 
+
+const getSuitPosts = async (
+  pageNumber: number,
+  pageSize: number,
+  filter: string,
+  username: string
+) => {
+  const response = await api.get<ResponseWith<Post[]>>(
+    `/post/suit?pageNumber=${pageNumber}&pageSize=${pageSize}&filter=${filter}&username=${username}`
+  );
+  return response.data.data;
+};
+
 const getPosts = async (
   pageNumber: number,
   pageSize: number,
@@ -53,6 +66,19 @@ const getPostsByTopicName = async (
 ) => {
   const response = await api.get<ResponseWith<Post[]>>(
     `/post/all?topic=${topicName}&pageNumber=${pageNumber}&pageSize=${pageSize}&filter=${filter}`
+  );
+  return response.data.data;
+};
+
+const searchPostsByKeywordInTopic = async (
+  topicName: string,
+  pageNumber: number,
+  pageSize: number,
+  filter: string,
+  keyword: string
+) => {
+  const response = await api.get<ResponseWith<Post[]>>(
+    `/post/all?topic=${topicName}&keyword=${keyword}&pageNumber=${pageNumber}&pageSize=${pageSize}&filter=${filter}`
   );
   return response.data.data;
 };
@@ -159,6 +185,7 @@ const getPostsInFeed = async (
   return response.data.data;
 };
 
+
 const PostService = {
   clearRecent,
   addRecent,
@@ -176,10 +203,12 @@ const PostService = {
   getPosts,
   create,
   edit,
+  searchPostsByKeywordInTopic,
   moveToTrash,
   getById,
   getStatisticsPost,
-  getPostsInFeed
+  getPostsInFeed,
+  getSuitPosts
 };
 
 export default PostService;

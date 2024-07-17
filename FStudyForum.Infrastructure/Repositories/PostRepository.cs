@@ -332,5 +332,43 @@ namespace FStudyForum.Infrastructure.Repositories
                 .ToListAsync();
             return posts;
         }
+        public async Task<IEnumerable<Post>> GetSuitPosts(QueryPostDTO query, string userName)
+        {
+            IQueryable<Post> queryable = _dbContext.Profiles
+                .Where(p => p.User.UserName == userName)
+                .Join(_dbContext.Categories, profile => profile.Major, category => category.Name, (profile, category) => new { profile, category })
+                .SelectMany(pm => pm.category.Topics.SelectMany(topic => topic.Posts))
+                .Include(post => post.Topic)
+                .ThenInclude(topic => topic!.Categories)
+                .Include(post => post.Creater)
+                .ThenInclude(creater => creater.Profile)
+                .Include(post => post.Votes)
+                .Include(post => post.Attachments)
+                .Include(post => post.Comments);
+            queryable = query.Type switch
+            {
+                PostType.IN_PROFILE => queryable.Where(p => p.Topic == null && !p.IsDeleted),
+                PostType.IN_TRASH => queryable.Where(p => p.IsDeleted),
+                _ => queryable.Where(p => p.Topic != null && !p.IsDeleted)
+            };
+
+            if (!string.IsNullOrEmpty(query.Topic))
+                queryable = queryable.Where(p => p.Topic != null && p.Topic.Name == query.Topic);
+
+            if (!string.IsNullOrEmpty(query.User))
+                queryable = queryable.Where(p => p.Creater.UserName == query.User);
+            if (!string.IsNullOrEmpty(query.Keyword))
+                queryable = queryable.Where(p => p.Title.Contains(query.Keyword) || p.Content.Contains(query.Keyword));
+            if (!string.IsNullOrEmpty(query.Filter))
+                queryable = query.Filter switch
+                {
+                    "Hot" => queryable.OrderByDescending(p => p.Votes.Sum(v => v.IsUp ? 1 : 0) + p.Comments.Count),
+                    "New" => queryable.OrderByDescending(p => p.CreatedAt),
+                    _ => queryable.OrderBy(p => p.Id),
+                };
+            return await queryable
+                .Paginate(query.PageNumber, query.PageSize)
+                .ToListAsync();
+        }
     }
 }

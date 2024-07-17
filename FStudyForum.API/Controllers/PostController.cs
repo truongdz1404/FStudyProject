@@ -513,6 +513,29 @@ namespace FStudyForum.API.Controllers
                 });
             }
         }
+        [HttpGet("suit")]
+        public async Task<IActionResult> GetPostMajor([FromQuery] QueryPostDTO query, string username)
+        {
+            try
+            {
+                var posts = await _postService.GetSuitPosts(username, query);
 
+                return Ok(new Response
+                {
+                    Message = "Get Posts successfully",
+                    Status = ResponseStatus.SUCCESS,
+                    Data = posts
+                });
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = ex.Message
+                });
+            }
+        }
     }
 }

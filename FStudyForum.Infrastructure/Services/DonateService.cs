@@ -81,8 +81,8 @@ namespace FStudyForum.Infrastructure.Services
             var donation = await _donationRepository.GetById(id)
                 ?? throw new Exception("Not found.");           
             _mapper.Map(updateDonationDTO, donation);
-            await _donationRepository.Update(donation);
             donation.CreatedAt = DateTime.Now;
+            await _donationRepository.Update(donation);            
             return _mapper.Map<DonationDTO>(donation);
         }
         public async Task<bool> CheckDonation(string username, int id, string message, decimal amount)
