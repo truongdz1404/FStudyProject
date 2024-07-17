@@ -41,11 +41,12 @@ namespace FStudyForum.API.Controllers
                 Data = await _userService.GetProfileByName(userName)
             });
         }
-        [HttpGet]
+        [HttpGet("all")]
         public async Task<IActionResult> GetAll([FromQuery] QueryUserDTO query)
         {
             try
             {
+                if (!ModelState.IsValid) return BadRequest(ModelState);
                 var users = await _userService.GetAll(query);
                 return Ok(new Response
                 {

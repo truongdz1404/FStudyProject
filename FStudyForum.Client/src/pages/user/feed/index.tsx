@@ -74,7 +74,7 @@ const FeedPage = () => {
           </span>
         </div>
       ) : (
-        <div>
+        <div className="mt-1">
           <div className="relative flex text-left z-20 border-b-2 pb-2 mx-2 mb-1">
             <PostFilter setFilter={setFilter} filter={filter} />
           </div>

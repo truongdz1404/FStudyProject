@@ -185,7 +185,7 @@ const FeedDescription = () => {
               </div>
               <button
                 type="button"
-                className="px-2 py-1 bg-blue-gray-100 text-[0.7rem] rounded-full"
+                className="px-2 py-1 bg-blue-gray-100/60 text-[0.7rem] rounded-full"
                 onClick={() => removeTopic(topic.name)}
               >
                 Remove

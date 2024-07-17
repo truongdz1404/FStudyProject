@@ -77,7 +77,7 @@ const CreateFeedForm: FC<Props> = ({ handler, onSuccess }) => {
           <input
             type="text"
             placeholder="My feed"
-            className="bg-blue-gray-50 py-3 px-4 rounded-2xl w-full border-none focus:outline-none text-sm"
+            className="bg-blue-gray-50 py-3 px-4 rounded-lg w-full border-none focus:outline-none text-sm"
             autoComplete="off"
             {...register("name")}
           />
@@ -99,7 +99,7 @@ const CreateFeedForm: FC<Props> = ({ handler, onSuccess }) => {
             placeholder="Write something..."
             autoComplete="off"
             className={cn(
-              "w-full appearance-none overflow-hidden bg-blue-gray-50 rounded-2xl min-h-24 text-sm",
+              "w-full appearance-none overflow-hidden bg-blue-gray-50 rounded-lg min-h-24 text-sm",
               "focus:outline-none py-3 px-4"
             )}
             {...register("description")}

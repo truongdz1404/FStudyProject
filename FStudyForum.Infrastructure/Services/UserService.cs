@@ -56,7 +56,7 @@ public class UserService : IUserService
             claims.Add(new Claim(ClaimTypes.Role, role));
         return new TokenDTO()
         {
-            AccessToken = _tokenService.GenerateAccessToken(claims),
+        AccessToken = _tokenService.GenerateAccessToken(claims),
             RefreshToken = user.RefreshToken
         };
     }

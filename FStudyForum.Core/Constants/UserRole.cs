@@ -2,8 +2,8 @@ namespace FStudyForum.Core.Constants;
 
 public static class UserRole
 {
-    public const string Admin = "Admin";
-    public const string Moderator = "Moderator";
-    public const string User = "User";
-    public static readonly string[] All = [Admin, User, Moderator];
+    public const string ADMIN = "Admin";
+    public const string MODERATOR = "Moderator";
+    public const string USER = "User";
+    public static readonly string[] ALL = [ADMIN, USER, MODERATOR];
 }

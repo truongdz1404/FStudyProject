@@ -8,7 +8,7 @@ import { Response } from "@/types/response";
 import { Comment, CreateComment } from "@/types/comment";
 import CommentInput from "@/components/comment/CommentInput";
 import ContentLayout from "@/components/layout/ContentLayout";
-import CommentItem from "@/components/comment/CommentItemAttachment";
+import CommentItem from "@/components/attachment/CommentItem";
 import { useRouterParam } from "@/hooks/useRouterParam";
 
 const CommentBox = () => {

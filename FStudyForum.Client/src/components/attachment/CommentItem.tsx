@@ -1,11 +1,5 @@
 import { FC, useCallback, useRef, useState } from "react";
-import {
-  ArrowBigUp,
-  ArrowBigDown,
-  MessageSquare,
-  ArrowUp,
-  ArrowDown,
-} from "lucide-react";
+import { ArrowBigUp, ArrowBigDown, MessageSquare, ArrowUp } from "lucide-react";
 import { Comment } from "@/types/comment";
 import ReplyInput from "@/components/comment/ReplyInput";
 import MenuItemComment from "@/components/comment/MenuItem";
@@ -15,7 +9,7 @@ import { cn, formatElapsedTime } from "@/helpers/utils";
 import { Link } from "react-router-dom";
 import { VoteTypes } from "@/helpers/constants";
 import VoteService from "@/services/VoteService";
-import CommentItemReply from "./CommentItemReply";
+import CommentItemReply from "../comment/CommentItemReply";
 
 type CommentItemProps = {
   comment: Comment;
@@ -42,7 +36,7 @@ const CommentItem: FC<CommentItemProps> = ({
   handleSaveEditedComment,
   replyToCommentId,
   editingCommentId,
-  level,
+  level
 }) => {
   const [voteType, setVoteType] = useState(comment.voteType);
   const [voteCount, setVoteCount] = useState(comment.voteCount);
@@ -115,7 +109,10 @@ const CommentItem: FC<CommentItemProps> = ({
                   <ArrowBigUp
                     strokeWidth={1.2}
                     fill={voteType === VoteTypes.UP ? "#ef5350" : "transparent"}
-                    className={cn("w-6 h-6 hover:text-red-400", voteType === VoteTypes.UP && "text-red-400")}
+                    className={cn(
+                      "w-6 h-6 hover:text-red-400",
+                      voteType === VoteTypes.UP && "text-red-400"
+                    )}
                   />
                 </div>
                 <span className={cn("text-xs font-medium")}>{voteCount}</span>
@@ -125,8 +122,13 @@ const CommentItem: FC<CommentItemProps> = ({
                 >
                   <ArrowBigDown
                     strokeWidth={1.2}
-                    fill={voteType === VoteTypes.DOWN ? "#42a5f5" : "transparent"}
-                    className={cn("w-6 h-6 hover:text-blue-400", voteType === VoteTypes.DOWN && "text-blue-400")}
+                    fill={
+                      voteType === VoteTypes.DOWN ? "#42a5f5" : "transparent"
+                    }
+                    className={cn(
+                      "w-6 h-6 hover:text-blue-400",
+                      voteType === VoteTypes.DOWN && "text-blue-400"
+                    )}
                   />
                 </div>
               </div>
@@ -137,13 +139,8 @@ const CommentItem: FC<CommentItemProps> = ({
                 )}
                 onClick={() => handleReplyClick(comment.id)}
               >
-                <MessageSquare
-                  strokeWidth={1.8}
-                  className={cn("w-4 h-4")}
-                />
-                <span className={cn("text-xs")}>
-                  Reply
-                </span>
+                <MessageSquare strokeWidth={1.8} className={cn("w-4 h-4")} />
+                <span className={cn("text-xs")}>Reply</span>
               </div>
               <div className="action flex items-center">
                 <MenuItemComment
@@ -171,7 +168,11 @@ const CommentItem: FC<CommentItemProps> = ({
                   {comment.replies?.map((reply, index) => (
                     <div
                       key={reply.id}
-                      ref={index + 1 === comment.replies?.length ? lastCommentChildRef : null}
+                      ref={
+                        index + 1 === comment.replies?.length
+                          ? lastCommentChildRef
+                          : null
+                      }
                     >
                       <CommentItemReply
                         key={reply.id}
@@ -189,28 +190,27 @@ const CommentItem: FC<CommentItemProps> = ({
                 </>
               )}
               <div>
-                {comment.replies && comment.replies.length > 0 && level === 0 && (
-                  <button
-                    className="flex space-x-1 w-full pl-10 bg-white"
-                    onClick={() => toggleExpand(comment.id)}
-                  >
-                    {isExpand() ? (
-                      <span className="mr-1 flex items-center text-sm">
+                {comment.replies &&
+                  comment.replies.length > 0 &&
+                  level === 0 && (
+                    <button
+                      className="flex space-x-1 w-full pl-10 bg-white"
+                      onClick={() => toggleExpand(comment.id)}
+                    >
+                      <span className="mr-1 flex items-center text-xs text-gray-600">
                         <span className="mr-2">
-                          <ArrowUp size={16} />
+                          <ArrowUp
+                            size={12}
+                            className={cn(
+                              "transition-transform",
+                              !isExpand() ? "rotate-180" : ""
+                            )}
+                          />
                         </span>
-                        Hide replies
+                        {isExpand() ? "Hide replies" : "Show replies"}
                       </span>
-                    ) : (
-                      <span className="mr-1 flex items-center text-sm">
-                        <span className="mr-2">
-                          <ArrowDown size={16} />
-                        </span>
-                        Show replies
-                      </span>
-                    )}
-                  </button>
-                )}
+                    </button>
+                  )}
               </div>
             </div>
           </div>
@@ -219,6 +219,5 @@ const CommentItem: FC<CommentItemProps> = ({
     </div>
   );
 };
-
 
 export default CommentItem;

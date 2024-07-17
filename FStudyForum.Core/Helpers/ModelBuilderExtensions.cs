@@ -1,3 +1,5 @@
+using FStudyForum.Core.Constants;
+using FStudyForum.Core.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,7 +10,7 @@ public static class ModelBuilderExtensions
     public static void SeedDatabase(this ModelBuilder builder)
     {
         var roles = new List<IdentityRole>();
-        foreach (var role in Constants.UserRole.All)
+        foreach (var role in UserRole.ALL)
         {
             roles.Add(new IdentityRole
             {
@@ -18,7 +20,21 @@ public static class ModelBuilderExtensions
             });
         }
 
-        builder.Entity<IdentityRole>().HasData(roles);
+        var categories = new List<Category>();
+        int i = 1;
+        foreach (var category in Major.All)
+        {
+            categories.Add(new Category
+            {
+                Id = i,
+                Name = category,
+                Description = "A major of FPT University",
+                Type = CategoryType.MAJOR
+            });
+            i++;
+        }
+
+        builder.Entity<Category>().HasData(categories);
     }
 
 }

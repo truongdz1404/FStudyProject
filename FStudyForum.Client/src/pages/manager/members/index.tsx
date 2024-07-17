@@ -1,5 +1,4 @@
 import UserService from "@/services/UserService";
-import { User } from "@/types/user";
 import DefaultUser from "@/assets/images/user.png";
 import {
   Card,
@@ -11,31 +10,46 @@ import {
   CardFooter,
   Avatar,
   IconButton,
-  Tooltip
+  Tooltip,
+  Spinner
 } from "@material-tailwind/react";
 import { ChevronsUpDown, Pencil, Search } from "lucide-react";
 import React from "react";
+import useSearchParam from "@/hooks/useSearchParam";
+import { useQuery } from "@tanstack/react-query";
 
 const tableHead = ["Member", "Role", "Action"];
-
+const PAGE_SIZE = 10;
 const MembersPage = () => {
-  const [loading, setLoading] = React.useState(false);
-  const [users, setUsers] = React.useState<User[]>([]);
-  React.useEffect(() => {
-    const fetchTopics = async () => {
-      setLoading(true);
-      try {
-        const paginatedUsers = await UserService.getAll();
+  const [maxPage, setMaxPage] = React.useState(0);
+  const [pageNumber, setPageNumber] = useSearchParam<string>({
+    key: "page",
+    defaultValue: "1"
+  });
 
-        setUsers(paginatedUsers.data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchTopics();
-  }, []);
+  const { data: users } = useQuery({
+    queryKey: ["USER_LIST", { pageNumber }],
+    queryFn: async () => {
+      const result = await UserService.getAll(+pageNumber, PAGE_SIZE);
+      setMaxPage(Math.ceil(result.totalCount / PAGE_SIZE));
+      return result.data;
+    }
+  });
+
+  const handlePrev = () => {
+    let n = +pageNumber;
+    if (n > 1) n--;
+    setPageNumber("" + n);
+  };
+
+  const handleNext = () => {
+    let n = +pageNumber;
+    if (n < maxPage) n++;
+    setPageNumber("" + n);
+  };
+
+  if (!users) return <Spinner className="mx-auto" />;
+
   return (
     <Card className="h-full w-full">
       <CardHeader floated={false} shadow={false} className="rounded-none">
@@ -53,7 +67,7 @@ const MembersPage = () => {
           />
         </div>
       </CardHeader>
-      <CardBody className="overflow-hidden px-0" hidden={loading}>
+      <CardBody className="overflow-hidden px-0">
         <table className="mt-4 w-full min-w-max table-auto text-left">
           <thead>
             <tr>
@@ -100,7 +114,7 @@ const MembersPage = () => {
                     </div>
                   </td>
                   <td className={classes}>
-                    <span className="font-normal opacity-70 text-xs">
+                    <span className="font-normal opacity-70 text-xs uppercase">
                       {roles.length ? roles : "NO ROLE"}
                     </span>
                   </td>
@@ -120,13 +134,23 @@ const MembersPage = () => {
       </CardBody>
       <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
         <Typography variant="small" color="blue-gray" className="font-normal">
-          Page 1 of 10
+          Page {pageNumber} of {maxPage}
         </Typography>
         <div className="flex gap-2">
-          <Button variant="outlined" size="sm">
+          <Button
+            variant="outlined"
+            size="sm"
+            onClick={handlePrev}
+            disabled={+pageNumber == 1}
+          >
             Previous
           </Button>
-          <Button variant="outlined" size="sm">
+          <Button
+            variant="outlined"
+            size="sm"
+            onClick={handleNext}
+            disabled={+pageNumber == maxPage}
+          >
             Next
           </Button>
         </div>
