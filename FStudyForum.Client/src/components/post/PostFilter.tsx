@@ -40,7 +40,7 @@ const PostFilter: React.FC<Props> = ({ setFilter, filter }) => {
             <div
               key={name}
               className={cn(
-                "block p-4 text-sm text-gray-700 hover:bg-blue-gray-100 cursor-pointer",
+                "block p-4 text-sm text-gray-700 hover:bg-blue-gray-50/50 cursor-pointer",
                 filter === name && "bg-blue-gray-50"
               )}
               onClick={() => {

@@ -20,20 +20,16 @@ const HomePage: React.FC = () => {
 
   const { data, fetchNextPage, isPending, isFetchingNextPage } =
     useInfiniteQuery({
-      queryKey: [`home-${filter}-query`],
+      queryKey: ["POST_LIST", "HOME", { filter }],
       queryFn: async ({ pageParam = 1 }) => {
-        try {
-          const posts = await PostService.getPosts(
-            pageParam,
-            LIMIT_SCROLLING_PAGNATION_RESULT,
-            filter
-          );
-          return posts;
-        } catch (e) {
-          return [];
-        }
+        return await PostService.getPosts(
+          pageParam,
+          LIMIT_SCROLLING_PAGNATION_RESULT,
+          filter
+        );
       },
-      getNextPageParam: (_, pages) => pages.length + 1,
+      getNextPageParam: (last, pages) =>
+        last.length ? pages.length + 1 : undefined,
       initialPageParam: 1
     });
   React.useEffect(() => {
@@ -54,7 +50,7 @@ const HomePage: React.FC = () => {
       {posts.map((post, index) => {
         return (
           <div key={index} className="w-full">
-            <div className="hover:bg-gray-50 rounded-lg w-full">
+            <div className="hover:bg-gray-50 rounded-lg w-full cursor-pointer">
               <PostItem key={index} data={post} />
             </div>
             <hr className="my-1 border-blue-gray-50" />
@@ -62,7 +58,11 @@ const HomePage: React.FC = () => {
         );
       })}
       <div ref={ref} className="text-center">
-        {isFetchingNextPage && <Spinner className="mx-auto" />}
+        {isFetchingNextPage ? (
+          <Spinner className="mx-auto" />
+        ) : (
+          !isPending && <span className="text-xs font-light">Nothing more</span>
+        )}  
       </div>
     </ContentLayout>
   );

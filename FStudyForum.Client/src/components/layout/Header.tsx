@@ -30,8 +30,7 @@ import useSignalR from "@/hooks/useSignalR";
 import { Notification } from "@/types/notification";
 import * as signalR from "@microsoft/signalr";
 import NotificationBox from "../notification";
-
-function ProfileMenu() {
+export function ProfileMenu() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -109,16 +108,6 @@ function ProfileMenu() {
   );
 }
 
-const getCreatePath = (pathname: string) => {
-  const segments = pathname.split("/").filter(s => s !== "");
-  switch (segments[0]) {
-    case "topic":
-      return `${segments[0]}/${segments[1]}/submit`;
-    default:
-      return "/submit";
-  }
-};
-
 const navListItems = [
   {
     label: "Create",
@@ -134,12 +123,12 @@ const navListItems = [
   }
 ];
 
-function NavList() {
-  const [isNotificationOpen, setIsNotificationOpen] = React.useState(false);
+export function NavList() {
   const { pathname } = useLocation();
-  const { on,off,invokeMethod,connectionState } = useSignalR();
   const { user } = useAuth();
-  const [ notifications, setNotifications ] = React.useState<Notification[]>([]);
+  const { on, off, invokeMethod, connectionState } = useSignalR();
+  const [notifications, setNotifications] = React.useState<Notification[]>([]);
+  const [isNotificationOpen, setIsNotificationOpen] = React.useState(false);
 
   const handleMarkAsRead = (id: number) => {
     invokeMethod("MarkNotificationAsRead", id);
@@ -151,13 +140,14 @@ function NavList() {
   };
 
   const handleMarkAllAsRead = () => {
-     invokeMethod("MarkAllNotificationsAsRead", user?.username);
-  }
+    invokeMethod("MarkAllNotificationsAsRead", user?.username);
+    setNotifications(notifications.map(noti => ({ ...noti, isRead: true })));
+  };
 
   const handleClearNotifications = () => {
-     invokeMethod("ClearNotifications", user?.username);
-     setNotifications([]);
-   };
+    invokeMethod("ClearNotifications", user?.username);
+    setNotifications([]);
+  };
 
   const handleDeleteNotification = (id: number) => {
     invokeMethod("DeleteNotification", id)
@@ -168,7 +158,10 @@ function NavList() {
   };
 
   const InvokeNotification = React.useCallback(() => {
-    if (connectionState===signalR.HubConnectionState.Connected){
+    if (
+      user?.username &&
+      connectionState === signalR.HubConnectionState.Connected
+    ) {
       invokeMethod("GetAllNotifications", user?.username);
     }
   }, [invokeMethod, user?.username, connectionState]);
@@ -177,24 +170,35 @@ function NavList() {
     InvokeNotification();
     const handleGetAllNotifications = (obj: Notification[]) => {
       setNotifications(obj);
-    }
+    };
 
     const handleGetNewestNotification = (obj: Notification) => {
       setNotifications(prev => [obj, ...prev]);
-    }
-  
+    };
+
     on("ReceiveAllNotification", handleGetAllNotifications);
     on("ReceiveNewestNotification", handleGetNewestNotification);
-  
+
     return () => {
       off("ReceiveAllNotification", handleGetAllNotifications);
       off("ReceiveNewestNotification", handleGetNewestNotification);
     };
-  }, [on, off, user?.username, connectionState, invokeMethod, InvokeNotification]); 
-
+  }, [on, off, invokeMethod, InvokeNotification]);
 
   const toggleNotification = () => {
     setIsNotificationOpen(!isNotificationOpen);
+  };
+
+  const allNotificationsRead = notifications.every(noti => noti.isRead);
+
+  const submitPath = (pathname: string) => {
+    const segments = pathname.split("/").filter(s => s !== "");
+    switch (segments[0]) {
+      case "topic":
+        return `${segments[0]}/${segments[1]}/submit`;
+      default:
+        return "/submit";
+    }
   };
   return (
     <>
@@ -209,7 +213,10 @@ function NavList() {
                 className="flex p-2 items-center gap-2 lg:rounded-full w-full font-medium text-sm normal-case text-blue-gray-700"
                 onClick={toggleNotification}
               >
-                {React.createElement(((notifications.length>0) ? BellDot : icon), { className: "h-5 w-5" })}
+                {React.createElement(
+                  (allNotificationsRead) ? icon : BellDot,
+                  { className: "h-5 w-5" }
+                )}
                 <span className={cn(!showLabel && "lg:hidden")}>{label}</span>
               </Button>
             );
@@ -217,7 +224,7 @@ function NavList() {
             return (
               <Link
                 key={label}
-                to={path === "/submit" ? getCreatePath(pathname) : path}
+                to={path === "/submit" ? submitPath(pathname) : path}
                 className="w-full"
               >
                 <Button
@@ -236,8 +243,8 @@ function NavList() {
           }
         })}
       </div>
-      <NotificationBox 
-        isOpen={isNotificationOpen} 
+      <NotificationBox
+        isOpen={isNotificationOpen}
         notifications={notifications}
         MarkAllAsRead={handleMarkAllAsRead}
         MarkAsRead={handleMarkAsRead}
@@ -266,7 +273,7 @@ const Header = React.memo(({ openSidebar }: HeaderProps) => {
 
   return (
     <Navbar className="max-w-screen-3xl rounded-none p-1 shadow-sm z-50">
-      <div className="relative mx-auto flex items-center justify-between text-blue-gray-900">
+      <div className="relative mx-auto flex items-center justify-between text-blue-gray-800">
         <div className="flex items-center w-1/4 lg:w-1/3">
           <IconButton
             size="sm"
@@ -279,17 +286,12 @@ const Header = React.memo(({ openSidebar }: HeaderProps) => {
           <Link
             to="/"
             className="mx-2 xl:mx-4 cursor-pointer py-1.5 font-medium flex items-center select-none"
-            onClick={() => {
-              sessionStorage.clear();
-            }}
           >
             <Icons.logo className="h-8 w-8" />
-            <span className="hidden text-zinc-700 text-md font-semibold md:block">
-              Study
-            </span>
+            <span className="hidden text-md font-semibold md:block">Study</span>
           </Link>
         </div>
-        <div className="w-2/3 xl:w-2/5 max-w-screen-md hidden md:block">
+        <div className="w-2/3 xl:w-2/5 max-w-screen-md hidden md:block transition-all duration-300 ease-in-out">
           <SearchInput />
         </div>
 

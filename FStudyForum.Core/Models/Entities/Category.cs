@@ -12,7 +12,6 @@ public class Category : BaseEntity
     public required string Description { get; set; }
     [MaxLength(50)]
     public required string Type { get; set; }
-    // public bool IsDeleted { get; set; }
     public virtual ICollection<Topic> Topics { get; set; } = new List<Topic>();
 
 }

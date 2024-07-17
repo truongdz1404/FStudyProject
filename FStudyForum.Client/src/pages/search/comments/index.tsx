@@ -9,7 +9,7 @@ import { Spinner } from "@material-tailwind/react";
 import { useLocation } from "react-router-dom";
 import useSearchParam from "@/hooks/useSearchParam";
 import CommentFilter from "@/components/comment/CommentFilter";
-import SearchPost from "@/components/search/SearchPost";
+import SearchComment from "@/components/search/SearchComment";
 
 const useQueryParams = () => {
   return new URLSearchParams(useLocation().search);
@@ -29,10 +29,10 @@ const SearchCommentPage: React.FC = () => {
     data: comments,
     fetchNextPage,
     isPending,
-    isFetching,
+    isFetchingNextPage,
     refetch
   } = useInfiniteQuery({
-    queryKey: [`search-comments-${filter}-query`, keyword],
+    queryKey: ["COMMENT_LIST", "SEARCH", { filter, keyword }],
     queryFn: async ({ pageParam = 1 }) => {
       if (!keyword) return { data: [], nextPage: undefined, hasMore: false };
       try {
@@ -58,15 +58,8 @@ const SearchCommentPage: React.FC = () => {
               : undefined,
           hasMore: comments.length === LIMIT_SCROLLING_PAGNATION_RESULT
         };
-      } catch (error: unknown) {
-        if (
-          error instanceof Error &&
-          error.message === "Request failed with status code 404"
-        ) {
-          return { data: [], nextPage: undefined, hasMore: false };
-        } else {
-          throw error;
-        }
+      } catch (error) {
+        return { data: [], nextPage: undefined, hasMore: false };
       }
     },
     getNextPageParam: lastPage =>
@@ -78,36 +71,37 @@ const SearchCommentPage: React.FC = () => {
   const results = comments?.pages.flatMap(page => page.data) || [];
 
   React.useEffect(() => {
-    if (inView && !isFetching) {
+    if (inView) {
       fetchNextPage();
     }
-  }, [inView, isFetching, fetchNextPage]);
+  }, [inView, fetchNextPage]);
 
   React.useEffect(() => {
     refetch();
   }, [keyword, refetch]);
 
   if (isPending) return <Spinner className="mx-auto" />;
-  console.table(results);
-
+  if (results.length === 0 && !isPending)
+    return <NotFoundSearch keyword={keyword} />;
   return (
     <>
-      <div className="relative flex text-left z-20">
+      <div className="relative flex text-left z-20 mb-1">
         <CommentFilter setFilter={setFilter} filter={filter} />
       </div>
-      {results.length === 0 && !isPending && (
-        <NotFoundSearch keyword={keyword} />
-      )}
       {results.map(({ post, comment }, index) => (
         <div key={index} className="w-full ">
-          <div className="hover:bg-gray-100 rounded-lg w-full py-3">
-            {/* <SearchPost key={index} data={post} comment={comment} />. */}
+          <div className="hover:bg-gray-100 rounded-lg w-full">
+            <SearchComment keyword={keyword} data={post} comment={comment} />
           </div>
           <hr className="my-1 border-blue-gray-50" />
         </div>
       ))}
       <div ref={ref} className="text-center">
-        {isFetching && <Spinner className="mx-auto" />}
+        {isFetchingNextPage ? (
+          <Spinner className="mx-auto" />
+        ) : (
+          !isPending && <span className="text-xs font-light">Nothing more</span>
+        )}
       </div>
     </>
   );

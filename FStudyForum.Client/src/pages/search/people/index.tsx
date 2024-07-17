@@ -4,8 +4,9 @@ import { useInView } from "react-intersection-observer";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { LIMIT_SCROLLING_PAGNATION_RESULT } from "@/helpers/constants";
 import NotFoundSearch from "@/components/layout/NotFoundSearch";
-import { Spinner } from "@material-tailwind/react";
+import { Avatar, Spinner } from "@material-tailwind/react";
 import { Link, useLocation } from "react-router-dom";
+import DefaultUser from "@/assets/images/user.png";
 
 const useQuery = () => {
   return new URLSearchParams(useLocation().search);
@@ -13,74 +14,53 @@ const useQuery = () => {
 
 const SearchUserPage: React.FC = () => {
   const { ref, inView } = useInView();
-  const [hasMore, setHasMore] = React.useState(true);
   const query = useQuery();
   const keyword = query.get("keyword") ?? "";
 
-  const { data, fetchNextPage, isPending, isFetchingNextPage, refetch } =
+  const { data, fetchNextPage, isPending, isFetchingNextPage } =
     useInfiniteQuery({
-      queryKey: [`search-people-query`, keyword],
+      queryKey: ["PEOPLE_LIST", "SEARCH", { keyword }],
       queryFn: async ({ pageParam = 1 }) => {
         try {
-          const result = await SearchService.searchUsers(
+          return await SearchService.searchUsers(
             keyword || "",
             pageParam,
             LIMIT_SCROLLING_PAGNATION_RESULT
           );
-          if (result.length < LIMIT_SCROLLING_PAGNATION_RESULT) {
-            setHasMore(false);
-          }
-          return result;
-        } catch (error) {
-          if (
-            error instanceof Error &&
-            error.message === "Request failed with status code 404"
-          ) {
-            setHasMore(false);
-            return [];
-          } else {
-            throw error;
-          }
+        } catch (e) {
+          return [];
         }
       },
-      getNextPageParam: (_, pages) => pages.length + 1,
+      getNextPageParam: (last, pages) =>
+        last.length ? pages.length + 1 : undefined,
       initialPageParam: 1
     });
   const users = data?.pages.flatMap(page => page) ?? [];
 
   React.useEffect(() => {
-    if (inView && hasMore) {
+    if (inView) {
       fetchNextPage();
     }
-  }, [inView, fetchNextPage, hasMore]);
-
-  React.useEffect(() => {
-    setHasMore(true);
-    refetch();
-  }, [keyword, refetch]);
+  }, [inView, fetchNextPage]);
 
   const uniqueTopics = Array.from(new Set(users.map(t => t.username))).map(
     name => users.find(t => t.username === name)
   );
 
   if (isPending) return <Spinner className="mx-auto" />;
-
+  if (uniqueTopics.length === 0) return <NotFoundSearch keyword={keyword} />;
   return (
     <>
-      {uniqueTopics.length === 0 && <NotFoundSearch keyword={keyword} />}
       {uniqueTopics.map((user, index) => {
         return (
           <Link to={`/user/${user?.username}`} key={user?.username}>
             <div key={index} className="w-full flex flex-col item-center">
-              <div className="hover:bg-gray-100 rounded-lg w-full py-6 flex items-center">
-                <img
-                  src={user?.avatar || "/src/assets/images/user.png"}
-                  alt={user?.username}
-                  className="ml-3 w-12 h-12 rounded-full mr-4"
+              <div className="hover:bg-gray-100 rounded-lg w-full p-4 gap-x-4 flex items-center text-blue-gray-800">
+                <Avatar
+                  src={user?.avatar || DefaultUser}
+                  className="w-10 h-10"
                 />
-                <div>
-                  <h3 className="font-semibold mb-1">{user?.username}</h3>
-                </div>
+                <div className="text-sm font-semibold">u/{user?.username}</div>
               </div>
               <hr className="my-1 border-blue-gray-50 w-full" />
             </div>
@@ -91,9 +71,7 @@ const SearchUserPage: React.FC = () => {
         {isFetchingNextPage ? (
           <Spinner className="mx-auto" />
         ) : (
-          <span className="text-xs font-light">
-            {uniqueTopics.length !== 0 && !isPending && "Nothing more"}
-          </span>
+          !isPending && <span className="text-xs font-light">Nothing more</span>
         )}
       </div>
     </>

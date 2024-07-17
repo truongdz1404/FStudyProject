@@ -13,6 +13,7 @@ using FStudyForum.Infrastructure.Repositories;
 using FStudyForum.Core.Models.DTOs;
 using FStudyForum.Core.Models.DTOs.Topic;
 using FStudyForum.Core.Models.DTOs.Search;
+using FStudyForum.Core.Models.DTOs.Profile;
 namespace FStudyForum.Infrastructure.Services;
 
 public class UserService : IUserService
@@ -55,7 +56,7 @@ public class UserService : IUserService
             claims.Add(new Claim(ClaimTypes.Role, role));
         return new TokenDTO()
         {
-            AccessToken = _tokenService.GenerateAccessToken(claims),
+        AccessToken = _tokenService.GenerateAccessToken(claims),
             RefreshToken = user.RefreshToken
         };
     }
@@ -90,10 +91,15 @@ public class UserService : IUserService
             Username = user.UserName!,
             Email = user.Email!,
             Roles = await _userManager.GetRolesAsync(user),
-            Mods = (await _userRepository.GetModeratedTopics(user.UserName!)).Select(p => p.Name).ToList(),
-            Banneds = (await _userRepository.GetBannedTopics(user.UserName!))
-                .Select(b => new TopicBanDTO() { TopicName = b.Topic.Name, BannedTime = b.BannedTime })
-                .ToList(),
+            Mods = (await _userRepository.GetModeratedTopics(user.UserName!)).Select(topic => new TopicDTO
+                {
+                    Id = topic.Id,
+                    Name = topic.Name,
+                    Description = topic.Description,
+                    Avatar = topic.Avatar,
+                    Banner = topic.Panner,
+                    Categories = topic.Categories.Select(c => c.Id).ToList()
+                }),
             Avatar = profile?.Avatar ?? string.Empty
         };
     }
@@ -224,17 +230,64 @@ public class UserService : IUserService
         return userDTOs;
     }
 
-    public async Task<IEnumerable<UserDTO>> GetAllUser()
+    public async Task<IEnumerable<ProfileDTO>> Search(string keyword, int size)
     {
-        var users = await _userRepository.GetAll();
-        var userDTOs = new List<UserDTO>();
-        foreach (var user in users)
-            userDTOs.Add(await GetProfileByUser(user));
-        return userDTOs;
+        var users = await _userRepository.Search(keyword, size);
+        var profileDTOs = new List<ProfileDTO>();
+        if (users != null)
+        {
+            foreach (var user in users)
+            {
+                var profileDTO = _mapper.Map<ProfileDTO>(user.Profile);
+                profileDTO.Username = user.UserName;
+                profileDTO.PostCount = user.CreatedPosts.Count;
+                profileDTO.CommentCount = user.Comments.Count;
+                profileDTOs.Add(profileDTO);
+            }
+        }
+        return profileDTOs;
     }
 
-    // public async Task<string> GetUserAvatar(string username){
-    //     var user = await _userManager.FindByNameAsync(username);
-    //     return user?.Avatar;
-    // }
+    public async Task<IEnumerable<UserStatisticsDTO>> GetUserStatisticsDTO(string action, int date)
+    {
+        DateTime startDate, endDate = DateTime.Now;
+        switch (action)
+        {
+            case "day":
+                startDate = endDate.AddDays(-date);
+                break;
+            case "lifetime":
+                startDate = DateTime.MinValue;
+                break;
+            case "year":
+                startDate = new DateTime(date, 1, 1);
+                endDate = new DateTime(date, 12, 31);
+                break;
+            case "month":
+                startDate = new DateTime(endDate.Year, date, 1);
+                int daysInMonth = DateTime.DaysInMonth(endDate.Year, date);
+                endDate = new DateTime(endDate.Year, date, daysInMonth);
+                break;
+            default:
+                throw new Exception("Invalid period");
+        }
+        var users = await _profileRepository.GetStatisticsProfile(startDate, endDate);
+        var groupedSthatistics = users.GroupBy(u => u.CreatedAt.Date)
+            .Select(g => new UserStatisticsDTO
+            {
+                Date = DateOnly.FromDateTime(g.Key),
+                TotalNumberRegistrants = g.Count()
+            });
+        var allDates = Enumerable.Range(0, (endDate.Date - startDate.Date).Days + 1)
+                .Select(offset => startDate.Date.AddDays(offset))
+                .ToList();
+        var completeStatistics = allDates.Select(date =>
+                groupedSthatistics.FirstOrDefault(stat => stat.Date == DateOnly.FromDateTime(date))
+                ?? new UserStatisticsDTO
+                {
+                    Date = DateOnly.FromDateTime(date),
+                    TotalNumberRegistrants = 0
+                });
+        return completeStatistics;
+    }
 }

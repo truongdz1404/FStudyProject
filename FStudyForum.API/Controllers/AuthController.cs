@@ -21,7 +21,6 @@ public class AuthController : ControllerBase
     private readonly IIdentityService _identityService;
     private readonly IEmailService _emailService;
 
-
     public AuthController(
         IOptions<JwtConfig> jwtConfig,
         IUserService accountService,
@@ -34,7 +33,6 @@ public class AuthController : ControllerBase
         _emailService = emailService;
 
     }
-
 
     [HttpPost("login")]
     public async Task<IActionResult> Authenticate([FromBody] LoginDTO loginDTO)
@@ -62,8 +60,6 @@ public class AuthController : ControllerBase
                 Message = ex.Message
             });
         }
-
-
     }
 
     [HttpPost("login-google")]
@@ -72,7 +68,7 @@ public class AuthController : ControllerBase
         try
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            var user = await _userService.FindOrCreateUserAsync(externalAuth, [UserRole.User]);
+            var user = await _userService.FindOrCreateUserAsync(externalAuth, [UserRole.USER]);
             if (user != null)
             {
                 var tokenDTO = await _userService
@@ -274,7 +270,7 @@ public class AuthController : ControllerBase
                 });
             }
         }
-        var isSucceed = await _identityService.CreateUserAsync(registerDTO, [UserRole.User]);
+        var isSucceed = await _identityService.CreateUserAsync(registerDTO, [UserRole.USER]);
         if (!isSucceed)
         {
             return StatusCode(500, new Response

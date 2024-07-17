@@ -59,6 +59,7 @@ namespace FStudyForum.Infrastructure.Migrations
                     Name = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    NeedReview = table.Column<bool>(type: "bit", nullable: false),
                     Panner = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
                     Avatar = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -174,6 +175,30 @@ namespace FStudyForum.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "tblFeeds",
+                schema: "dbo",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreaterId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_tblFeeds", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_tblFeeds_tblUsers_CreaterId",
+                        column: x => x.CreaterId,
+                        principalSchema: "dbo",
+                        principalTable: "tblUsers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "tblModerators",
                 schema: "dbo",
                 columns: table => new
@@ -257,8 +282,10 @@ namespace FStudyForum.Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsApproved = table.Column<bool>(type: "bit", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    TopicId = table.Column<long>(type: "bigint", nullable: false),
+                    IsDeletedForever = table.Column<bool>(type: "bit", nullable: false),
+                    TopicId = table.Column<long>(type: "bigint", nullable: true),
                     CreaterId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
@@ -271,8 +298,7 @@ namespace FStudyForum.Infrastructure.Migrations
                         column: x => x.TopicId,
                         principalSchema: "dbo",
                         principalTable: "tblTopics",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_tblPosts_tblUsers_CreaterId",
                         column: x => x.CreaterId,
@@ -465,6 +491,33 @@ namespace FStudyForum.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "tblTopicFeeds",
+                schema: "dbo",
+                columns: table => new
+                {
+                    FeedsId = table.Column<long>(type: "bigint", nullable: false),
+                    TopicsId = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_tblTopicFeeds", x => new { x.FeedsId, x.TopicsId });
+                    table.ForeignKey(
+                        name: "FK_tblTopicFeeds_tblFeeds_FeedsId",
+                        column: x => x.FeedsId,
+                        principalSchema: "dbo",
+                        principalTable: "tblFeeds",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_tblTopicFeeds_tblTopics_TopicsId",
+                        column: x => x.TopicsId,
+                        principalSchema: "dbo",
+                        principalTable: "tblTopics",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "tblAttachments",
                 schema: "dbo",
                 columns: table => new
@@ -472,7 +525,9 @@ namespace FStudyForum.Infrastructure.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Type = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    FileUrl = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    Size = table.Column<int>(type: "int", nullable: false),
+                    Url = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     PostId = table.Column<long>(type: "bigint", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
@@ -641,9 +696,9 @@ namespace FStudyForum.Infrastructure.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "01d2a80c-eb93-48eb-a10a-4f055f4d62c4", null, "User", "USER" },
-                    { "5ad9f1ba-35e3-4645-b22f-14f2820b768a", null, "Moderator", "MODERATOR" },
-                    { "7f64d9ec-76b5-40b8-8392-77c04ff948ce", null, "Admin", "ADMIN" }
+                    { "71808513-d7e3-4624-b0bd-aed376aa5dd5", null, "User", "USER" },
+                    { "94fce8a7-ff8c-41f4-840c-b735387aec5a", null, "Admin", "ADMIN" },
+                    { "ebf509d9-d94c-43c8-a423-d7fb203c5aa6", null, "Moderator", "MODERATOR" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -681,6 +736,12 @@ namespace FStudyForum.Infrastructure.Migrations
                 schema: "dbo",
                 table: "tblDonations",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_tblFeeds_CreaterId",
+                schema: "dbo",
+                table: "tblFeeds",
+                column: "CreaterId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_tblModerators_ModeratedTopicsId",
@@ -767,6 +828,12 @@ namespace FStudyForum.Infrastructure.Migrations
                 name: "IX_tblTopicCategories_TopicsId",
                 schema: "dbo",
                 table: "tblTopicCategories",
+                column: "TopicsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_tblTopicFeeds_TopicsId",
+                schema: "dbo",
+                table: "tblTopicFeeds",
                 column: "TopicsId");
 
             migrationBuilder.CreateIndex(
@@ -881,6 +948,10 @@ namespace FStudyForum.Infrastructure.Migrations
                 schema: "dbo");
 
             migrationBuilder.DropTable(
+                name: "tblTopicFeeds",
+                schema: "dbo");
+
+            migrationBuilder.DropTable(
                 name: "tblUserClaims",
                 schema: "dbo");
 
@@ -902,6 +973,10 @@ namespace FStudyForum.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "tblCategories",
+                schema: "dbo");
+
+            migrationBuilder.DropTable(
+                name: "tblFeeds",
                 schema: "dbo");
 
             migrationBuilder.DropTable(

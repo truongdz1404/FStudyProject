@@ -1,10 +1,9 @@
-import { TopicBan } from "./topic";
+import { Topic } from "./topic";
 
 export interface User {
   username: string;
   email: string;
   roles: Array<string>;
-  mods: Array<string>;
-  banneds: Array<TopicBan>;
+  mods: Array<Topic>;
   avatar: string;
 }

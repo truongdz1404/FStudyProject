@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.SignalR;
 
 namespace FStudyForum.API.Hubs;
-public sealed class PostHub : Hub
+public sealed class TestHub : Hub
 {
     public override async Task OnConnectedAsync()
     {

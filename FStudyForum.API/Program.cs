@@ -99,5 +99,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.MapHub<NotificationHub>("/notification-hub");
-app.MapHub<PostHub>("/post-hub");
+app.MapHub<TestHub>("/test-hub");
 app.Run();

@@ -8,5 +8,7 @@ namespace FStudyForum.Core.Interfaces.IRepositories
         Task SaveUserDonate(Donation donation);
         Task<Donation?> GetDonationByTid(string tid);
         Task<Donation?> GetDonationByUser(string username);
+        Task DeleteUserDonation(Donation donation);
+        Task<IEnumerable<Donation>> GetStatisticsDonations(DateTime startDate, DateTime endDate);
     }
 }

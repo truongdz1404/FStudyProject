@@ -58,7 +58,6 @@ namespace FStudyForum.API.Controllers
         }
 
 
-
         [HttpGet("{id}"), Authorize]
         public async Task<IActionResult> GetPost([FromRoute] long id)
         {
@@ -91,26 +90,19 @@ namespace FStudyForum.API.Controllers
             }
         }
 
-        [HttpDelete, Authorize]
-        public async Task<IActionResult> RemovePost([FromQuery] long id)
+        [HttpPost("move-trash/{id}"), Authorize]
+        public async Task<IActionResult> MovePostToTrash([FromRoute] long id)
         {
             try
             {
-                var userName = User.Identity?.Name ?? throw new Exception("User is not authenticated!");
-                var post = await _postService.DeletePostById(id, userName);
-                if (post == null)
-                {
-                    return NotFound(new Response
-                    {
-                        Status = ResponseStatus.ERROR,
-                        Message = "Post not found",
-                    });
-                }
+                var userName = User.Identity?.Name
+                    ?? throw new Exception("User is not authenticated!");
+                await _postService.MovePostToTrash(id, userName);
+
                 return Ok(new Response
                 {
-                    Message = "Get Post successfully",
+                    Message = "Move post to trash successfully",
                     Status = ResponseStatus.SUCCESS,
-                    Data = post
                 });
             }
             catch (Exception ex)
@@ -123,6 +115,53 @@ namespace FStudyForum.API.Controllers
             }
         }
 
+        [HttpPost("restore-trash/{id}"), Authorize]
+        public async Task<IActionResult> RestorePostFromTrash([FromRoute] long id)
+        {
+            try
+            {
+                var userName = User.Identity?.Name
+                    ?? throw new Exception("User is not authenticated!");
+                await _postService.RestorePostFromTrash(id, userName);
+
+                return Ok(new Response
+                {
+                    Message = "Move post to trash successfully",
+                    Status = ResponseStatus.SUCCESS,
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = ex.Message
+                });
+            }
+        }
+        [HttpDelete("delete/{id}"), Authorize]
+        public async Task<IActionResult> DeletePost([FromRoute] long id)
+        {
+            try
+            {
+                var userName = User.Identity?.Name
+                    ?? throw new Exception("User is not authenticated!");
+                await _postService.DeletePost(id, userName);
+                return Ok(new Response
+                {
+                    Message = "Delete Post successfully",
+                    Status = ResponseStatus.SUCCESS,
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = ex.Message
+                });
+            }
+        }
         [HttpPost("create"), Authorize]
         public async Task<IActionResult> CreatePost([FromBody] CreatePostDTO postDto)
         {
@@ -138,6 +177,30 @@ namespace FStudyForum.API.Controllers
                     Message = "Create post successfully",
                     Status = ResponseStatus.SUCCESS,
                     Data = post
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = ex.Message
+                });
+            }
+        }
+
+        [HttpPatch("edit/{postId}"), Authorize]
+        public async Task<IActionResult> EditPost([FromRoute] long postId, [FromBody] EditPostDTO postDTO)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            try
+            {
+                await _postService.EditPost(postId, postDTO);
+
+                return Ok(new Response
+                {
+                    Message = "Edit post successfully",
+                    Status = ResponseStatus.SUCCESS,
                 });
             }
             catch (Exception ex)
@@ -204,19 +267,12 @@ namespace FStudyForum.API.Controllers
                 var userName = User.FindFirstValue(ClaimTypes.Name)
                     ?? throw new Exception("User is not authenticated!");
                 var posts = await _postService.GetRecentPostsByUser(userName);
-                if (posts.IsNullOrEmpty())
-                {
-                    return NotFound(new Response
-                    {
-                        Status = ResponseStatus.ERROR,
-                        Message = "Posts not found",
-                    });
-                }
+
                 return Ok(new Response
                 {
                     Message = "Get Posts successfully",
                     Status = ResponseStatus.SUCCESS,
-                    Data = posts
+                    Data = posts ?? []
                 });
             }
             catch (Exception ex)
@@ -297,6 +353,32 @@ namespace FStudyForum.API.Controllers
                 });
             }
         }
+        [HttpGet("feed/{feedName}")]
+        public async Task<IActionResult> GetPostInFeed([FromQuery] QueryPostDTO query, [FromRoute] string feedName)
+        {
+            try
+            {
+                var userName = User.FindFirstValue(ClaimTypes.Name)
+                    ?? throw new Exception("User is not authenticated!");
+                var posts = await _postService.GetPostsInFeed(userName, feedName, query);
+
+                return Ok(new Response
+                {
+                    Message = "Get Posts successfully",
+                    Status = ResponseStatus.SUCCESS,
+                    Data = posts
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = ex.Message
+                });
+            }
+        }
+
         [HttpDelete("remove-save/{postID}"), Authorize]
         public async Task<IActionResult> RemoveSavedPost([FromRoute] int postID)
         {
@@ -311,7 +393,7 @@ namespace FStudyForum.API.Controllers
                                .ToList();
                     var responseNotFound = new Response
                     {
-                        Status = (int)HttpStatusCode.BadRequest + "",
+                        Status = ResponseStatus.ERROR,
                         Message = string.Join("; ", errors)
                     };
                     return BadRequest(responseNotFound);
@@ -323,14 +405,14 @@ namespace FStudyForum.API.Controllers
                     {
                         Data = post,
                         Message = "User is not found.",
-                        Status = (int)HttpStatusCode.NotFound + ""
+                        Status = ResponseStatus.ERROR
                     });
                 }
                 return Ok(new Response
                 {
                     Data = post,
                     Message = "Removed from saved",
-                    Status = (int)HttpStatusCode.OK + "",
+                    Status = ResponseStatus.SUCCESS,
                 });
             }
             catch (Exception ex)
@@ -359,7 +441,7 @@ namespace FStudyForum.API.Controllers
                     };
                     return BadRequest(responseNotFound);
                 }
-                var isPostExists = await _postService.IsPostExists(new SavePostDTO()
+                var isPostExists = await _postService.IsPostSaved(new SavePostDTO()
                 { UserName = username, PostId = postId });
                 return Ok(new Response
                 {
@@ -408,5 +490,29 @@ namespace FStudyForum.API.Controllers
                 });
             }
         }
+        [HttpGet("statistics={action}&date={date}")]
+        public async Task<IActionResult> GetPostStatics(string action, int date)
+        {
+            try
+            {
+                var postStatistics = await _postService.GetPostStatisticsDTO(action, date);
+
+                return Ok(new Response
+                {
+                    Data = postStatistics,
+                    Message = "Get post statistics successfully",
+                    Status = ResponseStatus.SUCCESS
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = ex.Message
+                });
+            }
+        }
+
     }
 }

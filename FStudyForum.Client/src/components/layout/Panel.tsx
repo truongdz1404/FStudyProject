@@ -3,7 +3,7 @@ import { FC, PropsWithChildren } from "react";
 
 const Panel: FC<PropsWithChildren> = ({ children }) => {
   return (
-    <Card className="mx-4 rounded-lg shadow-none bg-blue-gray-50/50 max-h-full overflow-y-auto scrollbar">
+    <Card className="mx-4 rounded-lg shadow-none bg-blue-gray-50/50 max-h-full overflow-y-auto scrollbar overflow-x-hidden">
       {children}
     </Card>
   );

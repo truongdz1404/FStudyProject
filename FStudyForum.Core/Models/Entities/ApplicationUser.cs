@@ -21,4 +21,5 @@ public class ApplicationUser : IdentityUser
     public virtual ICollection<TopicBan> BannedByTopics { get; set; } = new List<TopicBan>();
     public virtual HubConnection? HubConnection { get; set; }
     public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+    public virtual ICollection<Feed> Feeds { get; set; } = new List<Feed>();
 }

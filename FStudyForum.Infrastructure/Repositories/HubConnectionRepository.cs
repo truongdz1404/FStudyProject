@@ -31,7 +31,6 @@ namespace FStudyForum.Infrastructure.Services
             else
             {
                 existingConnection.ConnectionId = hubConnectionDto.ConnectionId;
-                _dbContext.HubConnections.Update(existingConnection);
             }
             await _dbContext.SaveChangesAsync();
         }
@@ -43,10 +42,28 @@ namespace FStudyForum.Infrastructure.Services
                 ?? throw new Exception("User not found");
 
             var connection = await _dbContext.HubConnections
-                .FirstOrDefaultAsync(c => c.User.Id == user.Id)
-                ?? throw new Exception("Connection not found");
-            _dbContext.HubConnections.Remove(connection);
-            await _dbContext.SaveChangesAsync();
+                .FirstOrDefaultAsync(c => c.User.Id == user.Id);
+
+            if (connection != null)
+            {
+                connection.ConnectionId = string.Empty;
+                await _dbContext.SaveChangesAsync();
+            }
+            else
+            {
+                throw new Exception("Connection not found");
+            }
+        }
+
+        public async Task<IEnumerable<HubConnectionDTO>> GetAllConnections()
+        {
+            return await _dbContext.HubConnections
+                .Select(c => new HubConnectionDTO
+                {
+                    ConnectionId = c.ConnectionId,
+                    Username = c.User.UserName!
+                })
+                .ToListAsync();
         }
     }
 }

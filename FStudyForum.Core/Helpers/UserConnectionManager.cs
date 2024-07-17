@@ -11,18 +11,15 @@ namespace FStudyForum.Core.Helpers
     public class UserConnectionManager : IUserConnectionManager
     {
         private readonly ConnectionDictionary<string, string> _userConnections;
-        private readonly IUserService _userService;
-        private readonly IHubConnectionRepository _hubConnectionService;
+        private readonly IHubConnectionRepository _hubConnectionRepository;
         private readonly UserManager<ApplicationUser> _userManager;
 
         public UserConnectionManager(
-            IUserService userService,
             IHubConnectionRepository hubConnectionService, 
             UserManager<ApplicationUser> userManager,
             ConnectionDictionary<string, string> userConnections)
         {
-            _userService = userService;
-            _hubConnectionService = hubConnectionService;
+            _hubConnectionRepository = hubConnectionService;
             _userManager = userManager;
             _userConnections = userConnections;
         }
@@ -31,16 +28,27 @@ namespace FStudyForum.Core.Helpers
         {
             var user = await _userManager.FindByNameAsync(username)
                 ?? throw new Exception("User not found");
-            await _hubConnectionService.AddOrUpdateConnection(new HubConnectionDTO { ConnectionId = connectionId, Username = username });
+            await _hubConnectionRepository.AddOrUpdateConnection(new HubConnectionDTO { ConnectionId = connectionId, Username = username });
             _userConnections.AddOrUpdate(username, connectionId, (key, oldValue) => connectionId);
         }
 
-        public IEnumerable<string> GetAllConnections()
+        public async Task SynchronizeUserConnections()
         {
-            foreach (var connection in _userConnections)
+            var connections = await _hubConnectionRepository.GetAllConnections();
+            foreach (var connection in connections)
             {
-                yield return connection.Key;
+                _userConnections.TryGetValue(connection.Username, out var connectionId);
+                if (connectionId != connection.ConnectionId)
+                {
+                    _userConnections.AddOrUpdate(connection.Username, connection.ConnectionId, (key, oldValue) => connection.ConnectionId);
+                }
             }
+        }
+
+        public async Task<IEnumerable<string>> GetAllConnections()
+        {
+            var connections = await _hubConnectionRepository.GetAllConnections();
+            return connections.Select(c => c.Username);
         }
 
         public async Task<string> GetUserConnection(string username)
@@ -62,13 +70,13 @@ namespace FStudyForum.Core.Helpers
             {
                 if (connection.Key == username)
                 {
-                    _userConnections.TryRemove(connection.Key, out _);
+                    _userConnections[key: username] = string.Empty;
                     deleted = true;
                 }
             }
             if (deleted)
             {
-                await _hubConnectionService.RemoveConnection(username);
+                await _hubConnectionRepository.RemoveConnection(username);
             }
         }
     }

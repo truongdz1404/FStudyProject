@@ -4,6 +4,7 @@ using FStudyForum.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using FStudyForum.Core.Models.DTOs.Search;
 using FStudyForum.Core.Helpers;
+using FStudyForum.Core.Models.DTOs.User;
 
 
 namespace FStudyForum.Infrastructure.Repositories;
@@ -28,6 +29,17 @@ public class UserRepository(ApplicationDBContext dbContext)
                .ToListAsync();
     }
 
+    public async Task<IEnumerable<ApplicationUser>> GetUsers(QueryUserDTO query)
+    {
+        IQueryable<ApplicationUser> queryable = _dbContext.Users;
+        if (query.Search != null)
+            queryable = queryable.Where(u => u.UserName!.Contains(query.Search.Trim()));
+        return await queryable
+               .Paginate(query.PageNumber, query.PageSize)
+               .Sort(query.OrderBy)
+               .ToListAsync();
+    }
+
     public async Task<IEnumerable<Topic>> GetModeratedTopics(string username)
     {
         var user = await _dbContext.Users.Include(u => u.ModeratedTopics).FirstOrDefaultAsync(u => u.UserName == username)
@@ -41,5 +53,15 @@ public class UserRepository(ApplicationDBContext dbContext)
                     .FirstOrDefaultAsync(u => u.UserName == username)
                     ?? throw new Exception("User not found");
         return user.BannedByTopics;
+    }
+
+    public async Task<IEnumerable<ApplicationUser>> Search(string keyword, int size)
+    {
+        return await _dbContext.Users
+        .Include(u => u.CreatedPosts)
+        .Include(u => u.Comments)
+        .Include(u => u.Profile)
+        .Where(u => u.UserName!.ToLower().Contains(keyword.ToLower()))
+        .Take(size).ToListAsync();
     }
 }

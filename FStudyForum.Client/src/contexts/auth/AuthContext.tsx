@@ -21,7 +21,6 @@ export const AuthContext = React.createContext<AuthContextType>({
 
 const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
   const [authState, dispatchAuth] = React.useReducer(reducer, initialState);
-
   React.useEffect(() => {
     const fetchProfile = async () => {
       try {

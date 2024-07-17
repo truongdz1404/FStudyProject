@@ -7,6 +7,7 @@ namespace FStudyForum.Core.Interfaces.IHelpers
         Task AddConnection(string connectionId, string username);
         Task RemoveConnection(string username);
         Task<string> GetUserConnection(string username);
-        IEnumerable<string> GetAllConnections();
+        Task<IEnumerable<string>> GetAllConnections();
+        Task SynchronizeUserConnections();
     }
 }

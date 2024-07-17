@@ -58,3 +58,8 @@ export interface UpdateDonation {
     username: string;
     tid: string | null;
 }
+export interface StatisticsDonate {
+    date: Date;
+    totalDonation: number;
+    totalAmount: number;
+}

@@ -11,7 +11,7 @@ const ReportList: React.FC = () => {
     error,
     isLoading
   } = useQuery<Report[]>({
-    queryKey: ["reports"],
+    queryKey: ["REPORT_LIST"],
     queryFn: () => ReportService.getUserReports(),
     refetchOnWindowFocus: false
   });
@@ -27,7 +27,7 @@ const ReportList: React.FC = () => {
   if (isLoading) return <Spinner className="mx-auto" />;
   return (
     <>
-      <ul className="bg-white shadow overflow-hidden sm:rounded-md max-w-full mx-auto mt-16">
+      <ul className="bg-white shadow sm:rounded-md max-w-full mx-auto mt-2">
         {reports?.map(report => (
           <li className="border-t border-gray-200" key={report.id}>
             <div className="px-4 py-5 sm:px-6">
@@ -38,7 +38,7 @@ const ReportList: React.FC = () => {
                 >
                   {report.type}
                 </Link>
-                <p className=" text-base text-blue-gray-900">
+                <p className="text-sm text-blue-gray-900 ">
                   From: {report.creater}
                 </p>
               </div>
@@ -57,7 +57,7 @@ const ReportList: React.FC = () => {
                 </p>
                 <div
                   onClick={() => handleResponseClick(report.id)}
-                  className="hover:cursor-pointer px-4 py-3 bg-blue-600 rounded-md text-white outline-none focus:ring-4 shadow-lg transform active:scale-90 transition-transform"
+                  className="hover:cursor-pointer px-4 py-2 bg-blue-600 rounded-md text-white outline-none text-sm"
                 >
                   Response
                 </div>

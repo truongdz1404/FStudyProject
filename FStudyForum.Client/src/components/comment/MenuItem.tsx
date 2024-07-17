@@ -16,7 +16,7 @@ import { Response } from "@/types/response";
 import { AxiosError } from "axios";
 import TopicService from "@/services/TopicService";
 import { showErrorToast, showSuccessToast } from "@/helpers/toast";
-import { ROLE } from "@/helpers/constants";
+import { Roles } from "@/helpers/constants";
 
 type MenuItemCommentProps = {
   comment: Comment;
@@ -68,7 +68,7 @@ const MenuItemComment: React.FC<MenuItemCommentProps> = ({
   ];
 
   const CommentMenuItem = () => {
-    const isAdmin = user?.roles.includes(ROLE.Admin);
+    const isAdmin = user?.roles.includes(Roles.ADMIN);
 
     if (comment.author === user?.username) {
       return [
@@ -87,7 +87,8 @@ const MenuItemComment: React.FC<MenuItemCommentProps> = ({
 
   return (
     <>
-      {comment.author === user?.username || user?.roles.includes(ROLE.Admin) ? (
+      {comment.author === user?.username ||
+      user?.roles.includes(Roles.ADMIN) ? (
         <Menu open={isMenuOpen} handler={setIsMenuOpen} placement="bottom-end">
           <MenuHandler>
             <Button

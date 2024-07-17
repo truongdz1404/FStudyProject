@@ -9,7 +9,7 @@ export default withMT({
     extend: {
       fontFamily: {
         inter: ["Inter",...defaultTheme.fontFamily.sans],
-        sans: ["Inter", ...defaultTheme.fontFamily.sans],
+        sans: ["Lexend", ...defaultTheme.fontFamily.sans],
       },
     },
   },

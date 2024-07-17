@@ -10,8 +10,11 @@ body {
 
 .yarl__button[aria-label="Zoom in"]:disabled div,
 .yarl__button[aria-label="Zoom out"]:disabled div {
-    color: rgba(255 255 255 /0.5) !important
-} 
+    color: rgba(189 189 189 /1) !important
+}
+.yarl__slide_image {
+    width: 100%;
+}
 
 
 

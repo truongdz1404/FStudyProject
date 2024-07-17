@@ -6,6 +6,7 @@ using FStudyForum.Core.Interfaces.IServices;
 using FStudyForum.Core.Models.Entities;
 using FStudyForum.Infrastructure.Repositories;
 using FStudyForum.Infrastructure.Services;
+using FStudyForum.API.Backgroundservice;
 
 namespace FStudyForum.API.Extensions;
 
@@ -17,6 +18,8 @@ public static class ServiceExtension
         #region Services
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IFeedService, FeedService>();
+
         services.AddScoped<IProfileService, ProfileService>();
         services.AddScoped<IIdentityService, IdentityService>();
         services.AddScoped<IEmailService, EmailService>();
@@ -35,6 +38,7 @@ public static class ServiceExtension
 
         #region Repositories
         services.AddTransient<IUserRepository, UserRepository>();
+        services.AddTransient<IFeedRepository, FeedRepository>();
         services.AddTransient<ITopicRepository, TopicRepository>();
         services.AddTransient<IBaseRepository<Profile>, BaseRepository<Profile>>();
         services.AddTransient<IProfileRepository, ProfileRepository>();
@@ -51,6 +55,10 @@ public static class ServiceExtension
         #region Misc
         services.AddSingleton<ConnectionDictionary<string, string>>();
         services.AddSingleton<IUserIdProvider, UsernameBasedUserIdProvider>();
+        #endregion
+
+        #region BackgroundServices
+        services.AddHostedService<ConnectionBackgroundService>();
         #endregion
 
         return services;

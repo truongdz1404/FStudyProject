@@ -142,5 +142,50 @@ namespace FStudyForum.API.Controllers
                 });
             }
         }
+        [HttpDelete("deleteUserDonation/{username}")]
+        public async Task<IActionResult> DeleteUserDonation(string username)
+        {
+            try
+            {
+               await _donateService.DeleteUserDonation(username);
+               return Ok(new Response
+                {
+                    Status = ResponseStatus.SUCCESS,
+                    Message = "Delete user donation successfully"
+                });
+               
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = ex.Message
+                });
+            }
+        }
+        [HttpGet("statistics={action}&date={date}")]
+        public async Task<IActionResult> GetStatisticsDonations(string action, int date)
+        {
+            try
+            {
+                var statistics = await _donateService.GetStatisticsDonations(action, date);
+                return Ok(new Response
+                {
+                    Data = statistics,
+                    Status = ResponseStatus.SUCCESS,
+                    Message = "Get statistics donation successfully"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = ex.Message
+                });
+            }
+        }
+
     }
 }

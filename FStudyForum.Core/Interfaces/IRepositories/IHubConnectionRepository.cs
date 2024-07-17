@@ -7,6 +7,6 @@ namespace FStudyForum.Core.Interfaces.IServices
     {
         Task AddOrUpdateConnection(HubConnectionDTO hubConnectionDto);
         Task RemoveConnection(string username);
-
+        Task<IEnumerable<HubConnectionDTO>> GetAllConnections();
     }
 }

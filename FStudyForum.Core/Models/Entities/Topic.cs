@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,8 @@ public class Topic : BaseEntity
     [MaxLength(300)]
     public string Description { get; set; } = string.Empty;
     public bool IsDeleted { get; set; } = false;
+    [DefaultValue(false)]
+    public bool NeedReview { get; set; }
     [MaxLength(300)]
     public string Panner { get; set; } = string.Empty;
     [MaxLength(300)]
@@ -21,5 +24,5 @@ public class Topic : BaseEntity
     public virtual ICollection<Category> Categories { get; set; } = new List<Category>();
     public virtual ICollection<ApplicationUser> ModeratedByUsers { get; set; } = new List<ApplicationUser>();
     public virtual ICollection<TopicBan> BannedUser { get; set; } = new List<TopicBan>();
-
+    public virtual ICollection<Feed> Feeds { get; set; } = new List<Feed>();
 }

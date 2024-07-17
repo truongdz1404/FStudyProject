@@ -28,6 +28,7 @@ const Donate = () => {
   const [loading, setLoading] = React.useState(false);
   const [donation, setDonation] = React.useState<Donation | null>(null);
   const navigate = useNavigate();
+  const isDeleted = React.useRef(false);
   const {
     register,
     handleSubmit,
@@ -42,10 +43,18 @@ const Donate = () => {
       return;
     }
     setLoading(true);
-    try {
-      const response = await PaymentService.saveUserDonate({
+   
+    try {    
+      if (!isDeleted.current) {
+        try {
+          await PaymentService.deleteDonate(`${user?.username}`);
+        } catch (deleteError) {
+          isDeleted.current = true;
+        }
+      }
+        const response = await PaymentService.saveUserDonate({
         amount: form.amount,
-        message: `${user.username}${form.description}`,
+        message: `${user.username} ${form.description}`,
         username: user.username,
         tid: null
       });
@@ -58,11 +67,12 @@ const Donate = () => {
     }
   };
   React.useEffect(() => {
+    
     if (donation !== null) {
       navigate("/donate/qrcode", {
         state: {
           amountByUser: donation.amount,
-          addInfoByUser: `${donation.id}${donation.message}`,
+          addInfoByUser: `${donation.id} ${donation.message}`,
           amount: donation.amount,
           id: donation.id,
           message: donation.message
@@ -95,7 +105,7 @@ const Donate = () => {
           </label>
           <Input
             id="phone"
-            type="text"
+            type="number"
             placeholder="ex: 20000"
             className={cn(
               "!border !border-gray-300 bg-white text-gray-900 shadow-xl shadow-gray-900/5 ring-4 ring-transparent placeholder:opacity-100",

@@ -15,31 +15,31 @@ const Overview: React.FC = () => {
   const { ref, inView } = useInView();
   const filter = useQueryParams().get("filter") ?? "New";
 
-  const { data, fetchNextPage, error, isPending, isFetchingNextPage } =
+  const { data, fetchNextPage, isPending, isFetchingNextPage } =
     useInfiniteQuery({
-      queryKey: [`user-overview-${filter}-query`],
+      queryKey: ["POST_LIST", "OVERVIEW", user?.username, { filter }],
       queryFn: async ({ pageParam = 1 }) => {
         try {
-          const posts = await PostService.getPostsInUserProfile(
+          return await PostService.getPostsInProfile(
             user!.username,
             pageParam,
             LIMIT_SCROLLING_PAGNATION_RESULT,
             filter
           );
-          return posts;
         } catch (e) {
           return [];
         }
       },
-      getNextPageParam: (_, pages) => pages.length + 1,
+      getNextPageParam: (last, pages) =>
+        last.length ? pages.length + 1 : undefined,
       initialPageParam: 1,
       enabled: !!user
     });
   React.useEffect(() => {
-    if (inView && !error) {
+    if (inView) {
       fetchNextPage();
     }
-  }, [inView, fetchNextPage, error]);
+  }, [inView, fetchNextPage]);
   if (!user || isPending) {
     return <Spinner className="mx-auto" />;
   }
@@ -57,19 +57,27 @@ const Overview: React.FC = () => {
         </Typography>
       </div>
 
-      <div className="pt-1">
-        {posts?.map((post, index) => (
-          <div key={index}>
-            <div className="hover:bg-gray-50 rounded-lg w-full">
-              <PostItem key={index} data={post} />
+      {posts.length > 0 && (
+        <div>
+          {posts?.map((post, index) => (
+            <div key={index}>
+              <div className="hover:bg-gray-50 rounded-lg w-full cursor-pointer">
+                <PostItem key={index} data={post} />
+              </div>
+              <hr className="my-1 border-blue-gray-50" />
             </div>
-            <hr className="my-1 border-blue-gray-50" />
+          ))}
+          <div ref={ref} className="text-center">
+            {isFetchingNextPage ? (
+              <Spinner className="mx-auto" />
+            ) : (
+              !isPending && (
+                <span className="text-xs font-light">Nothing more</span>
+              )
+            )}
           </div>
-        ))}
-      </div>
-      <div ref={ref} className="text-center">
-        {isFetchingNextPage && <Spinner className="mx-auto" />}
-      </div>
+        </div>
+      )}
     </ContentLayout>
   );
 };

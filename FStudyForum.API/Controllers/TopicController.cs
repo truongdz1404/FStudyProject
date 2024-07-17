@@ -95,7 +95,7 @@ namespace FStudyForum.API.Controllers
         }
 
 
-        [HttpPut("delete/{name}"), Authorize(Roles = UserRole.Admin)]
+        [HttpPut("delete/{name}"), Authorize(Roles = UserRole.ADMIN)]
         public async Task<IActionResult> DeleteTopic(string name)
         {
             var isDeleted = await _topicService.DeleteTopic(name);

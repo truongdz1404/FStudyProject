@@ -44,7 +44,7 @@ const PostItem: FC<PostProps> = ({ data, hideLess = true }) => {
     <div
       ref={containerRef}
       onClick={handleRemainClick}
-      className="py-1 px-4 w-full "
+      className="py-1 px-4 w-full"
     >
       <div className="flex justify-between">
         <div className="flex items-center gap-x-2">
@@ -63,7 +63,10 @@ const PostItem: FC<PostProps> = ({ data, hideLess = true }) => {
               to={`/user/${data.author}`}
               className="action flex items-center gap-x-2 z-0"
             >
-              <Avatar src={DefaultUser} className="w-6 h-6" />
+              <Avatar
+                src={data.authorAvatar || DefaultUser}
+                className="w-6 h-6"
+              />
             </Link>
           )}
           <div className="flex flex-col">
@@ -107,12 +110,12 @@ const PostItem: FC<PostProps> = ({ data, hideLess = true }) => {
         <MenuItemPost post={data} />
       </div>
       <div
-        className={cn("my-2 flex flex-col gap-y-2 w-full text-blue-gray-900")}
+        className={cn("my-2 flex flex-col gap-y-2 w-full text-blue-gray-800")}
       >
         <p className="font-semibold ">{data.title}</p>
         <EditorOutput content={data.content} hide={hideLess} className="mb-2" />
 
-        <AttachmentContainer files={data.attachments} />
+        <AttachmentContainer post={data} />
       </div>
       <div className="flex space-x-4 text-gray-700">
         <PostVote

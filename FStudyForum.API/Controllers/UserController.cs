@@ -16,10 +16,13 @@ namespace FStudyForum.API.Controllers
         private readonly IUserService _userService;
         private readonly IIdentityService _identityService;
 
-        public UserController(IUserService userService, IIdentityService identityService)
+        public UserController(IUserService userService,
+            IIdentityService identityService
+        )
         {
             _userService = userService;
             _identityService = identityService;
+
         }
 
         [HttpGet("profile"), Authorize]
@@ -38,11 +41,12 @@ namespace FStudyForum.API.Controllers
                 Data = await _userService.GetProfileByName(userName)
             });
         }
-        [HttpGet]
+        [HttpGet("all")]
         public async Task<IActionResult> GetAll([FromQuery] QueryUserDTO query)
         {
             try
             {
+                if (!ModelState.IsValid) return BadRequest(ModelState);
                 var users = await _userService.GetAll(query);
                 return Ok(new Response
                 {
@@ -60,6 +64,20 @@ namespace FStudyForum.API.Controllers
                 });
             }
         }
+
+        [HttpGet("search")]
+        public async Task<IActionResult> Search([FromQuery] string? keyword, [FromQuery] int size = 5)
+        {
+            if (keyword == null) return BadRequest();
+
+            var profiles = await _userService.Search(keyword, size);
+            return Ok(new Response
+            {
+                Message = "Search Users successfully",
+                Status = ResponseStatus.SUCCESS,
+                Data = profiles
+            });
+        }
         [HttpPost("create")]
         public async Task<IActionResult> CreateUser([FromBody] CreateUserDTO createUserDTO)
         {
@@ -71,7 +89,7 @@ namespace FStudyForum.API.Controllers
                     Email = createUserDTO.Username,
                     Password = createUserDTO.Password
                 }, createUserDTO.Roles, true);
-                
+
                 if (!isSucceed) throw new Exception("Username is existed");
                 return Ok(new Response
                 {
@@ -96,6 +114,28 @@ namespace FStudyForum.API.Controllers
                 });
             }
 
+        }
+        [HttpGet("statistics/{action}/{date}")]
+        public async Task<IActionResult> GetStatisticsProfile(string action, int date)
+        {
+            try
+            {
+                var profiles = await _userService.GetUserStatisticsDTO(action, date);
+                return Ok(new Response
+                {
+                    Status = ResponseStatus.SUCCESS,
+                    Message = "Get statistics profile successfully!",
+                    Data = profiles
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = ex.Message
+                });
+            }
         }
     }
 }

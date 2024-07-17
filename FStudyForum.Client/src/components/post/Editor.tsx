@@ -14,7 +14,7 @@ import Paragraph from "@tiptap/extension-paragraph";
 import Placeholder from "@tiptap/extension-placeholder";
 import Text from "@tiptap/extension-text";
 import Code from "@tiptap/extension-code";
-import FileInput, { FileWithURL } from "./FileInput";
+import { FileInputContext, FileWithURL } from "./FileInput";
 import React from "react";
 import { Button } from "@material-tailwind/react";
 import { CreatePost } from "@/types/post";
@@ -24,6 +24,9 @@ import { Attachment } from "@/types/attachment";
 import { AxiosError } from "axios";
 import { Response } from "@/types/response";
 import { Context } from "@/pages/submit";
+import FileInput from "./FileInput";
+import { deleteFiles } from "@/helpers/storage";
+import useUnmounted from "@/hooks/useUnmounted";
 
 const validation = Yup.object({
   title: Yup.string()
@@ -31,7 +34,7 @@ const validation = Yup.object({
     .min(3, "Title must be longer than 3 characters")
     .max(128, "Title must be shorter than 128 characters")
 });
-interface PostCreationRequest {
+interface PostSubmit {
   title: string;
   content?: string;
 }
@@ -39,22 +42,12 @@ interface EditorProps {
   context?: Context;
 }
 
-export interface FileInputContextType {
-  files: FileWithURL[];
-  setFiles: React.Dispatch<React.SetStateAction<FileWithURL[]>>;
-}
-
-export const FileInputContext = React.createContext<FileInputContextType>({
-  files: [],
-  setFiles: () => null
-});
-
 const Editor: FC<EditorProps> = ({ context }) => {
   const {
     register,
     handleSubmit,
     formState: { errors }
-  } = useForm<PostCreationRequest>({
+  } = useForm<PostSubmit>({
     resolver: yupResolver(validation),
     defaultValues: {
       title: ""
@@ -83,42 +76,45 @@ const Editor: FC<EditorProps> = ({ context }) => {
     }
   });
   const [files, setFiles] = React.useState<FileWithURL[]>([]);
+  const [temp, setTemp] = React.useState<string[]>([]);
+
+  const moveTemp = (url: string) => setTemp(pre => [...pre, url]);
   const [error, setError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
   const navigate = useNavigate();
-  const handleCreate = async (data: PostCreationRequest) => {
+
+  const handleCreate = async (data: PostSubmit) => {
     if (!context) {
       setError("Topic name is required");
       return;
     }
-    if (!isFileLoaded) {
-      setError("Wait until the files are uploaded");
-      return;
-    }
     if (!editor) return;
+
     const json = editor.getJSON();
     setLoading(true);
-
     const payload: CreatePost = {
       title: data.title,
       content: JSON.stringify(json),
       topicName: context.prefix == "t" ? context.name : "",
       attachments: files.map<Attachment>(file => {
         return {
-          type: file.data.type,
-          url: file.get!
+          url: file.url!,
+          name: file.name,
+          type: file.type,
+          size: file.size
         };
       })
     };
-    try {
-      const createPost = await PostService.create(payload);
-      files.map(file => URL.revokeObjectURL(file.preview));
 
+    try {
+      const attachmentUrls = files.map(f => f.url!);
+      const trashUrls = temp.filter(url => !attachmentUrls.includes(url));
+      setTemp([]);
+      const createPost = await PostService.create(payload);
+      await deleteFiles(trashUrls);
       if (context.prefix == "t")
         navigate(`/topic/${context.name}/comments/${createPost.id}`);
-      else {
-        navigate(`/user/${context.name}/comments/${createPost.id}`);
-      }
+      else navigate(`/user/${context.name}/comments/${createPost.id}`);
     } catch (e) {
       const error = e as AxiosError;
       setError((error?.response?.data as Response)?.message || error.message);
@@ -128,12 +124,17 @@ const Editor: FC<EditorProps> = ({ context }) => {
     setLoading(false);
   };
 
-  const isFileLoaded = files.every(file => file.get);
+  useUnmounted(async () => {
+    files.map(file => file.preview && URL.revokeObjectURL(file.preview));
+    temp.length && (await deleteFiles(temp));
+  });
+
+  const isFileLoaded = files.every(file => file.url);
   if (!editor) return null;
 
   return (
     <>
-      <FileInputContext.Provider value={{ files, setFiles }}>
+      <FileInputContext.Provider value={{ files, setFiles, moveTemp }}>
         <form
           id="create-post-form"
           className="w-full p-4 pt-2 bg-zinc-50 rounded-lg shadow-sm border border-zinc-200 text-blue-gray-700"

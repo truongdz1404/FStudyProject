@@ -26,5 +26,16 @@ namespace FStudyForum.Infrastructure.Repositories
                 .OrderByDescending(d => d.Id).FirstOrDefaultAsync();
             return donationByUser;
         }
+        
+        public async Task DeleteUserDonation(Donation donation)
+        {
+            _dbContext.Donations.Remove(donation);
+            await _dbContext.SaveChangesAsync();
+        }
+        public async Task<IEnumerable<Donation>> GetStatisticsDonations(DateTime startDate, DateTime endDate)
+        {
+            return await _dbContext.Donations.Where(d => d.CreatedAt >= startDate
+            && d.CreatedAt <= endDate && d.Tid != null).ToListAsync();
+        }       
     }
 }

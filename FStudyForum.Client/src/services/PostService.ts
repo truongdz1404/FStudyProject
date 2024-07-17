@@ -1,24 +1,30 @@
-import { ResponseWith } from "@/types/response";
+import { ResponseWith, Response } from "@/types/response";
 import api from "./api";
-import { CreatePost, Post, SavePost } from "@/types/post";
+import {
+  StatisticsPost,
+  CreatePost,
+  EditPost,
+  Post,
+  SavePost
+} from "@/types/post";
 
 const save = async (postId: number) => {
   const response = await api.post<ResponseWith<SavePost>>(
     `/post/save/${postId}`
   );
-  return response.data;
+  return response.data.message;
 };
 const removeFromSaved = async (postId: number) => {
   const response = await api.delete<ResponseWith<SavePost>>(
     `/post/remove-save/${postId}`
   );
-  return response.data;
+  return response.data.message;
 };
 const isSaved = async (username: string, postId: number) => {
   const response = await api.get<ResponseWith<boolean>>(
     `/post/saved/${username}/${postId}`
   );
-  return response.data;
+  return response.data.data;
 };
 const getSavedPosts = async (username: string) => {
   const response = await api.get<ResponseWith<Post[]>>(
@@ -62,7 +68,7 @@ const getPostsByUser = async (
   );
   return response.data.data;
 };
-const getPostsInUserProfile = async (
+const getPostsInProfile = async (
   userName: string,
   pageNumber: number,
   pageSize: number,
@@ -74,9 +80,42 @@ const getPostsInUserProfile = async (
   return response.data.data;
 };
 
+const getPostsInTrash = async (
+  userName: string,
+  pageNumber: number,
+  pageSize: number,
+  filter: string
+) => {
+  const response = await api.get<ResponseWith<Post[]>>(
+    `/post/all?user=${userName}&pageNumber=${pageNumber}&pageSize=${pageSize}&filter=${filter}&type=2`
+  );
+  return response.data.data;
+};
+
 const create = async (post: CreatePost) => {
   const response = await api.post<ResponseWith<Post>>("/post/create", post);
   return response.data.data;
+};
+
+const edit = async (postId: number, post: EditPost) => {
+  const response = await api.patch<ResponseWith<Post>>(
+    `/post/edit/${postId}`,
+    post
+  );
+  return response.data.data;
+};
+
+const moveToTrash = async (postId: number) => {
+  const response = await api.post<Response>(`/post/move-trash/${postId}`);
+  return response.data.message;
+};
+const restoreFromTrash = async (postId: number) => {
+  const response = await api.post<Response>(`/post/restore-trash/${postId}`);
+  return response.data.message;
+};
+const deleteForever = async (postId: number) => {
+  const response = await api.delete<Response>(`/post/delete/${postId}`);
+  return response.data.message;
 };
 
 const getById = async (id: string) => {
@@ -101,6 +140,25 @@ const clearRecent = async () => {
   return response.data.data;
 };
 
+const getStatisticsPost = async (action: string, date: number) => {
+  const response = await api.get<ResponseWith<StatisticsPost[]>>(
+    `post/statistics=${action}&date=${date}`
+  );
+  return response.data;
+};
+
+const getPostsInFeed = async (
+  pageNumber: number,
+  pageSize: number,
+  filter: string,
+  feedName: string
+) => {
+  const response = await api.get<ResponseWith<Post[]>>(
+    `/post/feed/${feedName}?pageNumber=${pageNumber}&pageSize=${pageSize}&filter=${filter}`
+  );
+  return response.data.data;
+};
+
 const PostService = {
   clearRecent,
   addRecent,
@@ -110,11 +168,18 @@ const PostService = {
   isSaved,
   getSavedPosts,
   getPostsByTopicName,
-  getPostsInUserProfile,
+  getPostsInProfile,
+  getPostsInTrash,
+  restoreFromTrash,
   getPostsByUser,
+  deleteForever,
   getPosts,
   create,
-  getById
+  edit,
+  moveToTrash,
+  getById,
+  getStatisticsPost,
+  getPostsInFeed
 };
 
 export default PostService;

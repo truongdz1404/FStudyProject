@@ -1,65 +1,86 @@
 import TopicService from "@/services/TopicService";
 import { Topic } from "@/types/topic";
-import { AxiosError } from "axios";
 import React, { FC, PropsWithChildren } from "react";
 import { Navigate, useParams } from "react-router-dom";
-import { Response } from "@/types/response";
 import { Profile } from "@/types/profile";
 import ProfileService from "@/services/ProfileService";
+import { useQuery } from "@tanstack/react-query";
+import PostService from "@/services/PostService";
+import { Post } from "@/types/post";
+import { Attachment } from "@/types/attachment";
+import FeedService from "@/services/FeedService";
+import { Feed } from "@/types/feed";
 
 interface RouterParamType {
-  topic: Topic | null;
-  user: Profile | null;
-  error?: string;
+  topic?: Topic;
+  user?: Profile;
+  post?: Post;
+  feed?: Feed;
+  attachment?: Attachment;
 }
-export const RouterParamContext = React.createContext<RouterParamType>({
-  topic: null,
-  user: null
-});
+export const RouterParamContext = React.createContext<RouterParamType>({});
 
 const RouterParamProvider: FC<PropsWithChildren> = ({ children }) => {
-  const { name, username } = useParams<{ name: string; username: string }>();
-  const [topic, setTopic] = React.useState<Topic | null>(null);
-  const [user, setUser] = React.useState<Profile | null>(null);
+  const {
+    name: topicName,
+    username,
+    id: postId,
+    feedName
+  } = useParams<{
+    name: string;
+    username: string;
+    id: string;
+    feedName: string;
+  }>();
 
-  const [error, setError] = React.useState("");
+  const { data: post, error: postError } = useQuery({
+    queryKey: ["POST_DETAIL", postId],
+    queryFn: async () => {
+      if (!postId) return;
+      const [data] = await Promise.all([
+        PostService.getById(postId),
+        PostService.addRecent(Number(postId))
+      ]);
+      return data;
+    },
+    enabled: !!postId
+  });
 
-  React.useEffect(() => {
-    setTopic(null);
-    if (!name) return;
-    const fetchTopic = async () => {
-      try {
-        const topic = await TopicService.getTopicByName(name);
-        setTopic(topic);
-      } catch (e) {
-        setTopic(null);
-        const error = e as AxiosError;
-        setError((error?.response?.data as Response)?.message || error.message);
-      }
-    };
-    fetchTopic();
-  }, [name]);
+  const { data: topic, error: topicError } = useQuery({
+    queryKey: ["TOPIC_DETAIL", topicName],
+    queryFn: async () => {
+      if (!topicName) return;
+      const data = await TopicService.getTopicByName(topicName);
+      return data;
+    },
+    enabled: !!topicName
+  });
 
-  React.useEffect(() => {
-    setUser(null);
-    if (!username) return;
-    const fetchUser = async () => {
-      try {
-        const user = await ProfileService.getByUsername(username!);
-        setUser(user);
-      } catch (e) {
-        setUser(null);
-        const error = e as AxiosError;
-        setError((error?.response?.data as Response)?.message || error.message);
-      }
-    };
-    fetchUser();
-  }, [username]);
+  const { data: feed, error: feedError } = useQuery({
+    queryKey: ["FEED_DETAIL", feedName],
+    queryFn: async () => {
+      if (!feedName) return;
+      const data = await FeedService.getFeed(feedName);
+      return data;
+    },
+    enabled: !!feedName
+  });
 
-  if (error) return <Navigate to={"not-found"} />;
+  const { data: user, error: userError } = useQuery({
+    queryKey: ["USER_DETAIL", username],
+    queryFn: async () => {
+      if (!username) return;
+      const data = await ProfileService.getByUsername(username);
+      return data;
+    },
+    enabled: !!username
+  });
+
+  if (postError || topicError || userError || feedError)
+    return <Navigate to={"not-found"} />;
 
   return (
-    <RouterParamContext.Provider value={{ topic, user, error }}>
+    <RouterParamContext.Provider value={{ topic, user, post, feed }}>
       {children}
     </RouterParamContext.Provider>
   );

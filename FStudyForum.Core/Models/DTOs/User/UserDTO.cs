@@ -8,8 +8,7 @@ public class UserDTO
     public string Email { get; set; } = string.Empty;
     public string Avatar { get; set; } = string.Empty;
     public string Banner { get; set; } = string.Empty;
-    public IList<string> Mods { get; set; } = [];
-    public IList<TopicBanDTO> Banneds { get; set; } = [];
+    public IEnumerable<TopicDTO> Mods { get; set; } = [];
     public IList<string> Roles { get; set; } = [];
 
 }

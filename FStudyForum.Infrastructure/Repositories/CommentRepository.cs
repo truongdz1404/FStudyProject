@@ -34,13 +34,13 @@ namespace FStudyForum.Infrastructure.Repositories
         public async Task<IEnumerable<Comment>> GetCommentsByPostIdAsync(long postId)
         {
             return await _context.Comments
-                .Where(c => c.Post.Id == postId && !c.IsDeleted)
                 .Include(c => c.Creater)
                 .Include(c => c.Creater.Profile)
                 .Include(c => c.Post)
                 .Include(c => c.Post.Topic)
                 .Include(c => c.Replies)
                 .Include(c => c.Votes)
+                .Where(c => c.Post.Id == postId && !c.IsDeleted && (c.Attachment == null || c.Post.Attachments.Count == 1))
                 .ToListAsync();
         }
         public async Task<IEnumerable<Comment>> GetCommentsByReplyIdAsync(long replyId)
@@ -56,12 +56,35 @@ namespace FStudyForum.Infrastructure.Repositories
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Comment>> GetCommentsByAttachmentIdAsync(long attachmentId)
+         public async Task<IEnumerable<Comment>> GetCommentsByAttachmentIdAsync(long attachmentId)
         {
-            return await _context.Comments
-                .Where(c => c.Attachment != null && c.Attachment.Id == attachmentId && !c.IsDeleted)
+            var attachment = await _context.Attachments
+                .Include(a => a.Post)
+                .ThenInclude(p => p.Attachments)
+                .FirstOrDefaultAsync(a => a.Id == attachmentId);
+            if (attachment == null)
+            {
+                return Enumerable.Empty<Comment>();
+            }
+
+            IQueryable<Comment> query = _context.Comments
+                .Include(c => c.Creater)
+                .ThenInclude(c => c.Profile)
+                .Include(c => c.Post)
+                .ThenInclude(p => p.Topic)
                 .Include(c => c.Replies)
-                .ToListAsync();
+                .Include(c => c.Votes);
+
+            if (attachment.Post.Attachments.Count == 1)
+            {
+                query = query.Where(c => c.Post.Id == attachment.Post.Id && !c.IsDeleted);
+            }
+            else
+            {
+                query = query.Where(c => c.Attachment != null && c.Attachment.Id == attachmentId && !c.IsDeleted);
+            }
+
+            return await query.ToListAsync();
         }
 
         public async Task<Comment> AddCommentAsync(CreateCommentDTO createCommentDTO)
@@ -110,12 +133,16 @@ namespace FStudyForum.Infrastructure.Repositories
         {
             IQueryable<Comment> queryable = _context.Comments
               .Include(c => c.Creater)
-              .ThenInclude(c => c.Profile)
+              .Include(c => c.Creater.Profile)
               .Include(c => c.Post)
               .Include(c => c.Replies)
               .Include(c => c.Votes)
               .AsSplitQuery()
-              .Where(c => !c.IsDeleted && c.Content.Contains(query.Keyword.Trim()));
+              .Where(c => !c.IsDeleted && c.Content.ToLower().Contains(query.Keyword.Trim().ToLower()));
+            if (!string.IsNullOrEmpty(query.User))
+                queryable = queryable.Where(c => c.Creater.UserName == query.User);
+            if (!string.IsNullOrEmpty(query.Topic))
+                queryable = queryable.Where(c => c.Post.Topic!.Name == query.Topic);
             queryable = query.Filter switch
             {
                 "Hot" => queryable.OrderByDescending(c => c.Votes.Sum(v => v.IsUp ? 1 : 0))

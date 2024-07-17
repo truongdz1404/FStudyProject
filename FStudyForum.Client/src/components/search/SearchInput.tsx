@@ -12,6 +12,8 @@ import { Topic } from "@/types/topic";
 import TopicService from "@/services/TopicService";
 import { debounce } from "lodash";
 import useQueryParams from "@/hooks/useQueryParams";
+import UserService from "@/services/UserService";
+import { Profile } from "@/types/profile";
 
 type History = {
   context: Context;
@@ -34,24 +36,27 @@ const SearchInput = () => {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [selectIndex, setSelectIndex] = React.useState(-1);
   const [foundTopics, setFoundTopics] = React.useState<Topic[]>([]);
+  const [foundUsers, setFoundUsers] = React.useState<Profile[]>([]);
   const keywordParam = useQueryParams().get("keyword");
-
+  const [context, setContext] = React.useState<Context | undefined>(undefined);
   const navigate = useNavigate();
 
-  const context: Context | undefined = React.useMemo(() => {
-    if (topic)
-      return {
+  React.useEffect(() => {
+    if (topic) {
+      setContext({
         prefix: "t",
         name: topic.name,
         avatar: topic.avatar || DefaultTopic
-      };
-    if (user)
-      return {
+      });
+    } else if (user) {
+      setContext({
         prefix: "u",
         name: user.username,
         avatar: user.avatar || DefaultAvatar
-      };
-    return undefined;
+      });
+    } else {
+      setContext(undefined);
+    }
   }, [topic, user]);
 
   const closeBox = () => {
@@ -74,37 +79,50 @@ const SearchInput = () => {
     ) as History[];
     setHistory(savedHistory);
   }, []);
+
   const debouncedSearch = React.useMemo(
     () =>
-      debounce(async (searchTerm: string) => {
-        if (!searchTerm) {
+      debounce(async (keyword: string) => {
+        if (!keyword) {
           setFoundTopics([]);
+          setFoundUsers([]);
           return;
         }
         try {
-          const founds = await TopicService.search(searchTerm);
-          setFoundTopics(founds);
+          const [foundTopics, foundUsers] = await Promise.all([
+            TopicService.search(keyword.replace(/^(t\/)/, "")),
+            UserService.search(keyword.replace(/^(u\/)/, ""))
+          ]);
+
+          setFoundTopics(foundTopics);
+          setFoundUsers(foundUsers);
         } catch (e) {
           setFoundTopics([]);
+          setFoundUsers([]);
         }
       }, 200),
     []
   );
 
   const canViewHistory = React.useCallback(
-    () => !!keyword == false && !context,
+    () => !keyword && !context,
     [keyword, context]
   );
   const canSearch = React.useCallback(() => !context, [context]);
 
   React.useEffect(() => {
     if (!canSearch()) return;
-    const trimmedKeyword = keyword.trim().replace(/^t\//, "");
-    debouncedSearch(trimmedKeyword);
+    debouncedSearch(keyword.trim());
     return () => {
       debouncedSearch.cancel();
     };
   }, [keyword, debouncedSearch, canSearch]);
+
+  const handleClearContext = () => {
+    setIsAll(true);
+    setKeyword("");
+    setContext(undefined);
+  };
 
   const handleKeydown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     switch (e.key) {
@@ -123,7 +141,10 @@ const SearchInput = () => {
     }
     if (e.key === "Enter" && selectIndex != -1) {
       if (canViewHistory()) handleSearch(history[selectIndex]);
-      else if (canSearch()) handleSelect(foundTopics[selectIndex]);
+      else if (canSearch()) {
+        const allResults = [...foundTopics, ...foundUsers];
+        handleSelect(allResults[selectIndex]);
+      }
     } else if (e.key === "Enter" && keyword.trim()) {
       handleSearch({
         keyword: keyword.trim(),
@@ -145,12 +166,20 @@ const SearchInput = () => {
     } else navigate(`/search/posts?keyword=${value.keyword}`);
   };
 
-  const handleSelect = (topic: Topic) => {
-    addHistory({
-      context: { prefix: "t", name: topic.name, avatar: topic.avatar }
-    });
-    closeBox();
-    navigate(`/topic/${topic.name}`);
+  const handleSelect = (item: Topic | Profile) => {
+    if ("username" in item) {
+      addHistory({
+        context: { prefix: "u", name: item.username, avatar: item.avatar }
+      });
+      closeBox();
+      navigate(`/user/${item.username}`);
+    } else {
+      addHistory({
+        context: { prefix: "t", name: item.name, avatar: item.avatar }
+      });
+      closeBox();
+      navigate(`/topic/${item.name}`);
+    }
     setKeyword("");
   };
 
@@ -184,8 +213,18 @@ const SearchInput = () => {
 
   const boxSize = React.useMemo(
     () =>
-      canViewHistory() ? history.length : canSearch() ? foundTopics.length : 0,
-    [canSearch, canViewHistory, foundTopics.length, history.length]
+      canViewHistory()
+        ? history.length
+        : canSearch()
+        ? foundTopics.length + foundUsers.length
+        : 0,
+    [
+      canSearch,
+      canViewHistory,
+      foundTopics.length,
+      foundUsers.length,
+      history.length
+    ]
   );
 
   return (
@@ -218,7 +257,11 @@ const SearchInput = () => {
               onClick={() => setIsAll(true)}
             >
               <div className=" bg-blue-gray-900/80 rounded-full p-1">
-                <X className="w-3 h-3 text-white" strokeWidth={3} />
+                <X
+                  className="w-3 h-3 text-white"
+                  strokeWidth={3}
+                  onClick={handleClearContext}
+                />
               </div>
             </div>
           </span>
@@ -322,6 +365,30 @@ const SearchInput = () => {
                         <span className="text-[0.7rem] font-light">
                           {`${topic.postCount} `}
                           {topic.postCount ? "posts" : "post"}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                {canSearch() &&
+                  foundUsers.map((user, index) => (
+                    <div
+                      key={index + foundTopics.length}
+                      className={cn(
+                        "flex gap-x-2 items-center py-2 px-4 hover:bg-blue-gray-50/40 cursor-pointer",
+                        selectIndex == index + foundTopics.length &&
+                          "bg-blue-gray-50/40"
+                      )}
+                      onClick={() => handleSelect(user)}
+                    >
+                      <Avatar
+                        src={user.avatar || DefaultAvatar}
+                        className="w-6 h-6"
+                      />
+                      <div className="flex-col flex">
+                        <span className="text-xs font-normal">{`u/${user.username}`}</span>
+                        <span className="text-[0.7rem] font-light">
+                          {`${user.postCount} `}
+                          {user.postCount ? "posts" : "post"}
                         </span>
                       </div>
                     </div>

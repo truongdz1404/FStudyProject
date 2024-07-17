@@ -21,11 +21,11 @@ const ProfileDescription: FC<ProfileDescriptionProps> = ({ profile }) => {
         <h1 className="text-xs uppercase">Achievements</h1>
         <div className="flex justify-around">
           <div className="flex flex-col items-center text-xs">
-            <p className="text-sm font-semibold">0</p>
+            <p className="text-sm font-semibold">{profile.postCount}</p>
             <p>Posts</p>
           </div>
           <div className="flex flex-col items-center text-xs">
-            <p className="text-sm font-semibold">0</p>
+            <p className="text-sm font-semibold">{profile.commentCount}</p>
             <p>Comments</p>
           </div>
         </div>

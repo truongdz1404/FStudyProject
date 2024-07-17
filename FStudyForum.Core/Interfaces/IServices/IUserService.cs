@@ -5,6 +5,7 @@ using FStudyForum.Core.Models.DTOs.User;
 using Microsoft.AspNetCore.Identity;
 using FStudyForum.Core.Models.DTOs.Topic;
 using FStudyForum.Core.Models.DTOs.Search;
+using FStudyForum.Core.Models.DTOs.Profile;
 namespace FStudyForum.Core.Interfaces.IServices;
 
 public interface IUserService
@@ -22,11 +23,12 @@ public interface IUserService
     Task<string?> GetRefreshTokenAsync(string userName);
 
     Task<IEnumerable<UserDTO>> SearchUserByName(QuerySearchUserDTO query);
+    Task<IEnumerable<ProfileDTO>> Search(string keyword, int size);
 
     Task<UserDTO> LockUser(LockUserDTO lockUserDTO);
     Task<UserDTO> UnlockUser(LockUserDTO lockUserDTO);
     Task<bool> IsUserLocked(string userName);
     Task<DateTimeOffset?> GetUnlockTime(string userName);
-    Task<IEnumerable<UserDTO>> GetAllUser();
 
+    Task<IEnumerable<UserStatisticsDTO>> GetUserStatisticsDTO(string action, int date);
 }

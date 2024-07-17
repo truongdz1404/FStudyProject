@@ -7,12 +7,12 @@ import "yet-another-react-lightbox/styles.css";
 
 type Props = {
   index: number;
-  hideArrow: boolean;
   sliders?: SlideImage[];
   close?: () => void;
 };
 
-const LightBox: FC<Props> = ({ index, hideArrow, sliders, close }) => {
+const LightBox: FC<Props> = ({ index, sliders, close }) => {
+  const hideArrow = (sliders?.length ?? 0) <= 1;
   return (
     <Lightbox
       styles={{

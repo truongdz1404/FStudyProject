@@ -58,19 +58,17 @@ namespace FStudyForum.API.Hubs
             await base.OnDisconnectedAsync(exception);
         }
 
-        [Authorize(Roles = UserRole.Admin)]
         public async Task SendNotificationToAll(string sender, string message)
         {
             try
             {
-                var allConnections = await _userService.GetAllUser();
+                var allConnections = await _userConnections.GetAllConnections();
                 var senderConnectionId = await _userConnections.GetUserConnection(sender)
                     ?? throw new Exception("Not found sender connection id!");
-                foreach (var userDto in allConnections)
+                foreach (var username in allConnections)
                 {
-                    if (userDto.Username != sender)
+                    if (username != sender)
                     {
-                        var username = userDto.Username;
                         var notificationDto = new NotificationDTO
                         {
                             MessageType = "All",
@@ -93,7 +91,6 @@ namespace FStudyForum.API.Hubs
             }
         }
 
-        [Authorize(Roles = UserRole.Admin + "," + UserRole.Moderator)]
         public async Task SendNotificationToUser(string sender, string receiver, string message)
         {
             try
