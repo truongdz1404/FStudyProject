@@ -97,8 +97,8 @@ const FileInput = forwardRef<HTMLInputElement, InputProps>(
           showErrorToast(
             "File type not supported or size exceeds allowed limit"
           );
-        }
-        addFiles(files);
+        } else addFiles(files);
+
         setDragActive(false);
         e.dataTransfer.clearData();
       }

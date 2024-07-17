@@ -18,14 +18,15 @@ interface ImageUploadProps extends React.HTMLAttributes<HTMLTableRowElement> {
 const ImageUpload = forwardRef<HTMLTableRowElement, ImageUploadProps>(
   ({ file, className, onRemove, onLoaded, ...props }, imageRef) => {
     const [progess, setProgess] = React.useState(file.url ? 100 : 0);
-
+    const [loaded, setLoaded] = React.useState(false);
     const handleRemove = (e: React.MouseEvent<HTMLButtonElement>) => {
       e.preventDefault();
       onRemove();
     };
 
     React.useEffect(() => {
-      if (file.url) return;
+      if (file.url || loaded) return;
+      setLoaded(true);
       const startUpload = async () => {
         if (!file.upload) return;
         const { width, height } = await getImageParams(file.upload);
@@ -61,7 +62,7 @@ const ImageUpload = forwardRef<HTMLTableRowElement, ImageUploadProps>(
       };
 
       startUpload();
-    }, [file.upload, file.url, onLoaded]);
+    }, [file, loaded, onLoaded]);
 
     return (
       <tr ref={imageRef} {...props} className={cn("", className)}>
