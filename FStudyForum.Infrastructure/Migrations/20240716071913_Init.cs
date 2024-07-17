@@ -226,6 +226,54 @@ namespace FStudyForum.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "tblHubConnections",
+                schema: "dbo",
+                columns: table => new 
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ConnectionId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                },
+                constraints: table => 
+                {
+                    table.PrimaryKey("PK_tblHubConnections", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_tblHubConnections_tblUsers_UserId",
+                        column: x => x.UserId,
+                        principalSchema: "dbo",
+                        principalTable: "tblUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "tblNotifications",
+                schema: "dbo",
+                columns: table => new 
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    MessageType = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsRead = table.Column<bool>(type: "bit", nullable: false),
+                    ReceiverId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table => 
+                {
+                    table.PrimaryKey("PK_tblNotifications", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_tblNotifications_tblUsers_UserId",
+                        column: x => x.ReceiverId,
+                        principalSchema: "dbo",
+                        principalTable: "tblUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "tblPosts",
                 schema: "dbo",
                 columns: table => new
@@ -844,6 +892,20 @@ namespace FStudyForum.Infrastructure.Migrations
                 schema: "dbo",
                 table: "tblVotes",
                 column: "VoterId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_tblHubConnections_UserId",
+                schema: "dbo",
+                table: "tblHubConnections",
+                column: "UserId",
+                unique: true);
+            
+            migrationBuilder.CreateIndex(
+                name: "IX_tblNotifications_ReceiverId",
+                schema: "dbo",
+                table: "tblNotifications",
+                column: "ReceiverId"
+            );
         }
 
         /// <inheritdoc />
@@ -936,6 +998,15 @@ namespace FStudyForum.Infrastructure.Migrations
             migrationBuilder.DropTable(
                 name: "tblTopics",
                 schema: "dbo");
+
+            migrationBuilder.DropTable(
+                name: "tblHubConnections",
+                schema: "dbo");
+
+            migrationBuilder.DropTable(
+                name: "tblNotifications",
+                schema: "dbo"
+            );
 
             migrationBuilder.DropTable(
                 name: "tblUsers",

@@ -17,6 +17,7 @@ import Donate from "@/pages/donate";
 import { Roles } from "@/helpers/constants";
 import Loadable from "@/helpers/loading/Loadable";
 import RouterParamProvider from "@/contexts/router/RouterParamContext";
+import { SignalRProvider } from "./contexts/signalR/SignalRContext";
 
 const AnalyticsPage = Loadable(lazy(() => import("@/pages/analytics")));
 const Notification = Loadable(
@@ -45,6 +46,7 @@ const TopcicManager = Loadable(lazy(() => import("@/pages/manager/topics")));
 const CategoryManager = Loadable(
   lazy(() => import("@/pages/manager/categories"))
 );
+const NotificationManager = Loadable(lazy(() => import("@/pages/manager/notifications")));
 const ResetPassword = Loadable(
   lazy(() => import("@/pages/auth/reset-password"))
 );
@@ -99,10 +101,12 @@ const router = createBrowserRouter([
     element: (
       <AuthGuard>
         <WelcomeGuard>
+          <SignalRProvider hubName="notification-hub">
           <RouterParamProvider>
             <Outlet />
             <ScrollRestoration getKey={location => location.pathname} />
           </RouterParamProvider>
+          </SignalRProvider>
         </WelcomeGuard>
       </AuthGuard>
     ),
@@ -227,6 +231,10 @@ const router = createBrowserRouter([
               {
                 path: "report/:reportId",
                 element: <Response />
+              },
+              {
+                path: "notifications",
+                element: <NotificationManager />
               }
             ]
           },

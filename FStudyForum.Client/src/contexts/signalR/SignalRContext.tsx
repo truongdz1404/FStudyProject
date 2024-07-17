@@ -18,6 +18,10 @@ interface SignalRContextType {
     methodName: string,
     ...args: T
   ) => Promise<void>;
+  invokeMethod: <T extends unknown[], R>(
+    methodName: string,
+    ...args: T
+  ) => Promise<R | null>;
   on: <T extends unknown[]>(
     methodName: string,
     newMethod: MessageHandler<T>
@@ -54,7 +58,7 @@ export const SignalRProvider: React.FC<SignalRProviderProps> = ({
   useEffect(() => {
     const newConnection = new signalR.HubConnectionBuilder()
       .withUrl(`${URL}/${hubName}`, { accessTokenFactory })
-      .withAutomaticReconnect()
+      .withAutomaticReconnect([1000, 2000, 5000, 10000, 20000, 30000])
       .build();
 
     setConnection(newConnection);
@@ -101,6 +105,32 @@ export const SignalRProvider: React.FC<SignalRProviderProps> = ({
     [connection]
   );
 
+  const invokeMethod = useCallback(
+    async <T extends unknown[], R>(
+      methodName: string,
+      ...args: T
+    ): Promise<R | null> => {
+      if (
+        connection &&
+        connection.state === signalR.HubConnectionState.Connected
+      ) {
+        try {
+          const result: R = await connection.invoke<R>(methodName, ...args);
+          return result;
+        } catch (error) {
+          console.error("Error invoking method:", methodName, error);
+          return null;
+        }
+      } else {
+        console.error(
+          "Cannot invoke method - connection is not in Connected state"
+        );
+        return null;
+      }
+    },
+    [connection]
+  );
+
   const on = useCallback(
     <T extends unknown[]>(methodName: string, newMethod: MessageHandler<T>) => {
       connection?.on(methodName, newMethod);
@@ -120,10 +150,11 @@ export const SignalRProvider: React.FC<SignalRProviderProps> = ({
       connection,
       connectionState,
       sendMessage,
+      invokeMethod,
       on,
       off
     }),
-    [connection, connectionState, sendMessage, on, off]
+    [connection, connectionState, sendMessage, invokeMethod, on, off]
   );
 
   return (

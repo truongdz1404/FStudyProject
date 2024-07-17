@@ -18,14 +18,18 @@ import {
   AlignJustify,
   Plus,
   Bell,
-  ChevronUp
+  ChevronUp,
+  BellDot
 } from "lucide-react";
 import { cn } from "@/helpers/utils";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Icons } from "../Icons";
 import { useAuth } from "@/hooks/useAuth";
 import SearchInput from "../search/SearchInput";
-
+import useSignalR from "@/hooks/useSignalR";
+import { Notification } from "@/types/notification";
+import * as signalR from "@microsoft/signalr";
+import NotificationBox from "../notification";
 export function ProfileMenu() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const navigate = useNavigate();
@@ -121,6 +125,72 @@ const navListItems = [
 
 export function NavList() {
   const { pathname } = useLocation();
+  const { user } = useAuth();
+  const { on, off, invokeMethod, connectionState } = useSignalR();
+  const [notifications, setNotifications] = React.useState<Notification[]>([]);
+  const [isNotificationOpen, setIsNotificationOpen] = React.useState(false);
+
+  const handleMarkAsRead = (id: number) => {
+    invokeMethod("MarkNotificationAsRead", id);
+    setNotifications(
+      notifications.map(noti =>
+        noti.id === id ? { ...noti, isRead: true } : noti
+      )
+    );
+  };
+
+  const handleMarkAllAsRead = () => {
+    invokeMethod("MarkAllNotificationsAsRead", user?.username);
+    setNotifications(notifications.map(noti => ({ ...noti, isRead: true })));
+  };
+
+  const handleClearNotifications = () => {
+    invokeMethod("ClearNotifications", user?.username);
+    setNotifications([]);
+  };
+
+  const handleDeleteNotification = (id: number) => {
+    invokeMethod("DeleteNotification", id)
+      .then(() => {
+        setNotifications(notifications.filter(noti => noti.id !== id));
+      })
+      .catch(err => console.log("Error deleting notification: ", err));
+  };
+
+  const InvokeNotification = React.useCallback(() => {
+    if (
+      user?.username &&
+      connectionState === signalR.HubConnectionState.Connected
+    ) {
+      invokeMethod("GetAllNotifications", user?.username);
+    }
+  }, [invokeMethod, user?.username, connectionState]);
+
+  React.useEffect(() => {
+    InvokeNotification();
+    const handleGetAllNotifications = (obj: Notification[]) => {
+      setNotifications(obj);
+    };
+
+    const handleGetNewestNotification = (obj: Notification) => {
+      setNotifications(prev => [obj, ...prev]);
+    };
+
+    on("ReceiveAllNotification", handleGetAllNotifications);
+    on("ReceiveNewestNotification", handleGetNewestNotification);
+
+    return () => {
+      off("ReceiveAllNotification", handleGetAllNotifications);
+      off("ReceiveNewestNotification", handleGetNewestNotification);
+    };
+  }, [on, off, invokeMethod, InvokeNotification]);
+
+  const toggleNotification = () => {
+    setIsNotificationOpen(!isNotificationOpen);
+  };
+
+  const allNotificationsRead = notifications.every(noti => noti.isRead);
+
   const submitPath = (pathname: string) => {
     const segments = pathname.split("/").filter(s => s !== "");
     switch (segments[0]) {
@@ -131,27 +201,57 @@ export function NavList() {
     }
   };
   return (
-    <div className="mt-2 mb-4 flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center">
-      {navListItems.map(({ label, icon, showLabel, path }) => (
-        <Link
-          key={label}
-          to={path === "/submit" ? submitPath(pathname) : path}
-          className="w-full"
-        >
-          <Button
-            color="blue-gray"
-            variant="text"
-            className={cn(
-              "flex p-2 items-center gap-2 lg:rounded-full w-full",
-              "font-medium text-sm normal-case text-blue-gray-700"
-            )}
-          >
-            {React.createElement(icon, { className: "h-5 w-5" })}
-            <span className={cn(!showLabel && "lg:hidden")}>{label}</span>
-          </Button>
-        </Link>
-      ))}
-    </div>
+    <>
+      <div className="mt-2 mb-4 flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center">
+        {navListItems.map(({ label, icon, showLabel, path }) => {
+          if (label === "Notification") {
+            return (
+              <Button
+                key={label}
+                color="blue-gray"
+                variant="text"
+                className="flex p-2 items-center gap-2 lg:rounded-full w-full font-medium text-sm normal-case text-blue-gray-700"
+                onClick={toggleNotification}
+              >
+                {React.createElement(
+                  (allNotificationsRead) ? icon : BellDot,
+                  { className: "h-5 w-5" }
+                )}
+                <span className={cn(!showLabel && "lg:hidden")}>{label}</span>
+              </Button>
+            );
+          } else {
+            return (
+              <Link
+                key={label}
+                to={path === "/submit" ? submitPath(pathname) : path}
+                className="w-full"
+              >
+                <Button
+                  color="blue-gray"
+                  variant="text"
+                  className={cn(
+                    "flex p-2 items-center gap-2 lg:rounded-full w-full",
+                    "font-medium text-sm normal-case text-blue-gray-700"
+                  )}
+                >
+                  {React.createElement(icon, { className: "h-5 w-5" })}
+                  <span className={cn(!showLabel && "lg:hidden")}>{label}</span>
+                </Button>
+              </Link>
+            );
+          }
+        })}
+      </div>
+      <NotificationBox
+        isOpen={isNotificationOpen}
+        notifications={notifications}
+        MarkAllAsRead={handleMarkAllAsRead}
+        MarkAsRead={handleMarkAsRead}
+        DeleteNotification={handleDeleteNotification}
+        ClearNotifications={handleClearNotifications}
+      />
+    </>
   );
 }
 type HeaderProps = {

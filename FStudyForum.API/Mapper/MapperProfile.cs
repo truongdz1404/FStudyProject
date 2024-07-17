@@ -8,6 +8,8 @@ using FStudyForum.Core.Models.DTOs.Donation;
 using FStudyForum.Core.Models.DTOs.Category;
 using FStudyForum.Core.Models.DTOs.Report;
 using Newtonsoft.Json;
+using FStudyForum.Core.Models.DTOs.Notification;
+using FStudyForum.Core.Models.DTOs.HubConnection;
 using FStudyForum.Core.Models.DTOs.Attachment;
 namespace FStudyForum.API.Mapper;
 
@@ -28,6 +30,7 @@ public class MapperProfile : AutoMapper.Profile
         CreateMap<Donation, CreateDonationDTO>().ReverseMap();
         CreateMap<Donation, UpdateDonationDTO>().ReverseMap();
         CreateMap<Category, CategoryDTO>().ReverseMap();
+        CreateMap<HubConnection, HubConnectionDTO>().ReverseMap();
 
         // Post Mapper
         CreateMap<PostDTO, Post>().ReverseMap();
@@ -48,5 +51,22 @@ public class MapperProfile : AutoMapper.Profile
                 JsonConvert.SerializeObject(src.Content) ?? string.Empty))
             .ForMember(dest => dest.ResponseContent, opt => opt.MapFrom(src => src.ResponseContent))
             .ForMember(dest => dest.Creater, opt => opt.MapFrom<ReportResolver>());
+
+        // Notification Mapper
+        CreateMap<NotificationDTO, Notification>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.MessageType, opt => opt.MapFrom(src => src.MessageType))
+            .ForMember(dest => dest.Message, opt => opt.MapFrom(src => 
+                JsonConvert.SerializeObject(src.Message) ?? string.Empty))
+            .ForMember(dest => dest.IsRead, opt => opt.MapFrom(src => src.IsRead))
+            .ForMember(dest => dest.Receiver, opt => opt.MapFrom<NotificationResolver>());
+
+        CreateMap<Notification, NotificationDTO>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.MessageType, opt => opt.MapFrom(src => src.MessageType))
+            .ForMember(dest => dest.Message, opt => opt.MapFrom(src =>
+                JsonConvert.DeserializeObject<NotificationMessage>(src.Message) ?? new NotificationMessage()))
+            .ForMember(dest => dest.IsRead, opt => opt.MapFrom(src => src.IsRead))
+            .ForMember(dest => dest.Receiver, opt => opt.MapFrom(src => src.Receiver));
     }
 }

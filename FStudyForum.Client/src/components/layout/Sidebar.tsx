@@ -27,7 +27,8 @@ import {
   HandCoins,
   Tags,
   Plus,
-  Eye
+  Eye,
+  BellRing
 } from "lucide-react";
 import React, { useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -223,6 +224,11 @@ const Sidebar = React.memo(({ handleClose }: SidebarProps) => {
                 label: "Report",
                 icon: <Flag className="w-5 h-5" />,
                 path: "/manager/report"
+              },
+              {
+                label: "Notifications",
+                icon: <BellRing className="w-5 h-5" />,
+                path: "/manager/notifications"
               }
             ]
           }
