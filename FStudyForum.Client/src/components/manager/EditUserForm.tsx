@@ -90,7 +90,7 @@ const EditUserForm: FC<Props> = ({ user, handle }) => {
 
   const handleSelect = (topic: Topic) => {
     setModTopics(pre => {
-      if (pre.some(t => t.id === topic.id)) {
+      if (pre.some(t => t.name == topic.name)) {
         return pre;
       }
       return [...pre, topic];

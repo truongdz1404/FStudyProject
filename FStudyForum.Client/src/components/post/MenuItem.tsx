@@ -145,6 +145,22 @@ const MenuItemPost: React.FC<Props> = ({ post }) => {
     }
   ];
 
+  // const modMenuItem = [
+  //   {
+  //     icon: Bookmark,
+  //     label: post.isSaved ? "Remove from saved" : "Save",
+  //     handle: () =>
+  //       !post.isSaved ? handleSave(post.id) : handleRemoveFromSaved(post.id)
+  //   },
+  //   {
+  //     icon: Flag,
+  //     label: "Report",
+  //     handle: () => {
+  //       switchOpenReport();
+  //     }
+  //   }
+  // ];
+
   const menuItem = () => {
     return user?.username === post.author ? authorMenuItem : defaultMenuItem;
   };
