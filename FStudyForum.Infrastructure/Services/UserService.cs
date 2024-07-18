@@ -56,7 +56,7 @@ public class UserService : IUserService
             claims.Add(new Claim(ClaimTypes.Role, role));
         return new TokenDTO()
         {
-        AccessToken = _tokenService.GenerateAccessToken(claims),
+            AccessToken = _tokenService.GenerateAccessToken(claims),
             RefreshToken = user.RefreshToken
         };
     }
@@ -91,17 +91,33 @@ public class UserService : IUserService
             Username = user.UserName!,
             Email = user.Email!,
             Roles = await _userManager.GetRolesAsync(user),
-            Mods = (await _userRepository.GetModeratedTopics(user.UserName!)).Select(topic => new TopicDTO
-                {
-                    Id = topic.Id,
-                    Name = topic.Name,
-                    Description = topic.Description,
-                    Avatar = topic.Avatar,
-                    Banner = topic.Panner,
-                    Categories = topic.Categories.Select(c => c.Id).ToList()
-                }),
             Avatar = profile?.Avatar ?? string.Empty
         };
+    }
+
+    public async Task<PaginatedData<TopicDTO>> GetModeratorTopic(string username, QueryTopicDTO query)
+    {
+
+        var user = await _userManager.FindByNameAsync(username)
+            ?? throw new Exception("UserName is invalid");
+        var roles = await _userManager.GetRolesAsync(user);
+
+        var isAdmin = roles.Contains("Admin");
+        PaginatedData<Topic> topics = null!;
+        if (isAdmin)
+            topics = await _userRepository.GetTopics(query);
+        else
+            topics = await _userRepository.GetModeratedTopics(username, query);
+        var topicDTOs = topics.Data.Select(topic => new TopicDTO
+        {
+            Id = topic.Id,
+            Name = topic.Name,
+            Description = topic.Description,
+            Avatar = topic.Avatar,
+            Banner = topic.Panner,
+            Categories = topic.Categories.Select(c => c.Id).ToList()
+        });
+        return new(topicDTOs, topics.TotalCount);
     }
 
 
@@ -289,5 +305,20 @@ public class UserService : IUserService
                     TotalNumberRegistrants = 0
                 });
         return completeStatistics;
+    }
+
+    public async Task EditUser(EditUserDTO editUserDTO)
+    {
+        var user = await _userManager.FindByNameAsync(editUserDTO.Username)
+            ?? throw new Exception("User not found");
+
+        if (editUserDTO.NewRoles != null)
+        {
+            await _userManager.RemoveFromRolesAsync(user, editUserDTO.OldRoles);
+            await _userManager.AddToRolesAsync(user, editUserDTO.NewRoles);
+        }
+        if (editUserDTO.ModeratorTopics != null)
+            await _userRepository.UpdateMoreratedTopics(user.UserName!, editUserDTO.ModeratorTopics);
+        await _userRepository.Update(user);
     }
 }

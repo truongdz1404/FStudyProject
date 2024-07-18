@@ -124,7 +124,7 @@ const FeedDescription = () => {
         <span className="text-sm font-light">{feed.description}</span>
       </div>
       <div className="p-4 border-t-2 w-full">
-        <p className="text-xs uppercase">Communities</p>
+        <p className="text-xs uppercase">Topics</p>
         <div className="mt-4 font-normal">
           <Input
             onChange={handleSearch}

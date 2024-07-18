@@ -174,11 +174,11 @@ const EditPostForm: FC<Props> = ({ post, handler }) => {
   if (!editor) return null;
 
   return (
-    <div className="relative">
+    <div className="relative overflow-y-auto scrollbar max-h-screen p-2">
       <h1 className="font-semibold text-center text-lg">Edit post</h1>
       <button
         type="button"
-        className="absolute p-1 bg-blue-gray-700/50 rounded-full right-0 top-0"
+        className="absolute p-1 bg-blue-gray-700/50 rounded-full right-0 top-0 m-2"
         onClick={handler}
       >
         <X className="text-white w-4 h-4" />

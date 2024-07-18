@@ -10,6 +10,7 @@ namespace FStudyForum.Core.Interfaces.IServices;
 
 public interface IUserService
 {
+    public Task<PaginatedData<TopicDTO>> GetModeratorTopic(string username, QueryTopicDTO query);
     Task<PaginatedData<UserDTO>> GetAll(QueryUserDTO query);
     Task<UserDTO> GetProfileByName(string userName);
     Task<UserDTO?> FindOrCreateUserAsync(ExternalAuthDTO externalAuth, List<string> roles);
@@ -29,6 +30,6 @@ public interface IUserService
     Task<UserDTO> UnlockUser(LockUserDTO lockUserDTO);
     Task<bool> IsUserLocked(string userName);
     Task<DateTimeOffset?> GetUnlockTime(string userName);
-
+    Task EditUser(EditUserDTO changeRoleDTO);
     Task<IEnumerable<UserStatisticsDTO>> GetUserStatisticsDTO(string action, int date);
 }

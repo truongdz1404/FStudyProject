@@ -205,7 +205,7 @@ const MenuItemPost: React.FC<Props> = ({ post }) => {
       </Dialog>
 
       <Dialog
-        className="max-w-[34rem] p-2"
+        className="max-w-[34rem]"
         open={openPopup == Popups.EDIT}
         handler={switchOpenBan}
       >

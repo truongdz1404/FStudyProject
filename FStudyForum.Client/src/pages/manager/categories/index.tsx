@@ -164,7 +164,7 @@ const CategoriesPage = () => {
             </div>
           </div>
         </CardHeader>
-        <CardBody className="overflow-y-hidden px-0">
+        <CardBody className="overflow-y-hidden p-0">
           <div className="flex items-center gap-4 mt-4">
             <select
               value={selectedType ?? ""}

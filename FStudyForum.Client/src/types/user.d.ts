@@ -1,9 +1,13 @@
-import { Topic } from "./topic";
-
 export interface User {
   username: string;
   email: string;
   roles: Array<string>;
-  mods: Array<Topic>;
   avatar: string;
+}
+
+export interface EditUser {
+  username: string;
+  oldRoles: Array<string>;
+  newRoles: Array<string>;
+  moderatorTopics?: Array<string>;
 }

@@ -5,6 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using FStudyForum.Core.Models.DTOs.Search;
 using FStudyForum.Core.Helpers;
 using FStudyForum.Core.Models.DTOs.User;
+using FStudyForum.Core.Models.DTOs;
+using FStudyForum.Core.Models.DTOs.Topic;
+using System.Linq.Dynamic.Core;
 
 
 namespace FStudyForum.Infrastructure.Repositories;
@@ -16,6 +19,16 @@ public class UserRepository(ApplicationDBContext dbContext)
     public async Task<ApplicationUser?> FindUserByRefreshTokenAsync(string refreshToken)
     {
         return await _dbContext.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
+    }
+
+    public async Task UpdateMoreratedTopics(string username, IEnumerable<string> moderatetopics)
+    {
+        var user = await _dbContext.Users.Include(u => u.BannedByTopics).ThenInclude(bt => bt.Topic)
+                    .FirstOrDefaultAsync(u => u.UserName == username)
+                    ?? throw new Exception("User not found");
+        var topics = await _dbContext.Topics.Where(t => moderatetopics.Contains(t.Name)).ToListAsync();
+        user.ModeratedTopics = topics;
+        await Update(user);
     }
 
     public async Task<IEnumerable<ApplicationUser>> SearchUserByName(QuerySearchUserDTO query)
@@ -40,11 +53,22 @@ public class UserRepository(ApplicationDBContext dbContext)
                .ToListAsync();
     }
 
-    public async Task<IEnumerable<Topic>> GetModeratedTopics(string username)
+    public async Task<PaginatedData<Topic>> GetModeratedTopics(string username, QueryTopicDTO query)
     {
-        var user = await _dbContext.Users.Include(u => u.ModeratedTopics).FirstOrDefaultAsync(u => u.UserName == username)
-            ?? throw new Exception("User not found");
-        return user.ModeratedTopics;
+        IQueryable<Topic> queryable = _dbContext.Topics.Include(t => t.ModeratedByUsers)
+            .Where(t => t.ModeratedByUsers.Any(m => m.UserName == username));
+        var totalCount = queryable.Count();
+
+        var topics = await queryable.Paginate(query.PageNumber, query.PageSize).ToListAsync() ?? [];
+        return new(topics, totalCount);
+    }
+
+    public async Task<PaginatedData<Topic>> GetTopics(QueryTopicDTO query)
+    {
+        IQueryable<Topic> queryable = _dbContext.Topics;
+        var totalCount = queryable.Count();
+        var topics = await queryable.Paginate(query.PageNumber, query.PageSize).ToListAsync() ?? [];
+        return new(topics, totalCount);
     }
 
     public async Task<IEnumerable<TopicBan>> GetBannedTopics(string username)

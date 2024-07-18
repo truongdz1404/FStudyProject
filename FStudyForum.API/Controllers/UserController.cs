@@ -2,6 +2,7 @@ using FStudyForum.Core.Exceptions;
 using FStudyForum.Core.Interfaces.IServices;
 using FStudyForum.Core.Models.DTOs;
 using FStudyForum.Core.Models.DTOs.Auth;
+using FStudyForum.Core.Models.DTOs.Topic;
 using FStudyForum.Core.Models.DTOs.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -137,5 +138,51 @@ namespace FStudyForum.API.Controllers
                 });
             }
         }
+        [HttpPost("edit")]
+        public async Task<IActionResult> EditUser([FromBody] EditUserDTO editUserDTO)
+        {
+            try
+            {
+                await _userService.EditUser(editUserDTO);
+                return Ok(new Response
+                {
+                    Status = ResponseStatus.SUCCESS,
+                    Message = "Update user successfully!",
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = ex.Message
+                });
+            }
+        }
+
+        [HttpGet("Mods")]
+        public async Task<IActionResult> GetMods([FromQuery] QueryTopicDTO query)
+        {
+            try
+            {
+                var userName = User.FindFirstValue(ClaimTypes.Name) ?? throw new Exception("User is not authenticated!");
+                var topics = await _userService.GetModeratorTopic(userName, query);
+                return Ok(new Response
+                {
+                    Status = ResponseStatus.SUCCESS,
+                    Message = "Update user successfully!",
+                    Data = topics
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new Response
+                {
+                    Status = ResponseStatus.ERROR,
+                    Message = ex.Message
+                });
+            }
+        }
+
     }
 }

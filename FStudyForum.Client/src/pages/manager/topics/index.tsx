@@ -132,7 +132,7 @@ const TopicsPage = () => {
               </Button>
             </div>
           </CardHeader>
-          <CardBody className="overflow-y-hidden px-0">
+          <CardBody className="overflow-y-hidden p-0 pb-4">
             <select
               value={selectedCategory ?? ""}
               onChange={e => setSelectedCategory(e.target.value)}

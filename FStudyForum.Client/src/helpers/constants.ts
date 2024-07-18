@@ -1,6 +1,7 @@
 export const Roles = {
   USER: "User",
-  ADMIN: "Admin"
+  ADMIN: "Admin",
+  MODERATOR: "Moderator"
 };
 export const VoteTypes = {
   UNVOTE: 0,

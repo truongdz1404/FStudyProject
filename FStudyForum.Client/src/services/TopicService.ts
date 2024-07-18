@@ -13,7 +13,7 @@ const getActiveTopics = async (): Promise<Topic[]> => {
   return response.data;
 };
 
-const getTopics = async () => {
+const getAll = async () => {
   const response = await api.get<ResponseWith<Topic[]>>("/topic/all");
   return response.data.data;
 };
@@ -67,11 +67,13 @@ const search = async (value: string) => {
   return response.data.data;
 };
 const filterByCategories = async (categoryIds: number[]): Promise<Topic[]> => {
-  const response = await api.get<ResponseWith<Topic[]>>(`/topic/filter?categoryIds=${categoryIds.join(',')}`);
+  const response = await api.get<ResponseWith<Topic[]>>(
+    `/topic/filter?categoryIds=${categoryIds.join(",")}`
+  );
   return response.data.data;
 };
 const TopicService = {
-  getTopics,
+  getAll,
   getActiveTopics,
   getTopicByName,
   search,

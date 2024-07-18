@@ -2,6 +2,7 @@ import { LIMIT_SCROLLING_PAGNATION_RESULT, Roles } from "@/helpers/constants";
 import { cn } from "@/helpers/utils";
 import { useAuth } from "@/hooks/useAuth";
 import DefaultFeed from "@/assets/images/feed.png";
+import DefaultTopic from "@/assets/images/topic.png";
 
 import {
   List,
@@ -35,6 +36,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import CreateFeedForm from "../feed/CreateFeedForm";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import FeedService from "@/services/FeedService";
+import UserService from "@/services/UserService";
 
 interface SubItem {
   label: string;
@@ -89,6 +91,28 @@ const Sidebar = React.memo(({ handleClose }: SidebarProps) => {
     },
     initialPageParam: 1
   });
+
+  const {
+    data: topicsData,
+    hasNextPage: hasNextTopicsPage,
+    fetchNextPage: fetchNextTopicsPage
+  } = useInfiniteQuery({
+    queryKey: ["TOPIC_LIST", "MODERATED"],
+    queryFn: async ({ pageParam = 1 }) => {
+      return await UserService.getMods(
+        pageParam,
+        LIMIT_SCROLLING_PAGNATION_RESULT
+      );
+    },
+    getNextPageParam: (last, pages) => {
+      const totalPages = Math.ceil(
+        last.totalCount / LIMIT_SCROLLING_PAGNATION_RESULT
+      );
+      const nextPage = pages.length + 1;
+      return nextPage <= totalPages ? nextPage : undefined;
+    },
+    initialPageParam: 1
+  });
   const toggleLabel = (label: string) => {
     setCollapse(prev =>
       prev.includes(label)
@@ -100,6 +124,10 @@ const Sidebar = React.memo(({ handleClose }: SidebarProps) => {
   const feeds = useMemo(() => {
     return feedData?.pages.flatMap(page => page.data) ?? [];
   }, [feedData]);
+
+  const topics = useMemo(() => {
+    return topicsData?.pages.flatMap(page => page.data) ?? [];
+  }, [topicsData]);
 
   const isCollapse = (label: string) => collapse.includes(label);
 
@@ -137,23 +165,37 @@ const Sidebar = React.memo(({ handleClose }: SidebarProps) => {
       },
       {
         group: "moderator",
-        disable: !!user?.mods.length == false,
+        disable:
+          topics.length === 0 &&
+          (user?.roles.includes(Roles.MODERATOR) ||
+            user?.roles.includes(Roles.ADMIN)),
         items: [
           {
             label: "Moderator",
             handle: () => toggleLabel("Moderator"),
-            items: user?.mods.map<SubItem>(topic => {
-              return {
-                label: `t/${topic.name}`,
-                icon: (
-                  <img
-                    src={topic.avatar || DefaultFeed}
-                    className="w-5 h-5 rounded-full"
-                  />
-                ),
-                path: `/topic/${topic.name}`
-              };
-            })
+            items: [
+              ...(topics.map<SubItem>(topic => {
+                return {
+                  label: topic.name,
+                  icon: (
+                    <img
+                      src={topic.avatar || DefaultTopic}
+                      className="w-5 h-5 rounded-full"
+                    />
+                  ),
+                  path: `/topic/${topic.name}`
+                };
+              }) ?? []),
+              ...(hasNextTopicsPage
+                ? [
+                    {
+                      label: "View more",
+                      icon: <Eye className="w-5 h-5" />,
+                      handle: () => fetchNextTopicsPage()
+                    }
+                  ]
+                : [])
+            ]
           }
         ]
       },
@@ -235,7 +277,15 @@ const Sidebar = React.memo(({ handleClose }: SidebarProps) => {
         ]
       }
     ],
-    [feeds, fetchNextPage, hasNextPage, user]
+    [
+      feeds,
+      fetchNextPage,
+      fetchNextTopicsPage,
+      hasNextPage,
+      hasNextTopicsPage,
+      topics,
+      user
+    ]
   );
   if (!user) return;
 
