@@ -11,11 +11,11 @@ interface DoughnutChartProps {
 
 const DoughnutChart: React.FC<DoughnutChartProps> = ({ data}) => {
   const chartData = {
-    labels: ['Total Login'], // Adding a label for the single value
+    labels: ['Total Login'], 
     datasets: [
       {
         label: 'My First Dataset',
-        data: [data], // Assuming the total percentage is 100
+        data: [data], 
         backgroundColor: [
           'rgb(255, 99, 132)',
           'rgb(54, 162, 235)'
