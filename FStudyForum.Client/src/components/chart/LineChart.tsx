@@ -8,9 +8,10 @@ ChartJS.register(CategoryScale, LinearScale, LineElement, PointElement, Title, T
 
 interface LineChartProps {
   data: StatisticsPost[];
+  loading: boolean;
 }
 
-const LineChart: React.FC<LineChartProps> = ({ data }) => {
+const LineChart: React.FC<LineChartProps> = ({ data, loading }) => {
   const labels = data.map((item) => item.date);
   const totalPosts = data.map((item) => item.totalPosts);
   const totalComments = data.map((item) => item.totalComments);
@@ -51,7 +52,7 @@ const LineChart: React.FC<LineChartProps> = ({ data }) => {
       },
     },
   };
-
+ 
   return (
     <div>
       <Line data={chartData} options={options} />

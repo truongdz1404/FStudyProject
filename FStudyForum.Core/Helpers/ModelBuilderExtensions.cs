@@ -32,9 +32,7 @@ public static class ModelBuilderExtensions
             });
             i++;
         }
-
         builder.Entity<IdentityRole>().HasData(roles);
         builder.Entity<Category>().HasData(categories);
     }
-
 }
